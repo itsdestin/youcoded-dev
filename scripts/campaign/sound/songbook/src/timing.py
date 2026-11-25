@@ -166,7 +166,10 @@ def fit_tempo(hits, bpm_range=(100, 120), step=0.5, fps=30, top=3, ending_beats=
     hits = [(float(h[0]), float(h[1] if len(h) > 1 else 1.0), (h[2] if len(h) > 2 else "")) for h in hits]
     logo = next((h for h in hits if h[2] == "logo"), None)
     if rits is None:
-        rits = (1.0,) if rit >= 0.999 else (0.75, 0.8, 0.85)
+        # WHY 1.0 searched for a slowing ending too (first-shot b and e): a picture cut on one even
+        # grid (120 bpm, every turn on a bar line) is landed exactly by an unslowed ending, and with
+        # only 0.75-0.85 searched that fit never appeared; it costs a little more (below)
+        rits = (1.0,) if rit >= 0.999 else (0.75, 0.8, 0.85, 1.0)
     res = []
     for rv in rits:
         xs = np.linspace(0, ending_beats, 401)
@@ -188,6 +191,7 @@ def fit_tempo(hits, bpm_range=(100, 120), step=0.5, fps=30, top=3, ending_beats=
                     # WHY 0.5 (+0.1 away from bar 1): an odd bar only when it earns its place, and a
                     # pick-up at the start before one in the middle
                     cost, rows = ((0.5 + (0.1 if at > 1 else 0.0)) if odd else 0.0), []
+                    cost += 0.02 if (rv >= 0.999 and rit < 0.999) else 0.0   # a slowing ending when it ties
                     for t, w, lab in hits:
                         if lab == "logo":
                             rows.append(dict(t=t, label=lab, weight=w, err_ms=0.0, err_frames=0.0,
@@ -201,10 +205,18 @@ def fit_tempo(hits, bpm_range=(100, 120), step=0.5, fps=30, top=3, ending_beats=
                         pen = abs(mv) if ON_WINDOW[0] <= mv <= ON_WINDOW[1] else 3 * abs(mv)
                         cost += w * pen
                         gb = G.bar_of_beat(g / beat + 1e-6)
+                        if odd and w >= 3 and int(gb) == at:
+                            # WHY (first-shot b): the odd bar carries no tune and the previous chord, so
+                            # on the peak it pushed the payoff phrase a bar past the cut; an odd bar
+                            # belongs before or after the peak, never on it
+                            cost += 1.0
                         rows.append(dict(t=t, label=lab, weight=w, err_ms=round(1000 * mv, 1), err_frames=round(mv * fps, 2),
                                          bar=int(gb), beat=round(1 + g / beat - G.start_beat(gb), 2),
                                          on=ON_WINDOW[0] <= mv <= ON_WINDOW[1]))
+                    # WHY rit_show: a fit with rit=1.0 for a slowing ending must say so, or the recipe's
+                    # default slowing is copied and the name lands late
                     res.append(dict(bpm=round(bpm, 2), odd=odd, odd_at=(at if odd else None), rit=rv, bars=n,
+                                    rit_show=(rv < 0.999 or rit < 0.999),
                                     cost=round(cost, 4), rows=rows, frames_per_beat=round(fps * beat, 3),
                                     big_ok=all(r["on"] for r in rows if r["weight"] >= 3)))
     res.sort(key=lambda r: (not r["big_ok"], r["cost"]))
@@ -222,13 +234,13 @@ def fit_text(fits, fps=30):
     for i, f in enumerate(fits):
         L.append(f"  {i + 1}. write bpm={f['bpm']:g}"
                  + (f", odd={f['odd']}, odd_at={f['odd_at']} (one {f['odd']}-beat bar as bar {f['odd_at']})" if f["odd"] else "")
-                 + (f", rit={f['rit']:g}" if f.get("rit", 1.0) < 0.999 else "")
+                 + (f", rit={f['rit']:g}" if f.get("rit_show", f.get("rit", 1.0) < 0.999) else "")
                  + (f": {f['bars']} bars of 4 + the ending" if f["bars"] else "")
                  + f"; {f['frames_per_beat']:g} frames a beat at {fps} fps"
                  + ("" if f["big_ok"] else "  -- a weight-3 hit is off: move the picture to the grid, or accept it"))
         for r in f["rows"]:
             if r.get("logo"):
-                L.append(f"       {r['t']:7.2f} s  w{r['weight']:g}  the name: lands exactly (the ending slows into it)  {r['label']}")
+                L.append(f"       {r['t']:7.2f} s  w{r['weight']:g}  the name: lands exactly" + (" (the ending slows into it)" if f.get("rit", 1.0) < 0.999 else "") + f"  {r['label']}")
                 continue
             L.append(f"       {r['t']:7.2f} s  w{r['weight']:g}  bar {r['bar']} beat {r['beat']:<5g} "
                      f"{r['err_ms']:+7.1f} ms ({r['err_frames']:+.2f} frames)  {'on' if r['on'] else 'off'}  {r['label']}")

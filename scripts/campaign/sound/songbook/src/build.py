@@ -99,6 +99,11 @@ def one(piece, extra_fn=None, path=None):
     with open(os.path.join(OUT, "notes", f"{piece.name}.txt"), "w") as f:
         f.write("\n".join(form.table_text(rows, piece) + [""] + (st["recipe"] or [])
                            + D.text(piece.name, st["hard"], st["dashboard"], piece)) + "\n")
+    # WHY (first-shot d): a full render rewrote the bar table but left an older note log beside it,
+    # so a composer read a stale ending; the log is now written with every render
+    import notes as NT
+    with open(os.path.join(OUT, "notes", f"{piece.name}.log.txt"), "w") as f:
+        f.write("\n".join(NT.note_log(band, rows, piece)) + "\n")
     return piece.name, st
 
 

@@ -192,6 +192,10 @@ def motif_check(full, backing, events, window=0.15):
             eb += sb[band].sum()
         ratios.append(float(10 * np.log10((em + 1e-20) / (eb + 1e-20))))
     r = np.array(ratios)
+    if not len(r):
+        # WHY (first-shot c, 2026-11-25): a piece with no melody at all (recipe C under a narrator
+        # who never pauses, logo="none") crashed every render on r.min(); no notes = nothing to check
+        return dict(notes=0, above_0db=0, min_db=None, median_db=None, weakest=[])
     return dict(notes=len(r), above_0db=int((r > 0).sum()), min_db=round(float(r.min()), 1),
                 median_db=round(float(np.median(r)), 1),
                 weakest=[(round(events[k][0], 2), int(events[k][1]), round(ratios[k], 1))

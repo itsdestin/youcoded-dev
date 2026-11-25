@@ -2,7 +2,8 @@
 
 Every film's music is composed in code, here. This page is the composer's whole guide: read it
 top to bottom once, then follow **The procedure**. Nobody here can listen; you judge by note dumps
-and measurements, and you never claim something sounds good.
+and measurements, and you never claim something sounds good. **A composer under test never opens
+`first-shot/`** (it holds the other briefs and the owner's ratings).
 
 ## What is fixed (the identity) and what is wanted
 
@@ -44,24 +45,53 @@ Every film follows these steps in order. Commands are run from anywhere:
    (`logo_at`). Narrated: map her words with `films.speech_from_words(words.json, t_from,
    start_at=1.5)` (1-2 s of music before her first word). Pass the brief to the recipe
    (`brief=BRIEF`): it supplies `subtle`, the `peak` and the hits unless you give them.
+   `--brief` reads the film's `FILM`, so write the recipe call too, with only `name, length,
+   land, bpm=<any>, brief=BRIEF`, then run it.
+   - **Subtle or present**, when the brief does not say: **subtle** if any of its words is calm,
+     soothing, gentle, quiet, soft, or it plays under a narrator or a poster; **present** only
+     when it asks for energy (bright, bold, lively, celebratory). In doubt, subtle (the brand
+     leans quiet). Present changes more than loudness: the full-blend logo, and in recipe C a
+     -2 dB level after her words.
+   - **When the picture is already cut, the picture wins**: no pre-roll if her voice starts at
+     the picture's first second (`start_at` = where she is in the picture); "the brief says 54 s"
+     and "the picture shows 50 s" means the picture. A `--brief` card warning (TOO SHORT) is the
+     editor's matter: report it, do not change the music for it. A card that stays on screen to
+     the end (a poster) is not too short; say so in the report.
+   - **A "peak" in a type-only film** is the moment the music is fitted to land on (a downbeat);
+     recipe A puts nothing special there unless you add one change (`brightness`) on its bar.
+   - **Sound effects** (a pen, a click) are not music: the music never plays them. If the brief
+     asks for one, it is a film effect (`Film.effects`, `films.place_effect`, soft only), made
+     after the music and reported separately; a moment marked only as a picture moment gets no
+     sound.
 2. **The tempo. First decide which is fixed.**
    - **The picture is cut** (its frames are given): `logo_at` is the editor's frame for the name,
      and `LAND = BRIEF.logo_at`. `render.sh --brief <film>` runs `fit_tempo` over the recipe's
-     range: the 3 best fits, each a line to copy (`bpm=`, and when they help `odd=`, `odd_at=` and
-     `rit=`), with every moment's error in ms and frames. It searches every tempo, no odd bar or
-     ONE odd bar of 1 (a pick-up), 2 or 3 beats at any bar, and the ending slowing to 75, 80 or
-     85 %. Write all of it into the recipe call.
+     range (+-3 bpm to land the name): the 3 best fits, each a line to copy (`bpm=`, and when they
+     help `odd=`, `odd_at=` and `rit=`), with every moment's error in ms and frames. It searches
+     every tempo, no odd bar or ONE odd bar of 1 (a pick-up), 2 or 3 beats at any bar (never on
+     the peak's bar), and the ending slowing to 75, 80, 85 % or not at all (`rit=1`). Write all of
+     it into the recipe call, `rit=` included. When no fit lands every weight-3 hit, `--brief`
+     also looks over 84-132 bpm and prints any fit that does: **a picture cut to its own beat
+     (96 bpm, or 120 with every turn on a bar line) takes that tempo**, not a recipe-range fit
+     that misses it. `range=LO-HI` searches a range you name (and writes the motion grid at its
+     first fit).
    - **The music comes first** (the editor cuts to it): choose the tempo in the recipe's range
      and get the name's time from `R.land_after(bars, bpm, ending, odd=, rit=)`; give the editor
      that time and the motion grid.
    - Either way `--brief` writes the **motion grid** (`out/notes/<name>.grid.json`: frames per
      beat, eighth, sixteenth, every bar line) at the first fit's tempo, for the editor.
    - Under a narrator it prints her pace, her tempo band (a beat every 2-3 syllables) and the
-     value nearest 120, then fits around it with her sentence ends as soft hits. One tempo per film.
+     value nearest 120, then fits around it with her sentence ends as soft hits; **copy the first
+     fit** (it is the value nearest 120 nudged to her sentence ends; recipe C's "nearest 120" is
+     only its default when no fit is given). One tempo per film.
+   - **Running one toolkit function** (`land_after`, `fit_tempo`): `render.sh --py -c "import
+     recipes as R; print(R.land_after(12, 116, 'short'))"` (the right Python and import path).
 3. **Pick a recipe** (below) and call it with the brief's numbers. Do not invent a new form for
    one film; if none fits, add a fourth recipe to `src/recipes.py` and say so.
 4. **Write the change plan** (`changes=`): one entry per turn of the picture, 8-16 s apart, plus
-   the peak (see The change plan).
+   the peak (see The change plan). Passing `changes=` REPLACES the recipe's default plan (recipe
+   C's brightness, bright turn and pool change too): copy the defaults you keep from the
+   `--notes` "change plan" line.
 5. **The bed alone.** `render.sh --bed <film>` renders sustain + pulse + cycles with no tune and
    prints its dashboard. Read the bed's gauges (sustain, pulse-rate, pulse-sim, groups,
    common-tone) before writing a tune note.
@@ -74,11 +104,16 @@ Every film follows these steps in order. Commands are run from anywhere:
    `pulse=chord`, `chords=plain`, `pad_level=0`; a sound switch: `pad_timbre=triangle`,
    `piano=salamander`, `air=legacy` (the old 11 dB air shelf, cap lifted); or `bed.cutoff=1200`,
    `sec.fig_touch=0.35`). It prints both dashboards' readings side by side (sustain, gap-fill,
-   tilt, presence, level-rate...). A misspelt switch stops with the list of known ones. The
-   owner picks.
+   tilt, presence, level-rate...): **the readings are of the whole piece**, the files keep the
+   first 20 s. A misspelt switch stops with the list of known ones. The owner picks. A piece
+   built by hand (not through a recipe) may not take `pad_level`; check that B's readings moved.
 8. **Render and report.** `render.sh <film>` (`SONGBOOK_NO_COPY=1` while checking). Every render
-   also writes `<name>-bed.wav`, the no-melody mix. Report the numbers: the hard checks, every out-of-range gauge with its one-line
+   also writes `<name>-bed.wav`, the no-melody mix, and rewrites the note log. Report the numbers: the hard checks, every out-of-range gauge with its one-line
    explanation, and the answers to "Before reporting" below. Never claim it sounds good.
+9. **Deliver.** `render.sh --deliver <film> <dir> [picture=film.mp4] [from=SECONDS]` writes
+   `<name>-music.mp3`, and with a picture `<name>.mp4`: the picture from `from` for the piece's
+   length, its sound replaced by the music (narrated, `voice_mux` given: the picture's own sound,
+   her voice, plus the music at `music_db`, the mux the margin was measured on, limited).
 
 ## The three recipes
 
@@ -90,7 +125,7 @@ your film needs. `recipes.land_after(bars, bpm, ending)` tells you where the nam
 
 | Item | Setting (default) |
 |---|---|
-| Tempo | 100-120 bpm from `fit_tempo`; a card about every 2-bar phrase |
+| Tempo | 100-120 bpm from `fit_tempo` (or the picture's own beat when `--brief` finds it outside); a card about every 2-bar phrase |
 | Harmony | 2 chords alternating, one per 2 bars (`"Ebmaj9 Ebmaj9 Abmaj9 Abmaj9"`), the same top note |
 | Sustain | the pad from frame 0 |
 | Pulse | the pedal pulse in eighths, pool B-flat 4, G4, F4, E-flat 4 circled (B-flat between the others), 10 of 16 steps, touch 0.42 |
@@ -110,7 +145,7 @@ your film needs. `recipes.land_after(bars, bpm, ending)` tells you where the nam
 | Sustain | the pad throughout; held strings may join at the peak (they double the pad's voicing) |
 | Pulse | the pedal pulse, 2.5-4 notes a second, the chord's root held under each chord (`fig_bass`) |
 | Cycles | 2-3 on co-prime periods, above C5 (default 23 and 29 half-beats), at most a third sounding; set their `offset` so their rounds fall in the bars with no tune (a round that meets a tune phrase is left out whole) |
-| Tune | 2-3 one-bar phrases, each followed by at least 2 bars of bed; default: a phrase, the same phrase again, a peak phrase reaching C6 |
+| Tune | 2-3 one-bar phrases, each followed by at least 2 bars of bed; default: a phrase, the same phrase again, a peak phrase reaching C6. **Under 40 s, two phrases** (the third crowds the bars); when the peak is within 4 s of the name it IS the ending's sigh: no separate peak phrase |
 | Changes | one every 8-16 s at the picture's turns (default: cycle1, the sub, then any cycle not yet in plus the strings at the peak); bring EVERY cycle in by name |
 | Lift | 2.5 dB over 2 bars into the peak, then settle 1 dB |
 | Form | the first 30 s must stand alone (it becomes the :30 cut-down) |
@@ -129,7 +164,30 @@ your film needs. `recipes.land_after(bars, bpm, ending)` tells you where the nam
 | Whimsy | `whimsy=True` (storybook): a bell-like double, an octave up and very soft, of the tune's first phrase (and every third after) |
 | Tune | only in pauses that fit a whole phrase, and after her last word; softer when subtle (`lead` 0.7) |
 | Level | one hand-set level under her words (-6 dB), never moving with her words; after them -2 (present) or the same -6 (subtle); subtle also gives the quiet logo and -16.5 LUFS |
-| Mux | `R.narrated(..., voice_mux=dict(path=voice.wav, t_from=, start_at=, music_db=-10))`: her margin is measured |
+| Mux | `R.narrated(..., voice_mux=dict(path=voice.wav, t_from=, start_at=, music_db=-10))`: her margin is measured. A static `music_db` of -12 for a soft-spoken reader is a level choice, not gaming; never a dip that follows her words |
+
+**Narrated, two cases the recipe does not solve by itself:**
+- **She speaks into the name** (her last word ends under a second before it): there is no
+  post-roll, so no tune, no whimsy and no cycle can play, and the sigh and logo pick-ups land on
+  her last words (`narrator-masked` fails). First ask the editor to land the name 1-2 s after her
+  last word (say how much ring the picture allows). If the picture is fixed: `ending="short"`,
+  `logo="quiet"`, and report the masking honestly; never lower `music_db` only to pass.
+- **An excerpt that ends mid-story** (no name in the window): `logo="none"`, `ending="short"`,
+  `LAND = R.land_after(bars, bpm, "short")` at a bar line just before the window ends; the
+  chords move on her sentence ends; nothing needs to "arrive". Expect `cell-present`,
+  `payoff-louder` and `level-rate` (the hand-on stop) OUT: one line each.
+- **The turn on one word** (`turn=`): the default chords turn bright on the sentence end NEAREST
+  the turn, which can be seconds early. For a turn on a word, write `chords=` yourself (one name
+  per sentence end) so the bright chord falls on the first sentence end after it.
+
+### Shorter than one bar of body: a sting or end card (under ~4 s to the name)
+
+No recipe lands a name in under about 3 s (each writes at least one 4-beat bar). Build the Piece
+from recipe A's parts (`R._pulse`, `R.sustain_mix`, `R._from_brief`; see `src/film_shot_f.py`,
+first-shot F) and say so. Two traps: at fast tempi (pick-ups under 0.25 s apart) the logo is heard
+late (+12 ms, a hard `length` fail): keep its pick-ups 0.25 s or more apart; and the pad's 1.2 s
+attack is still swelling in the first second (start it before frame 0 or accept the `sustain`
+"heard" reading). Nothing yet measures a loop seam for a piece played on repeat.
 
 ### Starting from a recipe (a film file)
 
@@ -212,8 +270,11 @@ of its period; under 20 s one cycle, 30-75 s two or three; at most one cycle not
 all. `chance` is decided once per round, and so is every guard: a ROUND is left out whole (never
 moved, never cut to a fragment) when any of its notes sounds into a tune phrase, under her words,
 within a beat of the peak, a semitone from the pad below C5, or on the pulse's own key; the note
-dump counts what was left out and why. So choose each cycle's `offset` to put its rounds in the
-bars with no tune. Bring every cycle in by name in the change plan: one never brought `"in"`
+dump counts what was left out and why. "Into a tune phrase" is wider than it reads: the whole
+2-beat half-bars around a phrase are blocked, up to about 3 beats past its last note. So choose
+each cycle's `offset` to put its rounds in the bars with no tune AND a bar clear of each phrase;
+check `cycles: N notes placed` in `--notes` after each try. A cycle brought in at the peak of a
+short film may get one round: bring it in earlier or leave it out. Bring every cycle in by name in the change plan: one never brought `"in"`
 plays from the start, and the change-plan gauge counts its first note as an unplanned change.
 
 **4. Tune** (`tunebank.py`, `tune.PHRASES`). Twelve phrases of 1-2 bars cut from the tune: `cell`,
@@ -230,8 +291,10 @@ level and at touch 0.8: one voice among the bed, not a soloist popping in and ou
 
 ## The change plan
 
-`Piece.changes = [(bar, what, arg), ...]`; bars count from 1 over the whole piece (an odd bar is
-bar 1; the ending bar is not counted). A layer never switches: it fades in a straight line over
+`Piece.changes = [(bar, what, arg), ...]`; bars count from 1 over the whole piece, the odd bar
+included (at `odd_at`); the ending bar is not counted. **`chords=` counts differently**: one name
+per 4-beat bar only; the odd bar keeps the chord before it (a warning prints if you give too
+many names). `tune=` uses the whole-piece bars, and the odd bar cannot take a phrase. A layer never switches: it fades in a straight line over
 2 bars from its bar line.
 
 | Entry | What it does |
@@ -269,8 +332,11 @@ and layers on one continuous piece.
   feels wrong. If a weight-3 moment will not fit, `fit_tempo` offers ONE odd bar: `odd=1` (a
   pick-up), `2` or `3` beats, at any bar `odd_at=` (bar 1 by default; after an earlier hit it
   moves only what follows), and the ending's slowing `rit=0.75-0.85` (it moves the name alone).
-  The recipes take `odd=`, `odd_at=`, `rit=`; the odd bar has no tune and the bar before it's
-  chord. Or ask the editor to move the picture to the grid.
+  The recipes take `odd=`, `odd_at=`, `rit=`. The odd bar carries no tune and keeps the chord
+  of the bar before it, so it never sits on the peak (the fit avoids that). Or ask the editor to
+  move the picture to the grid.
+- **Two timing windows**: a picture moment is "on" when heard 15 ms early to 45 ms late; the
+  name is stricter (the hard `length` check: within 10 ms).
 - **Hit very few moments**: music-in, the peak and the logo, and at most one more per 15 s; never
   two cuts in a row. "Just having the tempo lining up can be enough."
 - **The shared time line** (style `"v3"`, every recipe): one 1/f deviation of 4-6 ms per sixteenth
@@ -338,7 +404,7 @@ piece's style profile, then the default.
 | `silence` | over a second of nothing between the first frame and the name |
 | `clash` | a semitone or minor ninth held more than half a beat between sustained notes below C5, or any such interval with a note outside the chord, or a tune note on a borrowed chord's clashing note, in a bar the composer did not mark (`Piece.clash_ok = {bar: "why"}`) |
 | `narrator-masked` | a tune or cycle note in her range (F3-E5) starting while she speaks; with `voice_mux`, her voice under 6 dB above the music in the phone band |
-| `length` | the wrong file length, the name more than 10 ms off its frame, a non-silent first or last sample, less than 1.5 s after the name |
+| `length` | the wrong file length, the name more than 10 ms off its frame, a non-silent first or last sample, less than 1.5 s after the name, or a bar squeezed more than 50 % off the tempo to land the name |
 
 **The dashboard** is everything else, printed in groups with a target range and what it means.
 Each line starts with ` in `, `OUT` or `~`:
@@ -365,6 +431,12 @@ general range does not know (a 12 s card with no lift, a narrated stretch cut mi
 line in `Piece.explain`; (3) is the gauge measuring the wrong thing? say so in the report, never
 work around it in the music or by wrapping a tool. A `~` reading goes into the report as a
 number, with nothing done to it.
+
+**Gauges a recipe user can only explain**, never fix in the music: `level-rate` at the default
+`pad_level` (the same dip `gap-fill` reads; write "the dip between pulse notes, the owner's
+pad_level A/B"), anything after the name that comes from the logo itself (`mix-attacks-on-
+notes` on the logo's plucks), `tempo-stretch` on a hand-pinned ending, and on a `--bed` render
+`cell-present`/`hit-budget` (no tune by design).
 
 **THE RULE.** The dashboard never fails a render. For every out-of-range number the composer does
 one of two things: **explain it in one line** (`Piece.explain = {"gauge-id": "why"}`, printed next
@@ -507,7 +579,13 @@ round-8 film again, its composer should take those out for musical reasons or sa
 ## What is still weak (honest)
 
 - **Nobody has heard anything made with the rebuild.** The pad, the pedal pulse, the cycles and
-  the recipes are untested by ear; the three examples are proofs that the engine works.
+  the recipes are untested by ear; the three examples are proofs that the engine works. The
+  first-shot test ran on 2026-11-25 (six briefs, in `~/Documents/youcoded-campaign/round9/first-shot/`,
+  awaiting the owner's ratings); its friction reports drove the fixes in this file's procedure.
+- **No sting recipe and no loop measurement** (first-shot F): a sub-4-second end card is built by
+  hand, and nothing checks the seam of a piece played on repeat.
+- **Recipe C under a reader who never pauses** gives 13 near-identical bars of pad and pulse; it
+  has no sanctioned way to "widen" under her words beyond a chord turn and the pad's filter.
 - **The gauges are uncalibrated** until the first-shot test (`first-shot/`, prepared, not run):
   `gap-fill`, `roughness` and `novelty-peaks` are readings (`~`); `tilt` and `presence` ranges
   come from four pieces and the logo.
@@ -543,8 +621,11 @@ round-8 film again, its composer should take those out for musical reasons or sa
 render.sh --brief  <film>            # steps 1-2: brief, card holds, tempo fit, her pace, motion grid
 render.sh --bed    <film>            # step 5: the bed alone, rendered
 render.sh --notes [--log] <film>     # step 6 on: notes bar by bar, the bed, hard checks, dashboard (no audio)
-render.sh --sketch <film> [k=v ...]  # step 7: two 20 s sketches into out/sketches/
+render.sh --sketch <film> [k=v ...]  # step 7: two 20 s sketches into out/sketches/ (readings: whole piece)
 render.sh <film>                     # step 8: render, mix, measure (and <name>-bed.wav, the no-melody mix)
+render.sh --deliver <film> <dir> [picture=x.mp4] [from=s]   # step 9: mp3, and the mp4 with a picture
+render.sh --brief <film> range=88-100  # the tempo fit over a range you name
+render.sh --py -c "..."              # one toolkit function, with the right Python and paths
 ```
 
 `<film>` = a film's name, a film file's key (`mim` for `src/film_mim.py`) or a demonstration's

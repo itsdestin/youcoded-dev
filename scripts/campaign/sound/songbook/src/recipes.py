@@ -150,6 +150,13 @@ def _chordlist(chords, nbars, default, rich):
                 out.append([t])
     else:
         out = [list(b) if isinstance(b, (list, tuple)) else [b] for b in chords]
+    if chords is not None and len(out) > nbars:
+        # WHY (first-shot b): with an odd bar a composer wrote one name per global bar, and every
+        # chord after the odd bar silently slid a bar; say so instead of dropping names quietly
+        import sys
+        print(f"WARNING: {len(out)} chord names for {nbars} four-beat bars: chords= names only the 4-beat "
+              f"bars (the odd bar keeps the chord before it, the ending has its own); the last "
+              f"{len(out) - nbars} were dropped", file=sys.stderr)
     out = (out + [out[-1]] * nbars)[:nbars]
     if not rich:
         out = [[T.PLAIN.get(c, c) for c in b] for b in out]
@@ -201,6 +208,12 @@ class Grid:
     def bar_of(self, t):
         """The global bar (1-based) that a time falls in, at the nominal tempo."""
         return self.bar_of_beat(t / self.spb)
+
+    def moment_bar(self, t):
+        """The bar a picture MOMENT belongs to: the bar of its nearest beat. WHY (first-shot b, c):
+        a peak 34 ms before a bar line, or a turn 20 ms before one, is that bar line's moment, but
+        bar_of put it in the bar before, so the peak's layers and the bright turn came a bar early."""
+        return self.bar_of_beat(round(max(0.0, t) / self.spb) + 1e-6)
 
     def body(self, g):
         """The body (4-beat) index of global bar g, or None for the odd bar."""
@@ -273,7 +286,7 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
         tb.append((i + 1, ph))
     whole, tune_report = TB.lay(tb, chordbars, seed, shown_offset=lambda i: G.glob(i - 1))
     bar_of = G.bar_of
-    peak_bar = bar_of(peak) if peak is not None else None
+    peak_bar = G.moment_bar(peak) if peak is not None else None
     cuts = {1, total + 1}
     if odd:
         cuts |= {G.at, G.at + 1}
@@ -336,7 +349,8 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
                        + f", the name at {land:g} s (the tempo map stretches {100 * stretch:+.1f} %"
                        + (")" if abs(stretch) <= 0.03 else "; over 3 %: change bpm, add an odd bar or move the name)")
                        + (f"; ending slows to {rit:g}" if ending != "short" else ""),
-                       "   tune: " + ("; ".join(tune_report) if tune_report else "none (the pulse carries the cell)"),
+                       "   tune: " + ("; ".join(tune_report) if tune_report else ("none (the pulse carries the cell)" if recipe != "narrated" else
+                                                                           "none (the two-note pulse does not play the cell)")),
                        "   owner switches: " + ", ".join(f"{k}={v}" for k, v in o.items())]
     if extra:
         for k, v in extra.items():
@@ -401,12 +415,14 @@ def app_demo(name, length, *, land, bpm=116.0, chords=None, tune=None, changes=N
     The first 30 s must stand alone (it becomes the :30 cut-down). Level -15 LUFS."""
     o = owner(owner_over)
     subtle, peak, hits = _from_brief(brief, subtle, peak, hits)
-    rit = RIT if rit is None else rit
+    # WHY (first-shot c): a short ending does not slow (land_after, type_short), but these
+    # recipes defaulted it to 0.85, so --brief searched slowing endings for a "short" piece
+    rit = (1.0 if ending == "short" else RIT) if rit is None else rit
     G = Grid(bpm, odd, odd_at)
     if peak is None:
         peak = round(land * 0.75, 2)
     n, _ = _bars_to_land(land, bpm, ending, rit, odd)
-    pb = G.bar_of(peak)
+    pb = G.moment_bar(peak)
     if tune is None:
         # WHY this shape (statement, answer, restatement, the peak): a phrase heard once and never
         # echoed or answered sounds "thrown in"; one answered, then said again, is a theme
@@ -439,7 +455,7 @@ def default_changes(land, bpm, peak, odd=0, odd_at=1, cycles=("cycle1", "cycle2"
     defect 5): a cycle the plan never names plays from the start, an unplanned change the
     change-plan gauge could not see. Replace it with the picture's own turns."""
     bar = Grid(bpm, odd, odd_at).bar_of
-    pb = bar(peak)
+    pb = Grid(bpm, odd, odd_at).moment_bar(peak)
     plan = []
     cyc = list(cycles)
     menu = ([("in", cyc[0])] if cyc else []) + [("in", "sub")] + [("in", c) for c in cyc[1:2]] + [("density", -2)]
@@ -481,7 +497,9 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
     from timing import narrator_band, phrase_ends
     o = owner(owner_over)
     subtle, peak, hits = _from_brief(brief, subtle, peak, hits)
-    rit = RIT if rit is None else rit
+    # WHY (first-shot c): a short ending does not slow (land_after, type_short), but these
+    # recipes defaulted it to 0.85, so --brief searched slowing endings for a "short" piece
+    rit = (1.0 if ending == "short" else RIT) if rit is None else rit
     if logo is None:
         logo = "quiet" if subtle else "blend"
     pace = films.speech_pace(speech, 0.0, land)
@@ -549,10 +567,13 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
         if words and turn is not None and turn - words[0][1] > 12.0:
             changes.append((bar(words[0][1] + (turn - words[0][1]) / 2), "brightness", 0.85))
         if turn is not None:
-            changes.append((bar(turn), "family", "bright"))
+            changes.append((G.moment_bar(turn), "family", "bright"))
         if words:
             # once she has stopped, the pulse comes down to its usual place, under the tune
-            changes.append((bar(words[-1][2]) + 1, "pool", ["Bb4", "G4", "F4", "Eb4"]))
+            # WHY only inside the piece (first-shot c, d): when she speaks into the ending this bar
+            # was past the last body bar, printed as a change that never sounds
+            if bar(words[-1][2]) + 1 <= total:
+                changes.append((bar(words[-1][2]) + 1, "pool", ["Bb4", "G4", "F4", "Eb4"]))
     # WHY no step when subtle (audit defect 7): after her last word the music rose 7.6 dB in 6 s
     # (-18.8 to -11.2 LUFS) into the full logo, in a brief that asked for subtle; a 2 dB step still
     # measured a 7.8 dB rise (the tune entering, the pulse coming down into the louder middle of

@@ -168,7 +168,11 @@ def hard(band, plans, piece, form_results=(), y=None, st=None):
                         limit="no melody in F3-E5 under her words; voice >= 6 dB over the music",
                         why=("her words are clear of melody in her own range" + (
                             f"; her voice stands {margin[0]} dB (median) above the music in the phone band, "
-                            f"{margin[1]} dB at worst ({margin[2]} s)" if margin else " (no mux given: margin not measured)"))
+                            f"{margin[1]} dB at worst ({margin[2]} s)" if margin else
+                            # WHY (first-shot d): --notes and the first half of --bed have no audio, and
+                            # "no mux given" read as a pass of a margin that fails on the render
+                            (" (margin not measured: no audio here; the render measures it)" if vm else
+                             " (no voice_mux given: margin not measured)")))
                         if not bad and not masked else
                         (f"melody notes in her range while she speaks: {bad[:6]}" if bad else "") +
                         (f" her voice only {margin[1]} dB above the music at {margin[2]} s" if masked else "")))
@@ -183,6 +187,13 @@ def hard(band, plans, piece, form_results=(), y=None, st=None):
             probs.append(f"logo {li.get('notes')} heard {li.get('error_ms')} ms off the name")
         if not (st["first_sample_dbfs"] <= -90 and st["last_sample_dbfs"] <= -90):
             probs.append("first or last sample not silent")
+    # WHY (first-shot f): a name asked for earlier than a whole bar allows was "landed" by squeezing
+    # a bar to ~360 bpm (+227 %) and every hard check still passed; past 50 % it is a broken score
+    for p in plans[:-1]:
+        if p.nominal_bpm and abs(p.bpm / p.nominal_bpm - 1) > 0.5:
+            probs.append(f"tempo squeezed {100 * (p.bpm / p.nominal_bpm - 1):+.0f} % at {p.t0:.2f} s to land the name "
+                         "(too few beats before it: fewer bars, a later name, or a shorter odd bar)")
+            break
     if piece.logo != "none" and piece.length - land < 1.5 - 1e-6:
         probs.append(f"only {piece.length - land:.2f} s after the name (>= 1.5 s of ring)")
     out.append(dict(id="length", ok=not probs, value=len(probs), limit="exact length, name within 10 ms",
@@ -444,11 +455,13 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
             ok = len(times) <= 1 and not crowded
             tgt = "0-1 change under 20 s"
         else:
-            ok = all(8.0 - 1e-6 <= g <= 16.0 + 1e-6 for g in gaps) and not crowded and len(times) >= 1
+            # WHY 0.25 s of slack (first-shot b and e): turns sit on bar lines, so a picture's 16.0 s
+            # became 16.1 s and 8 s became 7.95 s; the gauge failed gaps it printed as "8.0"
+            ok = all(8.0 - 0.25 <= g <= 16.0 + 0.25 for g in gaps) and not crowded and len(times) >= 1
             tgt = "one change every 8-16 s, one per bar line (two only at the peak)"
         _row(out, "change-plan", "change", f"{len(times)} at {times}", tgt, ok,
              "the bed evolves slowly: one small change every 8-16 s, never two at once except at the peak",
-             (f"gaps {[round(g, 1) for g in gaps]} s" if gaps else "") + (f"; crowded bars {crowded}" if crowded else "")
+             (f"gaps {[round(g, 2) for g in gaps]} s" if gaps else "") + (f"; crowded bars {crowded}" if crowded else "")
              + (f"; unplanned: {', '.join(f'{n} starts at {t} s' for t, n in implicit)} (bring it in with "
                 f"(bar, 'in', name))" if implicit else ""))
     events = []
@@ -549,8 +562,10 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
         mg = M.voice_margin(y, vm["path"], piece.speech.words, start_at=vm.get("start_at", 0.0),
                             t_from=vm.get("t_from", 0.0), music_db=vm.get("music_db", -10.0))
         if mg:
+            # WHY the worst too (first-shot d): a median in range printed "in" beside a worst of
+            # -1.5 dB, which is the hard narrator-masked failure
             _row(out, "voice-margin", "timing", f"{mg[0]:+.1f} dB (worst {mg[1]:+.1f})", "10-14 dB over the music "
-                 "(phone band, in the film's mux)", 10.0 <= mg[0] <= 14.5,
+                 "(phone band, in the film's mux); worst >= 6", 10.0 <= mg[0] <= 14.5 and mg[1] >= 6.0,
                  "how far her voice stands above the music where a phone plays (300 Hz-8 kHz)", f"worst at {mg[2]} s")
     hits = list(getattr(piece, "hits", None) or [])
     if hits:
@@ -568,7 +583,11 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
                                                                    ("late" if ON_WINDOW[1] < d <= 0.13 else "apart"))
             res.append((lab or t, w, round(1000 * d), kind))
         bad = [r for r in res if r[1] >= 3 and r[3] != "on"] + [r for r in res if r[3] == "EARLY"]
-        _row(out, "picture-sync", "timing", f"{sum(1 for r in res if r[3] == 'on')}/{len(res)} on",
+        # WHY the weight-3 count first (first-shot d): the line said "weight-3 hits" but counted every
+        # moment, so a weight-1 turn between beats read as a missed hit
+        big = [r for r in res if r[1] >= 3]
+        _row(out, "picture-sync", "timing", f"weight-3 {sum(1 for r in big if r[3] == 'on')}/{len(big)} on; "
+             f"all {sum(1 for r in res if r[3] == 'on')}/{len(res)}",
              "weight-3 hits heard on the frame (-15..+45 ms); nothing heard early", not bad,
              "music that arrives before the picture feels wrong; up to 45 ms late still feels on",
              "; ".join(f"{a}: {c}" + (f" {b:+d} ms" if b is not None else "") for a, _, b, c in

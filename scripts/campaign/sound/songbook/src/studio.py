@@ -12,7 +12,9 @@
                                          switch changed (B; default: pad_level -8 <-> -4;
                                          or an [OWNER] switch, a sound switch from
                                          engine/options.py, bed.<k>, sec.<k>, a Piece field)
-                                         into out/sketches/
+                                         into out/sketches/ (readings: the whole piece)
+    render.sh --deliver <film> <dir> [picture=x.mp4] [from=s]   the music as mp3, and with a picture
+                                         the mp4 (music replaces its sound; narrated: her voice + music)
 
 <film> is a film's name, a film file's key (film_<key>.py) or a demonstration's name.
 """
@@ -125,7 +127,7 @@ def dump(piece, log=False):
     return L + (["", *lg] if log else [f"   note log: out/notes/{piece.name}.log.txt"])
 
 
-def brief(piece):
+def brief(piece, rng_over=None):
     import timing as TI
     L = [f"STEP 1 for {piece.name}"]
     b = getattr(piece, "brief", None)
@@ -135,6 +137,8 @@ def brief(piece):
     plans = plan(piece)
     bpm = float(np.median([p.nominal_bpm for p in plans[:-1]]))
     rng = {"type-short": (100, 120), "app-demo": (104, 120)}.get(getattr(piece, "recipe", ""), (bpm - 8, bpm + 8))
+    if rng_over:
+        rng = rng_over
     words = getattr(piece.speech, "words", None)
     if words:
         pace = films.speech_pace(piece.speech, 0.0, piece.land_time())
@@ -143,7 +147,7 @@ def brief(piece):
                  f"nearest 120: {band_['bpm']:g}")
         # WHY around 120 only: the value nearest 120 in her band is the choice (toolkit-plan a2);
         # the fit then nudges it within 6 bpm so her sentence ends fall near the grid
-        rng = (max(band_["lo"], band_["bpm"] - 6), min(band_["hi"], band_["bpm"] + 6))
+        rng = rng_over or (max(band_["lo"], band_["bpm"] - 6), min(band_["hi"], band_["bpm"] + 6))
         ends = TI.phrase_ends(piece.speech)
         L.append("her phrase ends (s, kind, pause after): " + "; ".join(f"{e['t']:g} {e['kind'][0]} {e['pause']:.2f}"
                                                                      for e in ends[:24]))
@@ -151,10 +155,28 @@ def brief(piece):
         L.append("her pauses of 1 s or more: " + "; ".join(f"{a:g}-{('end' if z > 1e8 else f'{z:g}')}"
                                                          for a, z in TI.pauses(piece.speech)))
     if hits:
-        L.append(f"THE TEMPO FROM THE PICTURE (fit_tempo over {rng[0]:g}-{rng[1]:g} bpm; weight 3 on the downbeat, "
-                 "others on a half-beat; on = -15..+45 ms):")
+        # WHY "+-3 to land the name" (first-shot d): with a name to land the tempo is moved to the one
+        # that lands it after whole bars, up to 3 bpm outside the range; a fit outside it looked wrong
+        L.append(f"THE TEMPO FROM THE PICTURE (fit_tempo over {rng[0]:g}-{rng[1]:g} bpm, +-3 to land the name; "
+                 "weight 3 on the downbeat, others on a half-beat; on = -15..+45 ms; another range: "
+                 "range=LO-HI):")
         fits = TI.fit_tempo(hits, rng, ending_beats=piece.ending_len, rit=piece.rit)
         L += TI.fit_text(fits)
+        if not fits:
+            # WHY (first-shot f): when nothing fitted, --brief printed nothing at all
+            L.append("  no fit: no tempo in the range lands the name after at least one whole bar. The name "
+                     "is too early for this range and ending (try range=LO-HI, ending='short', or ask for a later name)")
+        if not words and not rng_over and (not fits or not fits[0]["big_ok"]):
+            # WHY a wider look (first-shot a, b, e): a picture already cut on its own grid (96 bpm; or
+            # 120 with every turn on a bar line) lay outside or between the recipe's searched fits,
+            # and the composer was told to "move the picture" when the picture was right
+            wide = [f for f in TI.fit_tempo(hits, (84, 132), ending_beats=piece.ending_len, rit=piece.rit)
+                    if f["big_ok"]]
+            if wide:
+                L.append("  ON EVERY WEIGHT-3 HIT over 84-132 bpm (outside the recipe's usual range; prefer it "
+                         "when the picture was cut to its own beat):")
+                L += TI.fit_text(wide[:2])
+                fits = wide[:1] + fits          # the motion grid follows the fit that lands every hit
     else:
         fits = []
         L.append("no hits given (Piece.hits or the brief's moments): the tempo is the recipe's default")
@@ -294,7 +316,8 @@ def sketch(piece, switches):
         if cut < len(y):
             seg[-w:] *= np.linspace(1, 0, w)[:, None]
         sf.write(path, seg, SR, subtype="PCM_24")
-        L.append(f"   {q.name}: {path} (the first {cut / SR:.0f} s)")
+        L.append(f"   {q.name}: {path} (the file keeps the first {cut / SR:.0f} s; the readings below are of "
+                 f"the WHOLE {len(y) / SR:.0f} s piece)")
         L += ["      " + x for x in D.text(q.name, st["hard"], st["dashboard"], q)[:1]]
         outs = [r["id"] for r in st["dashboard"] if not r["ok"]]
         L.append(f"      dashboard out of range: {', '.join(outs) or 'none'}")
@@ -302,6 +325,47 @@ def sketch(piece, switches):
         # that switch is most likely to move (whole piece, not only the 20 s kept)
         keep = ("sustain", "gap-fill", "tilt", "presence", "roughness", "level-rate", "pulse-rate", "attack-rate")
         L.append("      readings: " + "; ".join(f"{r['id']} {r['value']}" for r in st["dashboard"] if r["id"] in keep))
+    return L
+
+
+def deliver(piece, out_dir, picture=None, start=0.0):
+    """THE DELIVERABLES: <out_dir>/<name>-music.mp3 (256k) from the last render, and with a
+    picture, <out_dir>/<name>.mp4: the picture from `start` s for the piece's length with its sound
+    REPLACED by the music, or, for a narrated piece (voice_mux), the picture's own sound (her voice)
+    plus the music at voice_mux's music_db, the same mux the voice-margin check measured, through a
+    -1 dBTP limiter.
+    WHY (first-shot b, c, d): three composers muxed by hand with ffmpeg, each a little differently
+    (one summed voice and music with no limiter)."""
+    import shutil
+    import subprocess
+    wav = os.path.join(OUT, "films", piece.name + ".wav")
+    if not os.path.exists(wav):
+        wav = os.path.join(OUT, piece.name + ".wav")
+    if not os.path.exists(wav):
+        raise SystemExit(f"no render of {piece.name}: run render.sh {piece.name} first")
+    if not shutil.which("ffmpeg"):
+        raise SystemExit("ffmpeg is not installed")
+    os.makedirs(out_dir, exist_ok=True)
+    L = []
+    mp3 = os.path.join(out_dir, piece.name + "-music.mp3")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", wav, "-b:a", "256k", mp3], check=True)
+    L.append(f"   music: {mp3}")
+    if picture:
+        mp4 = os.path.join(out_dir, piece.name + ".mp4")
+        vm = getattr(piece, "voice_mux", None)
+        cmd = ["ffmpeg", "-v", "error", "-y", "-ss", f"{start:g}", "-t", f"{piece.length:g}", "-i", picture, "-i", wav]
+        if vm:
+            g = vm.get("music_db", -10.0)
+            cmd += ["-filter_complex", f"[1:a]volume={g}dB[m];[0:a][m]amix=inputs=2:normalize=0:duration=first,"
+                    "alimiter=limit=0.89:level=false[a]", "-map", "0:v", "-map", "[a]"]
+            L.append(f"   picture: {mp4} (her voice from the picture + the music at {g:g} dB, limited)")
+        else:
+            cmd += ["-map", "0:v", "-map", "1:a"]
+            L.append(f"   picture: {mp4} (the picture's sound replaced by the music)")
+        # WHY re-encode the video: a stream copy from a cut point starts on the nearest keyframe
+        cmd += ["-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "256k",
+                "-t", f"{piece.length:g}", mp4]
+        subprocess.run(cmd, check=True)
     return L
 
 
@@ -317,8 +381,10 @@ def main(argv):
             print("\n".join(dump(p, log)))
             print()
     elif cmd == "--brief":
-        for p in resolve(rest):
-            print("\n".join(brief(p)))
+        rg = next((r.split("=", 1)[1] for r in rest if r.startswith("range=")), None)
+        rg = tuple(float(x) for x in rg.split("-")) if rg else None
+        for p in resolve([r for r in rest if not r.startswith("range=")]):
+            print("\n".join(brief(p, rg)))
             print()
     elif cmd == "--bed":
         import build
@@ -330,6 +396,13 @@ def main(argv):
             _, st = build.one(q, path=path)
             print("\n".join(D.text(q.name, st["hard"], st["dashboard"], q)))
             print(f"   the bed alone: {path}")
+    elif cmd == "--deliver":
+        kv = dict(r.split("=", 1) for r in rest if "=" in r)
+        pos = [r for r in rest if "=" not in r]
+        if len(pos) != 2:
+            raise SystemExit("render.sh --deliver <film> <out_dir> [picture=film.mp4] [from=SECONDS]")
+        for p in resolve(pos[:1]):
+            print("\n".join(deliver(p, pos[1], kv.get("picture"), float(kv.get("from", 0.0)))))
     elif cmd == "--sketch":
         names = [r for r in rest if "=" not in r]
         sw = [tuple(r.split("=", 1)) for r in rest if "=" in r]

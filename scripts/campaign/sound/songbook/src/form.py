@@ -311,7 +311,10 @@ def steady(band, plans, piece, rows):
     for a, b in zip(body, body[1:]):
         for parts, slack, what in ((None, 2, "attacks"), (FOUND, 1, "foundation attacks")):
             x, y = count(a, parts), count(b, parts)
-            if max(x, y) > 2 * min(x, y) + slack:
+            # WHY per 4 beats (first-shot b): a 1- or 2-beat odd bar holds fewer attacks by its length
+            # alone; counted raw, the gauge called the pick-up bar "stop-start"
+            xs, ys = x * 4.0 / max(a["blen"], 1e-6), y * 4.0 / max(b["blen"], 1e-6)
+            if max(xs, ys) > 2 * min(xs, ys) + slack:
                 bad.append(f"bar {a['k']}->{b['k']} {what} {x}->{y}")
     add("even", not bad, len(bad), "neighbouring bars at most 2x (+2) apart",
         "the texture jumps from bar to bar (stop-start): " + "; ".join(bad[:4]) if bad else
@@ -944,7 +947,10 @@ def audio(y, band, plans, piece, rows=None):
                 ll = -0.691 + 10 * math.log10(2 * float(np.mean(k[a:b])) + 1e-12)
                 pk_l = max(at_)
                 add("logo-gentle", ll <= pk_l + 1.0, round(ll - pk_l, 1), "<= +1 dB over the peak",
-                    f"the logo's first second is {ll - pk_l:+.1f} dB against the peak bar in a subtle film: use logo='quiet'"
+                    (f"the logo's first second is {ll - pk_l:+.1f} dB against the peak bar in a subtle film"
+                     # WHY (first-shot d): the advice was printed even when the logo was already quiet
+                     + (": use logo='quiet'" if getattr(piece, "logo", "") != "quiet" else
+                        " (the logo is already quiet: the peak bar is the quieter side; explain it)"))
                     if ll > pk_l + 1.0 else f"the logo lands {ll - pk_l:+.1f} dB against the peak")
     # under a narrator, the level only rises bar to bar where a swell is planned (> 1.5 dB fails)
     if piece.speech:
@@ -982,7 +988,8 @@ def audio(y, band, plans, piece, rows=None):
 
 def table_text(rows, piece):
     au = "lufs" in rows[0]
-    L = [f"NOTES: {piece.name}  ({len(rows)} bars; the last is the ending bar with the logo)",
+    L = [f"NOTES: {piece.name}  ({len(rows)} bars; the last is the ending bar"
+         + (" with the logo)" if getattr(piece, "logo", "blend") != "none" else ", a hand-on ending with no logo)"),
          "bar  time    section                  chords            tune (beat:note)                                 "
          "answer/counter          bass          notes  back  parts         new" + ("  LUFS  phone low%  >4k   sim" if au else "")]
     codes = {}
@@ -992,7 +999,10 @@ def table_text(rows, piece):
         other = " ".join(f"{n['rel']:g}:{nm(n['m'])}{'a' if n['cls'] == 'answer' else 'c'}" for n in sorted(
             (n for n in r["notes"] if n["cls"] in ("answer", "counter")), key=lambda n: n["rel"])) or "-"
         bass = " ".join(nm(m) for m in r["bass"]) or "-"
-        parts = "".join(sorted(PART_LETTER.get(b, "?") for b, f in r.get("sounding", {}).items() if f >= 0.5))
+        # WHY cycles at any length (first-shot e): a cycle round is short, never half a bar, so the
+        # table never showed K even in the bars where the note log had its notes
+        parts = "".join(sorted(PART_LETTER.get(b, "?") for b, f in r.get("sounding", {}).items()
+                               if f >= 0.5 or (b == "cycle" and f > 0)))
         new = r.get("new", "")
         new = ("NEW " + new) if new else ""
         line = (f"{r['k']:>3}  {r['t0']:6.2f}  {r['sec'][:24]:<24} {'/'.join(r['chords']):<17} {tune[:48]:<48} "
@@ -1001,8 +1011,10 @@ def table_text(rows, piece):
             line += f"  {r['lufs']:5.1f}  {r['phone']:5.1f} {r['low']:>4} {r.get('hf', ''):>5}  {r.get('sim', '')}"
         L.append(line)
     L.append("back = the accompaniment's rhythm (same letter = identical rhythm); a = answer note, c = counter-line note")
-    L.append("parts = groups sounding at least half the bar: L tune piano, V violin tune, D doubling, A answer, C counter, "
-             "P piano accompaniment, Z plucked strings, H held strings, R air, Y synth, S sub")
+    # WHY the recipe letters (first-shot a, e): the legend predated the pad, the cycles and the ring
+    L.append("parts = groups sounding at least half the bar (K: any cycle note): U pad, N pedalled ring, P piano pulse/"
+             "accompaniment, H held strings, K cycle, L tune piano, D whimsy/doubling, S sub; older pieces: V violin "
+             "tune, A answer, C counter, Z plucked strings, R air, Y synth")
     L.append("new = what is new in the bar: t a tune SHAPE not heard before, c a chord (pair), b an accompaniment rhythm")
     if au:
         L.append("LUFS = the bar's loudness; phone = the same in 300 Hz-8 kHz (what a phone plays); low% = energy below "

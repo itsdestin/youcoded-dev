@@ -40,7 +40,11 @@ OUT = os.path.join(HERE, "..", "out", "films")
 MO_KEYS = ("tune_on_top", "attacks", "steadiness", "joins", "bands_db_rel_total", "logo", "sections",
            "lufs_integrated", "true_peak_dbtp", "composition", "tune_identity", "loudness_target",
            # WHY (the rebuild): the hard checks and the dashboard are judged on the music alone
-           "hard", "dashboard", "explain", "bed", "recipe")
+           "hard", "dashboard", "explain", "bed", "recipe",
+           # WHY (first-shot c): mix_tests reads the style (no low-end floor in a recipe) and the
+           # air setting from these; without them a film's summary line applied the old floor and
+           # contradicted its own dashboard ("low end out of range" vs "in, no floor in a recipe")
+           "style", "air_db")
 SFX_REL = -8.0     # dB: an effect's loudest 100 ms vs. the music's loudness around it
 # WHY -8 (was -2): the owner on the first pen sounds: "annoying and too scratchy". Pen and
 # marker sounds must be soft and smooth, felt more than heard.

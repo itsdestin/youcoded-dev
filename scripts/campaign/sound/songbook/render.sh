@@ -14,6 +14,8 @@
 #   scripts/campaign/sound/songbook/render.sh --brief mim     # step 1: brief, tempo fit, her pace, motion grid
 #   scripts/campaign/sound/songbook/render.sh --bed mim       # step 5: the bed alone, rendered
 #   scripts/campaign/sound/songbook/render.sh --sketch mim [pad_level=-4]   # step 7: two 20 s sketches
+#   scripts/campaign/sound/songbook/render.sh --deliver mim <dir> [picture=x.mp4] [from=s]  # mp3 (+ mp4)
+#   scripts/campaign/sound/songbook/render.sh --py -c "import recipes as R; print(R.land_after(12, 116))"
 #
 # New films live in their own file, src/film_<key>.py (exposing FILM or FILMS); they are found
 # automatically. Each film's report: out/films/<name>.checks.txt; notes: out/notes/<name>.txt.
@@ -39,7 +41,11 @@ need "${SONGBOOK_STRINGS_B:-$SOUND/playful-round2/chamber/samples/vsco/Strings}/
 # WHY studio.py (the rebuild, 2026-11-24): the composing procedure's steps (brief, notes with the
 # dashboard, the bed alone, two sketches) share one entry point; see SONGBOOK.md "The procedure"
 case "${1:-}" in
-  --notes|--brief|--bed|--sketch)
+  --py)
+    # WHY (first-shot a, c): composers hunted for the right Python and import path to call one
+    # toolkit function (land_after, fit_tempo); this runs it with both set
+    shift; cd "$DIR/src" && PYTHONPATH="$DIR/src:$DIR/src/engine" exec "$PY" "$@";;
+  --notes|--brief|--bed|--sketch|--deliver)
     "$PY" -I "$DIR/src/studio.py" "$@" 2> >(grep -v "RuntimeWarning: Unexpected value in sys" >&2)
     exit;;
 esac

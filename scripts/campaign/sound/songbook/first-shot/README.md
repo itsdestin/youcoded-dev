@@ -4,7 +4,9 @@
 by a fresh composer, with no fixing, and the owner rates the results blind. The scores go in
 `ratings.md`, dated, so every later change to the songbook can be checked against them.
 
-Prepared 2026-11-25; **not run yet**. Nothing in the songbook's gauges is calibrated until it is
+Prepared 2026-11-25; **run 2026-11-25** (six first attempts in
+`~/Documents/youcoded-campaign/round9/first-shot/`, listed in its `index.json`; ratings not yet
+given). The composers' friction reports were fixed in the songbook the same day. Nothing in the songbook's gauges is calibrated until it is
 (`tilt`, `presence`, `roughness`, `gap-fill`, `novelty-peaks` wait on the ratings below).
 
 ## Running it
