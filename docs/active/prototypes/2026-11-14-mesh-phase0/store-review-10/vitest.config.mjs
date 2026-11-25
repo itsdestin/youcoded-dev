@@ -1,0 +1,1 @@
+export default { root: '/home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/docs/active/prototypes/2026-11-14-mesh-phase0/store-review-10', test: { include: ['fuzz10.test.ts','probe*.test.ts','bench.test.ts'], testTimeout: 0, hookTimeout: 0, pool: 'forks' }, server: { fs: { strict: false } } };
