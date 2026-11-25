@@ -1495,3 +1495,10 @@ recurred — the repetition is the data.
 - The in-between layout built on 2026-11-12 (robots beside the word, 761-1020px) was rejected a day later as "broken and unique"; he chose "desktop scaled down" after seeing two working takes side by side → no new note: yesterday's preference entry already says to show variants first.
 - Inline Python in shell heredocs failed twice on quoting, once showing him blank frames (also in the 2026-11-12 entry) → dropped as a rule; later scripts were written to files first, which did not fail.
 - deleted/merged: the robots-beside-the-word layout and its measuring code; the colour fade on `body`; the gallery scrollbar and its fade animation; the footer's pixel-offset badge hack; the demo's automatic start.
+
+## 2026-11-25 — built a Tasks to-do page, tested it in a dev copy of the app, parked it as card #285 (session/todo-page, workspace only)
+- Checking a page inside the real app (does typing save to disk, does an outside data change redraw) needed two hand-written browser-debugger scripts in scratch to reach the page's inner frame (~15 calls to build); they were lost when scratch was cleared, so the next page session rebuilds them → dropped as a card: #18 already lists the picture/click tools' faults and one session is not a pattern; recorded in `pages/tasks/README.md` what was and was not proven.
+- Recommended "built into the app", then "starter page with its own update rules"; Destin's answer was simpler than both: marketplace content delivered by the sharing #90 is building. Two rounds of proposal that reading #90/#202 first would have shortened → dropped: the lesson is specific to this page; decision recorded on #285 and in the README.
+- Destin's plan for ready-made pages (Tasks, Home, Finance, Calendar, maybe email) was filed nowhere → card: #285.
+- UX leftovers he turned down and the "don't name other to-do products" wording choice lived only in chat → applied: `pages/tasks/README.md`.
+- deleted/merged: the README's install note and limits merged into one "Where this stands" section; the empty app worktree for this session removed.

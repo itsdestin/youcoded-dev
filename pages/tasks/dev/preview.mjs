@@ -7,7 +7,7 @@
 //   node pages/tasks/dev/preview.mjs --app <youcoded checkout> [--theme youcoded|dark|…] [--seed sample|empty] [--out file.html]
 //
 // WHY --app is required: the kit changes with the app; this must show the page against the
-// kit of the branch being targeted (today: the pages-finish worktree's youcoded checkout).
+// kit of whichever app checkout is being targeted (master, or the Pages branch while it is unmerged).
 import { readFileSync, writeFileSync, mkdtempSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
