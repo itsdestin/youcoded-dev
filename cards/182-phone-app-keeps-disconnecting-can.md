@@ -10,8 +10,8 @@ created: 2026-10-22
 why: Destin: "i have serious stability/reliability/performance issues with the mobile app. it seems to disconnect frequently and i often find myself unable to refresh messages or send new ones."
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 C-6: approved wording after about 20 s of silence: Can't reach your computer. It may be asleep or off. YouCoded will keep trying.
-Next: Build it and show a picture.
+Done: LANDED PR #756: Cannot reach your computer strip after ~20 s (sentence alone)
+Next: real phone check
 Blocked: nothing.
 
 Chats

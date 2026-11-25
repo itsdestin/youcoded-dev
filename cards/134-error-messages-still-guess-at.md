@@ -11,13 +11,16 @@ created: 2026-10-15
 summary: Many error messages still state a guessed cause or offer no next step; six of seven fix batches remain.
 area: Settings
 side: both
+work: session/round4-silent-places, session/134-phone-paste
 ---
 Progress
-Done: Overnight 2026-11-12, branch session/look-wording-batch (not landed): 10 failed-load-shown-as-empty places now show Couldn't load + Try again: new-session model lists, Local models, sync log, Blocked users, Web search keys, Library update check, vote counts, project conversations and context files, friends and friend requests.
-Next: Game best-score and leaderboard rows, marketplace card count chips, project header still says 0 conversations beside the new error, phone error paths, about 73 silent button catches.
-Blocked: nothing recorded.
+Done: Phone-browser picture paste merged (PR #771, de7cbe952)
+Next: Android app picture paste is a separate piece if wanted
+Blocked: Nothing
 
 Chats
+- 2026-11-18 session/134-phone-paste: chat started
+- 2026-11-14 session/round4-silent-places: chat started
 
 From the old roadmap (user-interface, status confirmed, seen on all, last checked 2026-09-11)
 Error messages still guess at causes in many places. The app-wide re-audit is done and batch 1 of 7 (seventeen messages that stated something false) shipped 2026-09-11. Left: Android and crash plumbing, one Report/Diagnose block, "couldn't load" shown as "none", silent action failures, look and wording, guards. Destin's rule: every error state offers an action

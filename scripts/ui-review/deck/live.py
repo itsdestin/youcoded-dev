@@ -34,7 +34,12 @@ def is_live(step):
 
 
 def has_live(spec):
-    return any(is_live(st) for st in spec['steps'])
+    # WHY a screen step with `liveScreen` counts (Destin, 2026-11-10, on the frozen About popup:
+    # "i think the dropdown menus in that about popup should probably still work?"): such a step
+    # needs the practice app served at /app/ exactly like a live pane does, so serve builds it
+    # through the SAME path (serve.py `_ensure_app`) rather than a second one. A deck with no such
+    # step and no live pane stays as fast to start as before.
+    return any(is_live(st) or bool(st.get('liveScreen')) for st in spec['steps'])
 
 
 def all_live(spec):

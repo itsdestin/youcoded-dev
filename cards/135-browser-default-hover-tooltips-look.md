@@ -15,8 +15,8 @@ work: session/ui-consistency-audit
 vision: yours.look.finetune
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 C-8: provider brand colours on light themes = adjust each brand colour to the theme it sits on. Hover hints land via app PR #748.
-Next: Build the per-theme brand colour adjustment and show before/after on the five failing themes.
+Done: LANDED PR #755: brand colours adjusted app-side for five light community themes
+Next: publish theme list with the release (wecoded-themes branch session/look-wording-batch not published)
 Blocked: nothing recorded.
 
 Chats

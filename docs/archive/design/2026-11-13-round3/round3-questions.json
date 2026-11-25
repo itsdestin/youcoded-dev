@@ -1,0 +1,575 @@
+{
+ "title": "Round 3: ten choices and five land-or-hold items",
+ "key": "round-three-questions",
+ "out": "round3-questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Chat, help and settings",
+   "intro": "Choices left over from the round-3 work. Nothing here is built unless the question says so."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Help",
+   "path": "The Help popup, the Roadmap row and the Community on Reddit row",
+   "headline": "Known issues now leaves Help open behind your browser. Do the same for Roadmap and Community on Reddit?",
+   "today": "Pressing Known issues opens your browser and keeps the Help popup open behind the app (built, not landed). Roadmap and Community on Reddit still close Help when pressed.",
+   "problem": "The three rows now behave differently. After using Roadmap or Reddit, Help has vanished and it can look as if the click did nothing.",
+   "proposal": "Make all three rows behave the same: open the browser and leave Help where it was.",
+   "options": [
+    {
+     "id": "all",
+     "label": "Yes, all three the same",
+     "pros": [
+      "One behaviour for every web row.",
+      "Nothing vanishes."
+     ],
+     "cons": [
+      "Help stays in the way when you come back, until you close it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "one",
+     "label": "Known issues only",
+     "pros": [
+      "Smallest change."
+     ],
+     "cons": [
+      "Rows keep disagreeing."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Models",
+   "path": "Chats with a provider that refuses a conversation as too long",
+   "headline": "Learn a model's real size from a refusal, so later summaries start earlier?",
+   "today": "When a provider refuses a chat as too long, the app now offers Summarise and continue for more providers. It does not remember the size that refusal implied.",
+   "problem": "The app keeps guessing the old size for that model, so the next long chat can fail the same way before the app summarises.",
+   "proposal": "After a refusal, record the model's real limit and summarise earlier next time. Not built.",
+   "options": [
+    {
+     "id": "later",
+     "label": "Later, together with a size box",
+     "pros": [
+      "One design round covers both.",
+      "You can type a size for any model, exact from the start."
+     ],
+     "cons": [
+      "Until then each unknown model can still fail once per long chat."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "now",
+     "label": "Build it now",
+     "pros": [
+      "Fixes itself without typing anything."
+     ],
+     "cons": [
+      "One failure per model first, and only for refusals the app recognises.",
+      "Could pick a wrong size from an odd refusal."
+     ]
+    },
+    {
+     "id": "never",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "The repeat failure stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Settings",
+   "path": "Small save and toggle failures: theme choice not saving, the power-saving toggle, several settings toggles",
+   "headline": "Where should a failure to save a small setting be shown?",
+   "today": "A few settings can fail to save with no message at all: the theme choice not saving, the power-saving toggle, and several other toggles.",
+   "problem": "You press the control, it looks done, and the setting quietly did not stick.",
+   "proposal": "Show a short red notice inside the same popup, right under the control, with the reason and Try again.",
+   "options": [
+    {
+     "id": "inline",
+     "label": "Notice inside the popup",
+     "pros": [
+      "Right next to the control that failed.",
+      "Same red box used everywhere else."
+     ],
+     "cons": [
+      "Takes a little room in a small popup."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "toast",
+     "label": "Corner pop-up",
+     "pros": [
+      "No layout change in the popup."
+     ],
+     "cons": [
+      "Disappears on its own, so it can be missed.",
+      "A third style of message."
+     ]
+    },
+    {
+     "id": "silent",
+     "label": "Leave it silent",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "Settings keep quietly failing."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Settings",
+   "path": "The new failure notice at the top of Backup and sync",
+   "headline": "The failure notice sits at the top and may be out of sight. How should you notice it?",
+   "today": "A failed Backup and sync button now shows a notice at the very top of the popup (picture 5 on the pictures deck).",
+   "problem": "On a short window the popup is scrolled down at the button you pressed, so the notice is above the visible part and you see nothing happen.",
+   "proposal": "Scroll to the notice automatically, or also show it beside the button.",
+   "options": [
+    {
+     "id": "scroll",
+     "label": "Scroll to it automatically",
+     "pros": [
+      "You always see it.",
+      "No new place for messages."
+     ],
+     "cons": [
+      "The popup jumps up when a failure happens."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "beside",
+     "label": "Show it beside the button too",
+     "pros": [
+      "Visible where you looked."
+     ],
+     "cons": [
+      "Two copies of one message.",
+      "More to build."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it at the top",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "It can still be missed."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Games",
+   "path": "A new best score when the online best could not be loaded",
+   "headline": "When the online best score failed to load, still show \"new best\" after a game?",
+   "today": "After a game, a score above your best shows a \"new best\" label. If the online best could not be loaded, the app compares against only the scores saved on this computer.",
+   "problem": "The label can say \"new best\" for a score that is lower than your real online best.",
+   "proposal": "Hide the \"new best\" label while the online best is not loaded.",
+   "options": [
+    {
+     "id": "hide",
+     "label": "Hide it then",
+     "pros": [
+      "Never claims a record it cannot prove."
+     ],
+     "cons": [
+      "A real new best shows no label that one time."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep showing it",
+     "pros": [
+      "Celebration always appears."
+     ],
+     "cons": [
+      "It can be wrong."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Marketplace",
+   "path": "Refreshing the marketplace list when it fails while the list is full",
+   "headline": "Show a notice when a marketplace refresh fails but the old list is still on screen?",
+   "today": "If a refresh fails while the list is empty, a message shows. If the list is already full, the refresh failure is silent.",
+   "problem": "You press refresh, nothing changes and nothing says it failed, so you may think everything is up to date.",
+   "proposal": "Show a small notice under the filter bar, with Try again, while the old list stays.",
+   "options": [
+    {
+     "id": "notice",
+     "label": "Small notice under the filter bar",
+     "pros": [
+      "You know the list may be stale.",
+      "The list stays usable."
+     ],
+     "cons": [
+      "One more strip above the cards."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "A failed refresh looks like success."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Phone",
+   "path": "A phone request that timed out and then finished after all",
+   "headline": "When a phone's request timed out but later succeeded, add a notice and refresh?",
+   "today": "On a phone, a request that takes too long is reported as failed. Rarely, the computer finishes it a moment later.",
+   "problem": "The phone says it failed while it in fact worked, until you reload.",
+   "proposal": "Show a notice and refresh the screen when the late answer arrives. The wording is not written and needs your approval first.",
+   "options": [
+    {
+     "id": "leave",
+     "label": "Leave it for now",
+     "pros": [
+      "Rare.",
+      "No wording to decide yet."
+     ],
+     "cons": [
+      "A late success looks like a failure until you reload."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "add",
+     "label": "Add it, after wording is approved",
+     "pros": [
+      "Phone and computer agree."
+     ],
+     "cons": [
+      "More to build and to word.",
+      "Another notice type."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "Chat",
+   "path": "The folder list ordered by last use",
+   "headline": "A synced project you never saved stays at the bottom of the folder list. Save it automatically on first use?",
+   "today": "The folder list is now ordered by last use. Only folders you have saved count, so a project that arrived through sync and was never saved stays at the bottom, however often you use it.",
+   "problem": "A folder you use daily can sit at the bottom if it never went through Save.",
+   "proposal": "Save such a folder automatically the first time you start a chat in it.",
+   "options": [
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing is saved without you asking.",
+      "Nothing new to explain."
+     ],
+     "cons": [
+      "A synced folder you use daily stays at the bottom until you save it yourself."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "auto",
+     "label": "Save it on first use",
+     "pros": [
+      "Your daily folders rise to the top by themselves."
+     ],
+     "cons": [
+      "The saved-folder list grows by itself, including folders you opened once by accident.",
+      "A change to what is stored."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-9",
+   "words": true,
+   "surface": "Website",
+   "path": "The public website's demo build",
+   "headline": "Should the website's demo hide the developer mock-up pages that a special address reaches?",
+   "today": "The website's live demo is built from the app and includes developer mock-up pages that anyone can open by typing a special address.",
+   "problem": "Harmless, but a visitor who finds them sees unfinished practice pages.",
+   "proposal": "Leave those pages out of the website build only. The app and your dev copies keep them.",
+   "options": [
+    {
+     "id": "block",
+     "label": "Block them from the website",
+     "pros": [
+      "Visitors only see finished screens."
+     ],
+     "cons": [
+      "A small build change that must not break the demo."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to do."
+     ],
+     "cons": [
+      "Practice pages stay reachable."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-10",
+   "words": true,
+   "surface": "Look and wording",
+   "path": "About 38 more places that fail silently",
+   "headline": "Do the other 38 silent-failure places next round without a picture each?",
+   "today": "This round's sweep went through 75 places that swallow errors: 17 already fixed, 6 gone, 7 fixed now. About 38 remain, in groups such as settings toggles, file and project views, plugin and theme actions, and phone-only screens.",
+   "problem": "A picture for each one is slow and most look alike: the same red box and Try again.",
+   "proposal": "Do them all next round the same approved way, and show one list of what changed. Pictures only for a sample of each kind.",
+   "options": [
+    {
+     "id": "sample",
+     "label": "List of changes, pictures for a sample of each kind",
+     "pros": [
+      "Much faster.",
+      "You still see each kind of notice once."
+     ],
+     "cons": [
+      "You do not see every single place before it lands."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "all",
+     "label": "A picture for every one",
+     "pros": [
+      "You see everything."
+     ],
+     "cons": [
+      "Dozens of near-identical slides.",
+      "Slow."
+     ]
+    },
+    {
+     "id": "list",
+     "label": "List only, no pictures",
+     "pros": [
+      "Fastest."
+     ],
+     "cons": [
+      "You never see how a new kind of place looks."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Land or hold: changes with nothing to look at",
+   "intro": "Each of these is built and tested. A Land it lands them in the next release."
+  },
+  {
+   "id": "L-1",
+   "words": true,
+   "surface": "Phone",
+   "path": "A phone request that fails in the computer",
+   "headline": "Land: a failed phone request now reports the real reason at once?",
+   "today": "Nothing in the app looks different, so there is no picture. A request from a phone that the computer could not do now answers immediately with the real reason. Before, the phone waited 30 seconds and then said it timed out.",
+   "problem": "A 30-second wait with a wrong reason.",
+   "proposal": "Landing puts this in the next release.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "No more 30-second waits for a failure.",
+      "The reason shown is the real one."
+     ],
+     "cons": [
+      "Tested, not tried with a real phone."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "The 30-second wait stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-2",
+   "words": true,
+   "surface": "Chat",
+   "path": "A chat whose engine crashes or is killed",
+   "headline": "Land: a crashed chat now says \"Session ended unexpectedly\"?",
+   "today": "Nothing in the app looks different, so there is no picture. When the chat process crashes or is killed from outside, the chat now says \"Session ended unexpectedly\". Before, it reported a normal exit and the tab vanished. It was reviewed twice independently; the second review found a race that could mislabel a normal exit, and it is fixed.",
+   "problem": "A crash looked like you closed the chat yourself.",
+   "proposal": "Landing puts this in the next release.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "A crash is visible, not silent.",
+      "Reviewed twice."
+     ],
+     "cons": [
+      "Not tried with a real crash. The signal path is proven only by a check of the code text."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "No new message."
+     ],
+     "cons": [
+      "Crashes keep vanishing."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-3",
+   "words": true,
+   "surface": "Chat",
+   "path": "A provider refuses a chat as too long",
+   "headline": "Land: other providers' \"too long\" refusals now offer Summarise?",
+   "today": "Nothing in the app looks different, so there is no picture. More providers' refusals (DeepSeek, Mistral, OpenRouter pass-through) are recognised as too long and offer Summarise and continue. The wordings come from documentation and community posts only, never from a real reply.",
+   "problem": "For an unrecognised wording the chat is a dead end with no Summarise button.",
+   "proposal": "Landing puts this in the next release. Groq and xAI are not covered.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "A dead end becomes Summarise and continue for those providers."
+     ],
+     "cons": [
+      "Wordings unproven against real replies; a real refusal may read differently."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "Dead ends stay."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-4",
+   "words": true,
+   "surface": "Chat",
+   "path": "The folder list when starting or switching a session",
+   "headline": "Land: the folder list ordered by last use?",
+   "today": "Nothing in the app looks different, so there is no picture. The folder list is one list, ordered by when each saved folder was last used. Only a chat you start yourself counts (not resumed or app-made chats).",
+   "problem": "Daily folders were scattered through a fixed order.",
+   "proposal": "Landing puts this in the next release. The list rearranges itself, which you chose in an earlier answer.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Your recent folders are at the top."
+     ],
+     "cons": [
+      "A folder is never where it was last time.",
+      "A folder never saved stays at the bottom (question 8)."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "Scrolling stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-5",
+   "words": true,
+   "surface": "Chat",
+   "path": "The damaged-settings notice on phones and the Android app",
+   "headline": "Land: the damaged-settings notice now reaches phones and Android?",
+   "today": "Nothing in the app looks different, so there is no picture. The notice that a damaged Claude Code settings file was replaced now also shows on a connected phone and the Android app. The Show old copy button is hidden there. It is handed out once per run, so a phone that joins later sees nothing.",
+   "problem": "A silent reset on Android went unnoticed.",
+   "proposal": "Landing puts this in the next release.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Android users are told too."
+     ],
+     "cons": [
+      "Not tried on a real phone or Android.",
+      "A phone that joins later is not told."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Notice stays on the computer."
+     ],
+     "cons": [
+      "A reset on Android stays silent."
+     ]
+    }
+   ]
+  }
+ ]
+}

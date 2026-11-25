@@ -14,8 +14,8 @@ side: screens
 vision: chat.converse.local
 ---
 Progress
-Done: 2026-11-12 overnight: Cancel/Download popup built (commit 1254b83fe). Checked sources: Gemma 4 builds are Apache 2.0 per Hugging Face and Google's licence page, so no use-limit terms apply; other Gemma builds' terms unchecked and worded so.
-Next: Destin decides whether to keep the popup for a plain Apache licence.
+Done: Landed 2026-11-13 (PR #747): Gemma download popup showing its licence (Gemma 4 is Apache 2.0).
+Next: Shared downloader part of this card not started.
 Blocked: Nothing recorded as blocking. Refactor is on hold by Destin's choice since 2026-09-18.
 
 Chats

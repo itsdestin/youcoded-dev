@@ -8,7 +8,7 @@ tags: [local-models, memory, strix-halo, oom, engine]
 
 # Two large models at once took down the desktop (2026-08-16)
 
-> **Status 2026-10-16:** Destin has answered the open decision: warn, and let him choose (recorded in card #48(a)); the guard's numbers were fixed 2026-09-05. Still true on master as last checked: `MODELS_MAX = 2` in `engine-supervisor.ts` and no reader of the unified-memory (GTT) ceiling. Tracked in card #48(a) and card #47. The roadmap references below are retired.
+> **Status 2026-10-16:** Destin has answered the open decision: warn, and let him choose (recorded in card #48(a), merged into #226 on 2026-11-09 — read every "#48(a)" below as #226); the guard's numbers were fixed 2026-09-05. Still true on master as last checked: `MODELS_MAX = 2` in `engine-supervisor.ts` and no reader of the unified-memory (GTT) ceiling. Tracked in card #226 and card #47. The roadmap references below are retired.
 
 Loading Qwen3.5-122B and Qwen3.6-35B concurrently exhausted the machine's memory,
 triggered the kernel OOM killer, and killed YouCoded, Chrome, Steam, and Plasma's

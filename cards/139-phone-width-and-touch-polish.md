@@ -15,7 +15,7 @@ work: session/139-touch-session-scroll, session/narrow-screen-proposals
 ---
 Progress
 Done: Checked Projects and the new-session form at phone width: no clipping found. No code change.
-Next: Remaining items are wording (needs Destin's approval) or belong to the phone-layout card #235.
+Next: Fix the remaining phone-screen items: clearer wording, text that wraps badly or gets cut off, and buttons that are too small or only appear on hover. Check whether the Magnify control still needs work. The phone top bar, session list and pills are card #235's (design final 2026-11-14), not this card's.
 Blocked: Nothing blocks the merged scroll fix. The remaining groups need a decision on which overlapping workstream owns them.
 
 Chats

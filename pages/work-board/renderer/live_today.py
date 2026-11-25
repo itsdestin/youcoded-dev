@@ -22,7 +22,7 @@ HINT = {'polish': 'Built, and waiting on you: review it, ask for polish, or merg
         'build': 'Chats are building these.',
         'planning': 'Agreed, ready to plan the build. Planning items never overlap.',
         'explore': 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.',
-        'merged': 'In master; ships with the next release.'}
+        'merged': 'Finished and in master. Some already went out in a release; "Since the last release" shows what is going out next.'}
 
 
 def next_line(c):
@@ -71,8 +71,10 @@ def group(T, key, title, hint, tip, ctip, count, body, open_=False, tick=True):
     tools right): the heading row itself folds the group, its tools sit at the right, cards follow."""
     # WHY a real button (Destin, 2026-10-16: "i hate clickable elements that are bare text")
     tools = (f'<button class="btn sm" data-tickall="{key}" data-tip="Ticks every item shown in this group.">Tick all</button>' if tick and count else '')
+    # WHY no count when it is '' (2026-11-11): the release section has none while its facts cannot be read; an empty pill would look broken
+    cnt = f'<span class="cnt" data-tip="{T(ctip)}">{count}</span>' if count != '' else ''
     return (f'<details class="lsec lgroup" data-stage="{key}"{" open" if open_ else ""}><summary class="lghead" data-tip="{T(tip)}">'
-            f'<span class="gtext"><span class="gh">{E(title)}<span class="cnt" data-tip="{T(ctip)}">{count}</span></span><span class="gdesc">{E(hint)}</span></span>'
+            f'<span class="gtext"><span class="gh">{E(title)}{cnt}</span><span class="gdesc">{E(hint)}</span></span>'
             f'<span class="lgtools">{tools}<span class="chev" aria-hidden="true">›</span></span></summary><div class="lgbody">{body}</div></details>')
 
 
@@ -93,12 +95,13 @@ def live_tidy(t):
     notes = [c for c in idle if c.get('notesOnly')]
     work = [c for c in idle if not c.get('notesOnly')]
     if work:
-        rows.append(row(f'{len(work)} copies idle 2+ weeks with unsaved or unmerged work, and no item',
+        # WHY the singular (2026-11-11): the board read "1 copies idle"
+        rows.append(row(f'{len(work)} cop{"y" if len(work) == 1 else "ies"} idle 2+ weeks with unsaved or unmerged work, and no item',
                         ', '.join(f'{c["name"]} (last {c["last"]})' for c in work),
                         'Save as backup branches', "Starts a chat that saves each copy's changes as a backup branch, so they can be cleaned up safely.",
                         'Save each of these idle copies of work as a backup branch on GitHub, then show me what each held so I can decide: ' + ', '.join(c['name'] for c in work) + '.'))
     if notes:
-        rows.append(row(f'{len(notes)} copies that hold only notes or research', ', '.join(c['name'] for c in notes),
+        rows.append(row(f'{len(notes)} cop{"y" if len(notes) == 1 else "ies"} that hold{"s" if len(notes) == 1 else ""} only notes or research', ', '.join(c['name'] for c in notes),
                         'Keep the notes, close the copies', 'Starts a chat that keeps the notes in the workspace and closes the copies.',
                         'These copies of work hold only notes or research: ' + ', '.join(c['name'] for c in notes) + '. Keep the notes in the workspace and close the copies.'))
     if not rows:
@@ -142,8 +145,9 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic, tidy=None):
     # WHY exploration and merged appear here too (2026-10-16): bulk edit has to reach every item, and exploring items are the ones most often combined
     out.append(group(T, 'explore', 'Preliminary exploration', 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.', 'today.explore', 'today.explore.count', len(by['explore']), cards_of('explore')))
     if by['merged']:
-        out.append(group(T, 'merged', 'Merged', 'In master; ships with the next release.', 'today.merged', 'today.merged.count', len(by['merged']), cards_of('merged')))
-    n_tidy, tidy_html = live_tidy(tidy) if tidy is not None else tt.tidy(leftovers, dev_only, fold, [c['id'] for c in cards], raw=True)
+        out.append(group(T, 'merged', 'Merged', 'Finished and in master. Some already went out in a release; "Since the last release" shows what is going out next.', 'today.merged', 'today.merged.count', len(by['merged']), cards_of('merged')))
+    # WHY no snapshot fallback (2026-11-11): the old fallback was a hand-typed list of leftovers from Oct 12, shown as if current
+    n_tidy, tidy_html = live_tidy(tidy) if tidy is not None else ('', '<p class="t-xs muted">The leftover-work check could not be run here, so nothing is shown rather than an old list.</p>')
     out.append('<p class="t-xs muted lnone" id="lnone" hidden>Nothing matches.</p>')
     # ---- the bulk bar (Destin, 2026-10-15: bulk edit in v1)
     out.append('''<div class="lbulk layer" id="lbulk" hidden role="toolbar" aria-label="Edit ticked items"><span class="n" id="lbn"></span>
@@ -167,19 +171,34 @@ CSS = '''
 .lgroup{margin:0 0 16px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);transition:background-color 120ms steps(4)}
 .lgroup > summary{list-style:none} .lgroup > summary::-webkit-details-marker{display:none}
 .lghead{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-radius:var(--radius-xl)}
-@media (hover:hover){.lgroup:not([open]):has(> summary:hover){background:var(--inset)} .lgroup[open] > .lghead:hover{background:color-mix(in srgb,var(--inset) 60%,transparent)}}
+/* WHY the whole box, open or closed (Destin, 2026-11-12: "the hover/click effects on front page card are just visually
+   odd"; guide: "Pointing at a folded box lights the whole box ... never a strip across its header"): an open section
+   used to tint only its header, a rounded blob that stopped above the first item.
+   WHY ONE fill for both states and no press step (Destin, 2026-11-12: "the whole cards still seem to flicker when i
+   expand them"): measured frame by frame on a real click, a section went 234 -> 215 (hover) -> 204 (press) -> 215 ->
+   225 (open) in half a second, across a box that had just grown to thousands of pixels. Now the fill is the same
+   before and after the click, so opening changes the size and nothing else. It is a lighter step than --inset so the
+   item cards inside (which sit on --inset) still read as cards.
+   WHY it stays lit while the pointer is on "Tick all": un-lighting the box on the way to its own button is one more flash. */
+@media (hover:hover){.lgroup:has(> summary:hover){background:color-mix(in srgb,var(--inset) 60%,var(--panel))}}
 .lghead .gtext{flex:1;min-width:0;display:flex;flex-direction:column}
 .lghead .gh{font-size:16px;font-weight:500;color:var(--fg)} .lghead .gh .cnt{margin-left:6px}
 .lghead .gdesc{font-size:12px;color:var(--fg-muted);margin-top:2px}
 .lgtools{display:flex;align-items:center;gap:8px;flex:none}
 .lgroup[open] > .lghead .chev{transform:rotate(90deg)}
-.lghead:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* WHY the ring goes round the whole section, not its header row (Destin's screenshot, 2026-11-12): on the header alone
+   it stuck out past the box and cut across the first item card. */
+.lghead:focus-visible{outline:none} .lgroup:has(> summary:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
 .lgbody{padding:0 12px 12px}
 .lgroup .crow{background:var(--inset);border:1px solid var(--edge-card);border-radius:var(--radius-lg);box-shadow:none;margin-bottom:8px}
 .lgroup .crow:last-child{margin-bottom:0}
 /* an item card opens its details when clicked anywhere that is not one of its own controls */
 .lrow{cursor:pointer;transition:background-color 120ms steps(4)}
+/* WHY the card stays lit while the pointer is on its own buttons (Destin, 2026-11-12: "the whole cards still seem to
+   flicker when i expand them"): un-lighting it on the way to "View chats" made the card flash just before it grew. */
 @media (hover:hover){.lgroup .lrow:hover{background:color-mix(in srgb,var(--inset) 88%,var(--fg))}}
+/* WHY: press is one step past hover (guide §2.4); not while one of the card's own buttons or its tick box is the thing pressed */
+.lgroup .lrow:active:not(:has(button:active,input:active,a:active,select:active)){background:color-mix(in srgb,var(--inset) 78%,var(--fg))}
 /* live Today (live_today.py): the approved rows plus a tick box, and the bulk bar */
 .ltools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .field{font:inherit;font-size:12px;line-height:16px;padding:6px 12px;border-radius:var(--radius-lg);border:1px solid var(--edge-card);background:var(--inset);color:var(--fg);width:240px}

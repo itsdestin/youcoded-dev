@@ -1,0 +1,62 @@
+{
+  "title": "Next release: two messages to word",
+  "key": "release-1-4-wording",
+  "out": "release-1-4-wording.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Phone app",
+      "path": "Settings → Connect to Desktop, when the phone can't connect",
+      "headline": "What should the phone say when it can't connect to your computer?",
+      "today": "Every connection failure shows one message: \"Couldn’t connect to your computer. Make sure YouCoded on it is up to date and open, and that Tailscale is on for both devices.\" You chose this wording on Nov 10, because the phone couldn't tell an out-of-date computer apart from one it can't reach.",
+      "problem": "After this release, a phone on the new version can't connect to a computer still on v1.3.3. The message lists three possible causes, so people may check Tailscale first when the real fix is updating the computer.",
+      "proposal": "The phone can now tell the two cases apart: after a failed connection it quietly checks whether the computer answers at all. If it answers, the cause is almost certainly an old computer version. Pick the wording; use Other to edit any sentence.",
+      "options": [
+        {
+          "id": "two-messages",
+          "label": "Two specific messages",
+          "summary": "Computer answers: \"Your computer's YouCoded needs an update to work with this phone. Update it on the computer, then try again.\" Computer doesn't answer: \"Couldn’t reach your computer. Make sure it’s on, YouCoded is open, and Tailscale is on for both devices.\"",
+          "pros": ["Tells people exactly what to do in the common update-day case.", "The other message no longer mentions updating, so it isn't misleading either."],
+          "cons": ["Adds a quick check (under 3 seconds) before the message appears.", "Rarely, a computer that answers but refuses for another reason would get the 'needs an update' message."],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep today's message",
+          "summary": "\"Couldn’t connect to your computer. Make sure YouCoded on it is up to date and open, and that Tailscale is on for both devices.\"",
+          "pros": ["No change; it already mentions updating first."],
+          "cons": ["People can't tell which of the three causes applies."]
+        }
+      ]
+    },
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "Office editor",
+      "path": "The strip at the top of a Word or Excel file when saving keeps failing",
+      "headline": "Is this the right wording when an Office file still isn't saved after retrying?",
+      "today": "Approved in the last deck: when a save fails, the editor retries 3 times (after 10 seconds, 30 seconds and 1 minute), then stops and says so. The strip keeps its Try again button, and your edits stay open.",
+      "problem": "This is new wording people will read when their work isn't saved, so it needs to be clear and calm.",
+      "proposal": "The built wording is below, with the real reason filled in (for example \"This file is busy.\"). Pick it, or use Other to rewrite it.",
+      "options": [
+        {
+          "id": "built",
+          "label": "As built",
+          "summary": "\"Not saved after 3 more tries. This file is busy. Your changes are still open here.\"",
+          "pros": ["Says plainly that the work isn't saved, why, and that nothing is lost yet."],
+          "cons": ["\"3 more tries\" is a detail most people don't need."],
+          "recommended": true
+        },
+        {
+          "id": "shorter",
+          "label": "Shorter",
+          "summary": "\"Not saved. This file is busy. Your changes are still open here — Try again when it's free.\"",
+          "pros": ["Simpler; points to the button."],
+          "cons": ["Doesn't say the app already retried, so people may wonder why it stopped trying."]
+        }
+      ]
+    }
+  ]
+}

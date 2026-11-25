@@ -1,0 +1,1260 @@
+[
+  {
+    "name": "chat#signin-expired-cc",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc/light.png",
+    "ms": 2032,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-remote-cc",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-remote-cc/midnight.png",
+    "ms": 2180,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-remote-cc",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-remote-cc/light.png",
+    "ms": 2246,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc/midnight.png",
+    "ms": 2326,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc-phone",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc-phone/light.png",
+    "ms": 2368,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc-phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc-phone/midnight.png",
+    "ms": 2431,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-chatgpt",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-chatgpt/midnight.png",
+    "ms": 2534,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-chatgpt",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-chatgpt/light.png",
+    "ms": 2564,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-openrouter",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-openrouter/light.png",
+    "ms": 1879,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-remote-cc",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-remote-cc/halftone-dimension.png",
+    "ms": 3962,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc/halftone-dimension.png",
+    "ms": 4146,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-cc",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-cc/midnight.png",
+    "ms": 1777,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc/meadow-mist.png",
+    "ms": 5273,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-remote-cc",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-remote-cc/meadow-mist.png",
+    "ms": 5274,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc-phone",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc-phone/halftone-dimension.png",
+    "ms": 5573,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-chatgpt",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-chatgpt/halftone-dimension.png",
+    "ms": 5584,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-openrouter",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-openrouter/midnight.png",
+    "ms": 3466,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-native",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-native/midnight.png",
+    "ms": 2080,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc-phone",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc-phone/meadow-mist.png",
+    "ms": 6642,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-chatgpt",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-chatgpt/meadow-mist.png",
+    "ms": 6655,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-openrouter",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-openrouter/halftone-dimension.png",
+    "ms": 4411,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-cc",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-cc/light.png",
+    "ms": 4458,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-native",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-native/light.png",
+    "ms": 3020,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-openrouter",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-openrouter/meadow-mist.png",
+    "ms": 4654,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-rejected",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-rejected/midnight.png",
+    "ms": 1918,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-rejected",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-rejected/light.png",
+    "ms": 1922,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-cc",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-cc/meadow-mist.png",
+    "ms": 4709,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-cc",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-cc/halftone-dimension.png",
+    "ms": 5098,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-expired",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-expired/light.png",
+    "ms": 2153,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-native",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-native/halftone-dimension.png",
+    "ms": 4190,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-expired",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-expired/light.png",
+    "ms": 1464,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-expired",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-expired/midnight.png",
+    "ms": 1464,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud/light.png",
+    "ms": 2011,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-expired",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-expired/midnight.png",
+    "ms": 2684,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-signed-out",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-signed-out/midnight.png",
+    "ms": 1586,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#chatgpt-expired",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#chatgpt-expired/midnight.png",
+    "ms": 1390,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud/midnight.png",
+    "ms": 3736,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-expired",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-expired/meadow-mist.png",
+    "ms": 5515,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-rejected",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-rejected/meadow-mist.png",
+    "ms": 6716,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud/halftone-dimension.png",
+    "ms": 5747,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-expired",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-expired/halftone-dimension.png",
+    "ms": 6060,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#openrouter-key-rejected",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#openrouter-key-rejected/halftone-dimension.png",
+    "ms": 7134,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-native",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-native/meadow-mist.png",
+    "ms": 8739,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-expired",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-expired/halftone-dimension.png",
+    "ms": 5696,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#chatgpt-expired",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#chatgpt-expired/light.png",
+    "ms": 5068,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-signed-out",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-signed-out/light.png",
+    "ms": 7925,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud/meadow-mist.png",
+    "ms": 8841,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-expired",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-expired/meadow-mist.png",
+    "ms": 9726,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-signed-out",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-signed-out/meadow-mist.png",
+    "ms": 10272,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-signed-out",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-signed-out/halftone-dimension.png",
+    "ms": 11461,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#chatgpt-expired",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#chatgpt-expired/halftone-dimension.png",
+    "ms": 11575,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#chatgpt-expired",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#chatgpt-expired/meadow-mist.png",
+    "ms": 13222,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-remote-cc",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-remote-cc/dark.png",
+    "ms": 2198,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc/creme.png",
+    "ms": 2353,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-remote-cc",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-remote-cc/creme.png",
+    "ms": 2365,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-native",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-native/creme.png",
+    "ms": 2620,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-native",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-native/dark.png",
+    "ms": 2651,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc-phone",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc-phone/creme.png",
+    "ms": 2687,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-cc",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-cc/dark.png",
+    "ms": 2733,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc-phone",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc-phone/dark.png",
+    "ms": 2738,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-cc",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-cc/dark.png",
+    "ms": 2743,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-openrouter",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-openrouter/creme.png",
+    "ms": 2853,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud/dark.png",
+    "ms": 2865,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud/creme.png",
+    "ms": 2911,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#offline-cc",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#offline-cc/creme.png",
+    "ms": 2940,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-openrouter",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-openrouter/dark.png",
+    "ms": 3012,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-chatgpt",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-chatgpt/dark.png",
+    "ms": 3018,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#signin-expired-chatgpt",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/chat#signin-expired-chatgpt/creme.png",
+    "ms": 3206,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-expired",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-expired/creme.png",
+    "ms": 1800,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-expired",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-expired/dark.png",
+    "ms": 2170,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#chatgpt-expired",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#chatgpt-expired/dark.png",
+    "ms": 2426,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#chatgpt-expired",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#chatgpt-expired/creme.png",
+    "ms": 2797,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-signed-out",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-signed-out/creme.png",
+    "ms": 3593,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#claude-signed-out",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/236-working-offline-sign-in-expiry/docs/active/design/2026-11-17-claude-sign-in-expiry/runs/before/settings/assistant/cloud#claude-signed-out/dark.png",
+    "ms": 3354,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  }
+]

@@ -47,7 +47,7 @@ their design consequences are in `youcoded/docs/engine-dependencies.md` →
 The probes also found a shipped bug: the app could not read the engine's slot
 count on this build, so every local model was capped at one helper. Fixed and
 merged 2026-09-05; a follow-on (the count is read before the model loads) is
-in the local-models cards (#47, #48).
+in the local-models cards (#47, #226).
 
 What blocks stage two now is Destin's decisions — the prompt at
 `docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md` puts them on a

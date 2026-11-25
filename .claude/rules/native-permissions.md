@@ -5,7 +5,7 @@ paths:
   - "**/desktop/src/shared/permission-types.ts"
   - "**/desktop/src/renderer/components/PermissionsSection.tsx"
   - "**/desktop/src/renderer/components/permissions/**"
-last_verified: 2026-08-16
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/harness/permission-store.ts
     contains: "removeProject"

@@ -12,8 +12,8 @@ side: screens
 platform: Desktop only
 ---
 Progress
-Done: Destin, overnight deck 2026-11-13 C-9: Known issues should keep Help open behind (not close it).
-Next: Build it.
+Done: LANDED PR #756: Known issues, Roadmap and Reddit rows leave Help open
+Next: remaining items on this card
 Blocked: nothing recorded.
 
 Chats

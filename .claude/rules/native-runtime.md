@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/main/providers/**"
   - "**/desktop/src/main/native-home.ts"
   - "**/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-09-24
+last_verified: 2026-11-19
 verify:
   # The floors under remembered grants (2026-09-23): a silent move of this check would
   # make the "Always-allow beats the deny list" line read as the whole story again.
@@ -88,7 +88,7 @@ verify:
 ## Local reliability (Plan C) — guards: `capability-profile`/`known-models`/`compaction` tests
 - **CapabilityProfile NEVER branches on a model name** (`known-models.ts` is the ONLY modelId inspection); `supportsTools:false` → plain chat.
 - **A local model's REAL context window is read (`/props`) + clamped, never guessed** — ONE number feeds tiering, compaction, StatusBar.
-- **Near-limit compaction: one validated summary, never pruning.** Keep tool groups and accepted history; shorten only the summarizer's copy. The `compact-summary` line is the durable record — append, then adopt. Switches are fit-checked (`native:switch-model`).
+- **Near-limit compaction: one validated summary, never pruning.** Keep tool groups and accepted history; shorten only the summarizer's copy. **One exception (Destin, 2026-11-12):** when the next request cannot be sent at all and the model ANSWERED the summary request uselessly, the app's own stand-in (`standInSummary`) is committed the same way; never after a failed request, Stop or a model switch. The `compact-summary` line is the durable record — append, then adopt. Switches are fit-checked (`native:switch-model`).
 
 ## Stall watchdog & the park — guard: `harness-stall-watchdog.test.ts`
 - **The park is a `return` that does NOT resolve the stall race** — stage 2 emits `{stalled:true}` and returns; nothing is torn down; a late chunk still continues the turn. That `return` IS the feature.

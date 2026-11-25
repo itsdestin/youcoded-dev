@@ -1,0 +1,57 @@
+{
+ "deck": "review-deck-rethink",
+ "started": "2026-11-18T08:35:27.218Z",
+ "submitted": "2026-11-18T08:45:49Z",
+ "cur": 0,
+ "answers": {
+  "LS-1": {
+   "note": "confused. how does this work now? and what are you actually suggesting? i thought we already save?",
+   "t": 1794991548674,
+   "v": "other",
+   "seconds": 124,
+   "theme": "ivory-schematic"
+  },
+  "LS-2": {
+   "v": "pick",
+   "pick": "off",
+   "t": 1794991548674,
+   "seconds": 124,
+   "theme": "ivory-schematic"
+  },
+  "LS-3": {
+   "t": 1794991548674,
+   "v": "pick",
+   "pick": "none",
+   "seconds": 124,
+   "theme": "ivory-schematic"
+  },
+  "LS-4": {
+   "note": "i think if a full page is new, it should have a big version of the \"NEW\" tag next to the title without tags on individual cards. if the page is carried on from previous rounds with already-answered questions, then only the new cards/questions get the tag instead of the titel",
+   "t": 1794991548674,
+   "v": "pick",
+   "pick": "tag",
+   "seconds": 124,
+   "theme": "ivory-schematic"
+  },
+  "LS-L": {
+   "ok": {
+    "speed": true,
+    "old": true,
+    "counts": true,
+    "slow": true
+   },
+   "t": 1794991548674,
+   "changes": {
+    "wording": "i think we should leave an opening for the model to prepare and let me edit mockup ui elements/copy earlier outside of the normal deck/build flow if i explicityl request"
+   },
+   "v": "other",
+   "seconds": 124,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-18T08:12:03Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "1ac933bed"
+ }
+}
