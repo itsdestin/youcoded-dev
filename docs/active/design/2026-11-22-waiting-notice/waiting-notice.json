@@ -9,6 +9,240 @@
  "retired": {},
  "steps": [
   {
+   "id": "P-check",
+   "page": "What the independent check found",
+   "intro": "A reviewer who wrote none of this read the code and every notice. Bugs it found are being fixed; these are the choices it raised that you would notice.",
+   "stage": "design"
+  },
+  {
+   "id": "R-unsure",
+   "words": true,
+   "surface": "Notices",
+   "path": "Any chat, after a send, stop or clear",
+   "headline": "Where should the 20 \"not sure it went through\" notices go?",
+   "today": "You picked short floating notices (5 seconds) for every notice that says the app can't tell whether something went through, like \"Your message may not have been sent.\"",
+   "problem": "Your later rule says a problem that stops a message being sent belongs in the strip above the box. Some of these 20 are exactly that. And the ones warning \"check the chat before sending again\" (a double-send risk) vanish fastest of all.",
+   "proposal": "Sort these 20 by the same rule as the other failures.",
+   "options": [
+    {
+     "id": "by-rule",
+     "label": "Sort by your rule",
+     "pros": [
+      "\"Message not sent\" ones sit in the strip above the box until you send again or dismiss.",
+      "\"Check before sending again\" warnings stay until you close them, so you can't miss them."
+     ],
+     "cons": [
+      "More notices that wait for you to act."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep-float",
+     "label": "Keep all floating, 5 seconds",
+     "pros": [
+      "Nothing ever lingers."
+     ],
+     "cons": [
+      "A missed \"may not have been sent\" can mean a lost or doubled message."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-words",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice",
+   "headline": "Should notices that mean the same thing use the same sentence?",
+   "today": "About 30 notices say one of three things in many different wordings. A stop that wasn't confirmed alone has 5 sentences. A few show raw technical text, like \"Control incarnation ended before invocation\".",
+   "problem": "Different words for the same thing make you wonder whether they are different problems, and technical text tells you nothing.",
+   "proposal": "Three shared sentences, each naming what you tried: \"Stop didn't go through.\" / \"Can't tell if Stop went through. Check the chat before trying again.\" / \"Stop isn't available here.\" with the reason after. Technical text is never shown.",
+   "options": [
+    {
+     "id": "merge",
+     "label": "Shared sentences",
+     "pros": [
+      "One wording to learn per situation.",
+      "No technical text ever reaches you."
+     ],
+     "cons": [
+      "Loses some detail a few notices give today, like \"your phone was offline\"; that detail can stay as a second sentence."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "only-tech",
+     "label": "Only replace the technical text",
+     "pros": [
+      "Smallest change."
+     ],
+     "cons": [
+      "The many wordings stay."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-newchat",
+   "words": true,
+   "surface": "Notices",
+   "path": "Pressing a command with no chat open",
+   "headline": "When you press something that needs a chat and none is open, what should happen?",
+   "today": "A short notice says \"Open a conversation first.\" The last round suggested the button could just open a new chat for you.",
+   "problem": "Opening a chat on its own means a stray press leaves an empty chat in your list.",
+   "proposal": "Keep the notice, and give it a \"New chat\" button, so a chat is only made when you ask.",
+   "options": [
+    {
+     "id": "button",
+     "label": "Notice with a New chat button",
+     "pros": [
+      "Nothing is made unless you press it.",
+      "One press away from what you wanted."
+     ],
+     "cons": [
+      "One extra press."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "auto",
+     "label": "Open a chat automatically",
+     "pros": [
+      "No notice at all."
+     ],
+     "cons": [
+      "Stray empty chats in your list from accidental presses."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-fyi",
+   "words": true,
+   "surface": "Notices",
+   "path": "After a command runs",
+   "headline": "Should \"for your information\" notices that blocked nothing be short floating ones?",
+   "today": "Two notices were sorted into the strip: \"Attachments were left out of that command\" and \"There's no reply to copy yet.\"",
+   "problem": "Neither stopped anything, and your rule says notices you can't act on should be short floating ones. In the strip they wait for a Dismiss press.",
+   "proposal": "Make these two short floating notices that leave on their own. Yes moves them; No keeps them in the strip."
+  },
+  {
+   "id": "R-remote",
+   "words": true,
+   "surface": "Notices",
+   "path": "Using the app from a browser on another device",
+   "headline": "Should \"not available from another device yet\" be a short notice instead of one you must close?",
+   "today": "When you use the app from a browser on another device, some screens (like browsing themes) show \"Theme browsing isn't available via remote access yet.\" It was sorted as a notice that stays until you close it.",
+   "problem": "There is nothing you can do about it, and it can come back each time you open such a screen, adding a Close press every time.",
+   "proposal": "Make it a short floating notice with a clearer line: \"Browsing themes only works on the computer running YouCoded for now.\" Yes changes it; No keeps it until closed."
+  },
+  {
+   "id": "R-screen",
+   "words": true,
+   "surface": "Notices",
+   "path": "The \"resume a chat\" list and the screen for moving a chat between devices",
+   "headline": "Should notices from those two screens show on the screen itself, not in a chat's strip?",
+   "today": "Three failures (a chat couldn't be resumed, moving a chat isn't available, finish the current move first) were sorted into the strip. The moving screen also already has its own Try again and Continue buttons.",
+   "problem": "The strip belongs to the chat you have open, which may have nothing to do with the screen you are on, and the moving screen would show two sets of buttons for one problem.",
+   "proposal": "Show them on the screen that raised them, using its own buttons. Yes moves them; No keeps them in the strip."
+  },
+  {
+   "id": "R-card",
+   "words": true,
+   "surface": "Chat",
+   "path": "Inside a chat, after /compact or /clear fails",
+   "headline": "What happens to the \"Couldn't compact\" card in the chat once it works?",
+   "today": "You chose that a compact or clear failure shows as a card inside the chat with Try again.",
+   "problem": "If the card stays after Try again succeeds, the chat shows \"Couldn't compact\" above a chat that was compacted.",
+   "proposal": "Pick what the card does next.",
+   "options": [
+    {
+     "id": "goes",
+     "label": "Leaves once it works",
+     "pros": [
+      "The chat only shows what is true now."
+     ],
+     "cons": [
+      "No record that it failed once."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "stays",
+     "label": "Stays, with a \"Worked on retry\" line added",
+     "pros": [
+      "A full record in the chat."
+     ],
+     "cons": [
+      "More clutter in the chat for something already fixed."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-elsewhere",
+   "words": true,
+   "surface": "Session list",
+   "path": "A failure in a chat you are not looking at",
+   "headline": "When something fails in a chat you've switched away from, how should you find out?",
+   "today": "Some failures arrive a moment later. With notices now tied to their chat, one can land in a chat you have just left.",
+   "problem": "You would not see it until you happen to go back to that chat.",
+   "proposal": "Pick how that chat tells you.",
+   "options": [
+    {
+     "id": "dot",
+     "label": "A red dot on that chat in the list",
+     "pros": [
+      "You see which chat needs you without leaving the one you're in."
+     ],
+     "cons": [
+      "One more kind of dot in the list."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "float",
+     "label": "A short floating notice naming the chat",
+     "pros": [
+      "Hard to miss."
+     ],
+     "cons": [
+      "Interrupts the chat you're in for another one."
+     ]
+    },
+    {
+     "id": "nothing",
+     "label": "Nothing until you go back",
+     "pros": [
+      "Quietest."
+     ],
+     "cons": [
+      "Easy to miss a failed stop or clear."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-queue",
+   "words": true,
+   "surface": "Notices",
+   "path": "Two notices at the same moment",
+   "headline": "When two \"needs you\" notices arrive together, should they take turns?",
+   "today": "There is one floating notice spot. A second notice replaces the first, so a \"needs you\" notice can vanish without you pressing anything (for example two at startup).",
+   "problem": "A notice you were supposed to act on disappears unseen.",
+   "proposal": "They take turns: the next shows when you close the first. Quick ones like \"Copied\" show right away and never push a \"needs you\" notice out. Yes does this; No keeps one spot."
+  },
+  {
+   "id": "R-phone",
+   "words": true,
+   "surface": "Notices",
+   "path": "The strip above the message box, on a phone",
+   "headline": "On a narrow phone screen, should the strip's buttons sit under the words instead of beside them?",
+   "today": "The strip puts up to three buttons (Dismiss, Send anyway, Show card) beside the sentence.",
+   "problem": "On a phone that squeezes the sentence into a thin column of wrapped words, which you disliked on an earlier round.",
+   "proposal": "On narrow screens, buttons drop to their own row below the sentence. Yes does this; No keeps them beside the words."
+  },
+  {
    "id": "P-drawn",
    "page": "Your picks, drawn in the app",
    "intro": "The strip and the new button order, photographed in the practice app, then each failure and limit sorted by your rule.",
@@ -1915,5 +2149,8 @@
    "proposal": "Fix that one shared piece now. Yes: those notices leave on time, and that is the only change you would notice. No: they stay as they are.",
    "resolved": "Will fix the timer in the one shared piece; it stays useful whichever way you organize the notices."
   }
- ]
+ ],
+ "notes_handled": {
+  "P-drawn": "An independent reviewer checked the code and every notice. Its bugs are being fixed; the choices you'd notice are on the first page."
+ }
 }
