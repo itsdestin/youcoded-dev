@@ -12,8 +12,8 @@
 #   scripts/campaign/sound/songbook/render.sh --notes [--log] mim   # no audio: the notes bar by bar, the
 #                                                             # hard checks and the dashboard (out/notes/), ~1 s
 #   scripts/campaign/sound/songbook/render.sh --brief mim     # step 1: brief, tempo fit, her pace, motion grid
-#   scripts/campaign/sound/songbook/render.sh --bed mim       # step 3: the bed alone, rendered
-#   scripts/campaign/sound/songbook/render.sh --sketch mim [sustain=held]   # step 5: two 20 s sketches
+#   scripts/campaign/sound/songbook/render.sh --bed mim       # step 5: the bed alone, rendered
+#   scripts/campaign/sound/songbook/render.sh --sketch mim [pad_level=-4]   # step 7: two 20 s sketches
 #
 # New films live in their own file, src/film_<key>.py (exposing FILM or FILMS); they are found
 # automatically. Each film's report: out/films/<name>.checks.txt; notes: out/notes/<name>.txt.

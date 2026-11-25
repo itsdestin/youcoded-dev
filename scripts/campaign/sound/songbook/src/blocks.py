@@ -808,6 +808,15 @@ def acc_figure(band, p, bar, dyn, cut=4.0):
     return fig
 
 
+def _tune_near(band, beat, m, st):
+    """Is a tune note on this same key starting within a step of `beat`? (the pulse yields)"""
+    tn = getattr(band, "_tune_keys", None)
+    if tn is None:
+        tn = band._tune_keys = [(bar.beat + bb, int(mm)) for pl in band.plans for bar in pl.bars
+                                for bb, mm, d, canon, _ in bar.tune if canon[0] != "logo"]
+    return any(mm == m and abs(b - beat) < st - 1e-6 for b, mm in tn)
+
+
 def acc_pedal(band, p, bar, dyn, cut=4.0):
     """THE PEDAL PULSE (the rebuild, 2026-11-24; toolkit-plan c1): one pool of notes (default the
     "you-co-ded" cell B-flat G F plus E-flat), taken in a fixed order on the steps of a 16-step
@@ -841,11 +850,25 @@ def acc_pedal(band, p, bar, dyn, cut=4.0):
             continue
         # the k-th sounding step of this 16-step round takes the k-th pool note: a fixed order
         k = sum(1 for j in range(s16) if mask[j] == "x")
-        m = pool[k % len(pool)]
+        if (getattr(sec, "fig_order", None) or "cell") == "circle" and len(pool) > 1:
+            # circling: the pool's first note on every other step, the rest in turn between
+            # (B-flat G B-flat F B-flat E-flat): never the cell's three notes in a row
+            m = pool[0] if k % 2 == 0 else pool[1 + (k // 2) % (len(pool) - 1)]
+        else:
+            m = pool[k % len(pool)]
+        if _tune_near(band, beat, m, st):
+            # WHY (audit defect 6): the pulse's B-flat 4 and the tune's B-flat 4 struck 17 ms apart
+            # on the same key is a flam; the pulse yields that one step to the tune
+            continue
         # WHY legato (each note held into the next, a quarter-step overlap): a dry felt note dies
         # in half a second, and the gap after it read as a hole in the bed
         nxt = next((j for j in range(1, 17) if mask[(s16 + j) % 16] == "x"), 2)
         d = st * (nxt + 0.25)
+        bar_end = bar.beat + p.blen
+        if bl is not None and beat + d > bar_end and bl.pulse_at(bar_end) != pool:
+            # WHY (audit 2026-11-25, defect 6): legato across a pool change let the high B-flat 5
+            # ring into the tune's first note after her last word; the old pool stops at the bar line
+            d = max(st * 0.5, bar_end - 0.1 - beat)
         if pedal:
             d = max(d, (2.0 if (len(bar.chords) == 2 and off < 2) else p.blen) - off)
         v = sec.fig_touch * dyn.v(beat) * g
@@ -856,16 +879,28 @@ def acc_pedal(band, p, bar, dyn, cut=4.0):
                        p=(0.12 if k % 2 else -0.12), role="pulse")
         fig.append((beat, m))
     if getattr(sec, "fig_bass", False):
-        # the chord's root, soft and held, at each chord change: a floor a phone can hear (the sub
-        # and the pad's lowest note are below what a phone plays)
+        # the chord's root, soft and held, struck once at each chord CHANGE and held until the next
+        # one. WHY once (audit 2026-11-25, defect 12): it was struck again every bar under an
+        # unchanged chord (E-flat 2 at bars 1 and 2), which the guide never said. WHY at all: a
+        # felt-piano root gives the bed a low edge to the attack and names the chord; the sub
+        # and the pad's lowest note have no attack. (C2-A-flat 2 is 65-104 Hz: a phone plays
+        # little of it, so this is NOT "a floor a phone can hear", as an older comment said.)
+        spans = bl._spans() if bl is not None else None
         for a, b, c in _chord_spans(bar, min(cut, p.blen)):
             if bar.beat + a >= (bl.end_beat if bl is not None else 1e9) and not p.ending:
                 continue
             if not keep(p, bar, a, "bass"):
                 continue
+            d = b - a
+            if spans is not None and not p.ending:
+                sp = next((x for x in spans if x[0] - 1e-6 <= bar.beat + a < x[0] + x[1]), None)
+                if sp is not None:
+                    if abs(sp[0] - (bar.beat + a)) > 1e-6:
+                        continue                  # the same chord goes on: the root is still held
+                    d = min(sp[0] + sp[1], bl.end_beat) - (bar.beat + a)
             g = bl.gain("pulse", bar.beat + a) if bl is not None else 1.0
             if g > 1e-3:
-                band.piano("piano", bar.beat + a, bn(p, V[c]["root"]), b - a, sec.fig_touch * 0.95 * dyn.v(bar.beat + a) * g,
+                band.piano("piano", bar.beat + a, bn(p, V[c]["root"]), d, sec.fig_touch * 0.95 * dyn.v(bar.beat + a) * g,
                            tone=-0.35, pedal=False, p=-0.05, role="bass")
     return fig
 

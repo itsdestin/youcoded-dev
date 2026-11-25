@@ -56,6 +56,7 @@ def one(piece, extra_fn=None, path=None):
     st["loudness_target"] = getattr(piece, "loudness", -14.0)
     # WHY: the air-band gauge (mix_tests) depends on which master the piece went through
     st["air_db"] = X.air_for(piece)
+    st["style"] = getattr(piece, "style", "")
     # every sound switch this render used (engine/options.py), so an A/B's two files say how they differ
     st["sound"] = {k: (v if isinstance(v, (int, float, bool, str)) else str(v)) for k, v in O.summary(piece).items()}
     raw_b, _, _, _ = render(piece, backing=True, gains=gains)
@@ -136,8 +137,13 @@ def mix_tests(v, mo=None, loudness=-14.0):
         # WHY -12 for quiet pieces (2026-11-23): own (-17 LUFS) and tale (-16) measured -9.9 and
         # -10.3 here: a subtle film is lighter in the sub band and plays better on a phone for it.
         # The floor exists against a thin mix at full loudness, so it stays -9 there.
-        ("low end: 40-80 Hz 3-%d dB below, 80-250 >= 3 dB below" % (12 if loudness <= -16 else 9),
-         -(12 if loudness <= -16 else 9) <= b["40-80"] <= -3 and b["80-250"] <= -3),
+        # WHY a ceiling only for the recipes (audit 2026-11-25, defect 8): a floor on the lowest band
+        # made a 12 s card or a bed under a narrator (no sub, by the recipe) read out of range, the
+        # same pattern as the old air floor that produced round 8's added violin
+        (("low end: 40-80 Hz and 80-250 Hz at least 3 dB below total (no floor in a recipe)",
+          b["40-80"] <= -3 and b["80-250"] <= -3) if mo.get("style") == "v3" else
+         ("low end: 40-80 Hz 3-%d dB below, 80-250 >= 3 dB below" % (12 if loudness <= -16 else 9),
+          -(12 if loudness <= -16 else 9) <= b["40-80"] <= -3 and b["80-250"] <= -3)),
     ]
 
 

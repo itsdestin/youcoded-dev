@@ -99,7 +99,8 @@ def lay(placements, chords, seed, mutate_rate=0.25, shown_offset=0):
             P, tag = mutate(P, _chord_at(chords, b0 + P.notes[-1].beat) if P.notes else None, seed, bar)
         notes += [replace(n, beat=n.beat + b0) for n in P.notes]
         end = b0 + 4 * P.nbars
-        report.append(f"bar {bar + shown_offset}: {P.label or 'written'} ({P.nbars} bar{'s' if P.nbars > 1 else ''})"
+        shown = shown_offset(bar) if callable(shown_offset) else bar + shown_offset
+        report.append(f"bar {shown}: {P.label or 'written'} ({P.nbars} bar{'s' if P.nbars > 1 else ''})"
                       + (f", mutated: {tag}" if tag else ""))
     return Phrase(notes, max(1, int(end // 4)) if notes else 1, "tune"), report
 

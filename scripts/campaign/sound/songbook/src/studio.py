@@ -1,15 +1,15 @@
 """THE STUDIO: the composing procedure's commands (the rebuild, 2026-11-24; toolkit-plan a4).
 
-    render.sh --brief  <film>            step 1: the brief, the cards' hold times, the tempo fit
+    render.sh --brief  <film>            steps 1-2: the brief, the cards' hold times, the tempo fit
                                          (3 best tempi, every hit's error in ms and frames), her
                                          pace and tempo band, the motion grid for the editor
-    render.sh --notes  [--log] <film>    every step: the notes bar by bar, the recipe, the bed
+    render.sh --notes  [--log] <film>    step 6 and after: the notes bar by bar, the recipe, the bed
                                          (voicings, change plan in seconds, cycles placed and
                                          left out), the hard checks and the dashboard (~1 s)
-    render.sh --bed    <film>            step 3: the bed alone (sustain, pulse, cycles; no tune),
+    render.sh --bed    <film>            step 5: the bed alone (sustain, pulse, cycles; no tune),
                                          rendered, with its dashboard
-    render.sh --sketch <film> [k=v ...]  step 5: the first 20 s twice, as written (A) and with ONE
-                                         switch changed (B; default: the sustain pad <-> held;
+    render.sh --sketch <film> [k=v ...]  step 7: the first 20 s twice, as written (A) and with ONE
+                                         switch changed (B; default: pad_level -8 <-> -4;
                                          or an [OWNER] switch, a sound switch from
                                          engine/options.py, bed.<k>, sec.<k>, a Piece field)
                                          into out/sketches/
@@ -77,6 +77,8 @@ def bed_text(band):
             drops[d["why"]] = drops.get(d["why"], 0) + 1
         L.append(f"   cycles: {cy.get('placed', 0)} notes placed; left out: {drops or 'none'}; duty {cy.get('duty')}; "
                  f"co-prime {cy.get('coprime', (True,))[0]}")
+    if info.get("whimsy"):
+        L.append(f"   whimsy: {info['whimsy']} bell notes doubling the tune an octave up")
     return L
 
 
@@ -151,15 +153,22 @@ def brief(piece):
     if hits:
         L.append(f"THE TEMPO FROM THE PICTURE (fit_tempo over {rng[0]:g}-{rng[1]:g} bpm; weight 3 on the downbeat, "
                  "others on a half-beat; on = -15..+45 ms):")
-        L += TI.fit_text(TI.fit_tempo(hits, rng, ending_beats=piece.ending_len, rit=piece.rit))
+        fits = TI.fit_tempo(hits, rng, ending_beats=piece.ending_len, rit=piece.rit)
+        L += TI.fit_text(fits)
     else:
+        fits = []
         L.append("no hits given (Piece.hits or the brief's moments): the tempo is the recipe's default")
-    grid = TI.motion_grid(bpm, 30, 0.0, piece.length)
+    # WHY the recommended tempo (audit defect 9): the grid was written at the piece's current
+    # tempo, so an editor cutting to it before the composer changed bpm cut to the wrong grid
+    odd, odd_at = 0, 1
+    if fits:
+        bpm, odd, odd_at = fits[0]["bpm"], fits[0]["odd"], fits[0]["odd_at"] or 1
+    grid = TI.motion_grid(bpm, 30, 0.0, piece.length, odd=odd, odd_at=odd_at)
     os.makedirs(os.path.join(OUT, "notes"), exist_ok=True)
     gp = os.path.join(OUT, "notes", f"{piece.name}.grid.json")
     with open(gp, "w") as f:
         json.dump(grid, f, indent=1)
-    L.append(f"motion grid at {bpm:g} bpm, 30 fps: {grid['frames_per_beat']} frames a beat, {grid['frames_per_eighth']} an "
+    L.append(f"motion grid at {bpm:g} bpm{f' (odd bar {odd_at})' if odd else ''}{' (the first fit)' if fits else ''}, 30 fps: {grid['frames_per_beat']} frames a beat, {grid['frames_per_eighth']} an "
              f"eighth, {grid['frames_per_sixteenth']} a sixteenth (out/notes/{piece.name}.grid.json)")
     return L
 
@@ -190,13 +199,35 @@ def apply_switch(piece, key, value):
         except ValueError:
             return v
     if key == "sustain":
+        import recipes as R
         q.bed = dict(q.bed or {}, sustain=value)
+        # the sustain's bus level follows the layer (recipes.sustain_mix): the old trim goes
+        q.mix = {k: v for k, v in (q.mix or {}).items() if k not in ("pad", "ring", "bowed")}
+        q.mix.update(R.sustain_mix(value, int((q.owner or {}).get("pad_level", -8))))
     elif key == "pulse":
         for s in q.sections:
             if value == "chord":
                 s.fig_mode, s.figure, s.fig_floor = "chord", ["b 2 3 2 4 2 3 2", "b 2 3 2 4 3 2 3"], "G3"
             else:
                 s.fig_mode = "pedal"
+    elif key == "fig_order":
+        if value not in ("circle", "cell"):
+            raise SystemExit("fig_order: circle or cell")
+        for s in q.sections:
+            if getattr(s, "fig_mode", None) == "pedal":
+                s.fig_order = value
+    elif key == "pad_level":
+        # the sustain's level against the pulse ([OWNER], recipes.OWNER["pad_level"]): -8 is the
+        # calibrated level; -4 / 0 raise the sustain's bus by 4 / 8 dB (Piece.mix)
+        import recipes as R
+        lv = int(float(value))
+        if lv not in R.PAD_LEVELS:
+            raise SystemExit(f"pad_level: one of {R.PAD_LEVELS}")
+        q.mix = {k: v for k, v in (q.mix or {}).items() if k not in ("pad", "ring", "bowed")}
+        q.mix.update(R.sustain_mix((q.bed or {}).get("sustain", "pad"), lv))
+    elif key == "air" and value == "legacy":
+        # WHY a preset (audit defect 10): the plan's "air 0 vs 11" A/B needs the cap lifted too
+        q.sound = dict(q.sound or {}, air_db=11.0, air_policy="as-written")
     elif key == "chords" and value == "plain":
         for s in q.sections:
             s.chords = [[T.PLAIN.get(c, c) for c in b] for b in (s.chords or [])] or None
@@ -213,6 +244,11 @@ def apply_switch(piece, key, value):
         import options
         k = key[6:] if key.startswith("sound.") else key
         q.sound = dict(q.sound or {}, **options._parse(f"{k}={value}"))
+        if k == "air_db" and float(value) > float(options.get("air_max_db", q)) and "air_policy" not in (piece.sound or {}):
+            # WHY (audit defect 10): under the default cap, `air_db=11` in a sketch gave +1.5 dB,
+            # so the plan's air A/B could not be made with one switch; asking for more than the cap
+            # in a sketch means "as written"
+            q.sound["air_policy"] = "as-written"
     elif key in ("narrator_tempo", "voice_busy", "under_voice"):
         # these shape the piece when the recipe BUILDS it (tempo, the chord grid, the dashboard's
         # target), so they cannot be flipped on a finished piece: rebuild with the environment
@@ -221,10 +257,11 @@ def apply_switch(piece, key, value):
     else:
         if not hasattr(q, key):
             # WHY: a misspelt switch used to become an attribute nobody reads (B identical to A)
-            raise SystemExit(f"unknown switch {key!r}: an [OWNER] switch (sustain, pulse, chords), a sound "
+            raise SystemExit(f"unknown switch {key!r}: an [OWNER] switch (sustain, pulse, chords, fig_order, "
+                             f"pad_level), air=legacy, a sound "
                              f"switch ({', '.join(_sound_keys())}), bed.<field>, sec.<field> or a Piece field")
         setattr(q, key, num(value))
-    q.owner = dict(q.owner or {}, **({key: value} if key in ("sustain", "pulse", "chords") else {}))
+    q.owner = dict(q.owner or {}, **({key: value} if key in ("sustain", "pulse", "chords", "fig_order", "pad_level") else {}))
     return q
 
 
@@ -235,15 +272,18 @@ def sketch(piece, switches):
     d = os.path.join(OUT, "sketches")
     os.makedirs(d, exist_ok=True)
     if not switches:
-        cur = (piece.bed or {}).get("sustain", "pad")
-        switches = [("sustain", "held" if cur == "pad" else "pad")]
+        # WHY pad_level=-4 by default (audit 2026-11-25, defect 2): the sustain's balance against
+        # the pulse is the open question behind "choppy" (the level swings 4.6-4.8 dB inside each
+        # half-second at -8); the held-strings A/B is `sustain=held`
+        cur = int((piece.owner or {}).get("pad_level", -8))
+        switches = [("pad_level", "-4" if cur != -4 else "-8")]
     b = piece
     for k, v in switches:
         b = apply_switch(b, k, v)
     a = copy.deepcopy(piece)
     a.name = piece.name + "-sketch-A"
     b.name = piece.name + "-sketch-B"
-    L = [f"STEP 5 sketches of {piece.name}: A as written, B with " + ", ".join(f"{k}={v}" for k, v in switches)]
+    L = [f"STEP 7 sketches of {piece.name}: A as written, B with " + ", ".join(f"{k}={v}" for k, v in switches)]
     for q in (a, b):
         path = os.path.join(d, q.name + ".wav")
         _, st = build.one(q, path=path)
@@ -258,6 +298,10 @@ def sketch(piece, switches):
         L += ["      " + x for x in D.text(q.name, st["hard"], st["dashboard"], q)[:1]]
         outs = [r["id"] for r in st["dashboard"] if not r["ok"]]
         L.append(f"      dashboard out of range: {', '.join(outs) or 'none'}")
+        # WHY the readings side by side: an A/B differs in one switch, and these are the numbers
+        # that switch is most likely to move (whole piece, not only the 20 s kept)
+        keep = ("sustain", "gap-fill", "tilt", "presence", "roughness", "level-rate", "pulse-rate", "attack-rate")
+        L.append("      readings: " + "; ".join(f"{r['id']} {r['value']}" for r in st["dashboard"] if r["id"] in keep))
     return L
 
 

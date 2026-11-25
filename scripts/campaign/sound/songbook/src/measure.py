@@ -416,6 +416,33 @@ def roughness(y, until=None, hop=0.1):
     return round(float(np.percentile(r, 95)), 2), round(w[1], 1)
 
 
+def gap_fill(y, t0=1.0, until=None, win=0.2, hop=0.05, block=0.5):
+    """How far the level dips between the pulse's notes: K-weighted loudness in 200 ms windows
+    every 50 ms; in each half-second the swing (max - min); the median over the piece, dB, and
+    the worst half-second. WHY (audit 2026-11-25, defect 2): the sustain was meant to stop a pulse
+    of separate notes sounding choppy, but its effect was not measured; measured this way the
+    recipe beds read 4.6-4.8 dB, round 8's mim-r5 1.9, tale-r4 3.0, v1 mim 4.9 and round 7's
+    "choppy" mim-r3 4.3. Uncalibrated until the owner rates choppy/fine."""
+    t, v = momentary(y, hop=hop, win=win)
+    t1 = until if until else t[-1]
+    sel = (t >= t0) & (t <= t1)
+    t, v = t[sel], v[sel]
+    if len(t) < 4:
+        return 0.0, None
+    out = []
+    k = int(round(block / hop))
+    for i in range(0, len(v) - k + 1, k):
+        seg = v[i:i + k]
+        seg = seg[seg > -70]
+        if len(seg) >= 2:
+            out.append((float(seg.max() - seg.min()), float(t[i])))
+    if not out:
+        return 0.0, None
+    sw = np.array([a for a, _ in out])
+    w = max(out)
+    return round(float(np.median(sw)), 1), (round(w[0], 1), round(w[1], 1))
+
+
 def silences(y, t0, t1, thresh=-50.0):
     """Stretches between t0 and t1 where the music's momentary loudness is below `thresh` LUFS
     (no sound where music should be): [(start, end)]."""

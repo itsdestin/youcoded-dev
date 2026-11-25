@@ -16,6 +16,7 @@ The piano and synth code are copies of felt-and-pulse/src/instruments.py and
 playful-round2/blend/src/kit.py; the string code is playful-round2/chamber/src/strings.py.
 Changes are marked WHY.
 """
+import hashlib
 import os
 import re
 from functools import lru_cache
@@ -674,11 +675,63 @@ def string_note(sec, art, m, vel=0.6, dur=None, rr=0, release=0.18, attack=0.002
     r = near[rr % len(near)]
     x, rms = _str_pitched(r["path"], m - r["midi"])
     x = x * ((0.1 / max(rms, 1e-6)) * 10 ** ((vel - 0.7) * 18 / 20))
+    if art == "sus" and dur is not None and options.get("string_loop") == "on":
+        x = _loop_sustain(x, dur + release * 6, key=(r["path"], int(m)))
     if dur is not None:
         t = np.arange(len(x)) / SR
         x = x * np.where(t < dur, 1.0, np.exp(-(t - dur) / release))[:, None]
         x = x[: min(len(x), int((dur + release * 6) * SR))]
     return fade(x, fin=attack, fout=0.02)
+
+
+def _loop_sustain(x, need_s, key=(), xf=0.6):
+    """Extend a held (sustain) recording to `need_s` seconds by re-bowing its steady middle with
+    equal-power crossfades. WHY (audit 2026-11-25, defect 1): the VSCO sustain recordings run
+    7.5-15 s, and a held note was cut at the recording's length, so the "held strings" sustain
+    went silent after 8-11 s while its note log said it was still sounding (the sustain gauge
+    read 100 % over a hole). The steady part is taken from 1 s in (past the bow's start) to 0.6 s
+    before the recording's own end (before the bow leaves); each new pass starts at a seeded
+    point in it, so the joins do not repeat on a beat."""
+    need = int(need_s * SR)
+    if len(x) >= need:
+        return x
+    a, b = int(1.0 * SR), len(x) - int(0.6 * SR)
+    w = int(xf * SR)
+    if b - a < 3 * w:
+        return x                                  # too short to loop cleanly: leave as recorded
+    seg = x[a:b]
+    out = x[:b].copy()
+    k = 0
+    fin = np.sin(0.5 * np.pi * np.linspace(0, 1, w))[:, None]
+    fout = np.cos(0.5 * np.pi * np.linspace(0, 1, w))[:, None]
+    while len(out) < need:
+        d = hashlib.sha1(repr((key, k)).encode()).digest()
+        s0 = int(int.from_bytes(d[:4], "little") / 2 ** 32 * max(1, (len(seg) - 2 * w) // 2))
+        piece = seg[s0:]
+        out[-w:] = out[-w:] * fout + piece[:w] * fin
+        out = np.concatenate([out, piece[w:]])
+        k += 1
+    out = out[:need]
+    # WHY a slow level flattening (measured: a looped viola E-flat 3 swung -21.6 to -35.6 dB
+    # because its recording fades over 8 s and each pass jumps back to a louder point): a held
+    # layer must not swell and sag on its own; a 2-second RMS follower holds it at the steady
+    # part's median level, at most +-6 dB, from 1 s in (the bow's own start is left as played)
+    win = int(2.0 * SR)
+
+    def follow(z, mode):
+        # a moving RMS by cumulative sums (a 96000-tap convolution took minutes)
+        c = np.concatenate([[0.0], np.cumsum((z ** 2).mean(axis=1))])
+        if mode == "valid":
+            return np.sqrt((c[win:] - c[:-win]) / win)
+        i = np.clip(np.arange(len(z)) - win // 2, 0, len(z))
+        j = np.clip(np.arange(len(z)) + win // 2, 0, len(z))
+        return np.sqrt((c[j] - c[i]) / np.maximum(j - i, 1))
+    e = follow(out, "same") + 1e-9
+    tgt = float(np.median(follow(seg, "valid"))) + 1e-9
+    g = np.clip(tgt / e, 0.5, 2.0)
+    ramp = np.clip((np.arange(len(out)) - a) / SR, 0, 1)
+    out = out * (1 + (g - 1) * ramp)[:, None]
+    return out
 
 
 def pizz(sec, m, vel=0.5, rr=0):

@@ -106,6 +106,13 @@ class Section:
     fig_mask: Optional[str] = None   # 16 steps, x = play, . = rest (e.g. "x.xxx.x.x.xxx.x.")
     fig_mask_walk: tuple = (4, 1)    # (every N bars, flip K steps): the mask drifts slowly, seeded
     fig_bass: bool = False           # pedal mode: the chord's root, soft and held, at each chord change
+    # WHY fig_order (audit 2026-11-25, defect 3): the pool taken in its written order (B-flat G F
+    # E-flat) IS bar 1 of the tune, so the pulse played the tune's opening as a 2-bar loop (about
+    # 18 times in 36 s: round 6's "opening bar seven times" failure, in the background). "circle"
+    # returns to the pool's first note between the others (B-flat G B-flat F B-flat E-flat), the
+    # one-note circling the research describes (Quaeschning); "cell" is the written order.
+    # [OWNER] A/B through recipes.OWNER["fig_order"]; old pieces (None) keep "cell".
+    fig_order: Optional[str] = None  # "circle" | "cell"
     # WHY meter: fit_tempo may find that a weight-3 moment falls half a bar off the grid; the
     # composer's fix is ONE odd bar (2 or 3 beats) at least two bars before it (toolkit-plan a2).
     # Only a section of one bar with no tune may have one.
@@ -478,7 +485,10 @@ BUSES = ["lead", "sing", "double", "answer", "counter", "piano", "pizz", "bowed"
          # WHY (the rebuild, 2026-11-24): "pad" carries the sustain layer that sounds under everything
          # (bed.py; pad, held strings or pedalled ring) and "cycle" the short parts on unequal periods
          # (cycles.py), each on its own bus so the mix can set them (and send them to the echo) alone
-         "pad", "cycle"]
+         "pad", "cycle",
+         # WHY "ring" (audit 2026-11-25): the pedalled-piano sustain (bed sustain="ring") is a piano,
+         # not the saw pad; on the pad bus it took the pad's calibration, centre cut and echo
+         "ring"]
 TUNE_BUSES = ("lead", "sing", "double")
 FOREGROUND_BUSES = TUNE_BUSES + ("answer", "counter", "cycle")   # left out of the no-melody (bed) mix
 # The new buses' levels, hall/room sends and echo returns live in mix.py (TARGET, HALL, ROOM, ECHO)

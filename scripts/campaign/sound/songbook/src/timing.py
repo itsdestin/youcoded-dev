@@ -143,59 +143,74 @@ def pauses(speech, at_least=1.0):
 ON_WINDOW = (-0.015, 0.045)     # perceived onset vs frame that counts as ON (ITU BT.1359, EBU R37)
 
 
-def fit_tempo(hits, bpm_range=(100, 120), step=0.5, fps=30, top=3, ending_beats=4.0, rit=0.85, odd_bars=(0, 2, 3)):
+def fit_tempo(hits, bpm_range=(100, 120), step=0.5, fps=30, top=3, ending_beats=4.0, rit=0.85, odd_bars=(0, 1, 2, 3),
+              rits=None):
     """THE TEMPO FROM THE PICTURE. hits = [(seconds, weight, label)] (weight 3 = the peak and the
     logo, 1 = everything else; a narrator's phrase ends go in as weight-1 soft hits; a hit
-    labelled "logo" is the name). For every tempo in bpm_range (step 0.5) and every opening odd
-    bar (none, 2 or 3 beats: toolkit-plan a2), scores each hit by its error to the nearest
-    downbeat (weight 3) or half-beat (others). When the name is given, the tempo is first moved
-    to the one that lands the name exactly after a whole number of bars and the slowing ending
-    (that is what the tempo map will play), and every other hit is judged on that grid.
-    Returns the `top` best, each with the tempo to write, the odd bar, every hit's error in ms
-    and frames, and frames per beat at `fps`. A weight-3 hit is ON when the music is heard
-    between 15 ms early and 45 ms late."""
+    labelled "logo" is the name). THE PICTURE IS FIXED HERE: the editor's frames are the input and
+    the music is fitted to them.
+    Searched (toolkit-plan a2, d3, d4): every tempo in bpm_range (step 0.5); no odd bar, or ONE odd
+    bar of 1 (a pick-up), 2 or 3 beats at ANY bar (`odd_at`); and the ending's slowing, ending at
+    `rits` of the tempo (default 0.75, 0.8, 0.85; a short ending does not slow). Each hit is
+    scored by its error to the nearest downbeat (weight 3) or half-beat (others). When the name is
+    given, the tempo is moved to the one that lands it exactly after a whole number of bars and
+    the slowing ending (what the tempo map will play), and every other hit is judged on that grid.
+    WHY odd_at and the slowing searched (audit 2026-11-25, defect 9): with the odd bar fixed at
+    bar 1 a picture cut at 7.9 / peak 19.3 / logo 31.0 s had no fit within 100 ms of its peak; an
+    odd bar AFTER the peak moves the name without moving the peak, and a slower or faster
+    ending moves the name alone.
+    Returns the `top` best, each with the tempo to write (bpm, odd, odd_at, rit), every hit's
+    error in ms and frames, and frames per beat at `fps`. A weight-3 hit is ON when the music is
+    heard between 15 ms early and 45 ms late."""
+    from recipes import Grid
     hits = [(float(h[0]), float(h[1] if len(h) > 1 else 1.0), (h[2] if len(h) > 2 else "")) for h in hits]
     logo = next((h for h in hits if h[2] == "logo"), None)
-    xs = np.linspace(0, ending_beats, 401)
-    c = float(np.trapezoid(60.0 / rit_curve(xs / ending_beats, rit), xs))      # the ending's seconds x bpm
+    if rits is None:
+        rits = (1.0,) if rit >= 0.999 else (0.75, 0.8, 0.85)
     res = []
-    for odd in odd_bars:
-        for bpm0 in np.arange(bpm_range[0], bpm_range[1] + 1e-9, step):
-            bpm = float(bpm0)
-            n = None
-            if logo is not None:
-                n = max(1, round(((logo[0] - c / bpm) * bpm / 60.0 - odd) / 4.0))
-                bpm = (60.0 * (4 * n + odd) + c) / logo[0]
-                if not bpm_range[0] - 3 <= bpm <= bpm_range[1] + 3:
-                    continue
-            beat = 60.0 / bpm
-            cost, rows = (0.5 if odd else 0.0), []        # WHY 0.5: an odd bar only when it earns its place
-            for t, w, lab in hits:
-                if lab == "logo":
-                    rows.append(dict(t=t, label=lab, weight=w, err_ms=0.0, err_frames=0.0, bar=n + 1 + (1 if odd else 0),
-                                     beat=1, on=True, logo=True))
-                    continue
-                if w >= 3:
-                    # downbeats sit odd beats later than the plain 4-beat grid (the odd bar is bar 1)
-                    k = round((t - odd * beat) / (4 * beat))
-                    g = odd * beat + k * 4 * beat if (odd == 0 or k >= 0) else 0.0
-                else:
-                    k = round(t / (beat / 2))
-                    g = k * beat / 2
-                mv = g - t                                  # the grid point vs the frame: + = music late
-                pen = abs(mv) if ON_WINDOW[0] <= mv <= ON_WINDOW[1] else 3 * abs(mv)
-                cost += w * pen
-                hb = round((g - odd * beat) / (beat / 2))   # half-beats after the odd bar
-                bar = (1 if odd else 0) + 1 + hb // 8 if hb >= 0 else 1
-                rows.append(dict(t=t, label=lab, weight=w, err_ms=round(1000 * mv, 1), err_frames=round(mv * fps, 2),
-                                 bar=int(bar), beat=(1 + (hb % 8) / 2) if hb >= 0 else 1 + round(g / beat, 2),
-                                 on=ON_WINDOW[0] <= mv <= ON_WINDOW[1]))
-            res.append(dict(bpm=round(bpm, 2), odd=odd, bars=n, cost=round(cost, 4), rows=rows,
-                            frames_per_beat=round(fps * beat, 3), big_ok=all(r["on"] for r in rows if r["weight"] >= 3)))
+    for rv in rits:
+        xs = np.linspace(0, ending_beats, 401)
+        c = float(np.trapezoid(60.0 / rit_curve(xs / ending_beats, rv), xs))      # the ending's seconds x bpm
+        for odd in odd_bars:
+            for bpm0 in np.arange(bpm_range[0], bpm_range[1] + 1e-9, step):
+                bpm = float(bpm0)
+                n = None
+                if logo is not None:
+                    n = max(1, round(((logo[0] - c / bpm) * bpm / 60.0 - odd) / 4.0))
+                    bpm = (60.0 * (4 * n + odd) + c) / logo[0]
+                    if not bpm_range[0] - 3 <= bpm <= bpm_range[1] + 3:
+                        continue
+                beat = 60.0 / bpm
+                nb = n if n is not None else int(max(h[0] for h in hits) / (4 * beat)) + 2
+                for at in (range(1, nb + 2) if odd else (1,)):
+                    G = Grid(bpm, odd, at)
+                    downs = [G.start_beat(g) * beat for g in range(1, nb + 3)]
+                    # WHY 0.5 (+0.1 away from bar 1): an odd bar only when it earns its place, and a
+                    # pick-up at the start before one in the middle
+                    cost, rows = ((0.5 + (0.1 if at > 1 else 0.0)) if odd else 0.0), []
+                    for t, w, lab in hits:
+                        if lab == "logo":
+                            rows.append(dict(t=t, label=lab, weight=w, err_ms=0.0, err_frames=0.0,
+                                             bar=(n or 0) + 1 + (1 if odd else 0), beat=1, on=True, logo=True))
+                            continue
+                        if w >= 3:
+                            g = min(downs, key=lambda d: abs(d - t))
+                        else:
+                            g = round(t / (beat / 2)) * beat / 2
+                        mv = g - t                              # the grid point vs the frame: + = music late
+                        pen = abs(mv) if ON_WINDOW[0] <= mv <= ON_WINDOW[1] else 3 * abs(mv)
+                        cost += w * pen
+                        gb = G.bar_of_beat(g / beat + 1e-6)
+                        rows.append(dict(t=t, label=lab, weight=w, err_ms=round(1000 * mv, 1), err_frames=round(mv * fps, 2),
+                                         bar=int(gb), beat=round(1 + g / beat - G.start_beat(gb), 2),
+                                         on=ON_WINDOW[0] <= mv <= ON_WINDOW[1]))
+                    res.append(dict(bpm=round(bpm, 2), odd=odd, odd_at=(at if odd else None), rit=rv, bars=n,
+                                    cost=round(cost, 4), rows=rows, frames_per_beat=round(fps * beat, 3),
+                                    big_ok=all(r["on"] for r in rows if r["weight"] >= 3)))
     res.sort(key=lambda r: (not r["big_ok"], r["cost"]))
     out = []
     for r in res:
-        if all(abs(r["bpm"] - o["bpm"]) >= 1.0 or r["odd"] != o["odd"] for o in out):
+        if all(abs(r["bpm"] - o["bpm"]) >= 1.0 or r["odd"] != o["odd"] or r["rit"] != o["rit"] for o in out):
             out.append(r)
         if len(out) >= top:
             break
@@ -205,7 +220,9 @@ def fit_tempo(hits, bpm_range=(100, 120), step=0.5, fps=30, top=3, ending_beats=
 def fit_text(fits, fps=30):
     L = []
     for i, f in enumerate(fits):
-        L.append(f"  {i + 1}. write bpm={f['bpm']:g}" + (f", odd={f['odd']} (one {f['odd']}-beat bar first)" if f["odd"] else "")
+        L.append(f"  {i + 1}. write bpm={f['bpm']:g}"
+                 + (f", odd={f['odd']}, odd_at={f['odd_at']} (one {f['odd']}-beat bar as bar {f['odd_at']})" if f["odd"] else "")
+                 + (f", rit={f['rit']:g}" if f.get("rit", 1.0) < 0.999 else "")
                  + (f": {f['bars']} bars of 4 + the ending" if f["bars"] else "")
                  + f"; {f['frames_per_beat']:g} frames a beat at {fps} fps"
                  + ("" if f["big_ok"] else "  -- a weight-3 hit is off: move the picture to the grid, or accept it"))
@@ -218,16 +235,21 @@ def fit_text(fits, fps=30):
     return L
 
 
-def motion_grid(bpm, fps=30, start=0.0, length=60.0):
+def motion_grid(bpm, fps=30, start=0.0, length=60.0, odd=0, odd_at=1):
     """THE MOTION GRID for the editor: frames per beat, eighth and sixteenth, and every beat's
     frame. WHY: a move that lasts a beat (500 ms at 120) or an eighth (250 ms), staggered by a
     sixteenth, sits in the music's time without the music having to chase the picture."""
+    from recipes import Grid
     beat = 60.0 / bpm
     n = int((length - start) / beat) + 1
-    return dict(bpm=bpm, fps=fps, start_s=start, frames_per_beat=round(fps * beat, 4),
+    G = Grid(bpm, odd, odd_at)
+    # WHY through the grid: with an odd bar the bar lines after it move by its beats
+    bars = [G.start_beat(g) for g in range(1, n // 4 + 3)]
+    return dict(bpm=bpm, fps=fps, start_s=start, odd=odd, odd_at=(odd_at if odd else None),
+                frames_per_beat=round(fps * beat, 4),
                 frames_per_eighth=round(fps * beat / 2, 4), frames_per_sixteenth=round(fps * beat / 4, 4),
                 beat_frames=[round((start + k * beat) * fps, 2) for k in range(n)],
-                bar_frames=[round((start + 4 * k * beat) * fps, 2) for k in range(n // 4 + 1)])
+                bar_frames=[round((start + b * beat) * fps, 2) for b in bars if start + b * beat <= length])
 
 
 def card_hold(words):

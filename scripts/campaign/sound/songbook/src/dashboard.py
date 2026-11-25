@@ -28,13 +28,18 @@ from dsp import note
 # pad, K = a cycle (shown instead of "?")
 form.PART_LETTER.setdefault("pad", "U")
 form.PART_LETTER.setdefault("cycle", "K")
+form.PART_LETTER.setdefault("ring", "N")      # R is the air layer
 
 C5 = note("C5")
 VOICE = form.VOICE_RANGE                    # F3-E5
 ROUGH = (1, 11, 13)
 FG_BUSES = ("lead", "sing", "cycle", "answer", "counter")
-SUSTAIN_BUSES = ("pad", "bowed")
+SUSTAIN_BUSES = ("pad", "bowed", "ring")
 HARD_IDS = ("clipping", "silence", "clash", "narrator-masked", "length")
+# WHY REMOVED (audit 2026-11-25, defect 8; toolkit-plan e3): round 7's novelty quotas, which the
+# plan forbids under any name: "audio-nothing-new" (something new every 16 s) and "plateau" (a
+# level change every 30 s). They are no longer shown or counted anywhere.
+REMOVED = ("audio-nothing-new", "plateau")
 # older checks the dashboard measures in a new way (they are not shown twice)
 SUPERSEDED = {"chords-distinct": "chord-variety", "narrator-tempo": "narrator-tempo", "voice-busy": "voice-busy",
               "touch": "touch", "attack-rate": "attack-rate", "layers": "groups", "picture-sync": "picture-sync",
@@ -47,8 +52,13 @@ MIX_IDS = {"loudness": "mix-loudness", "mono": "mix-mono", "every tune note on t
            "no noise-like": "mix-no-drum-like", "air:": "mix-air-band", "low end:": "mix-low-end"}
 
 
-def _row(out, cid, group, value, target, ok, meaning, detail=""):
-    out.append(dict(id=cid, group=group, value=value, target=target, ok=bool(ok), meaning=meaning, detail=detail))
+def _row(out, cid, group, value, target, ok, meaning, detail="", calibrated=True):
+    """One gauge. calibrated=False: a reading only, shown with "~" and never as OUT. WHY (audit
+    2026-11-25, defect 8): ranges nobody has checked by ear (roughness, novelty, gap-fill) read
+    OUT on the approved logo itself, and composers pasted the same excuse into every piece; an
+    uncalibrated number is information, not something to explain away."""
+    out.append(dict(id=cid, group=group, value=value, target=target, ok=bool(ok) or not calibrated, meaning=meaning,
+                    detail=detail, calibrated=bool(calibrated), reading_in=bool(ok)))
 
 
 def _secs(band, e):
@@ -225,9 +235,26 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
             a, b = int(e["t"] * 10), int(min(land, e["t"] + _secs(band, e)) * 10)
             cov[max(0, a):max(0, b)] = 1
     share = float(cov[:max(1, int(land * 10))].mean())
-    _row(out, "sustain", "the bed", f"{100 * share:.0f} %", ">= 95 % to the name", share >= 0.95,
+    heard = None
+    stems = getattr(band, "stems", None)
+    if y is not None and stems:
+        # WHY from the audio as well (audit 2026-11-25, defect 1): the note log said the held
+        # strings sounded for 64 beats while their recording had stopped after 8-11 s; the gauge
+        # read 100 % over a hole. A 100 ms frame counts when the sustain buses sound within 30 dB
+        # of their own loudest second (a held layer fading in or out still counts).
+        sus = sum(stems[b] for b in SUSTAIN_BUSES if b in stems)
+        if np.abs(sus).max() > 1e-7:
+            from dsp import SR as _SR
+            h = int(0.1 * _SR)
+            nfr = int(land * 10)
+            e = np.array([np.sqrt(np.mean(sus[i * h:(i + 1) * h] ** 2)) for i in range(nfr)]) + 1e-12
+            ref = np.percentile(e, 95)
+            heard = float(np.mean(20 * np.log10(e / ref) > -30.0))
+    val = f"{100 * share:.0f} %" + (f" (heard {100 * heard:.0f} %)" if heard is not None else "")
+    worst = min(share, heard) if heard is not None else share
+    _row(out, "sustain", "the bed", val, ">= 95 % to the name", worst >= 0.95,
          "something held (pad, held strings, a pedalled chord) sounds under everything; without it a pulse of "
-         "separate notes sounds choppy between its notes")
+         "separate notes sounds choppy between its notes (written in the notes / heard in the audio)")
     pr = len({round(e["t"], 2) for e in pulse}) / t_body
     # WHY a lower band under a narrator (toolkit-plan a3, recipe C): there the pulse is "soft,
     # low-information", at most 3 struck notes a second in her range
@@ -287,7 +314,7 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
             for bus in on:
                 # in a bed piece the held strings play the pad's own voicing (bed.play), so they are
                 # the sustain made richer, one group, not a new part
-                if bus in ("pad",) or (bus == "bowed" and bl is not None):
+                if bus in ("pad", "ring") or (bus == "bowed" and bl is not None):
                     g.add("sustain")
                 elif bus == "bowed":
                     g.add("held")
@@ -300,18 +327,27 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
     _row(out, "groups", "how busy", groups_max, "<= 3 at once", groups_max <= 3,
          "how many groups sound together (sustain, pulse, held strings, tune and cycles as one); four is busy",
          f"most at bar {where[0]}: {', '.join(where[1])}" if where else "")
+    # WHY over 8-bar windows, not per section (audit 2026-11-25, defect 8): a 2-bar section after
+    # her last word that holds the tune's one phrase read 94 %; "rare" is about a stretch a
+    # listener hears as a passage, about 16 s at 120
+    body_rows = [r for r in rows if not r["ending"]]
+    cover = np.zeros(int(body_b * 4) + 1)
+    for e in fg:
+        a = int(e["beat"] * 4)
+        cover[a:a + max(1, int(e["dur"] * 4))] = 1
     duty = []
-    for p in plans[:-1]:
-        b0, b1 = p.beat0, p.beat0 + p.blen * len(p.bars)
-        cover = np.zeros(int((b1 - b0) * 4) + 1)
-        for e in fg:
-            if b0 <= e["beat"] < b1:
-                a = int((e["beat"] - b0) * 4)
-                cover[a:a + max(1, int(e["dur"] * 4))] = 1
-        duty.append((float(cover.mean()), p.sec.label))
+    W = min(8, len(body_rows))
+    for i in range(0, max(1, len(body_rows) - W + 1)):
+        if not body_rows:
+            break
+        b0 = body_rows[i]["beat"]
+        b1 = body_rows[min(len(body_rows) - 1, i + W - 1)]["beat"] + body_rows[min(len(body_rows) - 1, i + W - 1)]["blen"]
+        seg = cover[int(b0 * 4):int(b1 * 4)]
+        if len(seg):
+            duty.append((float(seg.mean()), f"bars {body_rows[i]['k']}-{body_rows[min(len(body_rows) - 1, i + W - 1)]['k']}"))
     dmax = max(duty) if duty else (0.0, "")
-    _row(out, "fg-duty", "how busy", f"{100 * dmax[0]:.0f} %", "<= 33 % of each section", dmax[0] <= 0.33 + 1e-9,
-         "how much of a section the tune and cycles fill; silence at least twice the sound keeps them rare",
+    _row(out, "fg-duty", "how busy", f"{100 * dmax[0]:.0f} %", "<= 33 % of any 8 bars", dmax[0] <= 0.33 + 1e-9,
+         "how much of the music the tune and cycles fill; silence at least twice the sound keeps them rare",
          f"fullest: {dmax[1]}")
     fgr = len(fg) / t_body
     worst = 0
@@ -364,8 +400,11 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
     distinct = len(set(seq))
     tri = [tuple(seq[i:i + 3]) for i in range(len(seq) - 2)]
     irr = len(set(tri)) / len(tri) if tri else 0.0
+    # WHY the run rule only from 6 changes (audit defect 8): with fewer changes almost every
+    # 3-chord run is new because the piece is short, not because the harmony wanders
+    runs_apply = len(seq) - 1 >= 6
     _row(out, "chord-variety", "harmony", f"{distinct} chords, {100 * irr:.0f} %", f">= {need} chords; 3-chord runs "
-         f"<= 55 % unique", distinct >= need and irr <= 0.55,
+         f"<= 55 % unique (from 6 changes)", distinct >= need and (irr <= 0.55 or not runs_apply),
          "a few chords that come back (not many): real music repeats its 3-chord runs; ~40 % unique is typical")
     bor = sorted({c for c in seq if c in T.BORROWED})
     _row(out, "borrowed", "harmony", len(bor), "<= 1 borrowed chord", len(bor) <= 1,
@@ -381,8 +420,20 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
 
     # ---------------- change
     ch = [c for c in (getattr(piece, "changes", None) or [])]
+    implicit = []
     if bl is not None:
-        times = sorted({round(bl.seconds(bl.bar_beat(int(c[0]))), 2) for c in ch if c[1] != "peak"})
+        # WHY (audit 2026-11-25, defect 5): a cycle the plan never brings "in" plays from the start;
+        # its first note is a change the listener hears (recipe B's cycle2 at 3.6 s, a novelty peak at
+        # 4.0 s) even though no entry names it, so it is counted here at its first note
+        named = {c[2] for c in ch if len(c) > 2 and c[1] == "in"}
+        for c in (getattr(piece, "cycles", None) or []):
+            if c.name and c.name not in named:
+                first = min((e["t"] for e in body if e["bus"] == "cycle" and e.get("cyc") == c.name), default=None)
+                if first is not None:
+                    implicit.append((round(first, 2), c.name))
+    if bl is not None:
+        times = sorted({round(bl.seconds(bl.bar_beat(int(c[0]))), 2) for c in ch if c[1] != "peak"}
+                       | {t for t, _ in implicit})
         per_bar = {}
         for c in ch:
             per_bar.setdefault(int(c[0]), []).append(c[1])
@@ -397,7 +448,9 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
             tgt = "one change every 8-16 s, one per bar line (two only at the peak)"
         _row(out, "change-plan", "change", f"{len(times)} at {times}", tgt, ok,
              "the bed evolves slowly: one small change every 8-16 s, never two at once except at the peak",
-             (f"gaps {[round(g, 1) for g in gaps]} s" if gaps else "") + (f"; crowded bars {crowded}" if crowded else ""))
+             (f"gaps {[round(g, 1) for g in gaps]} s" if gaps else "") + (f"; crowded bars {crowded}" if crowded else "")
+             + (f"; unplanned: {', '.join(f'{n} starts at {t} s' for t, n in implicit)} (bring it in with "
+                f"(bar, 'in', name))" if implicit else ""))
     events = []
     for c in sorted(set(seq) & T.BORROWED):
         k = next(r for r in rows if c in r["chords"])
@@ -539,8 +592,11 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
     if y is not None:
         import measure as M
         til, bands = M.tilt(y, until=land)
-        _row(out, "tilt", "touch and tone", f"{til:+.1f} dB/oct", "-5 to -8 dB an octave (125 Hz-8 kHz)",
-             -8.0 - 1e-9 <= til <= -5.0 + 1e-9,
+        # WHY -5 to -12 (audit 2026-11-25, defect 8): judged against the owner's own logo, which is
+        # what he chose: the piano logo reads -11 and the blend -3.9 over the whole file; -8 put his
+        # piano logo and recipe A (a soft pulse and a pad) out of range for being like the logo
+        _row(out, "tilt", "touch and tone", f"{til:+.1f} dB/oct", "-5 to -12 dB an octave (125 Hz-8 kHz; logo -11)",
+             -12.0 - 1e-9 <= til <= -5.0 + 1e-9,
              "how quickly the sound gets quieter going up: flatter is brighter (round 7, 'harsh': -2 to -3; "
              "a pop record about -5; the owner's piano logo -11)", f"octave bands re 125 Hz: {bands}")
         p1, p2 = M.presence(y, until=land)
@@ -549,17 +605,39 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
         nv, nt = M.novelty_peaks(y, until=land)
         planned = len([c for c in ch if c[1] != "peak"])
         _row(out, "novelty-peaks", "change", f"{len(nt)} at {nt[:8]}", f"<= {planned + 1} (planned changes + 1)",
-             len(nt) <= planned + 1, "moments where the sound turns into something else; more than planned reads as "
-             "choppy (calibration pending the owner's ratings)")
+             len(nt) <= planned + 1, "moments where the sound turns into something else; more than planned may read "
+             "as choppy (a reading: calibration waits for the owner's choppy/fine ratings)", calibrated=False)
         rr, rt = M.roughness(y, until=land)
-        _row(out, "roughness", "touch and tone", f"{rr:.2f}x", "<= 1.5x a plain triad (uncalibrated)", rr <= 1.5,
-             "beating between close notes (a grating, buzzy quality)", f"roughest at {rt} s")
+        # WHY against the logo (audit defect 8): the approved logo reads 1.88x (piano) and 1.98x
+        # (blend) a plain triad; 1.5x put the owner's own sound out of range
+        _row(out, "roughness", "touch and tone", f"{rr:.2f}x", "about the logo's 1.9-2.0x a plain triad",
+             rr <= 2.0, "beating between close notes (a grating, buzzy quality); a reading until the owner rates "
+             "harsh/fine", f"roughest at {rt} s", calibrated=False)
+        gf, gw = M.gap_fill(y, 1.0, land - 0.3)
+        _row(out, "gap-fill", "the bed", f"{gf:.1f} dB", "steadier is lower (round 8 mim-r5 1.9; round 7 'choppy' 4.3)",
+             gf <= 3.0, "how far the level dips between the pulse's notes, the median swing inside each half-second "
+             "(200 ms loudness): the held layer is there to fill those gaps; a reading until the owner rates "
+             "choppy/fine", (f"worst {gw[0]} dB at {gw[1]} s" if gw else ""), calibrated=False)
 
     # ---------------- the older checks and the mix checks, shown as gauges
+    v3 = getattr(piece, "style", "") == "v3"
+    fig_bass = any(getattr(p.sec, "fig_bass", False) for p in plans)
     for r in form_results:
-        if r["id"] in SUPERSEDED:
+        if r["id"] in SUPERSEDED or r["id"] in REMOVED:
             continue
-        _row(out, r["id"], "older checks", r["value"], r["limit"], r["ok"], r["why"])
+        ok, lim, why = r["ok"], r["limit"], r["why"]
+        # WHY per-recipe targets (audit 2026-11-25, defect 8): each of these read OUT on the recipes'
+        # own defaults, and every piece had to explain the same thing away
+        if r["id"] == "bass-moves" and fig_bass:
+            continue                              # the pulse's bass plays roots by design (fig_bass)
+        if r["id"] == "loudness-range" and v3:
+            # a ceiling only: a steady bed under a voice or a 12 s card barely moves (plan e3 forbids
+            # a minimum above 1.5-2 dB)
+            top = float(str(lim).split("-")[-1].split()[0])
+            ok, lim = float(r["value"]) <= top + 1e-6, f"<= {top:g} dB (a ceiling)"
+        if r["id"] == "cell-present" and getattr(piece, "recipe", "") == "type-short" and not ok:
+            ok, why = True, "recipe A may leave the tune out: in 10-20 s the logo is the one statement"
+        _row(out, r["id"], "older checks", r["value"], lim, ok, why)
     for name, ok in mix_tests:
         if name in MIX_HARD or name.startswith("logo played") or name.startswith("no logo"):
             continue
@@ -582,7 +660,9 @@ def text(name, hard_rows, dash_rows, piece):
         L.append(f"   {'ok  ' if r['ok'] else 'FAIL'} {r['id']:<17} {str(r['value']):>10}  {r['why']}")
     expl = getattr(piece, "explain", None) or {}
     outs = [r for r in dash_rows if not r["ok"]]
-    L.append(f"DASHBOARD {name}: {len(dash_rows) - len(outs)} in range, {len(outs)} out of range "
+    nread = sum(1 for r in dash_rows if not r.get("calibrated", True))
+    L.append(f"DASHBOARD {name}: {len(dash_rows) - len(outs) - nread} in range, {len(outs)} out of range, {nread} "
+             "readings (~, uncalibrated: information, nothing to explain) "
              "(gauges, never a failure: explain an out-of-range number in one line in Piece.explain, or change the "
              "music for a musical reason; never add or bend anything to move a number)")
     for g in GROUP_ORDER:
@@ -591,7 +671,7 @@ def text(name, hard_rows, dash_rows, piece):
             continue
         L.append(f"  [{g}]")
         for r in rs:
-            tag = " in " if r["ok"] else "OUT"
+            tag = ("~  " if not r.get("calibrated", True) else (" in " if r["ok"] else "OUT"))
             line = f"   {tag} {r['id']:<20} {str(r['value']):>18}  target {r['target']}"
             L.append(line)
             if r["meaning"] and g not in ("older checks", "mix"):

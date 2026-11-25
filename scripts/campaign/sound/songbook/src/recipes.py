@@ -35,7 +35,34 @@ OWNER = dict(
     under_voice="static",   # [OWNER] the music's tone under her: "static" (a fixed mid-only cut) | "follow" (a dip
                             #   that follows her words; NOT BUILT: his rule forbids it until he hears an A/B)
     chords="rich",          # [OWNER] "rich" (9ths, sus, add9) | "plain" (the same chords as triads and sevenths)
+    # [OWNER] the pulse's order (audit 2026-11-25, defect 3): "circle" (the pool's first note between
+    # the others, B-flat G B-flat F B-flat E-flat) | "cell" (the written order B-flat G F E-flat,
+    # which is bar 1 of the tune played as a 2-bar loop). WHY "circle" first: "cell" repeats the
+    # tune's opening ~18 times in 36 s, round 6's failure, and the research's source describes a
+    # pattern circling ONE note. Still his ear's call.
+    fig_order="circle",
+    # [OWNER] the sustain's level against the pulse, dB (audit defect 2): -8 (the plan's pad level,
+    # what the first examples used) | -4 | 0. WHY a switch: at -8 the level still swings 4.6-4.8 dB
+    # inside each half-second, as much as round 7's "choppy" mim (4.3); a louder pad fills the
+    # gaps between pulse notes but makes the bed thicker. Only his ear can set it.
+    pad_level=-8,
 )
+PAD_LEVELS = (-8, -4, 0)
+
+
+def sustain_mix(kind, pad_level=-8):
+    """Piece.mix trims for the sustain's bus: the [OWNER] pad_level (-8 = the calibrated pad
+    level, -4 / 0 louder by 4 / 8 dB) and, for held strings, the bowed bus brought down to the
+    pad's level. WHY (audit 2026-11-25, sketch of sustain=held): as the sustain, held strings
+    played at the bowed bus's own level (-25 LUFS, made for strings as an extra layer), 8 dB over
+    the pad (-33); the narrator's margin failed and the A/B compared a louder, brighter layer
+    rather than a different sustain. Both now sit at the same calibrated level."""
+    bus = {"pad": "pad", "ring": "ring", "held": "bowed"}.get(kind, "pad")
+    import mix as X
+    off = float(int(pad_level) + 8)
+    if bus != "pad":
+        off += X.TARGET["pad"] - X.TARGET[bus]
+    return {bus: off} if abs(off) > 1e-9 else {}
 
 
 def owner(over=None):
@@ -48,6 +75,10 @@ def owner(over=None):
                 raise KeyError(f"SONGBOOK_OWNER: unknown switch {k!r}; known: {', '.join(o)}")
             o[k] = int(v) if isinstance(OWNER[k], int) else v
     o.update(over or {})
+    if int(o["pad_level"]) not in PAD_LEVELS:
+        raise ValueError(f"pad_level {o['pad_level']!r}: one of {PAD_LEVELS} (dB against the pulse)")
+    if o["fig_order"] not in ("circle", "cell"):
+        raise ValueError(f"fig_order {o['fig_order']!r}: 'circle' or 'cell'")
     if o["under_voice"] != "static":
         raise NotImplementedError("under_voice='follow' is not built: the owner rules out an automatic dip on "
                                   "every word until he has heard an A/B (toolkit-plan b4)")
@@ -139,6 +170,62 @@ def land_after(bars, bpm, ending="sigh", odd=0, rit=None):
     return round((4 * bars + odd) * 60.0 / bpm + TempoMap._dur(L, L, bpm, bpm * r, RIT_Q), 3)
 
 
+class Grid:
+    """The piece's bar grid at the written tempo, with at most ONE odd bar (2 or 3 beats) at global
+    bar `odd_at` (1 = the first bar). Global bars count from 1 over the whole piece (the odd bar is
+    one of them; the ending bar is not); "body" bars are the 4-beat ones, indexed from 0.
+    WHY a class (audit 2026-11-25, defect 9): the odd bar could only be bar 1, so a weight-3
+    moment late in the film could not be landed by putting the odd bar after an earlier one;
+    every recipe now maps times and bars through this one grid."""
+
+    def __init__(self, bpm, odd=0, odd_at=1):
+        self.spb, self.odd = 60.0 / bpm, int(odd or 0)
+        self.at = int(odd_at or 1) if self.odd else None
+
+    def start_beat(self, g):
+        if not self.odd or g <= self.at:
+            return 4.0 * (g - 1)
+        return 4.0 * (g - 2) + self.odd
+
+    def bar_of_beat(self, b):
+        b = max(0.0, b)
+        if not self.odd:
+            return 1 + int(b // 4)
+        a = 4.0 * (self.at - 1)
+        if b < a - 1e-9:
+            return 1 + int(b // 4)
+        if b < a + self.odd - 1e-9:
+            return self.at
+        return self.at + 1 + int((b - a - self.odd) // 4)
+
+    def bar_of(self, t):
+        """The global bar (1-based) that a time falls in, at the nominal tempo."""
+        return self.bar_of_beat(t / self.spb)
+
+    def body(self, g):
+        """The body (4-beat) index of global bar g, or None for the odd bar."""
+        if not self.odd:
+            return g - 1
+        if g == self.at:
+            return None
+        return g - 1 if g < self.at else g - 2
+
+    def glob(self, i):
+        """The global bar of body index i."""
+        if not self.odd:
+            return i + 1
+        return i + 1 if i + 1 < self.at else i + 2
+
+    def halfbar(self, t):
+        """(body index * 2 + half) nearest time t, or None inside the odd bar."""
+        b = max(0.0, t / self.spb)
+        g = self.bar_of_beat(b)
+        i = self.body(g)
+        if i is None:
+            return None
+        return 2 * i + int(round((b - self.start_beat(g)) / 2.0))
+
+
 def _bars_to_land(land, bpm, ending, rit, odd):
     """How many 4-beat body bars fit before the name lands at this tempo, and how far the tempo
     must stretch to land it exactly (the tempo map does that; keep it under about 3 %)."""
@@ -151,41 +238,60 @@ def _bars_to_land(land, bpm, ending, rit, odd):
     return n, stretch
 
 
+def _from_brief(brief, subtle, peak, hits):
+    """WHY (audit 2026-11-25, defect 7): the recipes never read the Brief, so a brief marked
+    "subtle" still got the loud logo, and the worked example patched Piece.peak after building
+    (the same set-an-attribute-afterwards pattern that made a sketch switch do nothing). The
+    recipe's own arguments win; anything left out comes from the brief."""
+    if brief is not None:
+        if subtle is None:
+            subtle = (brief.feel == "subtle")
+        if peak is None:
+            peak = brief.peak()
+        if not hits:
+            hits = brief.hits()
+    return bool(subtle), peak, list(hits or [])
+
+
 def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, changes, cycles, peak, lift,
            seed, odd, logo, ending, loudness, touch, pulse, sustain_cfg, narration_bars=(), level=0.0,
            narr_level=-6.0, speech=None, hits=(), brief=None, notes="", o=None, rit=RIT, lead=0.8,
-           extra=None, explain=None, sound=None):
+           extra=None, explain=None, sound=None, odd_at=1, voice_mux=None):
     o = o or owner()
     n, stretch = _bars_to_land(land, bpm, ending, rit, odd)
+    G = Grid(bpm, odd, odd_at)
+    total = n + (1 if odd else 0)                 # global bars before the ending
+    if odd and not 1 <= G.at <= total:
+        raise ValueError(f"odd_at={odd_at}: the odd bar must be one of bars 1-{total}")
     chordbars = _chordlist(chords, n, default_chords, o["chords"] == "rich")
-    # tune bars are given as the piece's bars (an odd bar is bar 1); the bank lays them on the 4-beat bars
-    whole, tune_report = TB.lay([(b - (1 if odd else 0), ph) for b, ph in (tune or [])], chordbars, seed,
-                                shown_offset=1 if odd else 0)
-    # where sections must split: the lift, the settle after the peak, the narrator's spans
-    g0 = 1 if odd else 0                          # global bar number of body bar 1, minus 1
-    spb = 60.0 / bpm
-
-    def bar_of(t):                                # global bar (1-based) that a time falls in, at the nominal tempo
-        return 1 + int(max(0.0, t / spb - odd) // 4) + g0
+    # tune bars are given as the piece's (global) bars; the bank lays them on the 4-beat body bars
+    tb = []
+    for b, ph in (tune or []):
+        i = G.body(b)
+        if i is None:
+            raise ValueError(f"tune phrase at bar {b}: that is the odd bar (no tune may sit on it)")
+        tb.append((i + 1, ph))
+    whole, tune_report = TB.lay(tb, chordbars, seed, shown_offset=lambda i: G.glob(i - 1))
+    bar_of = G.bar_of
     peak_bar = bar_of(peak) if peak is not None else None
-    cuts = {1 + g0, n + g0 + 1}
+    cuts = {1, total + 1}
+    if odd:
+        cuts |= {G.at, G.at + 1}
     lift_bars, lift_db = (lift or (0, 0.0))
-    lv = {}                                       # global bar -> (level_db, narration, ramp bars)
+    lv = {}                                       # global bar -> (tag, ramp bars)
     if lift_db and peak_bar:
-        a = max(1 + g0, peak_bar - lift_bars)
-        z = min(n + g0, peak_bar + 2)
+        a = max(1, peak_bar - lift_bars)
+        z = min(total, peak_bar + 2)
         cuts |= {a, z}
         lv[a] = ("lift", lift_bars)
         lv[z] = ("settle", 2)
     for a, z in narration_bars:
-        cuts |= {max(1 + g0, a), min(n + g0 + 1, z)}
-    cuts = sorted(c for c in cuts if 1 + g0 <= c <= n + g0 + 1)
+        cuts |= {max(1, a), min(total + 1, z)}
+    cuts = sorted(c for c in cuts if 1 <= c <= total + 1)
     secs = []
-    if odd:
-        secs.append(Section("bed", 1, bpm=bpm, meter=int(odd), chords=[chordbars[0]], label="odd bar",
-                            into="flow", **pulse))
     state_db = level
     was_narr = False
+    spb = G.spb
     for a, z in zip(cuts[:-1], cuts[1:]):
         nb = z - a
         narr = any(x <= a < y for x, y in narration_bars)
@@ -198,7 +304,13 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
         if was_narr and not narr:
             rb = rb or 2                          # after her last word the music comes up over 2 bars
         was_narr = narr
-        body0 = a - g0 - 1                        # body bar index (0-based)
+        if odd and a == G.at:
+            # the odd bar: one bar of `odd` beats, no tune, the chord of the bar before it
+            secs.append(Section("bed", 1, bpm=bpm, meter=int(odd), chords=[chordbars[max(0, G.body(a - 1) or 0) if a > 1 else 0]],
+                                label=f"odd bar ({odd} beats, bar {a})", into="flow", narration=narr, level_db=db,
+                                **pulse))
+            continue
+        body0 = G.body(a)                         # body bar index (0-based)
         tsl = TB.slice_bars(whole, body0, nb)
         kw = dict(pulse)
         sec = Section("bed", nb, bpm=bpm, chords=chordbars[body0:body0 + nb], tune=[tsl] if tsl.notes else None,
@@ -210,14 +322,20 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
     # WHY the tune 2 dB under its bus's usual level (and lead 0.8): in a bed the tune is one voice
     # among the others; at full level each entry lifted the whole mix 3 dB for a bar and dropped
     # back (the first recipe B test), the "popping in and out" round 8 was criticised for
-    p = Piece(name, length, secs, logo=logo, seed=seed, land=land, peak=peak, ending=ending, rit=rit, mix={"lead": -2.0},
+    # WHY the sustain bus trim (audit defect 2, [OWNER] pad_level): -8 dB under the pulse is the
+    # calibrated level (mix.TARGET); -4 and 0 raise the sustain's bus by 4 and 8 dB
+    mixd = {"lead": -2.0, **sustain_mix(bed.get("sustain", "pad"), o["pad_level"])}
+    p = Piece(name, length, secs, logo=logo, seed=seed, land=land, peak=peak, ending=ending, rit=rit, mix=mixd,
               loudness=loudness, touch=touch, style="v3", bed=bed, changes=list(changes or []),
               cycles=list(cycles or []), hits=list(hits or []), recipe=recipe, brief=brief, owner=dict(o),
               speech=speech if speech is not None else [], notes=notes, explain=dict(explain or {}),
               sound=dict(sound or {}))
-    p.recipe_report = [f"RECIPE {recipe}: {n} bars of 4 at {bpm:g} bpm" + (f" + one odd bar of {odd}" if odd else "")
+    if voice_mux:
+        p.voice_mux = dict(voice_mux)
+    p.recipe_report = [f"RECIPE {recipe}: {n} bars of 4 at {bpm:g} bpm" + (f" + one odd bar of {odd} (bar {G.at})" if odd else "")
                        + f", the name at {land:g} s (the tempo map stretches {100 * stretch:+.1f} %"
-                       + (")" if abs(stretch) <= 0.03 else "; over 3 %: change bpm, add an odd bar or move the name)"),
+                       + (")" if abs(stretch) <= 0.03 else "; over 3 %: change bpm, add an odd bar or move the name)")
+                       + (f"; ending slows to {rit:g}" if ending != "short" else ""),
                        "   tune: " + ("; ".join(tune_report) if tune_report else "none (the pulse carries the cell)"),
                        "   owner switches: " + ", ".join(f"{k}={v}" for k, v in o.items())]
     if extra:
@@ -230,7 +348,7 @@ def _pulse(o, pool, mask, touch, step=0.5, bass=True, walk=(4, 1), pedal=False):
     """The pulse's section fields for the owner's pulse switch."""
     if o["pulse"] == "pedal":
         return dict(accomp="figure", fig_mode="pedal", fig_pedal=list(pool), fig_mask=mask, fig_touch=touch,
-                    step=step, fig_bass=bass, fig_mask_walk=walk, pedal=pedal)
+                    step=step, fig_bass=bass, fig_mask_walk=walk, pedal=pedal, fig_order=o["fig_order"])
     # round 8's chord-following figure, for the owner's A/B
     return dict(accomp="figure", fig_mode="chord", figure=["b 2 3 2 4 2 3 2", "b 2 3 2 4 3 2 3"], fig_floor="G3",
                 fig_touch=touch, step=step, pedal=pedal)
@@ -240,9 +358,9 @@ def _pulse(o, pool, mask, touch, step=0.5, bass=True, walk=(4, 1), pedal=False):
 
 
 def type_short(name, length, *, land, bpm=110.0, chords=None, tune=None, changes=None, cycles=None, peak=None,
-               lift=None, seed=1, odd=0, subtle=True, ending="short", pool=("Bb4", "G4", "F4", "Eb4"),
+               lift=None, seed=1, odd=0, odd_at=1, subtle=None, ending="short", pool=("Bb4", "G4", "F4", "Eb4"),
                mask="x.xxx.x.x.xxx.x.", touch=0.42, brief=None, hits=(), notes="", owner_over=None, explain=None,
-               sound=None):
+               sound=None, rit=None):
     """RECIPE A, type-only short (10-20 s): one unbroken, even phrase.
     tempo 100-120 (fit_tempo over the cards); 2 chords alternating, one per 2 bars (default
     Ebmaj9 - Abmaj9); the sustain from frame 0; the pedal pulse in eighths, 10 of 16 steps;
@@ -250,13 +368,14 @@ def type_short(name, length, *, land, bpm=110.0, chords=None, tune=None, changes
     cell); 0-1 change; no lift or at most 1.5 dB; the short ending; the quiet logo if subtle.
     Level -16.5 LUFS (subtle) or -15."""
     o = owner(owner_over)
+    subtle, peak, hits = _from_brief(brief, True if subtle is None and brief is None else subtle, peak, hits)
     return _build("type-short", name, length, land, bpm, chords=chords, default_chords=["Ebmaj9", "Abmaj9"],
                   tune=tune, changes=changes, cycles=cycles, peak=peak, lift=lift or (1, 0.0), seed=seed, odd=odd,
-                  logo="quiet" if subtle else "blend", ending=ending, loudness=-16.5 if subtle else -15.0,
+                  odd_at=odd_at, logo="quiet" if subtle else "blend", ending=ending, loudness=-16.5 if subtle else -15.0,
                   touch=0.85 if subtle else 0.92, pulse=_pulse(o, pool, mask, touch),
                   sustain_cfg=dict(sustain=o["sustain"], start=("sustain", "pulse")),
-                  hits=hits, brief=brief, notes=notes, o=o, rit=1.0 if ending == "short" else RIT, explain=explain,
-                  sound=sound)
+                  hits=hits, brief=brief, notes=notes, o=o,
+                  rit=(1.0 if ending == "short" else RIT) if rit is None else rit, explain=explain, sound=sound)
 
 
 # ---------------------------------------------------------------- Recipe B
@@ -269,9 +388,9 @@ DEMO_CYCLES = [Cycle("Bb5/0.5 G5/1", period=23, offset=5, name="cycle1"),
 
 
 def app_demo(name, length, *, land, bpm=116.0, chords=None, tune=None, changes=None, cycles=None, peak=None,
-             lift=(2, 2.5), seed=1, odd=0, subtle=False, ending="sigh", pool=("Bb4", "G4", "F4", "Eb4"),
+             lift=(2, 2.5), seed=1, odd=0, odd_at=1, subtle=None, ending="sigh", pool=("Bb4", "G4", "F4", "Eb4"),
              mask="x.xxx.x.x.xxx.x.", touch=0.40, brief=None, hits=(), notes="", owner_over=None, explain=None,
-             sound=None):
+             sound=None, rit=None):
     """RECIPE B, app demo, no narrator (30-75 s): the bed and a few rare tune phrases.
     tempo 104-120; one chord per 2 bars from the rich vocabulary (default Ebmaj9 Cm9 Abmaj9
     Bb9sus); the pad throughout, held strings may join at the peak; the pedal pulse (2.5-4
@@ -281,11 +400,13 @@ def app_demo(name, length, *, land, bpm=116.0, chords=None, tune=None, changes=N
     below); one lift of 2.5 dB over 2 bars into the peak, then settle; the full sigh + logo.
     The first 30 s must stand alone (it becomes the :30 cut-down). Level -15 LUFS."""
     o = owner(owner_over)
-    spb = 60.0 / bpm
+    subtle, peak, hits = _from_brief(brief, subtle, peak, hits)
+    rit = RIT if rit is None else rit
+    G = Grid(bpm, odd, odd_at)
     if peak is None:
         peak = round(land * 0.75, 2)
-    n, _ = _bars_to_land(land, bpm, ending, RIT, odd)
-    pb = 1 + int((peak / spb - odd) // 4) + (1 if odd else 0)
+    n, _ = _bars_to_land(land, bpm, ending, rit, odd)
+    pb = G.bar_of(peak)
     if tune is None:
         # WHY this shape (statement, answer, restatement, the peak): a phrase heard once and never
         # echoed or answered sounds "thrown in"; one answered, then said again, is a theme
@@ -298,34 +419,38 @@ def app_demo(name, length, *, land, bpm=116.0, chords=None, tune=None, changes=N
         if again + na <= pb - 2:
             tune.append((again, a))          # said again (it may come back mutated: tunebank.lay)
         tune.append((pb, top))
-        tune = [(b, ph) for b, ph in tune if 1 <= b <= n]
-    if changes is None:
-        changes = default_changes(land, bpm, peak, odd)
+        tune = [(b, ph) for b, ph in tune if 1 <= b <= n and G.body(b) is not None]
     if cycles is None:
         cycles = [Cycle(c.cell, c.period, c.offset, c.name, c.voice, c.touch, c.chance) for c in DEMO_CYCLES]
+    if changes is None:
+        changes = default_changes(land, bpm, peak, odd, odd_at, cycles=[c.name for c in cycles])
     return _build("app-demo", name, length, land, bpm, chords=chords,
                   default_chords=["Ebmaj9", "Cm9", "Abmaj9", "Bb9sus"], tune=tune, changes=changes, cycles=cycles,
-                  peak=peak, lift=lift, seed=seed, odd=odd, logo="quiet" if subtle else "blend", ending=ending,
-                  loudness=-16.0 if subtle else -15.0, touch=0.88, pulse=_pulse(o, pool, mask, touch),
+                  peak=peak, lift=lift, seed=seed, odd=odd, odd_at=odd_at, logo="quiet" if subtle else "blend",
+                  ending=ending, loudness=-16.0 if subtle else -15.0, touch=0.88, pulse=_pulse(o, pool, mask, touch),
                   sustain_cfg=dict(sustain=o["sustain"], start=("sustain", "pulse")),
-                  hits=hits, brief=brief, notes=notes, o=o, explain=explain, sound=sound)
+                  hits=hits, brief=brief, notes=notes, o=o, explain=explain, sound=sound, rit=rit)
 
 
-def default_changes(land, bpm, peak, odd=0):
+def default_changes(land, bpm, peak, odd=0, odd_at=1, cycles=("cycle1", "cycle2")):
     """A starting change plan for recipe B: one change about every 12 s (never closer than 8 or
     further than 16), the held strings joining at the peak. Cycles start OUT and come in one at a
-    time. Replace it with the picture's own turns."""
-    spb = 60.0 / bpm
-
-    def bar(t):
-        return 1 + int(max(0.0, t / spb - odd) // 4) + (1 if odd else 0)
+    time; a cycle the menu does not reach comes in at the peak. WHY every cycle brought in (audit
+    defect 5): a cycle the plan never names plays from the start, an unplanned change the
+    change-plan gauge could not see. Replace it with the picture's own turns."""
+    bar = Grid(bpm, odd, odd_at).bar_of
     pb = bar(peak)
     plan = []
-    menu = [("in", "cycle1"), ("in", "sub"), ("register", 1), ("in", "cycle2"), ("density", -2)]
+    cyc = list(cycles)
+    menu = ([("in", cyc[0])] if cyc else []) + [("in", "sub")] + [("in", c) for c in cyc[1:2]] + [("density", -2)]
     # evenly spaced from about 8 s to the peak, every gap 8-16 s
     k = max(1, int(np.ceil((peak - 8.0) / 14.0)))
     for i in range(min(k, len(menu))):
         plan.append((bar(8.0 + i * (peak - 8.0) / k),) + menu[i])
+    named = {c[2] for c in plan if len(c) > 2 and c[1] == "in"}
+    for c in cyc:
+        if c not in named:
+            plan.append((pb, "in", c))            # the peak is the one bar line that may carry two
     plan.append((pb, "in", "held"))
     plan.append((pb, "peak"))
     return plan
@@ -335,35 +460,37 @@ def default_changes(land, bpm, peak, odd=0):
 
 
 def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tune=None, changes=None,
-             cycles=None, peak=None, seed=1, odd=0, logo="blend", ending="sigh", pool=("Bb5", "G5", "F5"),
+             cycles=None, peak=None, seed=1, odd=0, odd_at=1, logo=None, ending="sigh", pool=("Bb5", "F5"),
              mask="x.x.x.x.x.x.xx.x", touch=0.26, whimsy=False, brief=None, hits=(), notes="", owner_over=None,
-             explain=None, sound=None, narr_level=-6.0):
+             explain=None, sound=None, narr_level=-6.0, subtle=None, voice_mux=None, rit=None):
     """RECIPE C, narrated story (30-75 s): a soft, low-information bed under her words.
     speech = films.speech_from_words(..., start_at=1-2 s of pre-roll). Tempo: her band
     (syllables x 60 / 3 to / 2), the value nearest 120 (timing.narrator_band). Chords change on
     her sentence ends (chords = one name per sentence, in order; default dark C-minor family
     turning bright at `turn` seconds, the problem-to-solution turn in her script), at most one
-    change per 1.5 s. Sustain >= 95 %. The pulse is soft and high (B-flat 5, G5, F5: above her
-    range F3-E5), 9 of 16 steps, never two rests running (about 2.2 attacks a second). One cycle at most, only in her pauses of
-    a second or more. The tune only in pauses that fit a whole phrase and after her last word.
+    change per 1.5 s. Sustain >= 95 %. The pulse is soft, high and nearly still under her words:
+    TWO notes (B-flat 5 and F5, above her range F3-E5), 9 of 16 steps, never two rests running
+    (about 2.2 attacks a second). One cycle at most, only in her pauses of a second or more. The
+    tune only in pauses that fit a whole phrase and after her last word.
     Level: one hand-set level under her words (default -6 dB), set by section, never moving with
-    her words. whimsy=True (storybook): a bell-like high double of the cell in a third of its
-    rounds."""
+    her words; after them -2 dB (present) or the same level (subtle). subtle (default from the brief's
+    feel) also gives the quiet logo and -16.5 LUFS. whimsy=True (storybook): a bell-like high
+    double (an octave up, very soft) of the tune's first phrase and every third one after. voice_mux = dict(path, t_from,
+    start_at, music_db) measures her margin over the music."""
     import films
     from timing import narrator_band, phrase_ends
     o = owner(owner_over)
+    subtle, peak, hits = _from_brief(brief, subtle, peak, hits)
+    rit = RIT if rit is None else rit
+    if logo is None:
+        logo = "quiet" if subtle else "blend"
     pace = films.speech_pace(speech, 0.0, land)
     if bpm is None:
         bpm = narrator_band(pace["syl_per_s"], o["narrator_tempo"])["bpm"] if pace else 116.0
-    spb = 60.0 / bpm
-    n, _ = _bars_to_land(land, bpm, ending, RIT, odd)
-
-    def bar(t):
-        return 1 + int(max(0.0, t / spb - odd) // 4) + (1 if odd else 0)
-
-    def halfbar(t):                               # (body bar index, half) nearest t
-        x = max(0.0, t / spb - odd) / 2.0
-        return int(round(x))
+    G = Grid(bpm, odd, odd_at)
+    n, _ = _bars_to_land(land, bpm, ending, rit, odd)
+    bar = G.bar_of
+    total = n + (1 if odd else 0)
     # chords on her sentence ends, snapped to the nearest half-bar, at most one per 1.5 s
     ends = [e for e in phrase_ends(speech) if e["kind"] == "sentence" and e["t"] < land - 2.0]
     dark = ["Cm9", "Abmaj9", "Fm9", "Cm11", "Abmaj9", "Bb9sus"]
@@ -385,8 +512,8 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
     last_t = -9.0
     placed = []
     for e, c in zip(ends, seq[1:] + ([seq[-1]] if seq else [])):
-        h = halfbar(e["t"])
-        if 0 < h < 2 * n and e["t"] - last_t >= 1.5 and halves[h] is None:
+        h = G.halfbar(e["t"])
+        if h is not None and 0 < h < 2 * n and e["t"] - last_t >= 1.5 and halves[h] is None:
             halves[h] = c
             last_t = e["t"]
             placed.append((round(e["t"], 2), h, c))
@@ -401,19 +528,19 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
     narr = []
     if words:
         a, z = bar(words[0][1]), bar(words[-1][2]) + 1
-        narr = [(a, min(z, n + 1 + (1 if odd else 0)))]
+        narr = [(a, min(z, total + 1))]
     if tune is None:
         # the tune only after her last word (the post-roll), as one phrase if it fits
         tune = []
         if words:
             b_after = bar(words[-1][2] + 0.3) + 1
-            if b_after <= n - 1:
-                tune.append((b_after, "cell-long" if b_after + 1 <= n else "cell"))
+            if b_after <= total - 1 and G.body(b_after) is not None:
+                tune.append((b_after, "cell-long" if b_after + 1 <= total else "cell"))
     if cycles is None:
-        cycles = [Cycle("G5/1 Bb5/1 F5/1", period=21, offset=4, name="cycle1", touch=0.24)]
-        if whimsy:
-            cycles.append(Cycle("Bb5/0.5 G5/0.5 F5/1", period=17, offset=9, name="bell", voice="bell",
-                                touch=0.2, chance=0.33))
+        # WHY these pitches (audit 2026-11-25, defect 5): the old cycle (G5 B-flat 5 F5) used the
+        # pulse's own notes in its own octave, so the two met in unison (both B-flat 5 at 1.49 s);
+        # G5 D5 E-flat 5 is a different shape on notes the pulse under her words does not play
+        cycles = [Cycle("G5/1 D5/1 Eb5/1", period=21, offset=4, name="cycle1", touch=0.24)]
     if changes is None:
         # WHY this default: the bed closes in a little as her problem deepens, the chords turn at
         # her turn, and once she stops the high pulse comes down to its usual register so the
@@ -426,12 +553,19 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
         if words:
             # once she has stopped, the pulse comes down to its usual place, under the tune
             changes.append((bar(words[-1][2]) + 1, "pool", ["Bb4", "G4", "F4", "Eb4"]))
+    # WHY no step when subtle (audit defect 7): after her last word the music rose 7.6 dB in 6 s
+    # (-18.8 to -11.2 LUFS) into the full logo, in a brief that asked for subtle; a 2 dB step still
+    # measured a 7.8 dB rise (the tune entering, the pulse coming down into the louder middle of
+    # the piano, the logo), so a subtle film keeps her level and lets the tune alone lift it
+    after_db = narr_level if subtle else -2.0
     p = _build("narrated", name, length, land, bpm, chords=chordbars, default_chords=None, tune=tune,
-               changes=changes, cycles=cycles, peak=peak, lift=None, seed=seed, odd=odd, logo=logo, ending=ending,
-               loudness=-16.0, touch=0.85, pulse=_pulse(o, pool, mask, touch, bass=True),
-               sustain_cfg=dict(sustain=o["sustain"], start=("sustain", "pulse"), cycle_pause=1.0),
-               narration_bars=narr, narr_level=narr_level, level=-2.0, speech=speech, hits=hits, brief=brief, notes=notes, o=o,
-               explain=explain, sound=sound)
+               changes=changes, cycles=cycles, peak=peak, lift=None, seed=seed, odd=odd, odd_at=odd_at, logo=logo,
+               ending=ending, loudness=-16.5 if subtle else -16.0, touch=0.85, pulse=_pulse(o, pool, mask, touch, bass=True),
+               sustain_cfg=dict(sustain=o["sustain"], start=("sustain", "pulse"), cycle_pause=1.0, whimsy=bool(whimsy)),
+               narration_bars=narr, narr_level=narr_level, level=after_db, speech=speech, hits=hits, brief=brief,
+               notes=notes, o=o, explain=explain, sound=sound, rit=rit, voice_mux=voice_mux,
+               # WHY a softer tune when subtle: the owner's ruling "subtle: fewer notes, softer touch"
+               lead=0.7 if subtle else 0.8)
     p.recipe_report.insert(1, "   her pace: " + (f"{pace['syl_per_s']} syllables a second; band "
                                                   f"{narrator_band(pace['syl_per_s'])['lo']}-{narrator_band(pace['syl_per_s'])['hi']} bpm; "
                                                   f"chosen {bpm:g} ({o['narrator_tempo']})" if pace else "no words"))

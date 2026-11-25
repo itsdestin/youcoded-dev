@@ -57,15 +57,18 @@ AIR_DB = O.DEFAULTS["air_db"]
 # WHY "pad" -33 and "cycles" -27 (2026-11-24, plan b3/c2): the pad is the bed, -30 to -36 LUFS
 # when exposed; the cycles are quiet colour, below the answer.
 TARGET = dict(lead=-19.0, sing=-17.5, double=-26.5, answer=-24.0, counter=-24.5, piano=-23.0, pizz=-23.5,
-              bowed=-25.0, air=-27.0, synth=-31.0, sub=-26.5, pad=-33.0, cycle=-27.0)
+              bowed=-25.0, air=-27.0, synth=-31.0, sub=-26.5, pad=-33.0, cycle=-27.0,
+              # WHY ring -33 (audit 2026-11-25): the pedalled-piano sustain is the same layer as the
+              # pad, so the owner's pad / held / ring A/B compares them at one level
+              ring=-33.0)
 HALL = dict(lead=0.24, sing=0.26, double=0.24, answer=0.26, counter=0.28, piano=0.22, pizz=0.30, bowed=0.32,
-            air=0.40, synth=0.28, sub=0.0, pad=0.32, cycle=0.34)
+            air=0.40, synth=0.28, sub=0.0, pad=0.32, cycle=0.34, ring=0.30)
 ROOM = dict(lead=0.10, sing=0.05, double=0.08, answer=0.10, counter=0.06, piano=0.10, pizz=0.10, bowed=0.03,
-            air=0.0, synth=0.05, sub=0.0, pad=0.0, cycle=0.08)
+            air=0.0, synth=0.05, sub=0.0, pad=0.0, cycle=0.08, ring=0.06)
 # echo return in dB below the bus (plan b4: -12 to -18); a piece may add or change any (Piece.echo,
 # {bus: dB or None}); the change plan's "echo" entries scale it over time (band.echo_curve)
 ECHO = dict(pad=-18.0, cycle=-14.0)
-PIANO_BUSES = ("lead", "double", "answer", "counter", "piano", "cycle")
+PIANO_BUSES = ("lead", "double", "answer", "counter", "piano", "cycle", "ring")
 
 # ---- fixed bus gains (option bus_gain="fixed")
 # Each bus is calibrated against a 4-second reference passage of its instrument at its usual
@@ -74,14 +77,15 @@ PIANO_BUSES = ("lead", "double", "answer", "counter", "piano", "cycle")
 # writing while a softer or louder passage than usual is now heard as softer or louder.
 REF = dict(lead=("piano", 0.60), double=("piano", 0.45), answer=("piano", 0.45), counter=("piano", 0.45),
            piano=("piano", 0.35), cycle=("piano", 0.40), pizz=("pizz", 0.50), bowed=("bowed", 0.50),
-           sing=("sing", 0.60), air=("air", 0.40), synth=("synth", 0.50), sub=("sub", 0.80), pad=("pad", 0.30))
+           sing=("sing", 0.60), air=("air", 0.40), synth=("synth", 0.50), sub=("sub", 0.80), pad=("pad", 0.30),
+           ring=("piano", 0.24))
 # WHY CAL (dB, measured 2026-11-24): the reference passages are not the songs. Over all 16 existing
 # pieces, the fixed gain differed from the old levelled gain by these medians (the lead's tune is
 # sparser than the reference, the air line far softer, ...). Adding them back makes ordinary writing
 # land where it always did, so only writing that departs from the usual (a softer phrase, a denser
 # figure) moves the level. pad/cycle are new (no history): 0.
 CAL = dict(lead=3.9, sing=-2.4, double=0.2, answer=2.1, counter=2.4, piano=-2.0, pizz=-1.0, bowed=-1.3,
-           air=14.7, synth=-2.6, sub=4.3, pad=0.0, cycle=0.0)
+           air=14.7, synth=-2.6, sub=4.3, pad=0.0, cycle=0.0, ring=0.0)
 
 
 @lru_cache(maxsize=None)
@@ -227,15 +231,17 @@ def mix(band, plans, piece, gains=None):
         if b in PIANO_BUSES and gains.get(b, 0.0):
             stems[b] = _piano_bus(stems[b], piece)
     n = len(next(iter(stems.values())))
-    if "pad" in stems and gains.get("pad", 0.0):
+    for sb in ("pad", "ring"):
+        if sb not in stems or not gains.get(sb, 0.0):
+            continue
         w = _narration_weight(plans, n)
         if w is not None:
             # WHY mid only (plan b3): the narrator sits in the centre; the pad's sides keep the
-            # bed's width while its centre makes room for her
+            # bed's width while its centre makes room for her (the ring sustain is the same layer)
             g = 10 ** (float(O.get("pad_centre_under_voice", piece)) * w / 20)
-            x = stems["pad"]
+            x = stems[sb]
             mid, side = (x[:, 0] + x[:, 1]) / 2 * g, (x[:, 0] - x[:, 1]) / 2
-            stems["pad"] = np.stack([mid + side, mid - side], axis=1)
+            stems[sb] = np.stack([mid + side, mid - side], axis=1)
     bpm = float(getattr(plans[0], "bpm", 0.0) or 0.0) if plans else 0.0
     hall_in = sum(stems[b] * HALL.get(b, 0.25) for b in BUSES)
     room_in = sum(stems[b] * ROOM.get(b, 0.05) for b in BUSES)

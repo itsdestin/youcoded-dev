@@ -125,23 +125,20 @@ _A_BRIEF = _R.Brief("type-only", 12.0, ("calm", "certain", "warm"), "subtle",
                     moments=[(6.545, "peak")], logo_at=_A_LAND,
                     cards=[(0.545, "your apps"), (3.273, "your rules"), (6.545, "yours")])
 RECIPE_A = _R.type_short(
-    "recipe-a-example", 12.0, land=_A_LAND, bpm=_A_BPM, seed=21, brief=_A_BRIEF, hits=_A_BRIEF.hits(),
-    # WHY these choices: two chords, one per 2 bars, the same top note (G) in both; no tune (the
-    # pulse already says B-flat G F all the time, and the logo is the one statement); one change:
-    # the pad opens a little for the last card
+    # the brief gives subtle (quiet logo, -16.5 LUFS), the peak and the hits
+    "recipe-a-example", 12.0, land=_A_LAND, bpm=_A_BPM, seed=21, brief=_A_BRIEF,
+    # WHY these choices: two chords, one per 2 bars, the same top note (G) in both; no tune (in
+    # 12 s the logo is the one statement); one change: the pad opens a little for the last card
     chords="Ebmaj9 Ebmaj9 Abmaj9 Abmaj9",
     changes=[(3, "brightness", 1.25)],
-    notes="Recipe A worked example: pad + pedal pulse, two chords, one change, the quiet logo.",
+    notes="Recipe A worked example: pad + circling pedal pulse, two chords, one change, the quiet logo.",
     # WHY these explanations (the dashboard rule: explain an out-of-range gauge, never bend the music)
-    explain={"tilt": "a soft felt pulse and a pad with no tune: darker than the target, about the owner's own "
-                     "piano logo (-11); for his ear, not a reason to brighten anything",
-             "roughness": "uncalibrated: every example reads 1.9-2.4x a plain triad; waits for the owner's ratings",
-             "cell-present": "recipe A has no tune on purpose: the pulse plays B-flat G F throughout, the logo is "
-                             "the one statement",
-             "loudness-range": "one even phrase with no lift (recipe A); the older 1.5 dB floor was set on longer pieces",
-             "level-rate": "the pulse stopping into the short ending (8 s); inside the bed the pad sits about 8 dB "
-                           "under the pulse, the plan's pad level: a balance for the owner's ear",
-             "mix-low-end": "no sub in a 12 s type-only short"})
+    explain={"tilt": "-12.2: a soft felt pulse and a pad with no tune, about the owner's own piano logo (-11); "
+                     "information for his ear, not a reason to brighten anything",
+             "level-rate": "the dip between the pulse's B-flat 4 (7.62 s) and F4 (8.16 s), a rest step, then the "
+                           "quiet logo rising: the pad at the plan's -8 dB does not fill that gap (gap-fill 5.1); "
+                           "the owner's pad_level A/B decides it",
+             "logo-gentle": "the quiet logo lands 1.0 dB over the last card's bar, exactly at the limit"})
 
 # ---- Recipe B: a 36 s app demo, cuts every 4 bars, the peak at bar 13, the full logo.
 _B_BPM = 116.0
@@ -150,29 +147,33 @@ _B_BRIEF = _R.Brief("app-demo", 36.0, ("bright", "easy", "capable"), "present",
                     moments=[(8.276, "the editor"), (16.552, "the theme"), (24.828, "peak")], logo_at=_B_LAND,
                     picture=[(0.0, "open"), (8.276, "the editor"), (16.552, "the theme"), (24.828, "it works")])
 RECIPE_B = _R.app_demo(
-    "recipe-b-example", 36.0, land=_B_LAND, bpm=_B_BPM, peak=24.828, seed=23, brief=_B_BRIEF,
-    hits=_B_BRIEF.hits(),
+    "recipe-b-example", 36.0, land=_B_LAND, bpm=_B_BPM, seed=23, brief=_B_BRIEF,
     # WHY: the bright vocabulary, one chord per 2 bars, every change keeping at least one note; a
     # second pass through the same four chords is the bed; the last pair turns to Ab/Bb for the lift
     chords="Ebmaj9 Ebmaj9 Cm9 Cm9 Abmaj9 Abmaj9 Bb9sus Bb9sus Ebmaj9 Ebmaj9 Cm9 Cm9 Abmaj9 Abmaj9 Ab/Bb",
     # the cell, then the cell again (the bank may vary its last note), and the peak phrase on the
     # payoff; bed alone for three bars between them
     tune=[(4, "cell"), (9, "cell"), (13, "from-top")],
-    cycles=[_Cy("Bb5/0.5 G5/1", period=23, offset=5, name="cycle1"),
-            _Cy("F5/1 D5/1", period=29, offset=14, name="cycle2", touch=0.26)],
-    # one change at each cut (8.3 s, 16.6 s) and the strings at the peak (24.8 s). WHY the sub at
-    # 16.6 s and not the pulse moving up: a step up there put the pulse (C5) above the cell's B-flat 4
-    changes=[(5, "in", "cycle1"), (9, "in", "sub"), (13, "in", "held"), (13, "peak")],
-    notes="Recipe B worked example: pad + pedal pulse + two co-prime cycles, three tune phrases, "
-          "a change at each cut, the strings and a 2.5 dB lift into the peak.",
-    explain={"chord-variety": "36 s is twice round four chords: every 3-chord run is new only because the piece "
-                              "is short",
-             "novelty-peaks": "the three tune entries and the lift each register as a turn besides the three "
-                              "planned changes; the gauge is not calibrated yet",
-             "roughness": "uncalibrated: every example reads 1.9-2.4x a plain triad; waits for the owner's ratings",
-             "bass-moves": "the pulse's bass plays each chord's root on purpose; the pad carries the inner motion",
-             "level-rate": "the level swings between pulse notes: the pad sits about 8 dB under the pulse (the "
-                           "plan's pad level, -30 to -36 LUFS); a balance for the owner's ear"})
+    # WHY these offsets: a cycle never sounds with a tune phrase, so its rounds are placed in the
+    # bed-alone bars (cycle1 at bars 5, 8 and 11; cycle2 after the peak, bar 14), where they ARE
+    # the variety; with the recipe's default offsets most rounds met a tune phrase and were left out
+    cycles=[_Cy("Bb5/0.5 G5/1", period=23, offset=13, name="cycle1"),
+            _Cy("F5/1 D5/1", period=29, offset=22, name="cycle2", touch=0.26)],
+    # one change at each cut (8.3 s: the first cycle; 16.6 s: the sub) and, at the peak (24.8 s),
+    # the strings and the second cycle (the peak is the one bar line that may carry two). WHY the
+    # second cycle at the peak and not at 16.6 s: brought in there, it met cycle1 in bar 11 and the
+    # foreground filled 43 % of bars 7-14 (two cycles in one bar between two tune phrases: busy).
+    # WHY every cycle brought in by name: one left out plays from the start, an unplanned change.
+    changes=[(5, "in", "cycle1"), (9, "in", "sub"), (13, "in", "held"), (13, "in", "cycle2"), (13, "peak")],
+    notes="Recipe B worked example: pad + circling pedal pulse + two co-prime cycles, three tune phrases, "
+          "a change at each cut, the strings, sub and a 2.5 dB lift into the peak.",
+    explain={"chord-variety": "36 s is twice round four chords plus the turn: with 7 changes nearly every 3-chord run "
+                              "is new because the piece is short, not because the harmony wanders",
+             "fg-duty": "bars 7-14 hold the restatement (bar 9), the peak phrase (bar 13) and three cycle rounds "
+                        "between them (40 %): recipe B's three phrases fall within 8 bars of each other in a "
+                        "36 s demo; over 60 s they spread out. For the owner's ear: two phrases may suit 36 s",
+             "level-rate": "the dip between two pulse notes at 11.7 s (a rest step): the pad at the plan's -8 dB "
+                           "does not fill it (gap-fill 4.3; 3.5 at pad_level -4); the owner's A/B"})
 
 # ---- Recipe C: a narrated stretch, the storybook voice from 0 to "...wonderful happened." with
 # 1.5 s of music before her first word; the turn at "However," (21.4 s in her file = 22.9 s here).
@@ -183,29 +184,28 @@ _VOICE = _os.path.normpath(_os.path.join(_os.path.dirname(_os.path.abspath(__fil
 _C_SPEECH = _sfw(_WORDS, 0.0, t_to=25.6, start_at=1.5)
 _C_LAND = _R.land_after(16, 120.0)          # her band's value nearest 120 is 120 itself
 RECIPE_C = _R.narrated(
+    # the brief gives subtle (the quiet logo, a 2 dB rise after her words, -16.5 LUFS) and the peak
     "recipe-c-example", 36.0, land=_C_LAND, speech=_C_SPEECH, turn=22.9, seed=25, whimsy=True,
     brief=_R.Brief("narrated", 36.0, ("storybook", "patient", "warm"), "subtle",
                    moments=[(22.9, "the turn"), (26.5, "peak")], logo_at=_C_LAND),
-    notes="Recipe C worked example: a soft high pulse under her words, dark chords on her sentence ends "
-          "turning bright at 'However,', one cycle in her long pauses, the tune after her last word.")
-RECIPE_C.voice_mux = dict(path=_VOICE, t_from=0.0, start_at=1.5, music_db=-10.0)
-RECIPE_C.explain = {
-    "fg-duty": "the 2-bar stretch after her last word holds the tune's one phrase; the gauge reads that "
-               "tiny section, not the piece",
-    "chord-variety": "four chord changes in 36 s (one per sentence): too few for 3-chord runs to repeat",
-    "change-plan": "her turn (22 s) and her last word (27 s) are 6 s apart; the pulse comes down when she stops",
-    "novelty-peaks": "her sentence-end chord changes register as turns; the gauge is not calibrated yet",
-    "roughness": "uncalibrated: every example reads 1.9-2.4x a plain triad; waits for the owner's ratings",
-    "narrator-chords": "chords can only change on a half-bar (1 s at 120): three of her sentence ends fall "
-                       "0.3-0.5 s from one (a known limit of the chord grid)",
-    "bass-moves": "the pulse's bass plays each chord's root on purpose; the pad carries the inner motion",
-    "top-voice": "the high pulse's last note rings an eighth into the tune's first (B-flat 4) as the pulse "
-                 "comes down",
-    "speech-covers": "a worked example cut at '...wonderful happened.': her story goes on in the film",
-    "level-rate": "the step from -6 dB under her words to -2 dB after them as the tune enters, plus the pad "
-                  "sitting about 8 dB under the pulse",
-    "mix-low-end": "no sub under her words (it enters only with the logo); nothing below E-flat 3 but the "
-                   "pulse's root"}
-RECIPE_C.peak = 26.5
+    voice_mux=dict(path=_VOICE, t_from=0.0, start_at=1.5, music_db=-10.0),
+    notes="Recipe C worked example: a soft two-note pulse high above her words, dark chords on her sentence "
+          "ends turning bright at 'However,', one cycle in her long pauses, a bell double of the cell, the "
+          "tune after her last word.",
+    explain={"change-plan": "her turn (22 s) and her last word (28 s) are 6 s apart, and the pulse comes down when "
+                            "she stops: both belong to her script, not to an 8-16 s clock",
+             "tilt": "-13.0: a two-note pulse high and very soft, a pad, and the quiet logo; darker than the "
+                     "owner's piano logo (-11). Information for his ear",
+             "narrator-chords": "chords can only change on a half-bar (1 s at 120): three of her sentence ends fall "
+                                "0.3-0.5 s from one (a known limit of the chord grid)",
+             "settle": "the bar before the ending holds the tune's last notes, their bell double and the pulse "
+                       "(9 notes); the quiet logo then lands alone",
+             "speech-covers": "a worked example cut at '...wonderful happened.': her story goes on in the film",
+             "level-rate": "the dip between two pulse notes at 6.3 s, then the chord change at 7 s (her sentence end) "
+                           "with its low root: the pad at -8 dB does not fill the gap (gap-fill 5.7)",
+             "logo-gentle": "the 'peak' (26.5 s) is her last words, under her at the hand-set -6 dB; the logo is the "
+                            "first thing heard without her, 4.5 dB over that bar",
+             "voice-steady": "bar 12 rises 2.9 dB under her words: her turn ('However,'), the bright E-flat chord "
+                             "struck with its low root; a planned chord change on her sentence end, not a swell"})
 
 DEMOS += [RECIPE_A, RECIPE_B, RECIPE_C]

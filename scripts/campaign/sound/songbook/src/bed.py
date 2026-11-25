@@ -118,6 +118,17 @@ class BedLine:
         """Is the layer at zero over the whole span [b, b + d] beats? (then nothing is placed)"""
         return all(self.gain(layer, x) <= 1e-3 for x in np.arange(b, b + d + 0.25, 0.5))
 
+    def first_on(self, layer, b, d):
+        """The first beat in [b, b + d) at which the layer is heard (the bar line its fade starts
+        on), or None. WHY (audit 2026-11-25, defects 1 and 11): a held line written from bar 1 for a
+        layer that fades in at bar 13 was struck at 0 s at zero level; the recording had died
+        long before the fade reached it (the peak's strings played 2 voices, not 3), and the note
+        log and bar table listed a note nobody hears. Notes now start where the layer does."""
+        for x in np.arange(b, b + d, 0.25):
+            if self.gain(layer, x) > 1e-3:
+                return float(max(b, x - 0.25)) if x > b else float(b)
+        return None
+
     def param(self, what, bar_no, default=0.0):
         """The pulse register (scale steps), density (steps), pad brightness (x) or echo at a bar:
         register/density add up, brightness multiplies, echo is the latest value."""
@@ -306,7 +317,9 @@ def play(band, plans, piece):
                 L[-1][2] = end - L[-1][0]
             else:
                 L.append([b, m, end - b])
-    sus_bus = {"pad": "pad", "ring": "pad", "held": "bowed"}[kind]
+    # WHY "ring" has its own bus (audit 2026-11-25): on the pad bus the pedalled piano took the
+    # saw pad's fixed-gain calibration, centre cut and echo; it is a piano and is set as one
+    sus_bus = {"pad": "pad", "ring": "ring", "held": "bowed"}[kind]
     cut = cfg.get("cutoff")
     if cut is None:
         try:                                     # the sound builder's pad colour (engine/options.py)
@@ -316,8 +329,10 @@ def play(band, plans, piece):
             cut = 900.0
     for v, L in lines.items():
         for i, (b, m, d) in enumerate(L):
-            if bl.silent("sustain", b, d):
+            b1 = bl.first_on("sustain", b, d)
+            if b1 is None:
                 continue
+            b, d = b1, d - (b1 - b)
             # WHY no overlap into a step: a voice moving by a semitone or tone (a suspension
             # resolving) hands over at the bar line; overlapped, the two notes rub
             nxt = L[i + 1][1] if i + 1 < len(L) else None
@@ -338,11 +353,11 @@ def play(band, plans, piece):
             if bl.silent("sustain", b, n) or b >= land:
                 continue
             for q, m in enumerate(sorted(ms)):
-                band.piano("pad", b + 0.03 * q, m, n, 0.24, tone=-0.3,
+                band.piano("ring", b + 0.03 * q, m, n, 0.24, tone=-0.3,
                            pedal=True, p=-0.05, role="sustain")
             if n >= 4:
                 for q, m in enumerate(sorted(ms)[-2:]):
-                    band.piano("pad", b + n / 2 + 0.03 * q, m, n / 2, 0.18,
+                    band.piano("ring", b + n / 2 + 0.03 * q, m, n / 2, 0.18,
                                tone=-0.3, pedal=True, p=-0.05, role="sustain")
     # 2. HELD STRINGS as an extra layer (over a pad or ring), and the SUB
     if bl.heard("held") and kind != "held":
@@ -357,16 +372,23 @@ def play(band, plans, piece):
                 else:
                     line.append([b, m, n])
             for b, m, d in line:
-                if bl.silent("held", b, d) or b >= land:
+                if b >= land:
                     continue
-                d = min(d, land - b)
+                b1 = bl.first_on("held", b, min(d, land - b))
+                if b1 is None:
+                    continue
+                d = min(d, land - b) - (b1 - b)
+                b = b1
                 band.bow("vla" if m < note("D4") else "vln", b, m, d + 0.15, 0.15, 0.15,
                          p=(-0.35, 0.35, 0.0)[v], bus="bowed", attack=min(1.0, band.secs(b, 2)), release=0.5)
     if bl.heard("sub"):
         for b, n, c, ms in bl.voicing:
-            if bl.silent("sub", b, n) or b >= land:
+            if b >= land:
                 continue
-            band.sub(b, note(T.V[c]["sub"]), min(n, land - b) - 0.05, 0.55, fin=0.0)
+            b1 = bl.first_on("sub", b, min(n, land - b))
+            if b1 is None:
+                continue
+            band.sub(b1, note(T.V[c]["sub"]), min(n, land - b) - (b1 - b) - 0.05, 0.55, fin=0.0)
     # 3. CYCLES
     # WHY whole phrases (toolkit-plan a3: "cycles count as one group with the tune: they never
     # sound in the same half-bar as a tune PHRASE"): a cycle note under a held tune note sat above
@@ -401,19 +423,49 @@ def play(band, plans, piece):
         near_peak=lambda b: peak_beat is not None and abs(b - peak_beat) < 1.0,
         pad=bl.pad_at,
         gain=bl.gain,
+        pulse=bl.pulse_at,
     )
     cyc = list(piece.cycles or [])
     for i, c in enumerate(cyc):
         if not c.name:
             c.name = f"cycle{i + 1}"
     notes, dropped = CY.placed(cyc, bl.end_beat, piece.seed, guards) if cyc else ([], [])
+    # WHY the cycle's index for its side (audit 2026-11-25, defect 4): hash(name) changes in every
+    # Python process (string hashing is randomised and `python -I` ignores PYTHONHASHSEED), so two
+    # renders of the same piece panned the cycles differently and were not repeatable
+    names = [c.name for c in cyc]
     for n in notes:
         m, touch = n["m"], n["touch"]
         tone = -0.3
         if n["voice"] == "bell":
             m, touch, tone = m + 12, touch * 0.8, -0.5
         band.piano("cycle", n["beat"], m, n["dur"], touch, tone=tone, pedal=False,
-                   p=(0.3 if hash(n["name"]) % 2 else -0.3), role="cycle")
+                   p=(0.3 if names.index(n["name"]) % 2 else -0.3), role="cycle")
+        band.log[-1]["cyc"] = n["name"]          # which cycle (the change-plan gauge reads it)
+    # WHIMSY (recipe C, storybook): a bell-like high double of the TUNE (toolkit-plan a3: "doubling
+    # the motif only, in <= 1/3 of its statements"), on the first of every three phrases, so at
+    # least the first. WHY a double of the tune and not a cycle (audit 2026-11-25, defect 5): as a
+    # cycle it could only speak in her pauses of a second or more and placed 0 notes in the worked
+    # example; the motif's own statements are where the plan puts it.
+    nwh = 0
+    if cfg.get("whimsy"):
+        tnotes = sorted((bar.beat + bb, int(m), d) for p in plans for bar in p.bars
+                        for bb, m, d, canon, _ in bar.tune if canon[0] != "logo")
+        phs, cur = [], []
+        for a, m, d in tnotes:
+            if cur and a - (cur[-1][0] + cur[-1][2]) > 1.0:
+                phs.append(cur)
+                cur = []
+            cur.append((a, m, d))
+        if cur:
+            phs.append(cur)
+        for k, ph in enumerate(phs):
+            if k % 3:
+                continue
+            for a, m, d in ph:
+                band.piano("double", a, m + 12, d, 0.18, tone=-0.5, pedal=False, p=0.25, role="double")
+                nwh += 1
+    info["whimsy"] = nwh
     info["cycles"] = dict(placed=len(notes), dropped=dropped, coprime=CY.coprime(cyc) if cyc else (True, []),
                           duty={c.name: round(c.duty(), 2) for c in cyc})
     # 4. THE FADES: each layer's bus follows the change plan (straight lines, never a switch)

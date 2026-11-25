@@ -17,9 +17,10 @@ Rules built in (not checks to pass, but how the engine plays):
     Eb F G Bb C D), so two cycles can never rub;
   * `chance` is decided once per time round (never per note): a round that is skipped is
     skipped whole, and the same seed always skips the same rounds;
-  * an onset is left out (not moved) when it falls in the same half-bar as a tune note, under
-    the narrator's words, within one beat of the peak, or where it would sit a semitone from
-    the pad below C5 - placed() returns what was left out and why;
+  * a whole ROUND is left out (never moved, never cut to a fragment) when any of its notes
+    sounds in a tune phrase's half-bars, under the narrator's words, within one beat of the
+    peak, a semitone from the pad below C5, or on the pulse's own key - placed() returns what
+    was left out and why;
   * `transpose_walk`: on return the cell may move one step along the pool, at most every third
     round (Chilvers' "Reflection" idiom).
 """
@@ -47,6 +48,7 @@ class Cycle:
     transpose_walk: bool = False
     unit: str = "half"                # "half" (half-beats) | "bar"
     pool: Optional[list] = None       # pitch classes allowed (names); default POOL
+    at_least: int = 0                 # rounds guaranteed to sound (chance-skipped rounds used first)
 
     def notes(self):
         """[(beat offset in the cell, midi, beats)]"""
@@ -115,22 +117,30 @@ def _pool_step(m, k, pool):
 
 
 def placed(cycles, end_beat, seed, guards, start_beat=0.0):
-    """Every cycle note to play, and every onset left out with its reason.
+    """Every cycle note to play, and every round left out with its reason.
     guards = dict of functions of a global beat:
-        tune_halfbar(beat) -> bool   a tune note starts in this half-bar
+        tune_halfbar(beat) -> bool   a tune phrase (with a beat around it) covers this half-bar
         speaking(beat)     -> bool   the narrator is speaking
         near_peak(beat)    -> bool   within one beat of the peak
         pad(beat)          -> [midi] the pad's notes sounding there
         gain(name, beat)   -> 0..1   the cycle's layer level (the change plan); 0 = out
+        pulse(beat)        -> [midi] (optional) the pulse's pool there
     Returns (notes, dropped): notes = [dict(name, beat, m, dur, touch, round)],
-    dropped = [dict(name, beat, m, why)]."""
+    dropped = [dict(name, beat, m, why)] (one entry per note of a dropped round).
+    WHY whole rounds (audit 2026-11-25, defect 5): guards used to drop single notes, so a 3-note
+    cell came out as 2 notes (G5 Bb5 with the F5 gone), a fragment that is neither the cell nor
+    silence. A round now plays whole or not at all; the reason is the first guard any of its
+    notes meets. A note SOUNDING into a tune phrase counts, not only one starting there (a cycle
+    B-flat 5 rang over the tune's first note)."""
     validate(cycles)
     notes, dropped = [], []
+    pulse = guards.get("pulse") or (lambda b: [])
     for ci, c in enumerate(cycles):
         name = c.name or f"cycle{ci + 1}"
         P, b0 = c.period_beats(), start_beat + c.offset_beats()
         k = 0
         shift = 0
+        rounds = []                              # (k, [(beat, mm, d)], why or None, chance_only)
         while b0 + k * P < end_beat - 1e-6:
             base = b0 + k * P
             # WHY decided once per round: a choice repeated exactly is a pattern; a choice per note
@@ -139,31 +149,57 @@ def placed(cycles, end_beat, seed, guards, start_beat=0.0):
             if c.transpose_walk and k and k % 3 == 0:
                 shift += 1 if _rng(seed, name, "walk", k) < 0.5 else -1
                 shift = int(np.clip(shift, -2, 2))
+            rn = []
             for off, m, d in c.notes():
                 beat = base + off
                 if beat >= end_beat - 1e-6:
                     continue
                 mm = _pool_step(m, shift, c.pool or POOL) if shift else m
-                why = None
+                rn.append((beat, mm, d))
+            why = None
+            for beat, mm, d in rn:
+                sounds = mm + (12 if c.voice == "bell" else 0)
                 g = guards["gain"](name, beat)
-                if not play:
-                    why = "chance (this round skipped)"
-                elif g <= 1e-3:
+                if g <= 1e-3:
                     why = "layer out (change plan)"
-                elif guards["tune_halfbar"](beat):
+                elif any(guards["tune_halfbar"](x) for x in np.arange(beat, beat + d + 1e-6, 0.5)):
                     why = "tune in this half-bar"
-                elif guards["speaking"](beat):
+                elif guards["speaking"](beat) or guards["speaking"](beat + d):
                     why = "under her words"
                 elif guards["near_peak"](beat):
                     why = "within a beat of the peak"
                 elif mm < note("C5") and any(abs(mm - q) in (1, 11, 13) for q in guards["pad"](beat) if q < note("C5")):
                     why = "a semitone from the pad"
+                elif sounds in pulse(beat):
+                    # WHY (audit defect 5): a cycle on the pulse's own key (both B-flat 5 at 1.49 s
+                    # in recipe C) is a doubling, a flam, not a second part
+                    why = "doubles a pulse note"
+                if why:
+                    break
+            if rn and not play and why is None:
+                rounds.append((k, rn, "chance (this round skipped)", True))
+            elif rn:
+                rounds.append((k, rn, why, False))
+            k += 1
+        # WHY at_least (audit defect 5: whimsy=True placed 0 bell notes): a colour the composer
+        # asked for is heard at least `at_least` times; rounds skipped only by chance are
+        # played instead, earliest first
+        played = sum(1 for r in rounds if r[2] is None)
+        need = int(getattr(c, "at_least", 0) or 0)
+        out_rounds = []
+        for r in rounds:
+            if r[2] is not None and r[3] and played < need:
+                r = (r[0], r[1], None, False)
+                played += 1
+            out_rounds.append(r)
+        for kk, rn, why, _ in out_rounds:
+            for beat, mm, d in rn:
                 if why:
                     dropped.append(dict(name=name, beat=round(beat, 3), m=int(mm), why=why))
-                    continue
-                notes.append(dict(name=name, beat=beat, m=int(mm), dur=d, touch=c.touch * g, round=k,
-                                  voice=c.voice))
-            k += 1
+                else:
+                    g = guards["gain"](name, beat)
+                    notes.append(dict(name=name, beat=beat, m=int(mm), dur=d, touch=c.touch * g, round=kk,
+                                      voice=c.voice))
     notes.sort(key=lambda n: n["beat"])
     return notes, dropped
 

@@ -44,6 +44,10 @@ DEFAULTS = dict(
     pad_cutoff=900.0,            # Hz, 24 dB/oct, key-tracked 50 %
     pad_attack=1.2,
     pad_release=2.2,
+    # WHY (audit 2026-11-25): a held string note longer than its recording (7.5-15 s) used to stop
+    # at the recording's end, leaving holes in the "held" sustain; "on" re-bows the steady middle
+    # with crossfades (sounds._loop_sustain) | "off" (the old cut, kept byte for byte in v1)
+    string_loop="on",
     # ---- mix (b4)
     bus_gain="fixed",            # "fixed": one calibrated gain per bus, written touch carries through |
                                  # "levelled": the old per-bus loudness levelling (TARGET while it plays)
@@ -65,7 +69,7 @@ PROFILES = {
     "v1": dict(air_db=11.0, air_policy="as-written", glue="legacy", piano_layers="switch", piano_even="off",
                piano_shine="as-written", piano_resonance="off", damper_thump="off", piano_bus_eq="off",
                bus_gain="levelled", reverb_lp=12000.0, reverb_hp=180.0, hall_predelay=0.022, echo="off",
-               voice_cut="stereo-dip"),
+               voice_cut="stereo-dip", string_loop="off"),
     "v2": dict(bus_gain="levelled"),
 }
 DEFAULTS["hall_predelay"] = "tempo"   # "tempo": 25 ms, opening toward 120 ms at or below 80 BPM | seconds
