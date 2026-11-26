@@ -658,8 +658,7 @@
           }
         }
       ],
-      "reopened": "You liked none of the first three layouts and found \"examples\" and \"pieces\" unclear.",
-      "reframed": "Renamed to components, surface templates and surfaces, and redrew every layout so its structure shows how they connect."
+      "resolved": "Stacks it is. Failed action is no longer a surface template: it is the error notice component (the red box with its buttons inside), which many surfaces use."
     },
     {
       "id": "K-2",
@@ -776,7 +775,70 @@
           }
         }
       ],
-      "reopened": "You found the earlier list too busy and repetitive."
+      "resolved": "Kept the one template line. The side panel it sits in is redrawn below, without the plain list and the empty space."
+    },
+    {
+      "id": "K-4",
+      "words": true,
+      "visual": true,
+      "surface": "Work board",
+      "path": "Surfaces tab → a surface",
+      "headline": "How should a surface's popup lay out its facts, without the empty space?",
+      "today": "The facts sit in a plain list down the right side: where it is, what it is for, kind, place, clicks, extras. Below them the panel is empty.",
+      "checked": "Opened the Close session surface's popup on the Work board 2026-11-25.",
+      "problem": "The list reads as plain text, and most of the right side is blank while the picture of the surface stays small.",
+      "proposal": "Facts become small labels in one row, and the template becomes a card with its picture. Drawn inside the real Work board; pictures are a month old, counts made up.",
+      "options": [
+        {
+          "id": "side-situations",
+          "label": "Situations in the side panel",
+          "recommended": true,
+          "picture": "pictures/kit3-Q3.png",
+          "summary": "Side panel: where it is, what it is for, the fact labels, the template card, then the list of situations filling the rest. The picture grows taller.",
+          "pros": [
+            "No empty space: the situations list fills the panel.",
+            "Biggest picture of the surface.",
+            "Everything about the surface sits in one column."
+          ],
+          "cons": [
+            "A long list of situations scrolls inside the panel.",
+            "Situations move from under the picture, where they are today."
+          ],
+          "reuse": {
+            "from": [
+              "Surfaces popup: header, arrows, picture, footer buttons",
+              "Fact labels as on cards",
+              "Filter pills as the situation rows"
+            ],
+            "new": [
+              "Template card with its picture"
+            ]
+          }
+        },
+        {
+          "id": "top-strip",
+          "label": "No side panel, facts on top",
+          "picture": "pictures/kit3-Q2.png",
+          "summary": "Facts in one strip above the picture, the template card at its right. The picture and the situations row use the full width.",
+          "pros": [
+            "Widest picture of the surface.",
+            "Situations stay under the picture, as today."
+          ],
+          "cons": [
+            "The picture is shorter, so tall surfaces show smaller.",
+            "A long job line or many labels can push the picture down."
+          ],
+          "reuse": {
+            "from": [
+              "Surfaces popup: header, arrows, picture, situations row, footer buttons",
+              "Fact labels as on cards"
+            ],
+            "new": [
+              "Template card with its picture"
+            ]
+          }
+        }
+      ]
     }
   ]
 }

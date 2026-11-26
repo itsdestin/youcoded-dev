@@ -8,7 +8,6 @@
     ['One-job popup', 'handle-prompt.jpg', 'A popup that does one thing.', ['Popup', 'Text box', 'Button'], ['handle-prompt.jpg', 'chat__model-picker__switch-model.jpg', 'chat__resume__pick-model.jpg'], 14],
     ['Popup with several groups', 'chat__close-session.jpg', 'Labelled cards, buttons pinned to the bottom.', ['Popup', 'Section label', 'Switch', 'Button'], ['chat__close-session.jpg', 'chat__close-session#note.jpg', 'settings__about.jpg'], 12],
     ['Detail page', 'marketplace__detail.jpg', 'Something you open from a card.', ['Popup', 'Status pill', 'Fact chip', 'Button'], ['marketplace__detail.jpg', 'marketplace__detail__bundle.jpg', 'marketplace__detail__connection.jpg'], 6],
-    ['Failed action', 'marketplace__detail__install#failed.jpg', 'A notice takes the buttons’ place.', ['Notice box', 'Fold row', 'Button'], ['marketplace__detail__install#failed.jpg', 'library#load-failed.jpg', 'library__themes#load-failed.jpg'], 9],
     ['Card grid', 'library.jpg', 'Things you open or install.', ['Card', 'Fact chip', 'Status pill'], ['library.jpg', 'library__themes.jpg', 'pages.jpg'], 7],
     ['Pick menu', 'chat__model-picker.jpg', 'A list that drops from a control.', ['Menu', 'Status pill'], ['chat__model-picker.jpg', 'chat__model-picker__fast-mode.jpg'], 23],
     ['First-time empty', 'library#empty.jpg', 'Nothing here yet, one button.', ['Card', 'Button'], ['library#empty.jpg', 'pages#empty.jpg'], 11],
