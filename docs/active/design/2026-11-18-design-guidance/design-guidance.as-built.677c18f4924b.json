@@ -1,0 +1,782 @@
+{
+  "title": "Design guidance rebuild",
+  "key": "design-guidance",
+  "out": "design-guidance.html",
+  "grows": true,
+  "tag": "feature",
+  "stage": "design",
+  "rounds_before": 0,
+  "retired": {},
+  "steps": [
+    {
+      "id": "PU-1",
+      "page": "What I understand you want",
+      "intro": "Mark each statement Holds or Fails. Add a note wherever my wording is off.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-1",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "The goal",
+      "headline": "The goal is new UI that a fresh agent gets right on the first try, with no rounds of correction.",
+      "changed": "Today a new screen usually takes several decks of fixes before it looks like YouCoded.",
+      "notice": "Success is measured by how often a first design comes back with no changes from you.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-2",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "Scope",
+      "headline": "This work covers the written and visual design guidance only, not the approval process or decks.",
+      "changed": "The deck and approval process is being redone in a separate session.",
+      "notice": "Problems I found with decks themselves (about 13% of your pushbacks: no picture, no context) get handed to that session, not fixed here.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-3",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "What goes wrong today",
+      "headline": "The biggest cause of misses is agents inventing their own version of something the app already has.",
+      "changed": "Six reviewers read about 1,145 of your pushbacks since August. Every one ranked this first: hand-made error boxes, buttons, cards, dropdowns, fades.",
+      "notice": "The fix usually landed only once you named the existing piece yourself, often after three to six rounds.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "Recorded as a rule for the rebuild: a new piece is allowed when nothing existing fits, but it is built from the app's parts and must look like a sibling of them, never out of place."
+    },
+    {
+      "id": "U-4",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "What goes wrong today",
+      "headline": "Written rules alone do not stick. Approved examples to copy and approved pictures to match would have prevented most misses.",
+      "changed": "About 60% of pushbacks pointed to a missing example or picture, 18% to a missing rule. Several mistakes kept happening after a rule existed, like buttons at the bottom-left.",
+      "notice": "The rebuild leads with things to copy and look at, and keeps rules short.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-5",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "The written guide",
+      "headline": "The written guide should be general rules plus pointers to real screens, not a description of every screen.",
+      "changed": "Your words from an earlier deck: \"this should be about more general rules/principles/design instructions that will apply when building new surfaces, with only pointers to existing surfaces to reference.\"",
+      "notice": "Today's guide is 935 lines. The rebuilt one is much shorter.",
+      "yes": "Holds",
+      "no": "Fails",
+      "resolved": "The rebuilt guide comes back to you on a deck to review before it replaces today's guide."
+    },
+    {
+      "id": "U-6",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "The visual kit",
+      "headline": "You want one visual reference you can point at: every building block, every ready-made example, every screen.",
+      "changed": "Nothing like this exists. Today there is an icon sheet, a status-pill sheet and an old August screenshot gallery.",
+      "notice": "You could say \"I want this popup, with that notice, and those buttons\" by pointing at named things.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-7",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "The visual kit",
+      "headline": "The kit is drawn by the app's real code, so it can never drift from what the app looks like.",
+      "changed": "The August screenshot gallery went out of date within weeks because it was pictures, not the real pieces.",
+      "notice": "Change a button in the app and the kit shows the new button automatically.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-8",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "Clean-up",
+      "headline": "Outdated and contradictory design docs get archived or fixed as part of this work.",
+      "changed": "Several docs disagree with each other or still describe rules you reversed, such as a filled \"Back to chat\" button.",
+      "notice": "One current source for each rule. Old records stay in the archive as history.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "PU-2",
+      "page": "What the rebuild includes",
+      "intro": "Scope questions, answered in words. How the kit looks comes later, as drawn designs.",
+      "stage": "understanding"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Visual kit",
+      "path": "How you open it",
+      "headline": "The kit is a YouCoded Page that updates itself. Should it be a new tab on the Work board, or its own page?",
+      "today": "The Work board is a YouCoded Page that redraws from the newest code each time you open it, and already has a Screens tab. Its screen pictures are from Oct 12 to 16 and have not refreshed since.",
+      "checked": "Read the Work board's page files and its Screens tab code 2026-11-18; the pictures were last committed 2026-10-16.",
+      "problem": "A Page cannot run the app's live pieces, so it shows pictures of them. Pictures go stale unless something retakes them, as the Screens tab shows.",
+      "proposal": "Either way: the page redraws from the newest code when opened, and its pictures, the kit's and the Screens tab's, are retaken automatically whenever a change to the app's look lands. Agents still copy the real code.",
+      "options": [
+        {
+          "id": "work-board-tab",
+          "label": "A tab on the Work board",
+          "recommended": true,
+          "summary": "A Design kit tab beside Screens. Each piece and example links straight to the screens that use it, in the same page.",
+          "pros": [
+            "One page for screens and pieces; \"where is this used\" is one click.",
+            "Uses the page you already open every day."
+          ],
+          "cons": [
+            "The Work board gets one more tab.",
+            "Only on your devices, like the Work board; not something other users get."
+          ]
+        },
+        {
+          "id": "own-page",
+          "label": "Its own page",
+          "summary": "A separate Design kit page in your Pages, linking out to the Work board's Screens tab.",
+          "pros": [
+            "Focused: nothing but design."
+          ],
+          "cons": [
+            "\"Where is this used\" jumps between two pages."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Visual kit",
+      "path": "What it holds",
+      "headline": "The Work board already shows every screen. Should the kit build on its Screens tab instead of a second gallery?",
+      "today": "The Work board's Screens tab shows every photographed screen, grouped by kind, with search, filters and click paths. It does not say which pieces each screen uses.",
+      "checked": "Read the Screens tab code 2026-11-18: it groups by screen kind and place, with no link to shared pieces.",
+      "problem": "A second screen gallery would duplicate it. But to see where a button or error box is used, screens need to know their pieces.",
+      "proposal": "Pieces and examples are built first, together. Then screens and pieces get linked both ways.",
+      "options": [
+        {
+          "id": "extend-screens",
+          "label": "Extend the Screens tab",
+          "recommended": true,
+          "summary": "Each screen gains its list of pieces and examples, worked out automatically when it is photographed; each piece links back. Its pictures start refreshing automatically too.",
+          "pros": [
+            "No duplicate gallery.",
+            "Answers \"where is this used\" from either side."
+          ],
+          "cons": [
+            "Touches the Work board's existing tab, so it comes back to you on a deck."
+          ]
+        },
+        {
+          "id": "no-screens",
+          "label": "Leave screens out",
+          "summary": "The kit shows pieces and examples only; each lists screen names, not pictures.",
+          "pros": [
+            "Smaller; the Work board is untouched."
+          ],
+          "cons": [
+            "No pictures of where a piece is used, and the Screens tab stays stale."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "L-1",
+      "words": true,
+      "surface": "Visual kit",
+      "path": "Ready-made examples",
+      "headline": "The first ready-made examples, picked from the mistakes you corrected most often",
+      "calls": [
+        {
+          "id": "ex-one-job",
+          "call": "One-job popup",
+          "why": "A small popup that does one thing, one card holding its words, box and stacked buttons. Took six decks to settle.",
+          "more": {
+            "today": "Each new small popup was laid out differently.",
+            "problem": "Grey hint placement and button position were corrected again and again.",
+            "change": "One approved example every new small popup copies."
+          }
+        },
+        {
+          "id": "ex-notice",
+          "call": "Notice and error box",
+          "why": "The one tinted box, its sentence, a Details fold, buttons inside at the right. Hand-made versions were corrected about 20 times.",
+          "more": {
+            "today": "Agents kept drawing their own warning and error boxes.",
+            "problem": "You had to say \"use the existing style\" in many decks.",
+            "change": "Info, warning, error and unknown-error versions to copy."
+          }
+        },
+        {
+          "id": "ex-failed-action",
+          "call": "Failed action",
+          "why": "When Send, Install or Download fails: the notice takes the buttons' place and keeps what you wrote.",
+          "more": {
+            "today": "Failures were drawn differently on each screen.",
+            "problem": "Retry above the details, two light buttons, no main button.",
+            "change": "One example of a failure replacing its buttons."
+          }
+        },
+        {
+          "id": "ex-button-rows",
+          "call": "Button rows",
+          "why": "One, two and three buttons: side by side, stacked, red confirm, costs money. Bottom-left buttons were corrected in about ten decks.",
+          "more": {
+            "today": "Button placement is described in words only.",
+            "problem": "Filled buttons kept landing at the bottom-left or unbalanced.",
+            "change": "Every approved arrangement shown, wide and narrow."
+          }
+        },
+        {
+          "id": "ex-settings-group",
+          "call": "Settings group",
+          "why": "A small label over one card of rows with switches, a fold-out row and a full-width follow-up button.",
+          "more": {
+            "today": "Settings screens were rebuilt by hand each time.",
+            "problem": "Bare text on the popup, boxes in boxes, folds opening a separate card.",
+            "change": "One assembled group to copy."
+          }
+        },
+        {
+          "id": "ex-multi-group-popup",
+          "call": "Popup with several groups",
+          "why": "Labelled cards, the body scrolling under a fade, buttons pinned to the bottom line.",
+          "more": {
+            "today": "Close session and Submit a ticket do this, but nothing points to them as the pattern.",
+            "problem": "Buttons ended up under the last card or inside it.",
+            "change": "One example with the pinned bottom line."
+          }
+        },
+        {
+          "id": "ex-detail-page",
+          "call": "Detail page",
+          "why": "Something you open from a card: top card with name, status, chips and actions, then two columns.",
+          "more": {
+            "today": "Only the Marketplace detail pages follow it.",
+            "problem": "New detail views kept inventing their own layout.",
+            "change": "One example any new detail view copies."
+          }
+        },
+        {
+          "id": "ex-card-grid",
+          "call": "Card grid",
+          "why": "Raised cards for things you open or install: name and status, one chip row that scrolls sideways, two lines of description.",
+          "more": {
+            "today": "Your Library is the reference.",
+            "problem": "Chips of different sizes, wrapping chip rows, flat cards.",
+            "change": "One example card and grid."
+          }
+        },
+        {
+          "id": "ex-menus-lists",
+          "call": "Menus and pick lists",
+          "why": "The small menu under a control, a dropdown, a quick picker with search, and a list's manage row at the foot.",
+          "more": {
+            "today": "Several hand-made popovers still exist.",
+            "problem": "Menus with their own shape, transparent menus, missing fades.",
+            "change": "One example of each list kind."
+          }
+        },
+        {
+          "id": "ex-empty-loading",
+          "call": "Empty, loading and full-screen error",
+          "why": "First-time card with one button, the quiet nothing-picked line, the loading line, and a whole screen that cannot load.",
+          "more": {
+            "today": "These exist as pieces but not shown in place.",
+            "problem": "Empty screens with a small notice at the top, dead-end error states.",
+            "change": "Each state shown in a real screen frame."
+          }
+        },
+        {
+          "id": "ex-chips-pills",
+          "call": "Chips, pills and tags in a row",
+          "why": "Status pills with dots, fact chips, tags and filter chips beside a search box, all the same height.",
+          "more": {
+            "today": "Each is a separate piece.",
+            "problem": "Mismatched heights and roundness, text sitting too high beside a dot, corrected over several decks.",
+            "change": "One example lining them up together."
+          }
+        },
+        {
+          "id": "ex-side-panel",
+          "call": "Side panel and full screen",
+          "why": "Which surface a new feature uses: top-bar button opens a panel or full screen, popups only from Settings or a status chip.",
+          "more": {
+            "today": "The rule exists in words.",
+            "problem": "Wrong surface was one of the most common arrangement misses.",
+            "change": "One example of each, with where each opens from."
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Design guide",
+      "path": "The written guide",
+      "headline": "What should happen to today's written design guide?",
+      "today": "The guide is 935 lines: nine principles, recipes for every kind of element, sections describing seven unreviewed screens, and 22 open questions.",
+      "checked": "Read in full 2026-11-18.",
+      "problem": "Agents read it and still guess what the words look like. The screen-by-screen descriptions are what you said the guide should not be.",
+      "proposal": "Pick what the written guide becomes once the kit exists.",
+      "options": [
+        {
+          "id": "shrink",
+          "label": "Short guide that points at the kit",
+          "recommended": true,
+          "summary": "Principles, a 'which example do I use' table, a short wording guide, and pointers into the kit. Screen descriptions move to their own notes.",
+          "pros": [
+            "Quick to read; every rule has a picture beside it in the kit.",
+            "One place for each rule."
+          ],
+          "cons": [
+            "Rewording 935 lines takes care not to lose a decision."
+          ]
+        },
+        {
+          "id": "keep-add",
+          "label": "Keep it, add kit links",
+          "summary": "Leave the guide as is and link each recipe to its kit example.",
+          "pros": [
+            "Nothing you approved is reworded."
+          ],
+          "cons": [
+            "Stays long; agents still read prose first."
+          ]
+        },
+        {
+          "id": "kit-only",
+          "label": "Kit replaces it",
+          "summary": "Rules live only as captions in the kit; no separate written guide.",
+          "pros": [
+            "Nothing to keep in sync."
+          ],
+          "cons": [
+            "Rules that are not about one piece have nowhere obvious to live."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Open questions",
+      "headline": "When should the guide's 22 open questions be answered?",
+      "today": "The guide lists 22 questions you have not ruled on, such as where buttons sit beside text and how multi-step popups show their steps.",
+      "checked": "Counted in the guide 2026-11-18; numbered Q1 to Q23 with no Q10.",
+      "problem": "These are exactly where agents guess. About 18% of pushbacks were a case no rule covered.",
+      "proposal": "Pick when to settle them.",
+      "options": [
+        {
+          "id": "as-needed",
+          "label": "As each example needs them",
+          "recommended": true,
+          "summary": "Each question is asked with pictures when the example it affects is designed.",
+          "pros": [
+            "You decide with pictures, not words.",
+            "No long question deck up front."
+          ],
+          "cons": [
+            "Questions no example touches stay open longer."
+          ]
+        },
+        {
+          "id": "all-now",
+          "label": "All now",
+          "summary": "One or two decks answer all 22 before the kit is built.",
+          "pros": [
+            "Everything settled early."
+          ],
+          "cons": [
+            "Many would be words-only, which you said is hard to judge."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Automatic checks",
+      "headline": "Should automatic checks catch the mistakes you corrected most often?",
+      "today": "Some checks exist: hand-made popups, notice boxes and toggles fail the build. Button placement, lines across boxes and chip heights are not checked.",
+      "checked": "Checked the app's check rules and tests 2026-11-18.",
+      "problem": "Buttons at the bottom-left and hand-styled buttons kept coming back even after you ruled on them.",
+      "proposal": "Add checks for the repeat mistakes that can be measured. You would never see them, only fewer misses.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Add them",
+          "recommended": true,
+          "summary": "Checks for filled buttons at the bottom-left, lines across boxes, hand-styled buttons and mismatched heights in a row.",
+          "pros": [
+            "A repeat mistake is stopped before you ever see it."
+          ],
+          "cons": [
+            "Some extra build time; a check may need tuning if it flags a fine design."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "Not now",
+          "summary": "Rely on the kit and the guide.",
+          "pros": [
+            "Less to build."
+          ],
+          "cons": [
+            "Repeat mistakes still reach you sometimes."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Wording",
+      "headline": "Should the guide include a short wording guide?",
+      "today": "Wording rules are scattered: sentence case, Try again, plain words. Too-long or jargon copy was about 14% of pushbacks.",
+      "checked": "From the deck history analysis, 2026-11-18.",
+      "problem": "Agents kept adding grey helper text, duplicate headings and words like \"bookkeeping\" or \"join\".",
+      "proposal": "A one-page wording guide: good and bad examples, a word budget per kind of text, and a list of words to avoid.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Include it",
+          "recommended": true,
+          "summary": "Short, with real before and after examples from your decks.",
+          "pros": [
+            "Fewer rounds on copy."
+          ],
+          "cons": [
+            "Wording is still edited on real screens last; this only makes the first try better."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "Leave wording out",
+          "summary": "Keep wording to the final pass on real screens.",
+          "pros": [
+            "Smaller rebuild."
+          ],
+          "cons": [
+            "Copy keeps coming back long."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Pages kit",
+      "path": "Pages people build",
+      "headline": "Should the kit for Pages (apps people build in YouCoded) share the same examples?",
+      "today": "Pages have their own style kit that copies some app pieces by hand. You asked on Oct 8 for it to be \"directly tied to the real app ui\".",
+      "checked": "Card 90 and the decisions log, read 2026-11-18.",
+      "problem": "Two separate kits drift apart, and Pages guidance falls behind the app.",
+      "proposal": "Decide whether Pages join this rebuild now or later.",
+      "options": [
+        {
+          "id": "later",
+          "label": "Later, on its own",
+          "recommended": true,
+          "summary": "Build the app kit first; Pages adopt its examples in a follow-up.",
+          "pros": [
+            "This work stays focused.",
+            "Pages get examples that are already approved."
+          ],
+          "cons": [
+            "Pages guidance stays behind a little longer."
+          ]
+        },
+        {
+          "id": "now",
+          "label": "Include now",
+          "summary": "Every example also comes in a Pages version.",
+          "pros": [
+            "One kit for both from the start."
+          ],
+          "cons": [
+            "Roughly doubles the example work."
+          ]
+        }
+      ],
+      "resolved": "Noted on card 90 (Pages): once this kit exists, the Pages kit is rebuilt from its approved examples and reusable pieces."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Brand",
+      "path": "First-run setup and YouCoded themes",
+      "headline": "Should brand mismatches in the app be fixed in this work?",
+      "today": "The app's YouCoded themes still use the old purple, and setup still says \"agents for everyone\", a line the brand guide retired.",
+      "checked": "The brand guide lists both as known gaps, read 2026-11-18.",
+      "problem": "They are visible to users, so they need your approval either way.",
+      "proposal": "Decide whether they ride along here or get their own small piece of work.",
+      "options": [
+        {
+          "id": "separate",
+          "label": "Separate small change",
+          "recommended": true,
+          "summary": "Filed as its own card, shown to you on its own deck.",
+          "pros": [
+            "Users see the change; it deserves its own look."
+          ],
+          "cons": [
+            "One more small thing on the list."
+          ]
+        },
+        {
+          "id": "include",
+          "label": "Include here",
+          "summary": "Fixed alongside the guide clean-up.",
+          "pros": [
+            "Done sooner."
+          ],
+          "cons": [
+            "Mixes a visible app change into docs work."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Visual kit",
+      "path": "How you picture it",
+      "headline": "Anything about how you picture the kit? Skip if nothing comes to mind.",
+      "today": "Nothing is drawn yet. The next stage shows two to four drawn designs of the kit page.",
+      "checked": "No kit designs exist as of 2026-11-18.",
+      "problem": "Drawings that miss what you already have in mind cost a round.",
+      "proposal": "A line on what you imagine: a layout, an app it should feel like, what you would do on it first.",
+      "answer": "words",
+      "prompt": "How you picture it (optional)"
+    },
+    {
+      "id": "PD-1",
+      "page": "How the Design kit tab looks",
+      "intro": "Pick a drawing for each. Drag a box on any picture to comment on that spot.",
+      "stage": "design"
+    },
+    {
+      "id": "U-9",
+      "words": true,
+      "surface": "Design guidance",
+      "path": "The words we use",
+      "headline": "Three words, everywhere: components, surface templates and surfaces.",
+      "changed": "Components are the small parts (a button, a switch). A surface template is a design assembled from components. A surface is a real screen, popup or menu in the app, each one a template in action.",
+      "notice": "The Work board's Screens tab becomes Surfaces, and the rewritten guide uses only these three words.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "K-1",
+      "words": true,
+      "surface": "Work board",
+      "path": "Design kit tab",
+      "headline": "Which layout shows, at a glance, how components, surface templates and surfaces fit together?",
+      "today": "The earlier drawings split \"examples\" and \"pieces\" into separate groups, so nothing showed how one is built from the other.",
+      "checked": "From your comments on the earlier drawings, 2026-11-24.",
+      "problem": "You should understand the page from one look or one click-through: which template is made of which components, and which real surfaces use it. No explainer text.",
+      "proposal": "Drawn inside the real Work board with its own styles. Pictures inside are a month old and counts are made up.",
+      "options": [
+        {
+          "id": "rows",
+          "label": "A row per template",
+          "recommended": true,
+          "picture": "pictures/kit2-T1.png",
+          "summary": "Each template is one row: its picture, then its name and the components it is made of, then the real surfaces using it. Components sit below.",
+          "pros": [
+            "Reads left to right: the template, what it's made of, where it's used.",
+            "Every template's links visible without clicking."
+          ],
+          "cons": [
+            "About four templates per screen; more scrolling."
+          ],
+          "reuse": {
+            "from": [
+              "Work board cards and fact chips",
+              "Surfaces tab pictures"
+            ],
+            "new": [
+              "The three-part template row"
+            ]
+          }
+        },
+        {
+          "id": "columns",
+          "label": "Three linked columns",
+          "picture": "pictures/kit2-T2.png",
+          "summary": "Components, templates and surfaces side by side. Click a template: its components and its surfaces light up, everything else fades.",
+          "pros": [
+            "The relationship is the layout itself.",
+            "Works backwards too: click any of the components to see every template using it."
+          ],
+          "cons": [
+            "Needs a click before the connections show.",
+            "Small pictures in the middle column."
+          ],
+          "reuse": {
+            "from": [
+              "Filter pills as the list of components",
+              "Work board cards",
+              "Surfaces tab tiles"
+            ],
+            "new": [
+              "Light-up linking between columns"
+            ]
+          }
+        },
+        {
+          "id": "stacks",
+          "label": "Stacked tiles",
+          "picture": "pictures/kit2-T3.png",
+          "summary": "Each template is a tile with its real surfaces fanned behind it and its components along its foot. Components have their own tab.",
+          "pros": [
+            "Most pictures per screen.",
+            "The stack shows \"one design, many uses\" at a glance."
+          ],
+          "cons": [
+            "Surfaces behind are only hinted at until you click.",
+            "Components are a tab away."
+          ],
+          "reuse": {
+            "from": [
+              "Surfaces tab tiles",
+              "Work board tab strip",
+              "Fact chips"
+            ],
+            "new": [
+              "The stacked tile"
+            ]
+          }
+        }
+      ],
+      "reopened": "You liked none of the first three layouts and found \"examples\" and \"pieces\" unclear.",
+      "reframed": "Renamed to components, surface templates and surfaces, and redrew every layout so its structure shows how they connect."
+    },
+    {
+      "id": "K-2",
+      "words": true,
+      "surface": "Work board",
+      "path": "Design kit tab → a piece or example",
+      "headline": "What should open when you click an example or piece?",
+      "today": "Clicking a screen on the Screens tab opens a popup: its picture on the left, where it is and its facts on the right, two buttons at the foot.",
+      "checked": "Opened a screen's popup on the Work board 2026-11-18.",
+      "problem": "An example has several versions (error, warning, unknown error), rules, a don't, and dozens of screens that use it. It has to fit without becoming a wall of text.",
+      "proposal": "Drawn inside the real Work board with its own styles. The screen pictures inside are a month old and the counts are made up; the real tab has live ones.",
+      "options": [
+        {
+          "id": "screens-popup",
+          "label": "Same popup as Screens",
+          "recommended": true,
+          "picture": "pictures/kit-D1.png",
+          "summary": "Picture on the left with a pill row to switch versions; its job, rules, a don't and the screens using it on the right.",
+          "pros": [
+            "Matches the Screens popup exactly, arrows to step through included.",
+            "Short: one version's picture at a time."
+          ],
+          "cons": [
+            "You switch versions one at a time instead of seeing them side by side."
+          ],
+          "reuse": {
+            "from": [
+              "Screens popup: header, arrows, picture, facts column, footer buttons",
+              "Filter pills as the version switch"
+            ],
+            "new": [
+              "Rules, Don't and Used on sections"
+            ]
+          }
+        },
+        {
+          "id": "one-column",
+          "label": "Every version at once",
+          "picture": "pictures/kit-D2.png",
+          "summary": "One column: a line on its job, every version side by side, a Do and Don't pair, then a strip of screens that use it.",
+          "pros": [
+            "All versions compared at a glance.",
+            "Do and Don't shown as a pair."
+          ],
+          "cons": [
+            "Taller; scrolls on a laptop.",
+            "Looks different from the Screens popup."
+          ],
+          "reuse": {
+            "from": [
+              "Screens popup shell",
+              "Screens tiles for the versions"
+            ],
+            "new": [
+              "Do and Don't cards"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "K-3",
+      "words": true,
+      "surface": "Work board",
+      "path": "Screens tab → a screen",
+      "headline": "What should a surface's popup add, now that it belongs to a template?",
+      "today": "A surface's popup on the Surfaces tab shows its picture, where it is, its kind and how many clicks reach it.",
+      "checked": "Opened the Close session surface's popup on the Work board 2026-11-24.",
+      "problem": "The earlier drawing listed all its components and read as busy and repetitive. The template already lists its components.",
+      "proposal": "Add only what is new: which template it follows. Drawn inside the real Work board with its own styles. Pictures inside are a month old and counts are made up.",
+      "options": [
+        {
+          "id": "template-only",
+          "label": "Its template, one button",
+          "recommended": true,
+          "picture": "pictures/kit2-P1.png",
+          "summary": "One line: the template it follows, as a button that opens it in the Design kit.",
+          "pros": [
+            "Quietest: one line added.",
+            "Components are one click away, on the template."
+          ],
+          "cons": [
+            "You don't see from here when a surface strayed from its template."
+          ],
+          "reuse": {
+            "from": [
+              "Surfaces popup facts column",
+              "Work board outlined button"
+            ],
+            "new": [
+              "Surface template line"
+            ]
+          }
+        },
+        {
+          "id": "template-and-flag",
+          "label": "Plus a hand-made flag",
+          "picture": "pictures/kit2-P2.png",
+          "summary": "The same line, plus a small tag only when the surface has a part not built from the components.",
+          "pros": [
+            "Surfaces that drifted from the kit stand out."
+          ],
+          "cons": [
+            "One more tag on some popups."
+          ],
+          "reuse": {
+            "from": [
+              "Surfaces popup facts column",
+              "Fact chip"
+            ],
+            "new": [
+              "\"hand-made part\" tag"
+            ]
+          }
+        }
+      ],
+      "reopened": "You found the earlier list too busy and repetitive."
+    }
+  ]
+}
