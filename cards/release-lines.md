@@ -124,3 +124,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#795 fixes | The release notes behind the version chip no longer open with a stray title, an empty “[Unreleased]” heading or a technical line.
 - youcoded#796 fixes | Commenting on words next to (or inside) an existing highlight now highlights them too.
 - youcoded#797 fixes | Resuming a chat after a crash or restart no longer shows a stray "No response requested." reply; the reply that was cut off now says "Interrupted."
+- youcoded#801 fixes | The app's usage counts now include a first message sent in a Claude Code chat, plus a one-word note when a setup step fails or is cancelled.
