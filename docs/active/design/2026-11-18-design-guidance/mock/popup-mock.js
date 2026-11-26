@@ -43,7 +43,7 @@
     const z = left.querySelector('.dimg'); z.style.height = '420px'; z.style.overflow = 'hidden';
     const zi = z.querySelector('img'); zi.style.maxHeight = '100%'; zi.style.objectFit = 'contain';
   }
-  if (d === 'Q3') {
+  if (d === 'Q3' || d === 'Q4' || d === 'Q5' || d === 'Q6') {
     // Side panel = template on top, then the situations as a list that fills the rest.
     // The strip under the picture goes, so the picture grows taller.
     const strip = left.querySelector('.sstrip');
@@ -57,7 +57,20 @@
     const zoom = left.querySelector('.dimg');
     zoom.style.height = '600px';
     facts.style.cssText = 'display:flex;flex-direction:column;gap:10px';
-    facts.innerHTML = `<div>${crumbs}<p class="t-sm" style="margin:6px 0 0">${job}</p></div>`
+    // Q4 = Q3 mirrored, and the "where it is" trail replaces the plain title in the header
+    // (Destin, 2026-11-25: "putting the main image on the right and the text and such on the left").
+    const mirror = d === 'Q4' || d === 'Q5';
+    const crumbHead = d === 'Q4' || d === 'Q5' || d === 'Q6';
+    if (mirror) {
+      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ');
+      grid.style.gridTemplateColumns = cols.reverse().join(' ');
+      facts.style.order = '-1';
+    }
+    if (crumbHead) {
+      const h = document.getElementById('dti');
+      if (h) { h.innerHTML = crumbs; h.querySelector('.crumbs').style.fontSize = 'inherit'; }
+    }
+    facts.innerHTML = `<div>${crumbHead ? '' : crumbs}<p class="t-sm" style="margin:${crumbHead ? 0 : 6}px 0 0">${job}</p></div>`
       + `<div style="display:flex;flex-wrap:wrap;gap:6px">${chips}</div>`
       + tplCard(48)
       + `<div class="eyebrow" style="margin-top:4px">Situations</div><div style="display:flex;flex-direction:column;gap:4px">${items}</div>`;

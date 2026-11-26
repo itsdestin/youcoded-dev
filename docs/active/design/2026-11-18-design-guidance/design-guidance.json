@@ -783,30 +783,29 @@
       "visual": true,
       "surface": "Work board",
       "path": "Surfaces tab → a surface",
-      "headline": "How should a surface's popup lay out its facts, without the empty space?",
-      "today": "The facts sit in a plain list down the right side: where it is, what it is for, kind, place, clicks, extras. Below them the panel is empty.",
-      "checked": "Opened the Close session surface's popup on the Work board 2026-11-25.",
-      "problem": "The list reads as plain text, and most of the right side is blank while the picture of the surface stays small.",
-      "proposal": "Facts become small labels in one row, and the template becomes a card with its picture. Drawn inside the real Work board; pictures are a month old, counts made up.",
+      "headline": "Which side should the facts sit on, now that the where-it-is trail is the title?",
+      "today": "The drawing you picked put the facts, template card and situations on the right, with the picture on the left and a plain title on top.",
+      "checked": "Your answer and its comment on the earlier drawing, 2026-11-25.",
+      "problem": "The title repeated the last step of the where-it-is trail, and you wanted to see the facts read first, on the left.",
+      "proposal": "Both drawings put the trail in the title. They differ only in which side the facts sit. Pictures are a month old, counts made up.",
       "options": [
         {
-          "id": "side-situations",
-          "label": "Situations in the side panel",
+          "id": "facts-left",
+          "label": "Facts left, picture right",
           "recommended": true,
-          "picture": "pictures/kit3-Q3.png",
-          "summary": "Side panel: where it is, what it is for, the fact labels, the template card, then the list of situations filling the rest. The picture grows taller.",
+          "picture": "pictures/kit3-Q4.png",
+          "summary": "Title is the trail. Left column: what it is for, the fact labels, the template card, the situations. Picture on the right.",
           "pros": [
-            "No empty space: the situations list fills the panel.",
-            "Biggest picture of the surface.",
-            "Everything about the surface sits in one column."
+            "You read what the surface is before looking at it.",
+            "The situation you click sits right beside the picture it changes."
           ],
           "cons": [
-            "A long list of situations scrolls inside the panel.",
-            "Situations move from under the picture, where they are today."
+            "Opposite of the Design kit's template popup, which keeps its picture on the left."
           ],
           "reuse": {
             "from": [
               "Surfaces popup: header, arrows, picture, footer buttons",
+              "Where-it-is trail as the title",
               "Fact labels as on cards",
               "Filter pills as the situation rows"
             ],
@@ -816,29 +815,31 @@
           }
         },
         {
-          "id": "top-strip",
-          "label": "No side panel, facts on top",
-          "picture": "pictures/kit3-Q2.png",
-          "summary": "Facts in one strip above the picture, the template card at its right. The picture and the situations row use the full width.",
+          "id": "facts-right",
+          "label": "Facts right, picture left",
+          "picture": "pictures/kit3-Q6.png",
+          "summary": "The drawing you picked, with the trail as the title and no repeated where-it-is line in the panel.",
           "pros": [
-            "Widest picture of the surface.",
-            "Situations stay under the picture, as today."
+            "Matches the popup layout used elsewhere on the Work board.",
+            "The picture is the first thing you see."
           ],
           "cons": [
-            "The picture is shorter, so tall surfaces show smaller.",
-            "A long job line or many labels can push the picture down."
+            "Facts come after the picture when reading left to right."
           ],
           "reuse": {
             "from": [
-              "Surfaces popup: header, arrows, picture, situations row, footer buttons",
-              "Fact labels as on cards"
+              "Surfaces popup: header, arrows, picture, footer buttons",
+              "Where-it-is trail as the title",
+              "Fact labels as on cards",
+              "Filter pills as the situation rows"
             ],
             "new": [
               "Template card with its picture"
             ]
           }
         }
-      ]
+      ],
+      "reopened": "You picked situations in the side panel, and asked to try the picture on the right with the facts on the left, and the where-it-is trail as the popup's title."
     }
   ]
 }
