@@ -79,6 +79,9 @@ if (opt.retake) {
     const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'));
     for (const r of again) {
       const key = `${r.name}|${r.theme}`;
+      // WHY a failed retake still updates its reason (2026-11-26): a picture first lost to a time-out, then found to be a
+      // screen the release cannot open at all, kept the stale time-out and stayed listed as "failed, take again" forever.
+      if (want.has(key) && !r.ok && r.reason) { const old = manifest.find((m) => `${m.name}|${m.theme}` === key); if (old && !old.ok) old.reason = r.reason; }
       if (!r.ok || !r.file || !want.has(key)) continue;
       const dest = join(run, side, ...r.name.split('/'), `${r.theme}.png`);
       mkdirSync(dirname(dest), { recursive: true });

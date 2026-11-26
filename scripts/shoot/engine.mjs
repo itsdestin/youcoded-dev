@@ -312,7 +312,9 @@ async function makeTab(b, targetId) {
     async prepare({ theme, width: w, height: h, reducedEffects = false }) {
       // WHY (first-draw-stability under load): SHOOT_CPU_THROTTLE=N slows only THIS page N times, to reproduce a busy machine deterministically.
       if (process.env.SHOOT_CPU_THROTTLE) await send('Emulation.setCPUThrottlingRate', { rate: Number(process.env.SHOOT_CPU_THROTTLE) });
-      if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
+      // WHY size is forgotten first (2026-11-26): a size change that times out can still land later; remembering the old size
+      // then skipped the next change and shot screens at the wrong size. Forgotten, the next screen always sets it again.
+      if (`${w}x${h}` !== size) { size = ''; await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
       // WHY (2026-11-11): a tab is reused from screen to screen and the app remembers, per tab, which chat it was on
       // (desktop-place.ts, card #146). A screen that opened another chat left the next screens in this tab on that
       // chat: 9 file and project screens went "no opener registered" in the full check and passed alone. Each screen
@@ -334,7 +336,8 @@ async function privateTab(b) {
   const { browserContextId } = await b.send('Target.createBrowserContext', { disposeOnDetach: true });
   const { targetId } = await b.send('Target.createTarget', { url: 'about:blank', browserContextId });
   const tab = await makeTab(b, targetId);
-  return { ...tab, close: () => b.send('Target.disposeBrowserContext', { browserContextId }).catch(() => {}) };
+  // WHY `fresh` (what-changed v1.3.4 run, 2026-11-26): see runQueue — a tab whose page stopped answering is swapped for a new one.
+  return { ...tab, close: () => b.send('Target.disposeBrowserContext', { browserContextId }).catch(() => {}), fresh: () => privateTab(b) };
 }
 
 function pidRecord() {
@@ -406,7 +409,17 @@ export async function attachPage(port, urlPrefix) {
 export async function runQueue(pool, jobs, work) {
   const queue = [...jobs]; const results = [];
   await Promise.all(pool.tabs.map(async (tab) => {
-    while (queue.length) { const job = queue.shift(); await backOff(); results.push(await work(tab, job)); }
+    while (queue.length) {
+      const job = queue.shift(); await backOff();
+      const r = await work(tab, job); results.push(r);
+      // WHY (what-changed v1.3.4 run, 2026-11-26): one page that stopped answering (an old release opening an Office
+      // file) left its tab dead, and every later screen that tab took failed too — "timed out", then "Script not found"
+      // for good, because the half-finished theme change could not be undone. 288 of 1,084 release pictures were lost
+      // that way. A tab that gave either answer is thrown away and a new private one takes the next screen.
+      if (tab.fresh && /timed out after \d+s|Script not found/.test(String(r?.reason ?? ''))) {
+        try { const next = await tab.fresh(); tab.close(); tab = next; } catch { /* the browser itself is gone: keep the tab, the failures say so */ }
+      }
+    }
   }));
   return results;
 }

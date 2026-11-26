@@ -419,7 +419,8 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
   // WHY (Office editor caret): the editor draws a blinking text cursor on its own canvas, which no style
   // can hide. A region a few pixels wide and one text line tall on an office screen is that cursor.
   // The terminal's block cursor is wider than a text caret, so its limit is wider (2026-11-07: chat/terminal).
-  if (opts.ignoreCaret) { const wide = opts.ignoreCaret === 'block' ? 12 : 5; const n = found.length; found = found.filter((r) => !(r.w <= wide * scale && r.h <= 26 * scale)); unstable += n - found.length; }
+  // WHY 48 on Office (v1.3.4 run, 2026-11-26): the cursor beside a document's heading is 43 px tall; 26 let it through.
+  if (opts.ignoreCaret) { const wide = opts.ignoreCaret === 'block' ? 12 : 5; const n = found.length; const tall = opts.ignoreCaret === 'line' ? 48 : 26; found = found.filter((r) => !(r.w <= wide * scale && r.h <= tall * scale)); unstable += n - found.length; }
   const inElAny = (r) => opts.els.some((e) => r.x / scale < e.box.x + e.box.w && e.box.x < (r.x + r.w) / scale && r.y / scale < e.box.y + e.box.h && e.box.y < (r.y + r.h) / scale);
   // WHY (2026-11-07: a 4 px speck drifting in the Halftone backdrop marked two status-bar screens): a speck this
   // small that touches no piece of the screen is backdrop. One inside a piece (a status dot on a button) stays.
@@ -451,6 +452,14 @@ export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) 
     const kept = found.filter((r) => !touches(flicker, A.width, A.height, r, near));
     unstable += found.length - kept.length; found = kept;
     const css = (b) => ({ x: b.x * scale, y: b.y * scale, w: b.w * scale, h: b.h * scale });
+    // WHY whole pictures (v1.3.4 run, 2026-11-26: the welcome mascot, which sways by script that no style can pause, left
+    // 8 specks on its hands and feet after 3 others were dropped as flicker): when a side's own two pictures differ
+    // anywhere inside a picture on the screen, that picture moves by itself, so every speck inside it is the same motion.
+    const moving = (opts.els ?? []).filter((e) => e.kind === 'image' && e.box && touches(flicker, A.width, A.height, css(e.box), 0));
+    if (moving.length) {
+      const inside = (r, e) => r.x >= e.box.x * scale - 2 && r.y >= e.box.y * scale - 2 && r.x + r.w <= (e.box.x + e.box.w) * scale + 2 && r.y + r.h <= (e.box.y + e.box.h) * scale + 2;
+      const n = found.length; found = found.filter((r) => !moving.some((e) => inside(r, e))); unstable += n - found.length;
+    }
     const stays = (c) => !(c.box && touches(flicker, A.width, A.height, css(c.box), 4)) && !(c.beforeBox && touches(flicker, A.width, A.height, css(c.beforeBox), 4));
     const keptEls = changes.filter((c) => c.kind === 'pixels' || stays(c));
     unstable += changes.length - keptEls.length; changes = keptEls;
@@ -700,6 +709,18 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     // WHY (2026-11-07 audit: office/presentation, document and spreadsheet settle into one of two layouts, 10-18 px
     // apart, between pictures of the SAME code): on an Office screen a shift with nothing else is that settling
     if (name.startsWith('office/') && r.shift && !r.changes.length) { r.shift = 0; r.unstable = (r.unstable ?? 0) + 1; }
+    // WHY the repeat pair gets a vote (v1.3.4 run, 2026-11-26): some screens show a state that moves on by itself (a
+    // "Reconnecting…" line that becomes "Can't reach your computer", an install that finishes). On a busy machine one
+    // side was caught earlier than the other and the pair read as a change; each side's own two pictures can agree
+    // (both early, or both late) so the flicker check above saw nothing. A real change shows in EVERY pair. When the
+    // second pictures of the two sides show no difference at all, the first pair's difference was the moment, not the code.
+    if ((r.changes.length || r.shift) && B2.has(key) && A2.has(key)) {
+      const b2 = side(B2, 'before-2'), a2 = side(A2, 'after-2');
+      if (b2.png.width === a2.png.width && b2.png.height === a2.png.height) {
+        const r2 = compareScreen(b2, a2, scale, {}, { ignoreCaret: name.startsWith('office/') ? 'line' : name.startsWith('chat/terminal') ? 'block' : false, els: [...(b2.elements ?? []), ...(a2.elements ?? [])] });
+        if (!r2.changes.length && !r2.shift) { r.unstable = (r.unstable ?? 0) + r.changes.length + (r.shift ? 1 : 0); r.changes = []; r.shift = 0; r.mask = null; }
+      }
+    }
     const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift, ...(r.shiftFromY ? { fromY: r.shiftFromY } : {}) } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}), ...(edge.edge ? { edge: edge.edge } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }

@@ -199,3 +199,14 @@ test('still ends as soon as the hold is released and nothing is in flight', asyn
   const win = { __shootInflight: 0, __shootHoldUntil: 8000 };
   assert.ok((await runStill(3000, win)(20000)) < 100);
 });
+
+import { runQueue } from '../engine.mjs';
+
+// WHY (what-changed v1.3.4 run, 2026-11-26): one stuck page used to fail every later screen its tab took (288 pictures).
+test('a tab whose page stopped answering is replaced before the next screen', async () => {
+  let made = 0; const closed = [];
+  const mk = () => { const id = ++made; return { id, close: () => closed.push(id), fresh: async () => mk() }; };
+  const seen = await runQueue({ tabs: [mk()] }, ['a', 'b', 'c'], async (tab, job) => ({ job, tab: tab.id, reason: job === 'a' ? 'Page.navigate timed out after 15s' : undefined }));
+  assert.deepEqual(seen.map((r) => r.tab), [1, 2, 2]);
+  assert.deepEqual(closed, [1]);
+});

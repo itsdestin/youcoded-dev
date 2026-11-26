@@ -406,7 +406,7 @@ function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACE
   const H=hunt(),nNew=list.filter(g=>g.newn===g.states.length).length;
   const lead=nv?`${NVIS.length} things are new since ${CM.release}: it could not show them at all. Each tile is one of them.`
     :H==='new'?`${n} screens can show something ${CM.release} could not${nNew?` (${nNew} of them are whole new screens)`:': each is an older screen with new situations, listed on its tile'}.`
-    :cv?`${CVIS.length} changes since ${CM.release}: ${CVIS.filter(ci=>CL[ci].type==='wide').length} show up in several places, the rest are on one screen each.${NQUIET?` Left out: ${NQUIET} situations whose only difference is too small to see or is sample data (a clock, a spinner).`:''}`
+    :cv?`${CVIS.length===1?'1 change':CVIS.length+' changes'} since ${CM.release}${(w=>w&&CVIS.length>1?`: ${w} show${w===1?'s':''} up in several places, the rest are on one screen each`:'')(CVIS.filter(ci=>CL[ci].type==='wide').length)}.${NQUIET?` Left out: ${NQUIET} situations whose only difference is too small to see or is sample data (a clock, a spinner).`:''}`
     :H==='changed'?`${n} screens look different from ${CM.release}.`
     :(n===SG.length?'All '+n+' screens':n+' of '+SG.length+' screens')+', grouped by where they are in the app.';
   $('#scount').textContent=lead+(nb?` ${nb} situations could not be compared: ${CM.release} cannot open them for a picture.`:'');

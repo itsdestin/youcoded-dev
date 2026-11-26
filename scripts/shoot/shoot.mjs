@@ -388,6 +388,11 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // element list must describe exactly what the picture shows (what-changed/FORMAT.md).
     const measured = opt.noElements || opt.check ? null : await tab.evaluate(MEASURE_ELEMENTS, 15_000).catch(() => null);
     const elements = measured?.elements ?? null, outOfView = measured?.outOfView ?? [];
+    // WHY (what-changed v1.3.4 run, 2026-11-26): on a busy machine a window-size change timed out, landed late, and the
+    // next screens on that tab were photographed at the wrong size and still passed — 7 phone screens drawn as a full
+    // desktop window, each then reported as a change that never happened. A picture at the wrong size proves nothing.
+    const win = await tab.evaluate('[innerWidth, innerHeight]', 5000).catch(() => null);
+    if (win && (win[0] !== w || win[1] !== h)) throw new Error(`the window is ${win[0]}×${win[1]}, not the ${w}×${h} this screen is shot at`);
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`);
