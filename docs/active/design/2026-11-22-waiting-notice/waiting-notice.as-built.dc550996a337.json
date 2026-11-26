@@ -1,0 +1,2705 @@
+{
+ "title": "The \"waiting on something\" notice",
+ "key": "waiting-notice",
+ "out": "waiting-notice.html",
+ "grows": true,
+ "tag": "bug",
+ "stage": "before",
+ "rounds_before": 1,
+ "retired": {},
+ "steps": [
+  {
+   "id": "P-check",
+   "page": "What the independent check found",
+   "intro": "A reviewer who wrote none of this read the code and every notice. Bugs it found are being fixed; these are the choices it raised that you would notice.",
+   "stage": "design"
+  },
+  {
+   "id": "R-unsure",
+   "words": true,
+   "surface": "Notices",
+   "path": "After you send, stop, clear or switch something",
+   "headline": "Not sure it went through: where each one goes, and its new words",
+   "calls": [
+    {
+     "id": "send-failed-generic",
+     "call": "Your message wasn't sent. It's still in the box.",
+     "why": "Strip · Dismiss · leaves when you send again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: The message could not be sent. Shows when: A built-in assistant chat refused a message for a reason with no specific wording.",
+      "problem": "Your message didn't go, and the notice can vanish before you see it.",
+      "change": "Strip above the box. Your words stay in the box to send again."
+     },
+     "picture": "pictures/n/send-failed-generic.png"
+    },
+    {
+     "id": "lost-send-restored",
+     "call": "Your message wasn't sent. It's back in the box.",
+     "why": "Strip · Dismiss · leaves when you send again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: An earlier message didn't reach your computer. It's back in the message box. Shows when: The app checks an unconfirmed earlier message, finds it never arrived, and puts the words back in the message box.",
+      "problem": "Same as above: a message that never arrived.",
+      "change": "Strip above the box, same sentence as any unsent message."
+     },
+     "picture": "pictures/n/lost-send-restored.png"
+    },
+    {
+     "id": "maybe-lost-send-restored",
+     "call": "Can't tell if your message was sent. It's back in the box. Check the chat before sending it again.",
+     "why": "Strip · Dismiss · leaves when you send again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: An earlier message may not have reached your computer. It's back in the message box — check the conversation before sending it again. Shows when: The app can't tell whether an earlier message arrived and puts its words back in the message box.",
+      "problem": "If you resend without checking, Claude may get it twice.",
+      "change": "Strip above the box, so it stays until you've decided."
+     },
+     "picture": "pictures/n/maybe-lost-send-restored.png"
+    },
+    {
+     "id": "send-unconfirmed",
+     "call": "Can't tell if your message was sent. Check the chat before sending it again.",
+     "why": "Strip · Dismiss · leaves when you send again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: YouCoded couldn't confirm your message was sent — check the conversation before sending it again. Shows when: A built-in assistant chat never answered whether your message arrived.",
+      "problem": "Disappears in seconds; a resend could double it.",
+      "change": "Strip above the box until you send again or dismiss."
+     },
+     "picture": "pictures/n/send-unconfirmed.png"
+    },
+    {
+     "id": "queue-maybe-not-sent",
+     "call": "Can't tell if your message was sent. Check the chat before sending it again.",
+     "why": "Strip · Dismiss · leaves when you send again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Your message may not have been sent. Check the chat before sending it again. Shows when: The message queue gave an unclear answer, so the message may or may not have gone.",
+      "problem": "Three different sentences said this one thing.",
+      "change": "Same sentence as above, in the strip."
+     },
+     "picture": "pictures/n/queue-maybe-not-sent.png"
+    },
+    {
+     "id": "queue-outcome-unknown",
+     "call": "Can't tell if your message was sent. Check the chat before sending it again.",
+     "why": "Strip · Dismiss · leaves when you send again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Message outcome is unknown. Check the queue and conversation before trying again. Shows when: Sending through the queue failed in an unexpected way.",
+      "problem": "\"Message outcome is unknown\" is unclear.",
+      "change": "Same sentence as above, in the strip."
+     },
+     "picture": "pictures/n/queue-outcome-unknown.png"
+    },
+    {
+     "id": "queue-availability-changed",
+     "call": "Can't tell if your message was sent. Check the chat before sending it again.",
+     "why": "Strip · Dismiss · leaves when you send again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Queue availability changed. Check the conversation before sending again. Shows when: The chat's message queue went away in the middle of sending.",
+      "problem": "\"Queue availability changed\" means nothing to most people.",
+      "change": "Same sentence as above, in the strip."
+     },
+     "picture": "pictures/n/queue-availability-changed.png"
+    },
+    {
+     "id": "claude-did-not-confirm",
+     "call": "Can't tell if /compact went through. Check the chat before trying again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Claude did not confirm this action. Check the conversation before trying again. Shows when: /model, /clear or /compact was sent to Claude Code but no confirmation came back.",
+      "problem": "Doesn't say which command it means.",
+      "change": "Strip, naming the command (/model, /clear or /compact)."
+     },
+     "picture": "pictures/n/claude-did-not-confirm.png"
+    },
+    {
+     "id": "control-unconfirmed",
+     "call": "Can't tell if /compact went through. Check the chat before trying again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: This action could not be confirmed. Check the conversation before trying again. Shows when: Sending /model, /clear or /compact failed unexpectedly.",
+      "problem": "A second wording of the line above.",
+      "change": "Merged into the line above."
+     },
+     "picture": "pictures/n/control-unconfirmed.png"
+    },
+    {
+     "id": "clear-not-confirmed",
+     "call": "Can't tell if /clear went through. Check the chat before trying again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Clear was not confirmed; queued messages remain paused. Shows when: /clear in a Claude Code chat with a queue did not finish cleanly.",
+      "problem": "Mentions \"paused queued messages\", which you can't act on.",
+      "change": "Strip, shared sentence; the paused-queue detail is dropped."
+     },
+     "picture": "pictures/n/clear-not-confirmed.png"
+    },
+    {
+     "id": "clear-outcome-unknown",
+     "call": "Can't tell if /clear went through. Check the chat before trying again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Clear outcome is unknown. Do not repeat it without checking the conversation. Shows when: /clear in a Claude Code chat got no answer.",
+      "problem": "A second wording of the line above.",
+      "change": "Merged into the line above."
+     },
+     "picture": "pictures/n/clear-outcome-unknown.png"
+    },
+    {
+     "id": "stop-not-confirmed",
+     "call": "Can't tell if Stop went through. If Claude is still working, press Stop again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Stop was not confirmed. Shows when: You press Stop in a Claude Code chat and it is not confirmed.",
+      "problem": "Five different sentences for one Stop problem.",
+      "change": "One sentence for every unconfirmed Stop, in the strip."
+     },
+     "picture": "pictures/n/stop-not-confirmed.png"
+    },
+    {
+     "id": "stop-outcome-unknown",
+     "call": "Can't tell if Stop went through. If Claude is still working, press Stop again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Stop outcome is unknown. Check the conversation. Shows when: You press Stop in a Claude Code chat and no answer comes back.",
+      "problem": "Same as above.",
+      "change": "Merged into the line above."
+     },
+     "picture": "pictures/n/stop-outcome-unknown.png"
+    },
+    {
+     "id": "stop-unconfirmed-phone",
+     "call": "Can't tell if Stop went through. If Claude is still working, press Stop again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Your computer hasn't confirmed the stop. If the assistant is still working, press Stop again. Shows when: Stop pressed on a phone is not confirmed in time.",
+      "problem": "Same as above.",
+      "change": "Merged into the line above."
+     },
+     "picture": "pictures/n/stop-unconfirmed-phone.png"
+    },
+    {
+     "id": "stop-refused",
+     "call": "Stop didn't go through. Press it again.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Stop didn't go through. Press it again. Shows when: Stop pressed on a phone is refused by the computer.",
+      "problem": "Vanishes in seconds while Claude keeps working.",
+      "change": "Strip until your next action."
+     },
+     "picture": "pictures/n/stop-refused.png"
+    },
+    {
+     "id": "stop-not-sent-offline",
+     "call": "Stop wasn't sent: you're offline. Press it again once you reconnect.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Not connected — Stop wasn't sent. Press it again once you're back online. Shows when: You press Stop on a phone while disconnected.",
+      "problem": "The offline part matters: it tells you to reconnect first.",
+      "change": "Strip; the offline detail stays because it changes what you do."
+     },
+     "picture": "pictures/n/stop-not-sent-offline.png"
+    },
+    {
+     "id": "mode-unconfirmed",
+     "call": "The permission mode didn't change. Try again.",
+     "why": "Strip · Dismiss · leaves on your next action · Try again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: The permission mode didn't change. Your computer didn't confirm it. Shows when: You change a chat's permission mode on a phone and the computer doesn't confirm.",
+      "problem": "\"Your computer didn't confirm it\" adds nothing you can act on.",
+      "change": "Strip with a Try again button; the extra detail is dropped."
+     },
+     "picture": "pictures/n/mode-unconfirmed.png"
+    },
+    {
+     "id": "close-unconfirmed",
+     "call": "Couldn't close \"Bug hunt\" on your computer, so it's back in the list.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Couldn't confirm \"Bug hunt\" closed on your computer, so it is back. Shows when: Closing a conversation from a phone is never confirmed, so it reappears.",
+      "problem": "It's about a chat in the list, which may not be the one open.",
+      "change": "Short floating notice; nothing else needed, the chat is visibly back."
+     },
+     "picture": "pictures/n/close-unconfirmed.png"
+    },
+    {
+     "id": "model-switch-failed",
+     "call": "Couldn't switch to Opus.",
+     "why": "Floating · until closed · Try again",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Couldn't switch to Opus Shows when: You switch models but Claude's next reply still comes from the old model.",
+      "problem": "Vanishes, and your next message quietly uses the old model.",
+      "change": "Floating notice that stays until you close it or press Try again."
+     },
+     "picture": "pictures/n/model-switch-failed.png"
+    },
+    {
+     "id": "model-switch-failed-again",
+     "call": "Couldn't switch to Opus again.",
+     "why": "Floating · until closed · Report bug",
+     "more": {
+      "today": "Floats for 5 seconds over any chat and says: Model switch failed again. Ask Claude to diagnose with /model, or report a bug. Shows when: A model switch fails a second time in a row.",
+      "problem": "Tells you to type a command to diagnose it.",
+      "change": "Stays until closed, with a Report bug button instead of instructions."
+     },
+     "picture": "pictures/n/model-switch-failed-again.png"
+    }
+   ]
+  },
+  {
+   "id": "R-words",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice",
+   "headline": "Should notices that mean the same thing use the same sentence?",
+   "today": "About 30 notices say one of three things in many different wordings. A stop that wasn't confirmed alone has 5 sentences. A few show raw technical text, like \"Control incarnation ended before invocation\".",
+   "problem": "Different words for the same thing make you wonder whether they are different problems, and technical text tells you nothing.",
+   "proposal": "Three shared sentences, each naming what you tried: \"Stop didn't go through.\" / \"Can't tell if Stop went through. Check the chat before trying again.\" / \"Stop isn't available here.\" with the reason after. Technical text is never shown.",
+   "options": [
+    {
+     "id": "merge",
+     "label": "Shared sentences",
+     "pros": [
+      "One wording to learn per situation.",
+      "No technical text ever reaches you."
+     ],
+     "cons": [
+      "Loses some detail a few notices give today, like \"your phone was offline\"; that detail can stay as a second sentence."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "only-tech",
+     "label": "Only replace the technical text",
+     "pros": [
+      "Smallest change."
+     ],
+     "cons": [
+      "The many wordings stay."
+     ]
+    }
+   ],
+   "resolved": "Shared sentences. A second sentence only when it changes what you do, like \"you're offline, reconnect first\"; otherwise dropped. Applied to every row in the list below."
+  },
+  {
+   "id": "R-newchat",
+   "words": true,
+   "surface": "Settings",
+   "path": "Settings → Appearance → Build new theme with Claude",
+   "headline": "Pressing \"Build new theme with Claude\" with no chat open: what should happen?",
+   "today": "Settings → Appearance has a \"Build new theme with Claude\" button. It runs the theme builder in the chat you have open. With no chat open, it shows \"Open a conversation first, then try again.\" Nothing else in the app shows this notice.",
+   "checked": "App.tsx onRunCommand is the only place that shows this notice (searched 2026-11-25).",
+   "problem": "You pressed a button that clearly asks for a chat, and the app makes you close Settings, open a chat, and come back.",
+   "proposal": "Pick what the button does when no chat is open.",
+   "options": [
+    {
+     "id": "auto",
+     "label": "Start a new chat for it",
+     "pros": [
+      "One press does what you asked.",
+      "No notice at all."
+     ],
+     "cons": [
+      "If you pressed it by mistake, an empty theme chat is left in your list."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "button",
+     "label": "Notice with a New chat button",
+     "pros": [
+      "A chat is made only on a second press."
+     ],
+     "cons": [
+      "An extra step for something you already asked for."
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Keep the notice as it is",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "You have to leave Settings and come back."
+     ]
+    }
+   ],
+   "resolved": "Adopted: with no chat open, the button opens the same new-chat popup Pages uses (folder, model). Once the built-in \"Your Assistant\" project exists, that becomes its default folder."
+  },
+  {
+   "id": "R-fyi",
+   "words": true,
+   "surface": "Notices",
+   "path": "After a command runs",
+   "headline": "Should \"for your information\" notices that blocked nothing be short floating ones?",
+   "today": "Two notices were sorted into the strip: \"Attachments were left out of that command\" and \"There's no reply to copy yet.\"",
+   "problem": "Neither stopped anything, and your rule says notices you can't act on should be short floating ones. In the strip they wait for a Dismiss press.",
+   "proposal": "Make these two short floating notices that leave on their own. Yes moves them; No keeps them in the strip."
+  },
+  {
+   "id": "R-remote",
+   "words": true,
+   "surface": "Notices",
+   "path": "Using the app from a browser on another device",
+   "headline": "Should \"not available from another device yet\" be a short notice instead of one you must close?",
+   "today": "When you use the app from a browser on another device, some screens (like browsing themes) show \"Theme browsing isn't available via remote access yet.\" It was sorted as a notice that stays until you close it.",
+   "problem": "There is nothing you can do about it, and it can come back each time you open such a screen, adding a Close press every time.",
+   "proposal": "Make it a short floating notice with a clearer line: \"Browsing themes only works on the computer running YouCoded for now.\" Yes changes it; No keeps it until closed."
+  },
+  {
+   "id": "R-screen",
+   "words": true,
+   "surface": "Notices",
+   "path": "The \"resume a chat\" list and the screen for moving a chat between devices",
+   "headline": "Should notices from those two screens show on the screen itself, not in a chat's strip?",
+   "today": "Three failures (a chat couldn't be resumed, moving a chat isn't available, finish the current move first) were sorted into the strip. The moving screen also already has its own Try again and Continue buttons.",
+   "problem": "The strip belongs to the chat you have open, which may have nothing to do with the screen you are on, and the moving screen would show two sets of buttons for one problem.",
+   "proposal": "Show them on the screen that raised them, using its own buttons. Yes moves them; No keeps them in the strip."
+  },
+  {
+   "id": "R-card",
+   "words": true,
+   "surface": "Chat",
+   "path": "Inside a chat, after /compact or /clear fails",
+   "headline": "What happens to the \"Couldn't compact\" card in the chat once it works?",
+   "today": "You chose that a compact or clear failure shows as a card inside the chat with Try again.",
+   "problem": "If the card stays after Try again succeeds, the chat shows \"Couldn't compact\" above a chat that was compacted.",
+   "proposal": "Pick what the card does next.",
+   "options": [
+    {
+     "id": "goes",
+     "label": "Leaves once it works",
+     "pros": [
+      "The chat only shows what is true now."
+     ],
+     "cons": [
+      "No record that it failed once."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "stays",
+     "label": "Stays, with a \"Worked on retry\" line added",
+     "pros": [
+      "A full record in the chat."
+     ],
+     "cons": [
+      "More clutter in the chat for something already fixed."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-elsewhere",
+   "words": true,
+   "surface": "Session list",
+   "path": "A failure in a chat you are not looking at",
+   "headline": "When something fails in a chat you've switched away from, how should you find out?",
+   "today": "Some failures arrive a moment later. With notices now tied to their chat, one can land in a chat you have just left.",
+   "problem": "You would not see it until you happen to go back to that chat.",
+   "proposal": "Pick how that chat tells you.",
+   "options": [
+    {
+     "id": "dot",
+     "label": "A red dot on that chat in the list",
+     "pros": [
+      "You see which chat needs you without leaving the one you're in."
+     ],
+     "cons": [
+      "One more kind of dot in the list."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "float",
+     "label": "A short floating notice naming the chat",
+     "pros": [
+      "Hard to miss."
+     ],
+     "cons": [
+      "Interrupts the chat you're in for another one."
+     ]
+    },
+    {
+     "id": "nothing",
+     "label": "Nothing until you go back",
+     "pros": [
+      "Quietest."
+     ],
+     "cons": [
+      "Easy to miss a failed stop or clear."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-queue",
+   "words": true,
+   "surface": "Notices",
+   "path": "Two notices at the same moment",
+   "headline": "When two \"needs you\" notices arrive together, should they take turns?",
+   "today": "There is one floating notice spot. A second notice replaces the first, so a \"needs you\" notice can vanish without you pressing anything (for example two at startup).",
+   "problem": "A notice you were supposed to act on disappears unseen.",
+   "proposal": "They take turns: the next shows when you close the first. Quick ones like \"Copied\" show right away and never push a \"needs you\" notice out. Yes does this; No keeps one spot."
+  },
+  {
+   "id": "R-phone",
+   "words": true,
+   "surface": "Notices",
+   "path": "The strip above the message box, on a phone",
+   "headline": "On a narrow phone screen, should the strip's buttons sit under the words instead of beside them?",
+   "today": "The strip puts up to three buttons (Dismiss, Send anyway, Show card) beside the sentence.",
+   "problem": "On a phone that squeezes the sentence into a thin column of wrapped words, which you disliked on an earlier round.",
+   "proposal": "On narrow screens, buttons drop to their own row below the sentence. Yes does this; No keeps them beside the words."
+  },
+  {
+   "id": "P-drawn",
+   "page": "Your picks, drawn in the app",
+   "intro": "The strip and the new button order, photographed in the practice app, then each failure and limit sorted by your rule.",
+   "stage": "design"
+  },
+  {
+   "id": "L-drawn",
+   "words": true,
+   "surface": "Chat",
+   "path": "Above the message box, and floating",
+   "headline": "Your picks, drawn by the real app",
+   "gallery": true,
+   "calls": [
+    {
+     "id": "held",
+     "call": "Your message was held back: strip above the box",
+     "why": "Amber dot. Dismiss on the left, Send anyway, then Show card filled on the right. Leaves once the question is answered or you send.",
+     "picture": "pictures/r4/strip-held.png",
+     "visual": true,
+     "more": {
+      "today": "Every one of these floats over the chat today and is shared by every chat.",
+      "change": "Amber dot. Dismiss on the left, Send anyway, then Show card filled on the right. Leaves once the question is answered or you send."
+     }
+    },
+    {
+     "id": "cant",
+     "call": "Can't be done now: the same strip",
+     "why": "Dismiss only. Leaves on your next typing, send or chat switch.",
+     "picture": "pictures/r4/strip-cant.png",
+     "visual": true,
+     "more": {
+      "today": "Every one of these floats over the chat today and is shared by every chat.",
+      "change": "Dismiss only. Leaves on your next typing, send or chat switch."
+     }
+    },
+    {
+     "id": "failed",
+     "call": "Failed before sending: the same strip, red dot",
+     "why": "Dismiss on the left, Try again filled on the right.",
+     "picture": "pictures/r4/strip-failed.png",
+     "visual": true,
+     "more": {
+      "today": "Every one of these floats over the chat today and is shared by every chat.",
+      "change": "Dismiss on the left, Try again filled on the right."
+     }
+    },
+    {
+     "id": "k7-plugin",
+     "call": "Needs you, app-wide: floating until closed",
+     "why": "Dismiss outlined on the left, the notice's own button filled on the right. No timer.",
+     "picture": "pictures/r4/k7-plugin-turned-off.png",
+     "visual": true,
+     "more": {
+      "today": "Every one of these floats over the chat today and is shared by every chat.",
+      "change": "Dismiss outlined on the left, the notice's own button filled on the right. No timer."
+     }
+    },
+    {
+     "id": "k7-settings",
+     "call": "A longer one, same order",
+     "why": "The same, with a longer sentence.",
+     "picture": "pictures/r4/k7-settings-repaired.png",
+     "visual": true,
+     "more": {
+      "today": "Every one of these floats over the chat today and is shared by every chat.",
+      "change": "The same, with a longer sentence."
+     }
+    },
+    {
+     "id": "k7-password",
+     "call": "One with no button of its own",
+     "why": "Only Dismiss, so it can always be closed.",
+     "picture": "pictures/r4/k7-saved-password-expired.png",
+     "visual": true,
+     "more": {
+      "today": "Every one of these floats over the chat today and is shared by every chat.",
+      "change": "Only Dismiss, so it can always be closed."
+     }
+    }
+   ]
+  },
+  {
+   "id": "L-sort-failed",
+   "words": true,
+   "surface": "Notices",
+   "path": "Something in this chat failed",
+   "headline": "Something failed: where each one goes, by your rule",
+   "calls": [
+    {
+     "id": "skill-unreadable",
+     "call": "That skill is installed, but its instructions couldn't be read. Reinstalling it from the marketplace usually fixes this.",
+     "why": "Strip · red · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: a skill you ran in a built-in assistant chat has unreadable instructions.",
+      "problem": "Nothing ran, and the notice can vanish before you read why.",
+      "change": "Strip above the box. Also: the skills list marks a skill whose instructions can't be read, so you see it before you pick it."
+     }
+    },
+    {
+     "id": "skill-error-detail",
+     "call": "Couldn't run /review: two skills match (a:review, b:review)",
+     "why": "Strip · red · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: running a skill failed with details, including when two installed skills share the name.",
+      "problem": "Nothing ran; two skills share the name and you aren't told what to do.",
+      "change": "Strip above the box. Also: when two skills share a name, the list asks which one you meant instead of failing."
+     }
+    },
+    {
+     "id": "skill-failed",
+     "call": "Couldn't run /review.",
+     "why": "Strip · red · Dismiss, Try again · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: running a skill failed with no details.",
+      "problem": "Nothing ran, and there is no way to retry.",
+      "change": "Strip above the box, with Try again."
+     }
+    },
+    {
+     "id": "takeover-failed",
+     "call": "Couldn't take over from your other computer. Close the conversation there, then try again.",
+     "why": "Strip · red · Dismiss, Try again · stays until it works or you dismiss",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you press Continue on a waiting transfer and taking it over from the other computer fails.",
+      "problem": "The chat can't continue until you act on your other computer.",
+      "change": "Strip above that chat's box, staying until the takeover works or you dismiss it, with Try again."
+     }
+    },
+    {
+     "id": "handoff-unconfirmed",
+     "call": "Couldn't confirm the handoff from Work laptop.",
+     "why": "Strip · red · Dismiss, Try again · stays until confirmed or dismissed",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you resume a conversation that is open on another device and that device never confirms letting go.",
+      "problem": "You can't tell whether the chat is safe to use here.",
+      "change": "Strip above that chat's box, leaving on its own once the other device lets go."
+     }
+    },
+    {
+     "id": "resume-failed",
+     "call": "Couldn't resume this conversation.",
+     "why": "Floating · red · Dismiss, Try again · stays until closed",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: reopening a past conversation fails.",
+      "problem": "The chat never opened, so there is no strip to put it in, and it can vanish too soon.",
+      "change": "Floating like the notices that need you: stays until you press Try again or Dismiss."
+     }
+    },
+    {
+     "id": "compact-summary-failed",
+     "call": "The model couldn’t write a usable summary, so the conversation was left intact. Try again later.",
+     "why": "In the chat · red · Try again · stays",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: /compact in a built-in assistant chat could not produce a summary.",
+      "problem": "It happens after the command is in the chat, but the notice floats and vanishes.",
+      "change": "A notice in the chat where the summary would have gone, like the AI-service error card, with Try again."
+     }
+    },
+    {
+     "id": "compact-interrupted",
+     "call": "Compaction stopped. The conversation was left as it was.",
+     "why": "In the chat · red · Try again · stays",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: a /compact in a built-in assistant chat was interrupted.",
+      "problem": "Same as above: you lose the record that compacting stopped.",
+      "change": "In the chat where the summary would have gone, with Try again."
+     }
+    },
+    {
+     "id": "compact-error-detail",
+     "call": "Couldn't compact: model unavailable",
+     "why": "In the chat · red · Try again · stays",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: /compact in a built-in assistant chat failed for an unlisted reason that came with details.",
+      "problem": "Same as above.",
+      "change": "In the chat, with the reason under Details and Try again."
+     }
+    },
+    {
+     "id": "compact-failed",
+     "call": "Couldn't compact this conversation.",
+     "why": "In the chat · red · Try again · stays",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: /compact in a built-in assistant chat failed with no details.",
+      "problem": "Same as above.",
+      "change": "In the chat, with Try again."
+     }
+    },
+    {
+     "id": "clear-error-detail",
+     "call": "Couldn't clear: write failed",
+     "why": "In the chat · red · Try again · stays",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: /clear in a built-in assistant chat failed for an unlisted reason that came with details.",
+      "problem": "It happens after the command is in the chat, but the notice floats and vanishes.",
+      "change": "In the chat, with the reason under Details and Try again."
+     }
+    },
+    {
+     "id": "clear-failed",
+     "call": "Couldn't clear this conversation.",
+     "why": "In the chat · red · Try again · stays",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: /clear in a built-in assistant chat failed with no details.",
+      "problem": "Same as above.",
+      "change": "In the chat, with Try again."
+     }
+    },
+    {
+     "id": "stop-task-failed",
+     "call": "Couldn't stop this task.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you press stop on a background task card and the request itself fails.",
+      "problem": "Nothing else is blocked; the task card still shows it running.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    },
+    {
+     "id": "reload-model",
+     "call": "Couldn't reload the model.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you press reload on the local model card and it fails.",
+      "problem": "Nothing is blocked; the reload button is still there to press again.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    },
+    {
+     "id": "close-refused-detail",
+     "call": "Couldn't close \"Bug hunt\": session is busy",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: closing a conversation from a phone is refused and the computer gives a reason.",
+      "problem": "Nothing is blocked; the chat stays open.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    },
+    {
+     "id": "close-refused",
+     "call": "Couldn't close \"Bug hunt\". Your computer didn't accept the request.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: closing a conversation from a phone is refused with no reason.",
+      "problem": "Nothing is blocked; the chat stays open.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    },
+    {
+     "id": "save-tag-change",
+     "call": "Couldn't save this tag change.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: adding or removing a tag on the open conversation is refused.",
+      "problem": "Nothing is blocked; the tag simply didn't change.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    },
+    {
+     "id": "save-note",
+     "call": "Couldn't save the note.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: saving the open conversation's note is refused.",
+      "problem": "Nothing is blocked.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    },
+    {
+     "id": "save-change",
+     "call": "Couldn't save this change.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: changing a flag (such as pinned) on the open conversation is refused.",
+      "problem": "Nothing is blocked.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    },
+    {
+     "id": "remove-from-list",
+     "call": "Couldn't remove this from the list.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: removing a file from the conversation's files list fails.",
+      "problem": "Nothing is blocked.",
+      "change": "Stays a short floating notice, timer fixed."
+     }
+    }
+   ]
+  },
+  {
+   "id": "L-sort-cant",
+   "words": true,
+   "surface": "Notices",
+   "path": "That can't be done here or now",
+   "headline": "Can't be done: when each leaves, and which ones to prevent",
+   "calls": [
+    {
+     "id": "not-in-native-runtime",
+     "call": "/doctor isn't available in YouCoded-runtime sessions yet.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you use a Claude Code command (typed, from the command drawer or from Settings) in a built-in assistant chat that has no equivalent.",
+      "problem": "It reads like an error, but it is a known limit of this kind of chat, and the command was offered to you.",
+      "change": "Better: these commands aren't offered in these chats at all. If typed anyway, the strip says it works only in Claude Code chats."
+     }
+    },
+    {
+     "id": "not-in-terminal-session",
+     "call": "/compact isn't available in a terminal session — it's a Claude Code command.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you pick a Claude Code command while a plain terminal session is open.",
+      "problem": "The command was offered even though it can't work here.",
+      "change": "Better: Claude Code commands aren't offered in a terminal session. If typed anyway, the strip explains."
+     }
+    },
+    {
+     "id": "skill-cant-start-native",
+     "call": "That skill can't be started from here in a YouCoded-runtime session yet.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you start a skill from the drawer in a built-in assistant chat.",
+      "problem": "The skill was offered even though it can't start here.",
+      "change": "Better: skills that can't start here are greyed in the list with a one-line reason."
+     }
+    },
+    {
+     "id": "open-conversation-first",
+     "call": "Open a conversation first, then try again.",
+     "why": "Floating · 5 seconds",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you press a Settings button that runs a command (like Build new theme with Claude) with no chat open.",
+      "problem": "No chat is open, so there is no strip; and you must go and open one yourself.",
+      "change": "Better: the button opens a new chat itself and runs there, so this notice is no longer needed."
+     }
+    },
+    {
+     "id": "attachments-ignored",
+     "call": "Attachments ignored with /compact",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you send /compact, /clear or /copy with files attached.",
+      "problem": "Floats and vanishes; you may not notice your files were left out.",
+      "change": "Strip above the box."
+     }
+    },
+    {
+     "id": "no-response-to-copy",
+     "call": "No response to copy",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you type /copy before the assistant has replied.",
+      "problem": "Floats and vanishes.",
+      "change": "Strip above the box."
+     }
+    },
+    {
+     "id": "compact-busy",
+     "call": "Can't compact while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+     "why": "Strip · Dismiss, Stop · leaves when the reply ends",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you run /compact in a built-in assistant chat mid-reply.",
+      "problem": "You must stop the reply yourself, and the notice can vanish first.",
+      "change": "Strip with a Stop button; it leaves on its own when the reply finishes, so you can run it again."
+     }
+    },
+    {
+     "id": "compact-nothing",
+     "call": "Nothing to compact yet — there needs to be at least a couple of exchanges before there’s anything to summarize.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you run /compact in a nearly empty built-in assistant chat.",
+      "problem": "Floats and vanishes.",
+      "change": "Strip above the box."
+     }
+    },
+    {
+     "id": "compact-not-live",
+     "call": "This session isn't running, so there's nothing to compact.",
+     "why": "Strip · Dismiss · leaves when the chat restarts",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: /compact in a built-in assistant chat that has stopped.",
+      "problem": "Floats and vanishes.",
+      "change": "Strip above the box, gone once the chat is running again."
+     }
+    },
+    {
+     "id": "clear-busy",
+     "call": "Can't clear while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+     "why": "Strip · Dismiss, Stop · leaves when the reply ends",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you run /clear in a built-in assistant chat mid-reply.",
+      "problem": "Same as compacting while busy.",
+      "change": "Strip with a Stop button; leaves when the reply finishes."
+     }
+    },
+    {
+     "id": "clear-not-live",
+     "call": "This session isn't running, so there's nothing to clear.",
+     "why": "Strip · Dismiss · leaves when the chat restarts",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: /clear in a built-in assistant chat that has stopped.",
+      "problem": "Floats and vanishes.",
+      "change": "Strip above the box."
+     }
+    },
+    {
+     "id": "skill-not-a-skill",
+     "call": "That isn't an installed skill, and it isn't a command YouCoded-runtime sessions support yet. Browse the marketplace to install skills.",
+     "why": "Strip · Dismiss, Browse skills · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you type an unknown /name in a built-in assistant chat.",
+      "problem": "It says to browse skills but gives no button to do it.",
+      "change": "Strip with a Browse skills button."
+     }
+    },
+    {
+     "id": "skill-busy",
+     "call": "Can't start a skill while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+     "why": "Strip · Dismiss, Stop · leaves when the reply ends",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you run a skill in a built-in assistant chat mid-reply.",
+      "problem": "Same as compacting while busy.",
+      "change": "Strip with a Stop button; leaves when the reply finishes."
+     }
+    },
+    {
+     "id": "skill-not-live",
+     "call": "This session isn't running, so there's nothing to run the skill in.",
+     "why": "Strip · Dismiss · leaves when the chat restarts",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you run a skill in a built-in assistant chat that has stopped.",
+      "problem": "Floats and vanishes.",
+      "change": "Strip above the box."
+     }
+    },
+    {
+     "id": "live-handoff-unavailable",
+     "call": "Live handoff is available from a computer or a remote connection to one.",
+     "why": "Strip · Dismiss · leaves on your next action",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you agree to take over a conversation from another device on the Android app's own runtime.",
+      "problem": "A known limit of the phone app, shown as a failure.",
+      "change": "Strip above the box, worded as what works instead: open it from a computer."
+     }
+    },
+    {
+     "id": "finish-current-transfer",
+     "call": "Finish the current conversation transfer, then try reopening this one again.",
+     "why": "Strip · Dismiss · leaves when the transfer finishes",
+     "more": {
+      "today": "Floats for a few seconds over any chat. Shows when: you start a second conversation transfer while one is still running.",
+      "problem": "You must remember to retry later.",
+      "change": "Strip above the box, gone on its own once the first transfer finishes."
+     }
+    }
+   ]
+  },
+  {
+   "id": "P-kinds",
+   "page": "How each kind of notice should behave",
+   "intro": "Seven decisions, one per kind of notice. Each card shows a real one; pick where that kind shows and when it leaves.",
+   "stage": "design"
+  },
+  {
+   "id": "K-1",
+   "headline": "Your message was held back: where should it show, and when should it leave?",
+   "today": "13 notices, such as \"Claude Code is waiting on something — answer it first.\". They float over every chat and are meant to leave after 3 to 8 seconds.",
+   "problem": "Your message is still waiting in the box after the notice leaves, or the notice gets stuck and follows you to other chats.",
+   "proposal": "Show it only in that chat, and keep it until the reason is gone or you send.",
+   "options": [
+    {
+     "id": "strip",
+     "label": "Strip, until fixed",
+     "picture": "pictures/band-connecting.png",
+     "caption": "The strip above the message box, as the app shows \"Connecting tools…\" today.",
+     "summary": "A strip above that chat's message box. It leaves the moment the reason is gone (question answered, reconnected, chat ready) or you send.",
+     "pros": [
+      "Sits right above the message it is about.",
+      "Never covers the chat.",
+      "Never leaves while your message is still held back."
+     ],
+     "cons": [
+      "Pushes the chat up by one line while it shows."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "float-chat",
+     "label": "Floating, until fixed",
+     "picture": "pictures/n/copy-path.png",
+     "caption": "Floating above the message box, as every notice shows today.",
+     "summary": "Floating as today, but only in that chat, and staying until the reason is gone or you send.",
+     "pros": [
+      "Looks like today."
+     ],
+     "cons": [
+      "Covers the bottom of the chat for as long as it stays."
+     ]
+    },
+    {
+     "id": "in-chat",
+     "label": "In the chat",
+     "picture": "pictures/error-card.png",
+     "caption": "In the chat, as the app shows an error from the AI service today.",
+     "summary": "A line in the chat, under the last message, until the reason is gone.",
+     "pros": [
+      "Sits beside the question it points to."
+     ],
+     "cons": [
+      "Scrolls away as the chat grows.",
+      "For a pop-up only on the terminal screen, there is nothing in the chat to sit beside."
+     ]
+    }
+   ],
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "checked": "Counted and read from the app code on 2026-11-23; every notice is listed under \"Every notice, by kind\".",
+   "picture": "pictures/n/blocked-send-waiting.png",
+   "caption": "A real one, in the app today."
+  },
+  {
+   "id": "K-2",
+   "headline": "Not sure it went through: where should it show, and when should it leave?",
+   "today": "20 notices, such as \"YouCoded couldn't confirm your message was sent — check the conversation before sending it again.\". They float for 3 to 6 seconds.",
+   "problem": "They ask you to check something, then vanish before you have checked it, and don't say which message they meant.",
+   "proposal": "Put the doubt on the message or action it is about, and keep it until the app confirms or you dismiss it.",
+   "options": [
+    {
+     "id": "on-message",
+     "label": "On the message",
+     "picture": "pictures/unconfirmed-send.png",
+     "caption": "A row on the message itself, as the app shows a message that may not have arrived today.",
+     "summary": "Marked on the message or action itself in that chat. Leaves on its own once confirmed, or when you press Dismiss.",
+     "pros": [
+      "You can see exactly which message is in doubt.",
+      "The app already does this for one case."
+     ],
+     "cons": [
+      "Needs a matching mark for Stop, /clear and model switches, not only messages."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "strip",
+     "label": "Strip, until dismissed",
+     "picture": "pictures/band-connecting.png",
+     "caption": "The strip above the message box, as the app shows \"Connecting tools…\" today.",
+     "summary": "A strip above that chat's box until confirmed or dismissed.",
+     "pros": [
+      "Hard to miss."
+     ],
+     "cons": [
+      "Doesn't point at which message is in doubt."
+     ]
+    },
+    {
+     "id": "float-timed",
+     "label": "Floating, timed",
+     "picture": "pictures/n/copy-path.png",
+     "caption": "Floating above the message box, as every notice shows today.",
+     "summary": "As today, with the timer fixed.",
+     "pros": [
+      "No change to learn."
+     ],
+     "cons": [
+      "Gone before you have checked."
+     ]
+    }
+   ],
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "checked": "Counted and read from the app code on 2026-11-23; every notice is listed under \"Every notice, by kind\".",
+   "picture": "pictures/n/queue-maybe-not-sent.png",
+   "caption": "A real one, in the app today."
+  },
+  {
+   "id": "K-3",
+   "headline": "That can't be done here or now: where should it show, and when should it leave?",
+   "today": "16 notices, such as \"/doctor isn't available in YouCoded-runtime sessions yet.\". They float for 3 seconds.",
+   "problem": "Some are long, and 3 seconds is not enough to read them. They are the direct answer to what you just did.",
+   "proposal": "Show it in that chat, and keep it until your next action: typing, sending, or switching chats.",
+   "options": [
+    {
+     "id": "strip-next",
+     "label": "Strip, until you act",
+     "picture": "pictures/band-connecting.png",
+     "caption": "The strip above the message box, as the app shows \"Connecting tools…\" today.",
+     "summary": "A strip above that chat's box. Leaves when you type, send, or switch chats.",
+     "pros": [
+      "As long as you need to read it.",
+      "Clears itself the moment you move on."
+     ],
+     "cons": [
+      "Pushes the chat up by one line."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "float-next",
+     "label": "Floating, until you act",
+     "picture": "pictures/n/copy-path.png",
+     "caption": "Floating above the message box, as every notice shows today.",
+     "summary": "Floating, only in that chat, until you type, send, or switch chats.",
+     "pros": [
+      "Looks like today."
+     ],
+     "cons": [
+      "Covers the bottom of the chat while it stays."
+     ]
+    },
+    {
+     "id": "float-timed",
+     "label": "Floating, timed",
+     "picture": "pictures/n/copy-path.png",
+     "caption": "Floating above the message box, as every notice shows today.",
+     "summary": "As today, with the timer fixed and a longer time for long notices.",
+     "pros": [
+      "Smallest change."
+     ],
+     "cons": [
+      "A long notice can still vanish mid-sentence."
+     ]
+    }
+   ],
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "checked": "Counted and read from the app code on 2026-11-23; every notice is listed under \"Every notice, by kind\".",
+   "picture": "pictures/n/compact-busy.png",
+   "caption": "A real one, in the app today.",
+   "resolved": "Kept the strip. Per your note, every one gets Dismiss, plus Try again or a way forward where one exists; when each leaves is now one row per notice on the page \"Your picks, drawn in the app\"."
+  },
+  {
+   "id": "K-4",
+   "headline": "Something in this chat failed: where should it show, and when should it leave?",
+   "today": "20 notices, such as \"The model couldn’t write a usable summary, so the conversation was left intact. Try again later.\". They float for 3 to 8 seconds.",
+   "problem": "A failure in a chat vanishes, leaving no record in that chat of what went wrong.",
+   "proposal": "Put it in the chat where it happened, like an AI service error, and keep it until your next message or until you dismiss it.",
+   "options": [
+    {
+     "id": "in-chat",
+     "label": "In the chat",
+     "picture": "pictures/error-card.png",
+     "caption": "In the chat, as the app shows an error from the AI service today.",
+     "summary": "A notice in the chat, where it happened. Stays until your next message, or Dismiss. Try again where the app can retry.",
+     "pros": [
+      "Matches how AI service errors already show.",
+      "You can scroll back and see what failed."
+     ],
+     "cons": [
+      "Adds a line to the chat."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "strip",
+     "label": "Strip, until you act",
+     "picture": "pictures/band-connecting.png",
+     "caption": "The strip above the message box, as the app shows \"Connecting tools…\" today.",
+     "summary": "A strip above the box until you type, send, or switch chats.",
+     "pros": [
+      "Hard to miss."
+     ],
+     "cons": [
+      "Leaves no trace once gone."
+     ]
+    },
+    {
+     "id": "float-timed",
+     "label": "Floating, timed",
+     "picture": "pictures/n/copy-path.png",
+     "caption": "Floating above the message box, as every notice shows today.",
+     "summary": "As today, with the timer fixed.",
+     "pros": [
+      "Smallest change."
+     ],
+     "cons": [
+      "Easy to miss, and no trace afterwards."
+     ]
+    }
+   ],
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "checked": "Counted and read from the app code on 2026-11-23; every notice is listed under \"Every notice, by kind\".",
+   "picture": "pictures/n/skill-failed.png",
+   "caption": "A real one, in the app today.",
+   "resolved": "Adopted your rule: a failure that stops a send goes in the strip; one after your message is in the chat goes in the chat; one you can't act on floats briefly. Each is sorted for you."
+  },
+  {
+   "id": "K-5",
+   "headline": "A button didn't work: where should it show, and when should it leave?",
+   "today": "39 notices, such as \"Couldn't copy — please try again.\" and \"Couldn't save Fast mode.\". They float for 3 to 5 seconds.",
+   "problem": "They are about the whole app, not a chat, so tying them to a chat would be wrong. Today the timer bug can leave them stuck.",
+   "proposal": "Keep them floating and not tied to a chat, with the timer fixed so they leave after 5 seconds.",
+   "options": [
+    {
+     "id": "float-timed",
+     "label": "Floating, 5 seconds",
+     "picture": "pictures/n/copy-path.png",
+     "caption": "Floating above the message box, as every notice shows today.",
+     "summary": "Floating above the box, in any chat, leaving after 5 seconds. The timer bug fixed.",
+     "pros": [
+      "Right for a quick \"that didn't work\".",
+      "Nothing else to learn."
+     ],
+     "cons": [
+      "Easy to miss if you look away."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "float-close",
+     "label": "Floating, until closed",
+     "picture": "pictures/n/session-lost.png",
+     "caption": "Floating with a button, as the signed-out notice shows today.",
+     "summary": "Floating until you close it.",
+     "pros": [
+      "Can't be missed."
+     ],
+     "cons": [
+      "Small failures pile up as things you have to close."
+     ]
+    },
+    {
+     "id": "strip",
+     "label": "Strip in this chat",
+     "picture": "pictures/band-connecting.png",
+     "caption": "The strip above the message box, as the app shows \"Connecting tools…\" today.",
+     "summary": "In the strip above whatever chat is open.",
+     "pros": [
+      "One place for everything."
+     ],
+     "cons": [
+      "Shows in a chat it has nothing to do with."
+     ]
+    }
+   ],
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "checked": "Counted and read from the app code on 2026-11-23; every notice is listed under \"Every notice, by kind\".",
+   "picture": "pictures/n/copy-path.png",
+   "caption": "A real one, in the app today."
+  },
+  {
+   "id": "K-6",
+   "headline": "Done: where should a confirmation show, and when should it leave?",
+   "today": "3 notices: \"Copied to clipboard\" and \"Saving report.pdf to this device…\" and \"Voice is ready — tap the mic to talk.\". They float for 3 seconds.",
+   "problem": "Only three things confirm this way; most actions confirm silently or on the button itself.",
+   "proposal": "Keep them floating for 3 seconds, timer fixed.",
+   "options": [
+    {
+     "id": "float",
+     "label": "Floating, 3 seconds",
+     "picture": "pictures/n/copy-path.png",
+     "caption": "Floating above the message box, as every notice shows today.",
+     "summary": "As today, with the timer fixed.",
+     "pros": [
+      "Quick and out of the way."
+     ],
+     "cons": [
+      "None worth noting."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "on-button",
+     "label": "On the button",
+     "summary": "Drop the notice; the button itself shows a tick for a moment.",
+     "pros": [
+      "Nothing pops up at all."
+     ],
+     "cons": [
+      "\"Copied\" after typing /copy has no button to show it on."
+     ]
+    }
+   ],
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "checked": "Counted and read from the app code on 2026-11-23; every notice is listed under \"Every notice, by kind\".",
+   "picture": "pictures/n/copied-to-clipboard.png",
+   "caption": "A real one, in the app today."
+  },
+  {
+   "id": "K-7",
+   "headline": "Needs you, app-wide: where should it show, and when should it leave?",
+   "today": "10 notices, such as \"You were signed out of your YouCoded account. Friends see you as offline until you sign in again.\". They float for 6 to 30 seconds.",
+   "problem": "You must do something (sign in, fix a password, check a file), and the notice can vanish before you do.",
+   "proposal": "Keep them floating in any chat, and keep them until you act or close them.",
+   "options": [
+    {
+     "id": "float-close",
+     "label": "Floating, until closed",
+     "picture": "pictures/n/session-lost.png",
+     "caption": "Floating with a button, as the signed-out notice shows today.",
+     "summary": "Floating with its button and a close button. Stays until you act or close it.",
+     "pros": [
+      "Can't be missed.",
+      "Not tied to a chat, because it isn't about one."
+     ],
+     "cons": [
+      "Covers the bottom of the chat until you deal with it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "float-timed",
+     "label": "Floating, timed",
+     "picture": "pictures/n/session-lost.png",
+     "caption": "Floating with a button, as the signed-out notice shows today.",
+     "summary": "As today, leaving after 6 to 30 seconds.",
+     "pros": [
+      "Gets out of the way by itself."
+     ],
+     "cons": [
+      "Can vanish before you have read it."
+     ]
+    }
+   ],
+   "words": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "checked": "Counted and read from the app code on 2026-11-23; every notice is listed under \"Every notice, by kind\".",
+   "picture": "pictures/n/session-lost.png",
+   "caption": "A real one, in the app today.",
+   "resolved": "Done: Dismiss is now the leftmost button, outlined; the notice's own button is filled, on the right. Drawn in the app on the page \"Your picks, drawn in the app\"."
+  },
+  {
+   "id": "P-ref",
+   "page": "Every notice, by kind",
+   "intro": "For reference: every notice's exact words, sorted into the seven kinds. Nothing to answer here.",
+   "stage": "design"
+  },
+  {
+   "id": "L-ref-held",
+   "words": true,
+   "context": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "headline": "1. Your message was held back: all 13",
+   "calls": [
+    {
+     "id": "blocked-send-waiting",
+     "call": "Claude Code is waiting on something — answer it first.",
+     "why": "You try to send while Claude Code is showing a question, permission request or pop-up that must be answered first. About one chat.",
+     "picture": "pictures/n/blocked-send-waiting.png"
+    },
+    {
+     "id": "escape-didnt-close",
+     "call": "Claude Code didn't close it — switch to terminal view to answer it. Your message is still here.",
+     "why": "You pressed Send anyway but the Claude Code pop-up did not close. About one chat.",
+     "picture": "pictures/n/escape-didnt-close.png"
+    },
+    {
+     "id": "not-ready-to-send",
+     "call": "This conversation is not ready to send yet. Your message is still here.",
+     "why": "You send in a built-in assistant chat that is still starting up. About one chat.",
+     "picture": "pictures/n/not-ready-to-send.png"
+    },
+    {
+     "id": "not-connected-message-kept",
+     "call": "Not connected — your message is still here. Send it again when you reconnect.",
+     "why": "You press Send while the phone or browser has lost its connection to the computer. About the whole app.",
+     "picture": "pictures/n/not-connected-message-kept.png"
+    },
+    {
+     "id": "not-connected-original-kept",
+     "call": "Not connected — the original message is still here.",
+     "why": "You press Send again on a failed message bubble while disconnected. About one chat.",
+     "picture": "pictures/n/not-connected-original-kept.png"
+    },
+    {
+     "id": "send-compacting",
+     "call": "Conversation is compacting. Wait for it to finish, then send your message.",
+     "why": "You send in a built-in assistant chat while it is compacting. About one chat.",
+     "picture": "pictures/n/send-compacting.png"
+    },
+    {
+     "id": "send-queue-full",
+     "call": "Send queue is full (10 messages waiting). Wait for the current turn to finish.",
+     "why": "You send in a built-in assistant chat that already has ten messages waiting. About one chat.",
+     "picture": "pictures/n/send-queue-full.png"
+    },
+    {
+     "id": "send-changed",
+     "call": "This conversation changed while your message was being prepared. Your message is still here.",
+     "why": "A built-in assistant chat changed underneath a message you were sending. About one chat.",
+     "picture": "pictures/n/send-changed.png"
+    },
+    {
+     "id": "send-starting-full",
+     "call": "Starting up — the model is still loading, and ten messages are already waiting.",
+     "why": "You send while the local model is still loading and ten messages are already waiting. About one chat.",
+     "picture": "pictures/n/send-starting-full.png"
+    },
+    {
+     "id": "send-not-live",
+     "call": "This session is no longer running. Start or resume it to send messages.",
+     "why": "You send in a built-in assistant chat that has stopped running. About one chat.",
+     "picture": "pictures/n/send-not-live.png"
+    },
+    {
+     "id": "queue-not-answering",
+     "call": "Claude Code isn't answering in this chat yet. Your message wasn't sent.",
+     "why": "You send in a Claude Code chat whose message queue is not ready yet but may be soon. About one chat.",
+     "picture": "pictures/n/queue-not-answering.png"
+    },
+    {
+     "id": "queue-refused",
+     "call": "This chat couldn't take your message. Your message wasn't sent.",
+     "why": "A Claude Code chat's message queue refuses your message. About one chat.",
+     "picture": "pictures/n/queue-refused.png"
+    },
+    {
+     "id": "terminal-waiting-for-answer",
+     "call": "Claude’s terminal is waiting for an answer. Check it before sending this command.",
+     "why": "You send /model, /clear or /compact while Claude Code's terminal shows a question. About one chat.",
+     "picture": "pictures/n/terminal-waiting-for-answer.png"
+    }
+   ]
+  },
+  {
+   "id": "L-ref-unsure",
+   "words": true,
+   "context": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "headline": "2. Not sure it went through: all 20",
+   "calls": [
+    {
+     "id": "send-unconfirmed",
+     "call": "YouCoded couldn't confirm your message was sent — check the conversation before sending it again.",
+     "why": "A built-in assistant chat never answered whether your message arrived. About one chat.",
+     "picture": "pictures/n/send-unconfirmed.png"
+    },
+    {
+     "id": "send-failed-generic",
+     "call": "The message could not be sent.",
+     "why": "A built-in assistant chat refused a message for a reason with no specific wording. About one chat.",
+     "picture": "pictures/n/send-failed-generic.png"
+    },
+    {
+     "id": "queue-availability-changed",
+     "call": "Queue availability changed. Check the conversation before sending again.",
+     "why": "The chat's message queue went away in the middle of sending. About one chat.",
+     "picture": "pictures/n/queue-availability-changed.png"
+    },
+    {
+     "id": "queue-maybe-not-sent",
+     "call": "Your message may not have been sent. Check the chat before sending it again.",
+     "why": "The message queue gave an unclear answer, so the message may or may not have gone. About one chat.",
+     "picture": "pictures/n/queue-maybe-not-sent.png"
+    },
+    {
+     "id": "queue-outcome-unknown",
+     "call": "Message outcome is unknown. Check the queue and conversation before trying again.",
+     "why": "Sending through the queue failed in an unexpected way. About one chat.",
+     "picture": "pictures/n/queue-outcome-unknown.png"
+    },
+    {
+     "id": "lost-send-restored",
+     "call": "An earlier message didn't reach your computer. It's back in the message box.",
+     "why": "The app checks an unconfirmed earlier message, finds it never arrived, and puts the words back in the message box. About one chat.",
+     "picture": "pictures/n/lost-send-restored.png"
+    },
+    {
+     "id": "maybe-lost-send-restored",
+     "call": "An earlier message may not have reached your computer. It's back in the message box — check the conversation before sending it again.",
+     "why": "The app can't tell whether an earlier message arrived and puts its words back in the message box. About one chat.",
+     "picture": "pictures/n/maybe-lost-send-restored.png"
+    },
+    {
+     "id": "claude-did-not-confirm",
+     "call": "Claude did not confirm this action. Check the conversation before trying again.",
+     "why": "/model, /clear or /compact was sent to Claude Code but no confirmation came back. About one chat.",
+     "picture": "pictures/n/claude-did-not-confirm.png"
+    },
+    {
+     "id": "control-unconfirmed",
+     "call": "This action could not be confirmed. Check the conversation before trying again.",
+     "why": "Sending /model, /clear or /compact failed unexpectedly. About one chat.",
+     "picture": "pictures/n/control-unconfirmed.png"
+    },
+    {
+     "id": "clear-not-confirmed",
+     "call": "Clear was not confirmed; queued messages remain paused.",
+     "why": "/clear in a Claude Code chat with a queue did not finish cleanly. About one chat.",
+     "picture": "pictures/n/clear-not-confirmed.png"
+    },
+    {
+     "id": "clear-outcome-unknown",
+     "call": "Clear outcome is unknown. Do not repeat it without checking the conversation.",
+     "why": "/clear in a Claude Code chat got no answer. About one chat.",
+     "picture": "pictures/n/clear-outcome-unknown.png"
+    },
+    {
+     "id": "stop-not-confirmed",
+     "call": "Stop was not confirmed.",
+     "why": "You press Stop in a Claude Code chat and it is not confirmed. About one chat.",
+     "picture": "pictures/n/stop-not-confirmed.png"
+    },
+    {
+     "id": "stop-outcome-unknown",
+     "call": "Stop outcome is unknown. Check the conversation.",
+     "why": "You press Stop in a Claude Code chat and no answer comes back. About one chat.",
+     "picture": "pictures/n/stop-outcome-unknown.png"
+    },
+    {
+     "id": "stop-not-sent-offline",
+     "call": "Not connected — Stop wasn't sent. Press it again once you're back online.",
+     "why": "You press Stop on a phone while disconnected. About one chat.",
+     "picture": "pictures/n/stop-not-sent-offline.png"
+    },
+    {
+     "id": "stop-refused",
+     "call": "Stop didn't go through. Press it again.",
+     "why": "Stop pressed on a phone is refused by the computer. About one chat.",
+     "picture": "pictures/n/stop-refused.png"
+    },
+    {
+     "id": "stop-unconfirmed-phone",
+     "call": "Your computer hasn't confirmed the stop. If the assistant is still working, press Stop again.",
+     "why": "Stop pressed on a phone is not confirmed in time. About one chat.",
+     "picture": "pictures/n/stop-unconfirmed-phone.png"
+    },
+    {
+     "id": "mode-unconfirmed",
+     "call": "The permission mode didn't change. Your computer didn't confirm it.",
+     "why": "You change a chat's permission mode on a phone and the computer doesn't confirm. About one chat.",
+     "picture": "pictures/n/mode-unconfirmed.png"
+    },
+    {
+     "id": "close-unconfirmed",
+     "call": "Couldn't confirm \"Bug hunt\" closed on your computer, so it is back.",
+     "why": "Closing a conversation from a phone is never confirmed, so it reappears. About one chat.",
+     "picture": "pictures/n/close-unconfirmed.png"
+    },
+    {
+     "id": "model-switch-failed",
+     "call": "Couldn't switch to Opus",
+     "why": "You switch models but Claude's next reply still comes from the old model. About one chat.",
+     "picture": "pictures/n/model-switch-failed.png"
+    },
+    {
+     "id": "model-switch-failed-again",
+     "call": "Model switch failed again. Ask Claude to diagnose with /model, or report a bug.",
+     "why": "A model switch fails a second time in a row. About one chat.",
+     "picture": "pictures/n/model-switch-failed-again.png"
+    }
+   ]
+  },
+  {
+   "id": "L-ref-cant",
+   "words": true,
+   "context": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "headline": "3. That can't be done here or now: all 16",
+   "calls": [
+    {
+     "id": "not-in-native-runtime",
+     "call": "/doctor isn't available in YouCoded-runtime sessions yet.",
+     "why": "You use a Claude Code command (typed, from the command drawer or from Settings) in a built-in assistant chat that has no equivalent. About one chat.",
+     "picture": "pictures/n/not-in-native-runtime.png"
+    },
+    {
+     "id": "not-in-terminal-session",
+     "call": "/compact isn't available in a terminal session — it's a Claude Code command.",
+     "why": "You pick a Claude Code command while a plain terminal session is open. About one chat.",
+     "picture": "pictures/n/not-in-terminal-session.png"
+    },
+    {
+     "id": "skill-cant-start-native",
+     "call": "That skill can't be started from here in a YouCoded-runtime session yet.",
+     "why": "You start a skill from the drawer in a built-in assistant chat. About one chat.",
+     "picture": "pictures/n/skill-cant-start-native.png"
+    },
+    {
+     "id": "open-conversation-first",
+     "call": "Open a conversation first, then try again.",
+     "why": "You press a Settings button that runs a command (like Build new theme with Claude) with no chat open. About the whole app.",
+     "picture": "pictures/n/open-conversation-first.png"
+    },
+    {
+     "id": "attachments-ignored",
+     "call": "Attachments ignored with /compact",
+     "why": "You send /compact, /clear or /copy with files attached. About one chat.",
+     "picture": "pictures/n/attachments-ignored.png"
+    },
+    {
+     "id": "no-response-to-copy",
+     "call": "No response to copy",
+     "why": "You type /copy before the assistant has replied. About one chat.",
+     "picture": "pictures/n/no-response-to-copy.png"
+    },
+    {
+     "id": "compact-busy",
+     "call": "Can't compact while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+     "why": "You run /compact in a built-in assistant chat mid-reply. About one chat.",
+     "picture": "pictures/n/compact-busy.png"
+    },
+    {
+     "id": "compact-nothing",
+     "call": "Nothing to compact yet — there needs to be at least a couple of exchanges before there’s anything to summarize.",
+     "why": "You run /compact in a nearly empty built-in assistant chat. About one chat.",
+     "picture": "pictures/n/compact-nothing.png"
+    },
+    {
+     "id": "compact-not-live",
+     "call": "This session isn't running, so there's nothing to compact.",
+     "why": "/compact in a built-in assistant chat that has stopped. About one chat.",
+     "picture": "pictures/n/compact-not-live.png"
+    },
+    {
+     "id": "clear-busy",
+     "call": "Can't clear while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+     "why": "You run /clear in a built-in assistant chat mid-reply. About one chat.",
+     "picture": "pictures/n/clear-busy.png"
+    },
+    {
+     "id": "clear-not-live",
+     "call": "This session isn't running, so there's nothing to clear.",
+     "why": "/clear in a built-in assistant chat that has stopped. About one chat.",
+     "picture": "pictures/n/clear-not-live.png"
+    },
+    {
+     "id": "skill-not-a-skill",
+     "call": "That isn't an installed skill, and it isn't a command YouCoded-runtime sessions support yet. Browse the marketplace to install skills.",
+     "why": "You type an unknown /name in a built-in assistant chat. About one chat.",
+     "picture": "pictures/n/skill-not-a-skill.png"
+    },
+    {
+     "id": "skill-busy",
+     "call": "Can't start a skill while your assistant is still working. Stop the current turn (or wait for it to finish) and try again.",
+     "why": "You run a skill in a built-in assistant chat mid-reply. About one chat.",
+     "picture": "pictures/n/skill-busy.png"
+    },
+    {
+     "id": "skill-not-live",
+     "call": "This session isn't running, so there's nothing to run the skill in.",
+     "why": "You run a skill in a built-in assistant chat that has stopped. About one chat.",
+     "picture": "pictures/n/skill-not-live.png"
+    },
+    {
+     "id": "live-handoff-unavailable",
+     "call": "Live handoff is available from a computer or a remote connection to one.",
+     "why": "You agree to take over a conversation from another device on the Android app's own runtime. About one chat.",
+     "picture": "pictures/n/live-handoff-unavailable.png"
+    },
+    {
+     "id": "finish-current-transfer",
+     "call": "Finish the current conversation transfer, then try reopening this one again.",
+     "why": "You start a second conversation transfer while one is still running. About one chat.",
+     "picture": "pictures/n/finish-current-transfer.png"
+    }
+   ]
+  },
+  {
+   "id": "L-ref-chatfail",
+   "words": true,
+   "context": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "headline": "4. Something in this chat failed: all 20",
+   "calls": [
+    {
+     "id": "compact-summary-failed",
+     "call": "The model couldn’t write a usable summary, so the conversation was left intact. Try again later.",
+     "why": "/compact in a built-in assistant chat could not produce a summary. About one chat.",
+     "picture": "pictures/n/compact-summary-failed.png"
+    },
+    {
+     "id": "compact-interrupted",
+     "call": "Compaction stopped. The conversation was left as it was.",
+     "why": "A /compact in a built-in assistant chat was interrupted. About one chat.",
+     "picture": "pictures/n/compact-interrupted.png"
+    },
+    {
+     "id": "compact-error-detail",
+     "call": "Couldn't compact: model unavailable",
+     "why": "/compact in a built-in assistant chat failed for an unlisted reason that came with details. About one chat.",
+     "picture": "pictures/n/compact-error-detail.png"
+    },
+    {
+     "id": "compact-failed",
+     "call": "Couldn't compact this conversation.",
+     "why": "/compact in a built-in assistant chat failed with no details. About one chat.",
+     "picture": "pictures/n/compact-failed.png"
+    },
+    {
+     "id": "clear-error-detail",
+     "call": "Couldn't clear: write failed",
+     "why": "/clear in a built-in assistant chat failed for an unlisted reason that came with details. About one chat.",
+     "picture": "pictures/n/clear-error-detail.png"
+    },
+    {
+     "id": "clear-failed",
+     "call": "Couldn't clear this conversation.",
+     "why": "/clear in a built-in assistant chat failed with no details. About one chat.",
+     "picture": "pictures/n/clear-failed.png"
+    },
+    {
+     "id": "skill-unreadable",
+     "call": "That skill is installed, but its instructions couldn't be read. Reinstalling it from the marketplace usually fixes this.",
+     "why": "A skill you ran in a built-in assistant chat has unreadable instructions. About one chat.",
+     "picture": "pictures/n/skill-unreadable.png"
+    },
+    {
+     "id": "skill-error-detail",
+     "call": "Couldn't run /review: two skills match (a:review, b:review)",
+     "why": "Running a skill failed with details, including when two installed skills share the name. About one chat.",
+     "picture": "pictures/n/skill-error-detail.png"
+    },
+    {
+     "id": "skill-failed",
+     "call": "Couldn't run /review.",
+     "why": "Running a skill failed with no details. About one chat.",
+     "picture": "pictures/n/skill-failed.png"
+    },
+    {
+     "id": "stop-task-failed",
+     "call": "Couldn't stop this task.",
+     "why": "You press stop on a background task card and the request itself fails. About one chat.",
+     "picture": "pictures/n/stop-task-failed.png"
+    },
+    {
+     "id": "reload-model",
+     "call": "Couldn't reload the model.",
+     "why": "You press reload on the local model card and it fails. About one chat.",
+     "picture": "pictures/n/reload-model.png"
+    },
+    {
+     "id": "resume-failed",
+     "call": "Couldn't resume this conversation.",
+     "why": "Reopening a past conversation fails. About one chat.",
+     "picture": "pictures/n/resume-failed.png"
+    },
+    {
+     "id": "takeover-failed",
+     "call": "Couldn't take over from your other computer. Close the conversation there, then try again.",
+     "why": "You press Continue on a waiting transfer and taking it over from the other computer fails. About one chat.",
+     "picture": "pictures/n/takeover-failed.png"
+    },
+    {
+     "id": "handoff-unconfirmed",
+     "call": "Couldn't confirm the handoff from Work laptop.",
+     "why": "You resume a conversation that is open on another device and that device never confirms letting go. About one chat.",
+     "picture": "pictures/n/handoff-unconfirmed.png"
+    },
+    {
+     "id": "close-refused-detail",
+     "call": "Couldn't close \"Bug hunt\": session is busy",
+     "why": "Closing a conversation from a phone is refused and the computer gives a reason. About one chat.",
+     "picture": "pictures/n/close-refused-detail.png"
+    },
+    {
+     "id": "close-refused",
+     "call": "Couldn't close \"Bug hunt\". Your computer didn't accept the request.",
+     "why": "Closing a conversation from a phone is refused with no reason. About one chat.",
+     "picture": "pictures/n/close-refused.png"
+    },
+    {
+     "id": "save-tag-change",
+     "call": "Couldn't save this tag change.",
+     "why": "Adding or removing a tag on the open conversation is refused. About one chat.",
+     "picture": "pictures/n/save-tag-change.png"
+    },
+    {
+     "id": "save-note",
+     "call": "Couldn't save the note.",
+     "why": "Saving the open conversation's note is refused. About one chat.",
+     "picture": "pictures/n/save-note.png"
+    },
+    {
+     "id": "save-change",
+     "call": "Couldn't save this change.",
+     "why": "Changing a flag (such as pinned) on the open conversation is refused. About one chat.",
+     "picture": "pictures/n/save-change.png"
+    },
+    {
+     "id": "remove-from-list",
+     "call": "Couldn't remove this from the list.",
+     "why": "Removing a file from the conversation's files list fails. About one chat.",
+     "picture": "pictures/n/remove-from-list.png"
+    }
+   ]
+  },
+  {
+   "id": "L-ref-appfail",
+   "words": true,
+   "context": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "headline": "5. A button didn't work: all 39",
+   "calls": [
+    {
+     "id": "copy-failed-retry",
+     "call": "Couldn't copy — please try again.",
+     "why": "/copy could not write to the clipboard. About one chat.",
+     "picture": "pictures/n/copy-failed-retry.png"
+    },
+    {
+     "id": "save-fast-mode",
+     "call": "Couldn't save Fast mode.",
+     "why": "Turning Fast mode on or off (in the model picker or with /fast) fails to save. About the whole app.",
+     "picture": "pictures/n/save-fast-mode.png"
+    },
+    {
+     "id": "save-effort",
+     "call": "Couldn't save the effort level.",
+     "why": "Changing the effort level (in the model picker or with /effort) fails to save. About the whole app.",
+     "picture": "pictures/n/save-effort.png"
+    },
+    {
+     "id": "plan-tier",
+     "call": "Couldn't change the plan tier.",
+     "why": "Changing your plan tier in Settings on Android fails. About the whole app.",
+     "picture": "pictures/n/plan-tier.png"
+    },
+    {
+     "id": "download-unavailable",
+     "call": "Download isn’t available here.",
+     "why": "You press Download on a file where this device can't download. About the whole app.",
+     "picture": "pictures/n/download-unavailable.png"
+    },
+    {
+     "id": "download-refused",
+     "call": "Couldn’t download .env: it’s in a private location (like keys, passwords or .env files) that remote access never sends.",
+     "why": "The computer refuses a Download request or the request errors. About the whole app.",
+     "picture": "pictures/n/download-refused.png"
+    },
+    {
+     "id": "download-failed",
+     "call": "Couldn’t download report.pdf.",
+     "why": "A Download fails with no reason given. About the whole app.",
+     "picture": "pictures/n/download-failed.png"
+    },
+    {
+     "id": "picture-copy-failed",
+     "call": "Couldn't copy that picture.",
+     "why": "Copy picture from the right-click menu fails. About the whole app.",
+     "picture": "pictures/n/picture-copy-failed.png"
+    },
+    {
+     "id": "picture-save-failed",
+     "call": "Couldn't save that picture.",
+     "why": "Save picture from the right-click menu fails. About the whole app.",
+     "picture": "pictures/n/picture-save-failed.png"
+    },
+    {
+     "id": "copy-path",
+     "call": "Couldn't copy the path.",
+     "why": "Copy path on a file fails. About the whole app.",
+     "picture": "pictures/n/copy-path.png"
+    },
+    {
+     "id": "open-file",
+     "call": "Couldn't open the file.",
+     "why": "Opening a file in its own app from the files drawer fails. About the whole app.",
+     "picture": "pictures/n/open-file.png"
+    },
+    {
+     "id": "load-whole-file",
+     "call": "Couldn't load the whole file.",
+     "why": "You ask to see the rest of a large file and reading it fails. About the whole app.",
+     "picture": "pictures/n/load-whole-file.png"
+    },
+    {
+     "id": "attach-pasted-image",
+     "call": "Couldn't attach the pasted image.",
+     "why": "Pasting a picture into the message box fails. About the whole app.",
+     "picture": "pictures/n/attach-pasted-image.png"
+    },
+    {
+     "id": "open-file-picker",
+     "call": "Couldn't open the file picker.",
+     "why": "You press Attach and the file picker fails to open. About the whole app.",
+     "picture": "pictures/n/open-file-picker.png"
+    },
+    {
+     "id": "open-folder",
+     "call": "Couldn't open the folder.",
+     "why": "Opening a project's folder from its page fails. About the whole app.",
+     "picture": "pictures/n/open-folder.png"
+    },
+    {
+     "id": "upload-too-large",
+     "call": "That file is over 25 MB, the most a phone can send to the computer. Attach a smaller one.",
+     "why": "You attach a file over 25 MB from a phone or browser. About the whole app.",
+     "picture": "pictures/n/upload-too-large.png"
+    },
+    {
+     "id": "upload-folder-full",
+     "call": "The computer’s space for attachments is full right now. Try again in a little while, or attach fewer files.",
+     "why": "You attach a file from a phone or browser while the computer's attachment folder is full. About the whole app.",
+     "picture": "pictures/n/upload-folder-full.png"
+    },
+    {
+     "id": "upload-failed",
+     "call": "Upload failed",
+     "why": "Sending an attachment from a phone or browser to the computer fails. About the whole app.",
+     "picture": "pictures/n/upload-failed.png"
+    },
+    {
+     "id": "copy-failed",
+     "call": "Couldn't copy.",
+     "why": "Picking an option in a message's copy picker fails to copy. About the whole app.",
+     "picture": "pictures/n/copy-failed.png"
+    },
+    {
+     "id": "like-theme-failed",
+     "call": "Couldn't like theme — try again",
+     "why": "Liking a theme in the marketplace fails (other than a sign-in problem). About the whole app."
+    },
+    {
+     "id": "change-favorites",
+     "call": "Couldn't change your favorites.",
+     "why": "Starring or unstarring a command, skill or theme fails. About the whole app.",
+     "picture": "pictures/n/change-favorites.png"
+    },
+    {
+     "id": "save-setting",
+     "call": "Couldn't save this setting.",
+     "why": "Changing a new-session default in Settings fails to save. About the whole app.",
+     "picture": "pictures/n/save-setting.png"
+    },
+    {
+     "id": "save-output-style",
+     "call": "Couldn't save your output style.",
+     "why": "Your output style edit failed to save after the preferences popup closed. About the whole app.",
+     "picture": "pictures/n/save-output-style.png"
+    },
+    {
+     "id": "save-system-prompt",
+     "call": "Couldn't save your system prompt.",
+     "why": "Your system prompt edit failed to save after the preferences popup closed. About the whole app.",
+     "picture": "pictures/n/save-system-prompt.png"
+    },
+    {
+     "id": "create-tag",
+     "call": "Couldn't create the tag.",
+     "why": "Creating a new conversation tag fails. About the whole app.",
+     "picture": "pictures/n/create-tag.png"
+    },
+    {
+     "id": "save-tag",
+     "call": "Couldn't save the tag.",
+     "why": "Editing a conversation tag fails. About the whole app.",
+     "picture": "pictures/n/save-tag.png"
+    },
+    {
+     "id": "delete-tag",
+     "call": "Couldn't delete the tag.",
+     "why": "Deleting a conversation tag fails. About the whole app.",
+     "picture": "pictures/n/delete-tag.png"
+    },
+    {
+     "id": "open-link",
+     "call": "Couldn't open the link.",
+     "why": "Opening a link from a deliverables card fails. About the whole app.",
+     "picture": "pictures/n/open-link.png"
+    },
+    {
+     "id": "open-browser",
+     "call": "Couldn't open the browser.",
+     "why": "Clicking a usage chip in the status bar fails to open the Claude usage page. About the whole app.",
+     "picture": "pictures/n/open-browser.png"
+    },
+    {
+     "id": "open-page",
+     "call": "Couldn't open the page.",
+     "why": "Opening a project's online repository page fails. About the whole app.",
+     "picture": "pictures/n/open-page.png"
+    },
+    {
+     "id": "open-setup-session",
+     "call": "Couldn't open a setup session.",
+     "why": "Starting a setup chat for an integration from the marketplace fails. About the whole app.",
+     "picture": "pictures/n/open-setup-session.png"
+    },
+    {
+     "id": "install-integration",
+     "call": "Couldn't install Google Drive.",
+     "why": "Installing an integration from the marketplace errors. About the whole app.",
+     "picture": "pictures/n/install-integration.png"
+    },
+    {
+     "id": "connect-integration",
+     "call": "Couldn't connect Google Drive.",
+     "why": "Connecting an integration fails. About the whole app.",
+     "picture": "pictures/n/connect-integration.png"
+    },
+    {
+     "id": "uninstall-integration",
+     "call": "Couldn't uninstall Google Drive.",
+     "why": "Uninstalling an integration fails. About the whole app.",
+     "picture": "pictures/n/uninstall-integration.png"
+    },
+    {
+     "id": "refresh-integrations",
+     "call": "Couldn't refresh the integrations list.",
+     "why": "After installing, connecting or uninstalling an integration, the list fails to reload. About the whole app.",
+     "picture": "pictures/n/refresh-integrations.png"
+    },
+    {
+     "id": "refresh-project-list",
+     "call": "Couldn't refresh the project list.",
+     "why": "After adding or changing a project, the projects list fails to reload. About the whole app.",
+     "picture": "pictures/n/refresh-project-list.png"
+    },
+    {
+     "id": "rename-project",
+     "call": "Couldn't rename this project.",
+     "why": "Renaming a project is refused. About the whole app.",
+     "picture": "pictures/n/rename-project.png"
+    },
+    {
+     "id": "save-description",
+     "call": "Couldn't save the description.",
+     "why": "Saving a project's description is refused. About the whole app.",
+     "picture": "pictures/n/save-description.png"
+    },
+    {
+     "id": "stop-syncing",
+     "call": "Couldn't stop syncing this project.",
+     "why": "Stop syncing on a project is refused. About the whole app.",
+     "picture": "pictures/n/stop-syncing.png"
+    }
+   ]
+  },
+  {
+   "id": "L-ref-done",
+   "words": true,
+   "context": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "headline": "6. Done: all 3",
+   "calls": [
+    {
+     "id": "copied-to-clipboard",
+     "call": "Copied to clipboard",
+     "why": "/copy copied the last reply. About one chat.",
+     "picture": "pictures/n/copied-to-clipboard.png"
+    },
+    {
+     "id": "download-saving",
+     "call": "Saving report.pdf to this device…",
+     "why": "You press Download on a file and the computer accepts. About the whole app.",
+     "picture": "pictures/n/download-saving.png"
+    },
+    {
+     "id": "voice-ready",
+     "call": "Voice is ready — tap the mic to talk.",
+     "why": "Voice input finishes setting up. About the whole app.",
+     "picture": "pictures/n/voice-ready.png"
+    }
+   ]
+  },
+  {
+   "id": "L-ref-heads",
+   "words": true,
+   "context": true,
+   "surface": "Notices",
+   "path": "Every notice of this kind",
+   "headline": "7. Needs you, app-wide: all 10",
+   "calls": [
+    {
+     "id": "session-lost",
+     "call": "You were signed out of your YouCoded account. Friends see you as offline until you sign in again.",
+     "why": "The YouCoded server stops recognising your sign-in. About the whole app.",
+     "picture": "pictures/n/session-lost.png"
+    },
+    {
+     "id": "plugin-turned-off",
+     "call": "We turned off a plugin that was found to be unsafe.",
+     "why": "At start-up, once per plugin, when YouCoded has newly turned off an installed plugin as unsafe. About the whole app.",
+     "picture": "pictures/n/plugin-turned-off.png"
+    },
+    {
+     "id": "settings-repaired",
+     "call": "Your Claude Code settings couldn't be read, so YouCoded reset them. Your old settings are saved in a file.",
+     "why": "At start-up, once, when YouCoded had to replace a damaged Claude Code settings file (no button on a phone or the Android app). About the whole app.",
+     "picture": "pictures/n/settings-repaired.png"
+    },
+    {
+     "id": "tailscale-only",
+     "call": "YouCoded only connects to your computer over Tailscale, and this address isn’t one. Turn on Tailscale on both devices and add the computer again using its Tailscale address.",
+     "why": "The phone tries to reconnect to a saved computer at an address that isn't a Tailscale address. About the whole app.",
+     "picture": "pictures/n/tailscale-only.png"
+    },
+    {
+     "id": "saved-password-rejected",
+     "call": "Work PC didn't accept the saved password. Update it in Settings → Connect to Desktop.",
+     "why": "The phone's saved computer refuses its saved password (invalid, revoked or unknown). About the whole app.",
+     "picture": "pictures/n/saved-password-rejected.png"
+    },
+    {
+     "id": "saved-password-none-set",
+     "call": "Work PC has no remote access password set yet. Set one on that computer, in Settings → Remote access.",
+     "why": "The phone's saved computer has no remote access password set. About the whole app.",
+     "picture": "pictures/n/saved-password-none-set.png"
+    },
+    {
+     "id": "saved-password-expired",
+     "call": "Work PC signed this phone out after 30 days without use. Enter the password again in Settings → Connect to Desktop.",
+     "why": "The phone's saved sign-in to the computer expired from lack of use. About the whole app.",
+     "picture": "pictures/n/saved-password-expired.png"
+    },
+    {
+     "id": "saved-password-refused-other",
+     "call": "Work PC refused this sign-in.",
+     "why": "The phone's saved computer refuses the sign-in for another reason (e.g. retired). About the whole app.",
+     "picture": "pictures/n/saved-password-refused-other.png"
+    },
+    {
+     "id": "remote-unsupported",
+     "call": "Theme browsing isn't available via remote access yet.",
+     "why": "On a phone or browser, you use a part of the app the computer doesn't offer over remote access yet (shown once per feature). About the whole app."
+    },
+    {
+     "id": "office-save-failed",
+     "call": "An Office document couldn't be saved.",
+     "why": "An Office document tab closed while the Office page was hidden and could not save, so it came back. About the whole app."
+    }
+   ]
+  },
+  {
+   "id": "P-1",
+   "page": "What goes wrong today",
+   "intro": "The notice from your screenshot, and the rule you suggested for it.",
+   "stage": "design"
+  },
+  {
+   "id": "L-0",
+   "words": true,
+   "context": true,
+   "surface": "Chat",
+   "path": "The notice above the message box",
+   "headline": "Why the notice misbehaves",
+   "calls": [
+    {
+     "id": "when",
+     "call": "When it appears",
+     "why": "You press Send while Claude Code waits for you to answer something. Your message is held back, not sent, and stays in the box."
+    },
+    {
+     "id": "stuck",
+     "call": "Why it never goes away",
+     "why": "It should vanish after 8 seconds, but the countdown restarts every time the screen updates. While Claude works, that is many times a second."
+    },
+    {
+     "id": "follows",
+     "call": "Why it follows you to other chats",
+     "why": "The app has one spot for floating notices, shared by every chat, so switching chats leaves it showing."
+    }
+   ]
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "surface": "Chat",
+   "path": "The notice above the message box",
+   "headline": "The notice should belong to one chat, and leave once the question is answered or you send a message.",
+   "changed": "Your suggestion, written as the rule the fix would follow.",
+   "notice": "It would never show in a chat it has nothing to do with, and never vanish while your message is still held back.",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "P-2",
+   "page": "How the app's other warnings look and behave",
+   "intro": "Real pictures from the app. Most already belong to one chat and leave once the problem is fixed.",
+   "stage": "design"
+  },
+  {
+   "id": "L-1",
+   "words": true,
+   "context": true,
+   "gallery": true,
+   "surface": "Chat",
+   "path": "Every warning a chat can show",
+   "headline": "Every kind of warning in a chat today",
+   "calls": [
+    {
+     "id": "question",
+     "call": "A question from Claude",
+     "why": "A card in the chat. Only in that chat. Stays until you answer or dismiss it. This is what the notice is pointing you to.",
+     "picture": "pictures/question-card.png"
+    },
+    {
+     "id": "stuck",
+     "call": "Claude seems stuck",
+     "why": "Inside the chat, under the last reply, with a red outline. Only in that chat. Goes away by itself the moment Claude replies again.",
+     "picture": "pictures/stuck-inline.png"
+    },
+    {
+     "id": "error",
+     "call": "An error from the AI service",
+     "why": "Inside the chat, with a red outline and Details. Only in that chat. Stays until your next message. Buttons to try again or switch model.",
+     "picture": "pictures/error-card.png"
+    },
+    {
+     "id": "offline",
+     "call": "No internet",
+     "why": "Inside the chat, a small red-outlined line with Try again. Only in that chat. Goes away once the connection works.",
+     "picture": "pictures/offline.png"
+    },
+    {
+     "id": "signin",
+     "call": "Signed out of Claude",
+     "why": "Inside the chat, in place of the reply. After you sign in it turns green, then goes away with your next message.",
+     "before": "pictures/signin-expired.png",
+     "before_name": "Signed out",
+     "picture": "pictures/signin-back.png",
+     "picture_name": "Signed back in"
+    },
+    {
+     "id": "unconfirmed",
+     "call": "A message that may not have arrived",
+     "why": "A row just above the message box. Only in that chat. Goes away once the message is confirmed, or when you press Dismiss.",
+     "picture": "pictures/unconfirmed-send.png"
+    },
+    {
+     "id": "band",
+     "call": "Starting up, or tools that failed",
+     "why": "A strip just above the message box. Only in that chat. Grey while it works, red if it fails. Goes away once the chat is ready.",
+     "before": "pictures/band-connecting.png",
+     "before_name": "Starting up",
+     "picture": "pictures/band-failed.png",
+     "picture_name": "Tools failed"
+    },
+    {
+     "id": "phone",
+     "call": "Phone reconnecting to the computer",
+     "why": "A strip just above the message box on a phone. Only in that chat. Goes away once it reconnects, and keeps your draft.",
+     "picture": "pictures/phone-reconnecting.png"
+    },
+    {
+     "id": "top",
+     "call": "Something left out when the chat started",
+     "why": "An amber strip across the top of the chat. Only in that chat. It stays, because it is information rather than a problem to fix.",
+     "picture": "pictures/top-strip.png"
+    },
+    {
+     "id": "floating",
+     "call": "Short floating notices",
+     "why": "One floating spot for the whole app, used by about 40 messages like this one. Meant to leave after a few seconds. All share the stuck-timer bug.",
+     "picture": "pictures/today-floating-close.png"
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Your choices",
+   "intro": "Where the notice goes, when it shows, and what happens to your held-back message.",
+   "stage": "design"
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Chat",
+   "path": "The notice above the message box",
+   "headline": "Now that you have seen every notice: how should they be organized?",
+   "today": "About 120 short notices share one floating spot above the message box. Most are about one chat; about 45 are about the whole app.",
+   "checked": "Counted from the app code on 2026-11-23; every one is photographed on the pages before this one.",
+   "problem": "Notices about one chat float over every chat, and the timer bug can leave any of them on screen while Claude works.",
+   "proposal": "Pick how they should be organized. Drawings of your pick, made in the real app, come next round.",
+   "options": [
+    {
+     "id": "two-homes",
+     "label": "Two homes",
+     "recommended": true,
+     "summary": "Notices about one chat sit in a strip just above that chat's message box. Notices about the whole app keep floating.",
+     "pros": [
+      "A chat's notice never shows in another chat.",
+      "A problem stays until it is fixed; a plain confirmation still leaves after a few seconds.",
+      "The strip already exists for \"Connecting tools…\" and the phone's \"Reconnecting…\"."
+     ],
+     "cons": [
+      "Two places to look instead of one.",
+      "Each notice has to be sorted into one home or the other."
+     ]
+    },
+    {
+     "id": "all-strip",
+     "label": "All in the strip",
+     "summary": "Every notice, about one chat or the whole app, sits in the strip above the message box.",
+     "pros": [
+      "One place for everything.",
+      "Nothing ever covers your messages."
+     ],
+     "cons": [
+      "App-wide notices, like a failed download, would sit in whichever chat is open and stay there when you switch."
+     ]
+    },
+    {
+     "id": "floating-fixed",
+     "label": "Keep floating",
+     "summary": "Everything stays floating as today, with the timer fixed and chat notices shown only in their own chat.",
+     "pros": [
+      "Smallest change; looks the same as today."
+     ],
+     "cons": [
+      "Floating notices still cover the bottom of the chat while they show.",
+      "Only one can show at a time; a new one replaces the last."
+     ]
+    }
+   ],
+   "picture": "pictures/today-real.png",
+   "caption": "Today, in the real app: a question is waiting and you pressed Send.",
+   "resolved": "Replaced by one decision per kind of notice, on the first page, with every notice sorted and listed."
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Chat",
+   "path": "The notice above the message box",
+   "headline": "When should the notice appear?",
+   "today": "Only when you press Send and the message is held back.",
+   "checked": "Read in the app's code on 2026-11-21.",
+   "problem": "Claude's question is usually already on screen, so a notice before you send would repeat it.",
+   "proposal": "Two choices.",
+   "options": [
+    {
+     "id": "after-send",
+     "label": "After you press Send",
+     "recommended": true,
+     "summary": "It only appears when your message is held back, as now.",
+     "pros": [
+      "Never repeats a question you can already see.",
+      "Shows exactly when you need to know why nothing sent."
+     ],
+     "cons": [
+      "You only learn something is waiting once you try to send."
+     ]
+    },
+    {
+     "id": "always",
+     "label": "Whenever something waits",
+     "summary": "It shows as soon as Claude Code waits on you, even before you type.",
+     "pros": [
+      "You know before you start typing."
+     ],
+     "cons": [
+      "Shows on top of a question you can already see, most of the time."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Chat",
+   "path": "The message box",
+   "headline": "Once you answer, should your held-back message send itself?",
+   "today": "Your message stays in the box. After answering, you press Send again yourself.",
+   "checked": "Read in the app's code on 2026-11-21.",
+   "problem": "Pressing Send twice is a small annoyance; a message sending itself later can be a surprise.",
+   "proposal": "Two choices.",
+   "options": [
+    {
+     "id": "manual",
+     "label": "You press Send again",
+     "recommended": true,
+     "summary": "The message waits in the box until you send it.",
+     "pros": [
+      "Nothing sends without you pressing the button.",
+      "You can change or delete it first."
+     ],
+     "cons": [
+      "One extra press after answering."
+     ]
+    },
+    {
+     "id": "auto",
+     "label": "It sends itself",
+     "summary": "The notice says your message will send once you answer, and it goes out as soon as you do.",
+     "pros": [
+      "No second press."
+     ],
+     "cons": [
+      "A message typed minutes ago could go out after you changed your mind.",
+      "A bigger change to how sending works, so more that could go wrong."
+     ]
+    }
+   ],
+   "resolved": "Kept: you press Send yourself. Your note is the rule: the notice leaves on its own the moment the question is answered."
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Every floating notice",
+   "path": "The floating notices above the message box",
+   "headline": "Should I also fix the stuck timer for the other floating notices now?",
+   "today": "About 40 short notices, like \"Not connected\" or \"Couldn't switch model\", share the same stuck-timer bug.",
+   "checked": "Found by reading the shared notice code on 2026-11-21; the bug is in the one piece all of them use.",
+   "problem": "Any of them can stay on screen while Claude works, the same way this one did.",
+   "proposal": "Fix that one shared piece now. Yes: those notices leave on time, and that is the only change you would notice. No: they stay as they are.",
+   "resolved": "Will fix the timer in the one shared piece; it stays useful whichever way you organize the notices."
+  },
+  {
+   "id": "P-b1",
+   "page": "What you asked for, and what you'll get",
+   "intro": "One row per thing you asked for, in your words. Tick or change each.",
+   "stage": "before"
+  },
+  {
+   "id": "W-asked",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "What you asked for, and what you'll get",
+   "calls": [
+    {
+     "id": "stuck",
+     "call": "The floating notice no longer stays forever or follows you between chats.",
+     "why": "Its timer is fixed for every floating notice, and chat notices now belong to their chat.",
+     "decided": "it should be tied to a specific chat and only dismiss when the issue is resolved or a message is sent"
+    },
+    {
+     "id": "held",
+     "call": "\"Held back\" sits in the strip above that chat's box and leaves the moment the question is answered or you send.",
+     "why": "The app re-checks whether the question is still open, so it can't get stuck.",
+     "decided": "the warning should dismiss itself as soon as the question is resolved"
+    },
+    {
+     "id": "buttons",
+     "call": "Dismiss is leftmost and outlined; the main button is filled, on the right.",
+     "why": "On the strip and on floating notices that need you.",
+     "decided": "\"dismiss\" should be the leftmost button and not filled in. primary action should be filled rightmost button"
+    },
+    {
+     "id": "rule",
+     "call": "Failures go by your rule: stopped a send → strip; after your message is in → in the chat; nothing to do → short floating notice.",
+     "why": "All 20 failures, as you ticked them.",
+     "decided": "blocking issues that stop the message from being sent in the first place should appear in the strip above the input area"
+    },
+    {
+     "id": "cant",
+     "call": "\"Can't do that here\" notices sit in the strip with Dismiss (and Stop or Browse skills where useful), and leave on your next action.",
+     "why": "Busy ones leave on their own when the reply ends.",
+     "decided": "should probably include dismiss/try again buttons in most cases, and auto-dismiss in some instances on next command or message send"
+    },
+    {
+     "id": "prevent",
+     "call": "Fewer chances to hit these: commands that can't work in a chat aren't offered there; skills that can't start are greyed with a reason; two skills sharing a name asks which; unreadable skills are marked.",
+     "why": "The approved prevention ideas from the \"can't be done\" list.",
+     "decided": "i'd like to try to minimize the room/opportunity for these kinds of errors to appear in the first place"
+    },
+    {
+     "id": "limits",
+     "call": "Known limits say what works instead (\"Browsing themes only works on the computer running YouCoded for now\").",
+     "why": "Short floating, no button to press.",
+     "decided": "if the failure is simply a known limitation of the app, this should be better explained"
+    },
+    {
+     "id": "unsure",
+     "call": "The 20 \"not sure it went through\" notices move as you ticked: unsent messages in the strip until you send again, unconfirmed Stop/clear/compact in the strip, a failed model switch stays until closed.",
+     "why": "With the new shared wording.",
+     "decided": "Ticked all 20 rows"
+    },
+    {
+     "id": "words",
+     "call": "Notices that mean the same thing use the same sentence; a second sentence only when it changes what you do. No technical text ever shows.",
+     "why": "About 30 sentences become a handful.",
+     "decided": "i think we should only show additional detail when it would change how a user resolves the issue"
+    },
+    {
+     "id": "theme",
+     "call": "\"Build new theme with Claude\" with no chat open opens the new-chat popup Pages uses.",
+     "why": "Pick a folder and model; the theme builder waits in the new chat.",
+     "decided": "we should offer the normal popup used elsewhere (pages and such) that lets the user pick a model and such for the theme"
+    },
+    {
+     "id": "fyi",
+     "call": "\"Attachments were left out\" and \"No reply to copy yet\" are short floating notices.",
+     "why": "They blocked nothing.",
+     "decided": "Yes"
+    },
+    {
+     "id": "screen",
+     "call": "Notices from the resume list and the screen for moving a chat show on that screen, with its own buttons.",
+     "why": "Never in an unrelated chat's strip.",
+     "decided": "Yes"
+    },
+    {
+     "id": "card",
+     "call": "A failed compact or clear shows a card in the chat with Try again; it leaves once it works.",
+     "why": "Only on screen; not saved into the chat's history.",
+     "decided": "Leaves once it works"
+    },
+    {
+     "id": "dot",
+     "call": "A failure in a chat you've left puts a red dot on that chat in the list.",
+     "why": "The dot goes when you open the chat.",
+     "decided": "A red dot on that chat in the list"
+    },
+    {
+     "id": "turns",
+     "call": "Two \"needs you\" notices take turns; quick ones like \"Copied\" never push them out.",
+     "why": "The next shows when you close the first.",
+     "decided": "Yes"
+    },
+    {
+     "id": "phone",
+     "call": "On a phone, the strip's buttons drop below the words.",
+     "why": "Desktop keeps them beside the words.",
+     "decided": "Yes"
+    },
+    {
+     "id": "times",
+     "call": "Floating notice times: done 3 s, button failed 5 s, \"needs you\" until closed.",
+     "why": "As you picked for each kind.",
+     "decided": "Floating (3 s) / Floating, timed (5 s) / Floating until closed"
+    },
+    {
+     "id": "review",
+     "call": "A separate reviewer checked everything before this list was made.",
+     "why": "Its bug fixes are already in; its choices were your last page.",
+     "decided": "please have a separate independent reviewer do a final check"
+    }
+   ]
+  },
+  {
+   "id": "P-b2",
+   "page": "Every screen that changes",
+   "intro": "The ones already drawn in the practice app. The rest are photographed after the build.",
+   "stage": "before"
+  },
+  {
+   "id": "W-screens",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Every screen that changes",
+   "gallery": true,
+   "calls": [
+    {
+     "id": "g-held",
+     "call": "Held back, in the strip",
+     "why": "Leaves once the question is answered or you send.",
+     "picture": "pictures/r4/strip-held.png"
+    },
+    {
+     "id": "g-cant",
+     "call": "Can't do that here, in the strip",
+     "why": "Leaves on your next action.",
+     "picture": "pictures/r4/strip-cant.png"
+    },
+    {
+     "id": "g-failed",
+     "call": "Something failed before sending",
+     "why": "Red dot, Dismiss and Try again.",
+     "picture": "pictures/r4/strip-failed.png"
+    },
+    {
+     "id": "g-k7",
+     "call": "A notice that needs you",
+     "why": "Stays until you close it; Dismiss left, main button right.",
+     "picture": "pictures/r4/k7-saved-password-expired.png"
+    },
+    {
+     "id": "g-theme",
+     "call": "The new-chat popup the theme button will open",
+     "why": "The same one Pages uses today; the title will say it's for a theme.",
+     "picture": "pictures/r4/new-chat-popup.png"
+    }
+   ]
+  },
+  {
+   "id": "P-b3",
+   "page": "Behind the scenes",
+   "intro": "What happens without a screen of its own.",
+   "stage": "before"
+  },
+  {
+   "id": "W-behind",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "What happens behind the scenes",
+   "numbered": true,
+   "calls": [
+    {
+     "id": "b1",
+     "call": "You press Send while Claude waits on a question. Your message stays in the box and the strip says so.",
+     "why": "The strip re-checks about once a second; when the question is gone, so is the strip."
+    },
+    {
+     "id": "b2",
+     "call": "A command or skill that can't run here puts its notice in this chat's strip only.",
+     "why": "Switching chats or typing puts it away."
+    },
+    {
+     "id": "b3",
+     "call": "Wherever a failure arrives a moment late, it goes to the chat it belongs to, not the one on screen.",
+     "why": "If that's not the chat you're in, that chat gets a red dot in the list."
+    },
+    {
+     "id": "b4",
+     "call": "Technical messages from inside the app are written to the log, never shown.",
+     "why": "You see the plain shared sentence instead."
+    },
+    {
+     "id": "b5",
+     "call": "Closing a chat throws away its notice.",
+     "why": "Reopening that chat later starts clean."
+    }
+   ]
+  },
+  {
+   "id": "P-b4",
+   "page": "Choices I made",
+   "intro": "Things you could notice that I decided without asking.",
+   "stage": "before"
+  },
+  {
+   "id": "W-choices",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Choices I made",
+   "calls": [
+    {
+     "id": "c-elsewhere",
+     "call": "The red dot uses the same red as other \"needs attention\" dots, and only one shows per chat.",
+     "why": "So it reads as the app's existing warning dot."
+    },
+    {
+     "id": "c-queue",
+     "call": "Up to three \"needs you\" notices wait in line; any more are dropped and written to the log.",
+     "why": "A pile-up that long only happens when something is very wrong."
+    },
+    {
+     "id": "c-card",
+     "call": "The in-chat failure card is the app's existing red error card.",
+     "why": "Same look as the AI-service error card you already know."
+    },
+    {
+     "id": "c-strip-red",
+     "call": "The red strip is a deliberate exception to the rule that every failure uses the error card.",
+     "why": "You approved its look; I'll write the exception into the design guide so nobody \"fixes\" it back."
+    },
+    {
+     "id": "c-buddy",
+     "call": "The small floating buddy chat gets the same strip.",
+     "why": "Otherwise it would keep the old stuck notice."
+    },
+    {
+     "id": "c-model",
+     "call": "A failed model switch has Try again; a second failure has Report bug.",
+     "why": "Replaces \"ask Claude to diagnose with /model\"."
+    }
+   ]
+  },
+  {
+   "id": "P-b5",
+   "page": "Checks",
+   "intro": "The checks I'll run after building. Switch any on or off.",
+   "stage": "before"
+  },
+  {
+   "id": "W-checks",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Checks I'll run",
+   "calls": [
+    {
+     "id": "k-review",
+     "call": "A fresh reviewer reads the finished change.",
+     "why": "Looks for bugs and anything that breaks a rule.",
+     "result": "run",
+     "more": {
+      "does": "A reviewer who has seen none of this conversation reads every changed file and your answers, and lists bugs and surprises.",
+      "why": "On: this changes how every notice in the app behaves."
+     },
+     "check": "code-review"
+    },
+    {
+     "id": "k-trace",
+     "call": "Every row on the first page is traced to what was built.",
+     "why": "Nothing you asked for gets lost.",
+     "result": "run",
+     "more": {
+      "does": "Each row is matched to the code and pictures that deliver it; any gap is listed.",
+      "why": "On by default."
+     }
+    },
+    {
+     "id": "k-grader",
+     "call": "A fresh grader checks the after-build deck against this one.",
+     "why": "Marks each row met or not met.",
+     "result": "run",
+     "more": {
+      "does": "Someone with no stake compares this list to the finished build and marks each row met or not.",
+      "why": "On by default."
+     }
+    },
+    {
+     "id": "k-gate",
+     "call": "The done gate.",
+     "why": "The work is finished only when you change nothing in the after-build walkthrough.",
+     "result": "run",
+     "more": {
+      "does": "A script refuses to call the work done while any row lacks a result.",
+      "why": "On by default."
+     }
+    },
+    {
+     "id": "k-verify",
+     "call": "The app's own code checks and every screen opened.",
+     "why": "Types, tests, dead code, and all screens photographed.",
+     "result": "run",
+     "more": {
+      "does": "Runs the full desktop check suite and opens every named screen in the practice app.",
+      "why": "On: required before anything is called done."
+     }
+    },
+    {
+     "id": "k-ux",
+     "call": "A tester with no context tries the notices.",
+     "why": "Not suggested this time.",
+     "result": "skip",
+     "more": {
+      "does": "A fresh helper uses the practice app like a newcomer and reports confusion.",
+      "why": "Off unless you want it: you've already steered every notice in detail."
+     }
+    },
+    {
+     "id": "k-android",
+     "call": "Android's own build and tests.",
+     "why": "Not suggested this time.",
+     "result": "skip",
+     "more": {
+      "does": "Builds and tests the phone app.",
+      "why": "Off: these are shared screens with no phone-only code, and the phone build tools may not be on this computer today; I'll say so plainly if it's unverified."
+     }
+    }
+   ]
+  }
+ ],
+ "notes_handled": {
+  "P-drawn": "An independent reviewer checked the code and every notice. Its bugs are being fixed; the choices you'd notice are on the first page."
+ }
+}

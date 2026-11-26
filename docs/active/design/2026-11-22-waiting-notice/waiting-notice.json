@@ -4,7 +4,7 @@
  "out": "waiting-notice.html",
  "grows": true,
  "tag": "bug",
- "stage": "design",
+ "stage": "before",
  "rounds_before": 1,
  "retired": {},
  "steps": [
@@ -20,8 +20,6 @@
    "surface": "Notices",
    "path": "After you send, stop, clear or switch something",
    "headline": "Not sure it went through: where each one goes, and its new words",
-   "reopened": "You asked for more context on where the 20 \"not sure it went through\" notices should go.",
-   "reframed": "Each of the 20 is now its own row: what it says today, when it shows, its new shared wording, and where it would go. Tick the ones that look right.",
    "calls": [
     {
      "id": "send-failed-generic",
@@ -286,8 +284,6 @@
    "surface": "Settings",
    "path": "Settings → Appearance → Build new theme with Claude",
    "headline": "Pressing \"Build new theme with Claude\" with no chat open: what should happen?",
-   "reopened": "You asked when anyone would see \"Open a conversation first\".",
-   "reframed": "It has exactly one cause: the theme-building button in Settings, pressed while no chat is open. Shown now with that button.",
    "today": "Settings → Appearance has a \"Build new theme with Claude\" button. It runs the theme builder in the chat you have open. With no chat open, it shows \"Open a conversation first, then try again.\" Nothing else in the app shows this notice.",
    "checked": "App.tsx onRunCommand is the only place that shows this notice (searched 2026-11-25).",
    "problem": "You pressed a button that clearly asks for a chat, and the app makes you close Settings, open a chat, and come back.",
@@ -325,7 +321,8 @@
       "You have to leave Settings and come back."
      ]
     }
-   ]
+   ],
+   "resolved": "Adopted: with no chat open, the button opens the same new-chat popup Pages uses (folder, model). Once the built-in \"Your Assistant\" project exists, that becomes its default folder."
   },
   {
    "id": "R-fyi",
@@ -2359,6 +2356,347 @@
    "problem": "Any of them can stay on screen while Claude works, the same way this one did.",
    "proposal": "Fix that one shared piece now. Yes: those notices leave on time, and that is the only change you would notice. No: they stay as they are.",
    "resolved": "Will fix the timer in the one shared piece; it stays useful whichever way you organize the notices."
+  },
+  {
+   "id": "P-b1",
+   "page": "What you asked for, and what you'll get",
+   "intro": "One row per thing you asked for, in your words. Tick or change each.",
+   "stage": "before"
+  },
+  {
+   "id": "W-asked",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "What you asked for, and what you'll get",
+   "calls": [
+    {
+     "id": "stuck",
+     "call": "The floating notice no longer stays forever or follows you between chats.",
+     "why": "Its timer is fixed for every floating notice, and chat notices now belong to their chat.",
+     "decided": "it should be tied to a specific chat and only dismiss when the issue is resolved or a message is sent"
+    },
+    {
+     "id": "held",
+     "call": "\"Held back\" sits in the strip above that chat's box and leaves the moment the question is answered or you send.",
+     "why": "The app re-checks whether the question is still open, so it can't get stuck.",
+     "decided": "the warning should dismiss itself as soon as the question is resolved"
+    },
+    {
+     "id": "buttons",
+     "call": "Dismiss is leftmost and outlined; the main button is filled, on the right.",
+     "why": "On the strip and on floating notices that need you.",
+     "decided": "\"dismiss\" should be the leftmost button and not filled in. primary action should be filled rightmost button"
+    },
+    {
+     "id": "rule",
+     "call": "Failures go by your rule: stopped a send → strip; after your message is in → in the chat; nothing to do → short floating notice.",
+     "why": "All 20 failures, as you ticked them.",
+     "decided": "blocking issues that stop the message from being sent in the first place should appear in the strip above the input area"
+    },
+    {
+     "id": "cant",
+     "call": "\"Can't do that here\" notices sit in the strip with Dismiss (and Stop or Browse skills where useful), and leave on your next action.",
+     "why": "Busy ones leave on their own when the reply ends.",
+     "decided": "should probably include dismiss/try again buttons in most cases, and auto-dismiss in some instances on next command or message send"
+    },
+    {
+     "id": "prevent",
+     "call": "Fewer chances to hit these: commands that can't work in a chat aren't offered there; skills that can't start are greyed with a reason; two skills sharing a name asks which; unreadable skills are marked.",
+     "why": "The approved prevention ideas from the \"can't be done\" list.",
+     "decided": "i'd like to try to minimize the room/opportunity for these kinds of errors to appear in the first place"
+    },
+    {
+     "id": "limits",
+     "call": "Known limits say what works instead (\"Browsing themes only works on the computer running YouCoded for now\").",
+     "why": "Short floating, no button to press.",
+     "decided": "if the failure is simply a known limitation of the app, this should be better explained"
+    },
+    {
+     "id": "unsure",
+     "call": "The 20 \"not sure it went through\" notices move as you ticked: unsent messages in the strip until you send again, unconfirmed Stop/clear/compact in the strip, a failed model switch stays until closed.",
+     "why": "With the new shared wording.",
+     "decided": "Ticked all 20 rows"
+    },
+    {
+     "id": "words",
+     "call": "Notices that mean the same thing use the same sentence; a second sentence only when it changes what you do. No technical text ever shows.",
+     "why": "About 30 sentences become a handful.",
+     "decided": "i think we should only show additional detail when it would change how a user resolves the issue"
+    },
+    {
+     "id": "theme",
+     "call": "\"Build new theme with Claude\" with no chat open opens the new-chat popup Pages uses.",
+     "why": "Pick a folder and model; the theme builder waits in the new chat.",
+     "decided": "we should offer the normal popup used elsewhere (pages and such) that lets the user pick a model and such for the theme"
+    },
+    {
+     "id": "fyi",
+     "call": "\"Attachments were left out\" and \"No reply to copy yet\" are short floating notices.",
+     "why": "They blocked nothing.",
+     "decided": "Yes"
+    },
+    {
+     "id": "screen",
+     "call": "Notices from the resume list and the screen for moving a chat show on that screen, with its own buttons.",
+     "why": "Never in an unrelated chat's strip.",
+     "decided": "Yes"
+    },
+    {
+     "id": "card",
+     "call": "A failed compact or clear shows a card in the chat with Try again; it leaves once it works.",
+     "why": "Only on screen; not saved into the chat's history.",
+     "decided": "Leaves once it works"
+    },
+    {
+     "id": "dot",
+     "call": "A failure in a chat you've left puts a red dot on that chat in the list.",
+     "why": "The dot goes when you open the chat.",
+     "decided": "A red dot on that chat in the list"
+    },
+    {
+     "id": "turns",
+     "call": "Two \"needs you\" notices take turns; quick ones like \"Copied\" never push them out.",
+     "why": "The next shows when you close the first.",
+     "decided": "Yes"
+    },
+    {
+     "id": "phone",
+     "call": "On a phone, the strip's buttons drop below the words.",
+     "why": "Desktop keeps them beside the words.",
+     "decided": "Yes"
+    },
+    {
+     "id": "times",
+     "call": "Floating notice times: done 3 s, button failed 5 s, \"needs you\" until closed.",
+     "why": "As you picked for each kind.",
+     "decided": "Floating (3 s) / Floating, timed (5 s) / Floating until closed"
+    },
+    {
+     "id": "review",
+     "call": "A separate reviewer checked everything before this list was made.",
+     "why": "Its bug fixes are already in; its choices were your last page.",
+     "decided": "please have a separate independent reviewer do a final check"
+    }
+   ]
+  },
+  {
+   "id": "P-b2",
+   "page": "Every screen that changes",
+   "intro": "The ones already drawn in the practice app. The rest are photographed after the build.",
+   "stage": "before"
+  },
+  {
+   "id": "W-screens",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Every screen that changes",
+   "gallery": true,
+   "calls": [
+    {
+     "id": "g-held",
+     "call": "Held back, in the strip",
+     "why": "Leaves once the question is answered or you send.",
+     "picture": "pictures/r4/strip-held.png"
+    },
+    {
+     "id": "g-cant",
+     "call": "Can't do that here, in the strip",
+     "why": "Leaves on your next action.",
+     "picture": "pictures/r4/strip-cant.png"
+    },
+    {
+     "id": "g-failed",
+     "call": "Something failed before sending",
+     "why": "Red dot, Dismiss and Try again.",
+     "picture": "pictures/r4/strip-failed.png"
+    },
+    {
+     "id": "g-k7",
+     "call": "A notice that needs you",
+     "why": "Stays until you close it; Dismiss left, main button right.",
+     "picture": "pictures/r4/k7-saved-password-expired.png"
+    },
+    {
+     "id": "g-theme",
+     "call": "The new-chat popup the theme button will open",
+     "why": "The same one Pages uses today; the title will say it's for a theme.",
+     "picture": "pictures/r4/new-chat-popup.png"
+    }
+   ]
+  },
+  {
+   "id": "P-b3",
+   "page": "Behind the scenes",
+   "intro": "What happens without a screen of its own.",
+   "stage": "before"
+  },
+  {
+   "id": "W-behind",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "What happens behind the scenes",
+   "numbered": true,
+   "calls": [
+    {
+     "id": "b1",
+     "call": "You press Send while Claude waits on a question. Your message stays in the box and the strip says so.",
+     "why": "The strip re-checks about once a second; when the question is gone, so is the strip."
+    },
+    {
+     "id": "b2",
+     "call": "A command or skill that can't run here puts its notice in this chat's strip only.",
+     "why": "Switching chats or typing puts it away."
+    },
+    {
+     "id": "b3",
+     "call": "Wherever a failure arrives a moment late, it goes to the chat it belongs to, not the one on screen.",
+     "why": "If that's not the chat you're in, that chat gets a red dot in the list."
+    },
+    {
+     "id": "b4",
+     "call": "Technical messages from inside the app are written to the log, never shown.",
+     "why": "You see the plain shared sentence instead."
+    },
+    {
+     "id": "b5",
+     "call": "Closing a chat throws away its notice.",
+     "why": "Reopening that chat later starts clean."
+    }
+   ]
+  },
+  {
+   "id": "P-b4",
+   "page": "Choices I made",
+   "intro": "Things you could notice that I decided without asking.",
+   "stage": "before"
+  },
+  {
+   "id": "W-choices",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Choices I made",
+   "calls": [
+    {
+     "id": "c-elsewhere",
+     "call": "The red dot uses the same red as other \"needs attention\" dots, and only one shows per chat.",
+     "why": "So it reads as the app's existing warning dot."
+    },
+    {
+     "id": "c-queue",
+     "call": "Up to three \"needs you\" notices wait in line; any more are dropped and written to the log.",
+     "why": "A pile-up that long only happens when something is very wrong."
+    },
+    {
+     "id": "c-card",
+     "call": "The in-chat failure card is the app's existing red error card.",
+     "why": "Same look as the AI-service error card you already know."
+    },
+    {
+     "id": "c-strip-red",
+     "call": "The red strip is a deliberate exception to the rule that every failure uses the error card.",
+     "why": "You approved its look; I'll write the exception into the design guide so nobody \"fixes\" it back."
+    },
+    {
+     "id": "c-buddy",
+     "call": "The small floating buddy chat gets the same strip.",
+     "why": "Otherwise it would keep the old stuck notice."
+    },
+    {
+     "id": "c-model",
+     "call": "A failed model switch has Try again; a second failure has Report bug.",
+     "why": "Replaces \"ask Claude to diagnose with /model\"."
+    }
+   ]
+  },
+  {
+   "id": "P-b5",
+   "page": "Checks",
+   "intro": "The checks I'll run after building. Switch any on or off.",
+   "stage": "before"
+  },
+  {
+   "id": "W-checks",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Checks I'll run",
+   "calls": [
+    {
+     "id": "k-review",
+     "call": "A fresh reviewer reads the finished change.",
+     "why": "Looks for bugs and anything that breaks a rule.",
+     "result": "run",
+     "more": {
+      "does": "A reviewer who has seen none of this conversation reads every changed file and your answers, and lists bugs and surprises.",
+      "why": "On: this changes how every notice in the app behaves."
+     },
+     "check": "code-review"
+    },
+    {
+     "id": "k-trace",
+     "call": "Every row on the first page is traced to what was built.",
+     "why": "Nothing you asked for gets lost.",
+     "result": "run",
+     "more": {
+      "does": "Each row is matched to the code and pictures that deliver it; any gap is listed.",
+      "why": "On by default."
+     }
+    },
+    {
+     "id": "k-grader",
+     "call": "A fresh grader checks the after-build deck against this one.",
+     "why": "Marks each row met or not met.",
+     "result": "run",
+     "more": {
+      "does": "Someone with no stake compares this list to the finished build and marks each row met or not.",
+      "why": "On by default."
+     }
+    },
+    {
+     "id": "k-gate",
+     "call": "The done gate.",
+     "why": "The work is finished only when you change nothing in the after-build walkthrough.",
+     "result": "run",
+     "more": {
+      "does": "A script refuses to call the work done while any row lacks a result.",
+      "why": "On by default."
+     }
+    },
+    {
+     "id": "k-verify",
+     "call": "The app's own code checks and every screen opened.",
+     "why": "Types, tests, dead code, and all screens photographed.",
+     "result": "run",
+     "more": {
+      "does": "Runs the full desktop check suite and opens every named screen in the practice app.",
+      "why": "On: required before anything is called done."
+     }
+    },
+    {
+     "id": "k-ux",
+     "call": "A tester with no context tries the notices.",
+     "why": "Not suggested this time.",
+     "result": "skip",
+     "more": {
+      "does": "A fresh helper uses the practice app like a newcomer and reports confusion.",
+      "why": "Off unless you want it: you've already steered every notice in detail."
+     }
+    },
+    {
+     "id": "k-android",
+     "call": "Android's own build and tests.",
+     "why": "Not suggested this time.",
+     "result": "skip",
+     "more": {
+      "does": "Builds and tests the phone app.",
+      "why": "Off: these are shared screens with no phone-only code, and the phone build tools may not be on this computer today; I'll say so plainly if it's unverified."
+     }
+    }
+   ]
   }
  ],
  "notes_handled": {
