@@ -110,3 +110,16 @@ T1 → T2 → T3 → T4 → T5 → T6. Each task: tests first where behaviour is
   `serializeChatState`.
 - **Theme popup (S4):** `PageCreateDialog` gets a `screen` override (`settings/theme-new-chat`) and a
   theme subtitle; verify it opens a normal chat with `/theme-builder ` waiting.
+
+## Revision 2 (after review 2 — every finding accepted)
+- **Red dot (B1, N2, N3):** applied as its own step AFTER both status merges in App (works when
+  `summaries` is null on desktop). Cleared where `viewedSessions` is set AND in the buddy's seen
+  callback. Per-window: a failure marks the list in the window it happened in (one window per chat is
+  the norm); recorded as a choice in the after-build walkthrough.
+- **Re-check fallback (S1, N1):** a 1 s re-check runs only where the host reads terminal text locally
+  (Android's own runtime) and only while a held-back notice is showing in the visible chat view.
+  `screen-input-store.subscribe` notifies only when a value actually changes, including on clear.
+- **Two slots (S2):** the "needs you" notice and the routine toast stack vertically (routine above,
+  never overlapping); tested with both up.
+- **Commands (S3):** the test calls `dispatchSlashCommand` for every YouCoded command with a native
+  session and asserts its route, and fails when `runsIn` in `youcoded-commands.ts` disagrees.
