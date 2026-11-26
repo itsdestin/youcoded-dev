@@ -1,0 +1,342 @@
+{
+  "title": "Campaign music: feel sketches for five films",
+  "key": "campaign-round2-sketches",
+  "out": "campaign-round2-sketches.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "O-1",
+      "words": true,
+      "surface": "Campaign music",
+      "path": "What we took from your last music review",
+      "headline": "Your real complaint was never \"busy\": it was parts that did not sound like one piece of music.",
+      "changed": "In your words: \"different instruments playing entirely their own song at different volume levels\", a tune \"randomly thrown in on top\", high notes \"thrown-in\", strings \"wayyy too harsh\". A full sound is fine when it is one song. Settled from your picks: our soft piano, middle brightness, today's room, rich chords, both pulses you liked, quiet or piano-only endings, no strings.",
+      "notice": "The long music guide is now a two-page brief that starts with \"one piece of music, not layers\": every part follows the same chords, the tune is the top line of the same piano, parts stay close in volume and rise and fall together. Process, as you approved: two 15-second sketches per film, you pick, then the full score. Five different films are tested, not one.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-MIM",
+      "page": "Make it mine",
+      "intro": "One person changes their app just by asking. The picture is re-cut so every scene change lands on the music's bar lines, at 128 beats a minute."
+    },
+    {
+      "id": "MIM-1",
+      "words": true,
+      "surface": "Make it mine",
+      "path": "Seconds 37.5 to 52.5: the money chat, the bills, the morning email, the payoff",
+      "headline": "Which feel should Make it mine's full score use: straight or gently swung?",
+      "today": "Two 15-second sketches over the same stretch of the re-cut film. Same notes, same tempo (128 beats a minute, a step faster than before because you said this film needs more energy). A: the piano pattern moves in even, straight steps, which drives forward. B: every second note comes a little late, so it bounces instead of drives.",
+      "problem": "Listen for whether the piano pattern, the soft pad and the tune sound like one piece played by one pair of hands, and which feel suits how quickly this film moves. Honest doubt: nobody here can hear; this was judged from note lists and measurements only. The tune's notes all fit the chords, but the pad's volume does not yet rise and fall with the piano's, so the pad may still feel like a separate layer. It is also a little brighter than your \"middle\" pick.",
+      "proposal": "Pick the feel to score in full. Neither sends it back for two new sketches; say what is wrong in the note.",
+      "media": [
+        {"label": "A: straight", "src": "media-r10/mim-a.mp4", "summary": "Even, straight steps that drive forward."},
+        {"label": "B: gently swung", "src": "media-r10/mim-b.mp4", "summary": "The same notes with a gentle lilt that bounces."}
+      ],
+      "mediaLayout": "row",
+      "options": [
+        {"id": "a", "label": "A: straight", "pros": ["Pushes forward like the quick cuts"], "cons": ["Can feel mechanical over a long film"]},
+        {"id": "b", "label": "B: gently swung", "pros": ["Playful, matches the personal tone"], "cons": ["Bounce may soften the energy you asked for"]},
+        {"id": "neither", "label": "Neither", "pros": ["Nothing gets scored on a feel you do not like"], "cons": ["One more round of sketches before a full score"]}
+      ]
+    },
+    {
+      "id": "MIM-2",
+      "words": true,
+      "surface": "Make it mine",
+      "path": "The two sketches above",
+      "headline": "Does the sketch you picked sound like one unified piece of music?",
+      "today": "Every part of these sketches now takes its notes from the same chords, and the tune is played by the same piano as the pattern under it.",
+      "problem": "That is what the note lists say. Only your ear can tell whether the parts actually sound like one song rather than layers doing their own thing.",
+      "proposal": "Pick the closest answer. The note box says which part still sticks out, if any.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "The full score keeps this way of building it."},
+        {"id": "nearly", "label": "Nearly", "summary": "The full score fixes the part you name in the note."},
+        {"id": "no", "label": "No", "summary": "The way the parts are put together is rethought before any full score."}
+      ]
+    },
+    {
+      "id": "MIM-3",
+      "words": true,
+      "surface": "Make it mine",
+      "path": "The two sketches above",
+      "headline": "Does it sound like youcoded's music?",
+      "today": "The goal is unique music for each ad that still feels like the same brand music: our soft piano, our key, rich chords and the three-note tune.",
+      "problem": "A faster, livelier film could drift away from what makes the other films sound like ours.",
+      "proposal": "Pick the closest answer; the note says what feels off.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "Same family as the films you liked."},
+        {"id": "nearly", "label": "Nearly", "summary": "Close; the note says what pulls it away."},
+        {"id": "no", "label": "No", "summary": "It sounds like someone else's music."}
+      ]
+    },
+    {
+      "id": "MIM-4",
+      "words": true,
+      "surface": "Make it mine",
+      "path": "The whole re-cut film, 60 seconds, no sound yet",
+      "headline": "Is the re-cut Make it mine right, with every scene change moved onto the music's bar lines?",
+      "today": "You picked \"the cut re-timed so every cut lands on a bar line\". The film is re-cut on a 128-beats-a-minute grid: every scene change on a bar line, sends and taps on beats, no shot sped up or slowed down by more than about 8 percent.",
+      "problem": "The re-cut changes the film's pace slightly. It has no music yet, so judge the picture alone: whether anything now feels rushed, dragged or oddly timed.",
+      "proposal": "Yes scores the music onto this cut. No keeps the old timing; say in the note which moment feels wrong.",
+      "media": [
+        {"label": "Re-cut film, silent", "src": "media-r10/mim-recut.mp4", "summary": "The sketches above are its 37.5 to 52.5 second stretch."}
+      ]
+    },
+    {
+      "id": "P-OWN15",
+      "page": "Make it mine, 15-second feed version",
+      "intro": "Someone asks the app to change its look: rainy anime Tokyo, then \"actuallyyy gimme desert\", then the name."
+    },
+    {
+      "id": "OWN15-1",
+      "words": true,
+      "surface": "Make it mine, 15 seconds",
+      "path": "The whole 15-second clip",
+      "headline": "Which feel should the 15-second Make it mine use: straight or gently swung?",
+      "today": "Two sketches at 128 beats a minute, cut so Tokyo lands on bar 3, the desert on bar 6 and the name on bar 8. A: the piano pulse is even and straight, like a steady quick walk. B: the same notes, gently swung, so it bounces.",
+      "problem": "Listen for whether the name at the end sounds like the same piano finishing its own tune (not a new, louder instrument), and whether the music lifts with Tokyo and the desert. Honest doubt: judged from note lists only. The music rises about 2 dB into the desert, which may be too modest for a high-energy clip, and the soft pad only partly follows that rise.",
+      "proposal": "Pick the feel to finish. Neither sends it back for two new sketches.",
+      "media": [
+        {"label": "A: straight", "src": "media-r10/own15-a.mp4", "summary": "Even pulse, like a steady quick walk."},
+        {"label": "B: gently swung", "src": "media-r10/own15-b.mp4", "summary": "Same notes; every second note leans a little late."}
+      ],
+      "mediaLayout": "row",
+      "options": [
+        {"id": "a", "label": "A: straight", "pros": ["Crisp and quick for a short feed clip"], "cons": ["Less playful than the joke in the words"]},
+        {"id": "b", "label": "B: gently swung", "pros": ["Bounces with the playful request"], "cons": ["Can feel lazier in only 15 seconds"]},
+        {"id": "neither", "label": "Neither", "pros": ["Nothing finished on a feel you do not like"], "cons": ["Another round of sketches"]}
+      ]
+    },
+    {
+      "id": "OWN15-2",
+      "words": true,
+      "surface": "Make it mine, 15 seconds",
+      "path": "The two sketches above",
+      "headline": "Does the sketch you picked sound like one unified piece of music?",
+      "today": "The name at the end is now played by the tune's own piano at about the tune's touch; before, it was a separate, louder sound that jumped about 7 dB.",
+      "problem": "Only your ear can tell whether the piano, the pad and the name now sound like one song.",
+      "proposal": "Pick the closest answer. The note box says which part still sticks out, if any.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "The finished clip keeps this way of building it."},
+        {"id": "nearly", "label": "Nearly", "summary": "The part you name in the note gets fixed."},
+        {"id": "no", "label": "No", "summary": "Rethought before anything is finished."}
+      ]
+    },
+    {
+      "id": "OWN15-3",
+      "words": true,
+      "surface": "Make it mine, 15 seconds",
+      "path": "The two sketches above",
+      "headline": "Does it sound like youcoded's music?",
+      "today": "Same piano, key, chords and three-note tune as the other films, at a faster pace.",
+      "problem": "A short, quick clip could lose what makes the others sound like ours.",
+      "proposal": "Pick the closest answer; the note says what feels off.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "Same family as the films you liked."},
+        {"id": "nearly", "label": "Nearly", "summary": "Close; the note says what pulls it away."},
+        {"id": "no", "label": "No", "summary": "It sounds like someone else's music."}
+      ]
+    },
+    {
+      "id": "P-PURPLE",
+      "page": "Purple is the new orange",
+      "intro": "No voice: the last word and the colour change on the beat, faster and faster, landing on \"youcoded is the new everything.\" A plain timing card stands in for the unshot film."
+    },
+    {
+      "id": "PURPLE-1",
+      "words": true,
+      "surface": "Purple is the new orange",
+      "path": "Its last 15 seconds: the speed-up and the landing",
+      "headline": "Which feel should the purple film use: steady at 120, or quicker and bouncier at 132?",
+      "today": "A: steady and straight at 120 beats a minute, the piano's even pulse with the tune running along the top in one unbroken line as the colours speed up, ending on the name played by the same soft piano. B: the same notes a step faster (132) with a gentle bounce; the card's fastest colour changes bounce with it.",
+      "problem": "Listen for whether the music speeds up with the colours as one piece of piano music, and whether the name feels like the tune's own last note. Honest doubt: judged from note lists only. The loudness stays fairly even, so the build may feel steady rather than exciting, and the tune is there a bit more of the time than in your favourite pieces. The card's font is a stand-in.",
+      "proposal": "Pick the feel to score in full. Neither sends it back for two new sketches.",
+      "media": [
+        {"label": "A: steady 120", "src": "media-r10/purple-a.mp4", "summary": "Straight and even; the tune is one unbroken line."},
+        {"label": "B: bouncy 132", "src": "media-r10/purple-b.mp4", "summary": "A step faster with a gentle bounce."}
+      ],
+      "mediaLayout": "row",
+      "options": [
+        {"id": "a", "label": "A: steady 120", "pros": ["Calm and clear; matches the narrated films' pace"], "cons": ["May feel too steady for a speeding-up film"]},
+        {"id": "b", "label": "B: bouncy 132", "pros": ["Quicker and more playful, like the fast colours"], "cons": ["Furthest from the pace of the other films"]},
+        {"id": "neither", "label": "Neither", "pros": ["Nothing scored on a feel you do not like"], "cons": ["Another round of sketches"]}
+      ]
+    },
+    {
+      "id": "PURPLE-2",
+      "words": true,
+      "surface": "Purple is the new orange",
+      "path": "The two sketches above",
+      "headline": "Does the sketch you picked sound like one unified piece of music?",
+      "today": "The ending is piano only, no strings and no low rumble, and the name is played by the same piano as the tune.",
+      "problem": "Only your ear can tell whether the speed-up sounds like one song or parts doing their own thing.",
+      "proposal": "Pick the closest answer. The note box says which part still sticks out, if any.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "The full score keeps this way of building it."},
+        {"id": "nearly", "label": "Nearly", "summary": "The part you name in the note gets fixed."},
+        {"id": "no", "label": "No", "summary": "Rethought before any full score."}
+      ]
+    },
+    {
+      "id": "PURPLE-3",
+      "words": true,
+      "surface": "Purple is the new orange",
+      "path": "The two sketches above",
+      "headline": "Does it sound like youcoded's music?",
+      "today": "Same piano, key, chords and three-note tune as the other films, with no voice and a faster build.",
+      "problem": "A film with no narrator and a fast build could drift away from the family sound.",
+      "proposal": "Pick the closest answer; the note says what feels off.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "Same family as the films you liked."},
+        {"id": "nearly", "label": "Nearly", "summary": "Close; the note says what pulls it away."},
+        {"id": "no", "label": "No", "summary": "It sounds like someone else's music."}
+      ]
+    },
+    {
+      "id": "P-SCREENS",
+      "page": "The wall of screens",
+      "intro": "The fairytale's last 15 seconds: from \"It's time to free ourselves\" to \"open source everything.\" and the name."
+    },
+    {
+      "id": "SCREENS-1",
+      "words": true,
+      "surface": "The wall of screens",
+      "path": "Its last 15 seconds, with the narrator",
+      "headline": "Under the narrator's close, which blends better: a soft held sound under the piano, or the piano alone?",
+      "today": "This pair asks about texture, not tempo: both are 115.65 beats a minute, straight (the tempo nearest your \"120 with breaths\" that puts both scene cuts on bar lines). A: a soft held sound carries the chords under a light, high piano tick. B: the same notes, all on one piano, its chord played again every bar instead of the held sound.",
+      "problem": "Listen for whether A's held sound blends in as part of one piece, or B, all one piano, sounds more like a single piece. Both grow toward the wall of screens, go quiet under her last words and end on the same quiet piano name. Honest doubt: judged from note lists only. Two of her short words sit only about 3 dB over the music, and the swell is small (about 1.3 dB) and may be too subtle to notice.",
+      "proposal": "Pick the texture to score in full. Neither sends it back for two new sketches.",
+      "media": [
+        {"label": "A: held sound", "src": "media-r10/screens-a.mp4", "summary": "A soft held sound under a light, high piano tick."},
+        {"label": "B: piano only", "src": "media-r10/screens-b.mp4", "summary": "Everything on one piano, its chord played again each bar."}
+      ],
+      "mediaLayout": "row",
+      "options": [
+        {"id": "a", "label": "A: held sound", "pros": ["Smoother, more continuous bed under her voice"], "cons": ["Keeps going while the piano rests, so it may feel separate"]},
+        {"id": "b", "label": "B: piano only", "pros": ["Literally one instrument, the simplest kind of unity"], "cons": ["Re-struck chords pulse more and may feel busier"]},
+        {"id": "neither", "label": "Neither", "pros": ["Nothing scored on a texture you do not like"], "cons": ["Another round of sketches"]}
+      ]
+    },
+    {
+      "id": "SCREENS-2",
+      "words": true,
+      "surface": "The wall of screens",
+      "path": "The two sketches above",
+      "headline": "Does the sketch you picked sound like one unified piece of music?",
+      "today": "Every high piano note is now a note the chords already hold, and the chord changes as the wall of screens appears.",
+      "problem": "Only your ear can tell whether the parts sound like one song rather than layers doing their own thing.",
+      "proposal": "Pick the closest answer. The note box says which part still sticks out, if any.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "The full score keeps this way of building it."},
+        {"id": "nearly", "label": "Nearly", "summary": "The part you name in the note gets fixed."},
+        {"id": "no", "label": "No", "summary": "Rethought before any full score."}
+      ]
+    },
+    {
+      "id": "SCREENS-3",
+      "words": true,
+      "surface": "The wall of screens",
+      "path": "The two sketches above",
+      "headline": "Does it sound like youcoded's music?",
+      "today": "Same piano, key, chords and three-note tune as the other films, quieter and slower under a narrator.",
+      "problem": "Under a voice the music is pushed back, which can make it sound generic.",
+      "proposal": "Pick the closest answer; the note says what feels off.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "Same family as the films you liked."},
+        {"id": "nearly", "label": "Nearly", "summary": "Close; the note says what pulls it away."},
+        {"id": "no", "label": "No", "summary": "It sounds like someone else's music."}
+      ]
+    },
+    {
+      "id": "P-BOOK",
+      "page": "The storybook fairytale",
+      "intro": "From \"However, recently...\" to \"...artificial intelligence.\", where the page glows on \"wonderful\". These two sketches are also the evidence for the narrator question on the next page."
+    },
+    {
+      "id": "BOOK-1",
+      "words": true,
+      "surface": "The storybook fairytale",
+      "path": "Fifteen seconds with the narrator",
+      "headline": "Should the music meet her quick, bright read, or give her room and soften her slightly?",
+      "today": "A, meet her energy: a little quicker (124 beats a minute), gently swung, all one piano, soft chords on every bar and their own notes repeated higher; her voice exactly as recorded. B, give her room: your steady 120, a quiet held pad and a low bass note while she talks, two soft piano notes only in her longer pauses, her pauses a little longer, and her voice made slightly softer and set a touch further back.",
+      "problem": "Listen for where her read feels at home, and whether each sounds like one piece. Honest doubt: judged from note lists only. Her speed and pitch are unchanged in both, so if both still feel wrong, the read itself is the likelier cause. In both her pauses are up to 0.67 s longer, with the picture holding still to match. A's high notes still sit about an octave over the chords while she speaks, and both are a little brighter than your \"middle\" pick.",
+      "proposal": "Pick the approach to score in full. Neither means the recording is the problem; the next page asks what to do about it.",
+      "media": [
+        {"label": "A: meet her energy", "src": "media-r10/book-a.mp4", "summary": "Quicker, swung, one piano; her voice exactly as recorded."},
+        {"label": "B: give her room", "src": "media-r10/book-b.mp4", "summary": "Steady 120, quiet pad; her voice slightly softer and further back."}
+      ],
+      "mediaLayout": "row",
+      "options": [
+        {"id": "a", "label": "A: meet her energy", "pros": ["Her voice untouched; the music keeps up with her"], "cons": ["Livelier than your calmer pieces"]},
+        {"id": "b", "label": "B: give her room", "pros": ["Closest to the calm sound you have liked"], "cons": ["Her voice is lightly edited, which may sound less natural"]},
+        {"id": "neither", "label": "Neither", "pros": ["Points at the recording, not the music"], "cons": ["Fixing that may mean a new recording"]}
+      ]
+    },
+    {
+      "id": "BOOK-2",
+      "words": true,
+      "surface": "The storybook fairytale",
+      "path": "The two sketches above",
+      "headline": "Does the sketch you picked sound like one unified piece of music, voice included?",
+      "today": "Every high note is now a note the chords below already hold, and every chord change lands on a beat with its bass.",
+      "problem": "Only your ear can tell whether music and voice sound like one piece.",
+      "proposal": "Pick the closest answer. The note box says which part still sticks out, if any.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "The full score keeps this way of building it."},
+        {"id": "nearly", "label": "Nearly", "summary": "The part you name in the note gets fixed."},
+        {"id": "no", "label": "No", "summary": "Rethought before any full score."}
+      ]
+    },
+    {
+      "id": "BOOK-3",
+      "words": true,
+      "surface": "The storybook fairytale",
+      "path": "The two sketches above",
+      "headline": "Does it sound like youcoded's music?",
+      "today": "Same piano, key, chords and three-note tune as the other films.",
+      "problem": "Shaping the music around a quick narrator can pull it away from the family sound.",
+      "proposal": "Pick the closest answer; the note says what feels off.",
+      "options": [
+        {"id": "yes", "label": "Yes", "summary": "Same family as the films you liked."},
+        {"id": "nearly", "label": "Nearly", "summary": "Close; the note says what pulls it away."},
+        {"id": "no", "label": "No", "summary": "It sounds like someone else's music."}
+      ]
+    },
+    {
+      "id": "P-VOICE",
+      "page": "The narrator",
+      "intro": "You said \"she just seems to fast/harsh for our music selection maybe\" and answered \"idk\" on what to do. Here are the three ways forward."
+    },
+    {
+      "id": "VOICE-1",
+      "words": true,
+      "surface": "The narrator",
+      "path": "Both fairytale films",
+      "headline": "What should we do about the narrator feeling too fast and harsh for our music?",
+      "today": "Both fairytales use one recording of a quick, bright British storybook voice. The storybook sketches on the previous page try the first two ways: B gives her room, A changes the music instead.",
+      "problem": "Music can only do so much: her speed and pitch are the same in every sketch, so if she still feels wrong over both, the read itself is the cause.",
+      "proposal": "Pick a way forward. Nothing is recorded unless you pick the last option, and even then not until you say go.",
+      "options": [
+        {"id": "room", "label": "Keep her, give room", "recommended": true, "pros": ["No new recording; ready now (sketch B)", "Music stays calm, like the pieces you liked"], "cons": ["Her voice is lightly edited: longer pauses, a little softer and further back", "Cannot change how fast she talks"]},
+        {"id": "livelier", "label": "Keep her, livelier music", "pros": ["Her voice stays exactly as recorded (sketch A)", "No new recording"], "cons": ["The fairytales would sound livelier than the calmer films", "Does nothing about \"harsh\""]},
+        {"id": "rerecord", "label": "Record a calmer read", "pros": ["Fixes the cause: a slower, warmer voice suits the music", "No edits needed on her voice"], "cons": ["A new recording session on your voice account", "All picture timing in both fairytales would be redone to follow the new read", "Nothing to hear until it is recorded"]}
+      ]
+    },
+    {
+      "id": "P-NEXT",
+      "page": "What happens next"
+    },
+    {
+      "id": "NEXT-1",
+      "words": true,
+      "surface": "Campaign music",
+      "path": "After you submit",
+      "headline": "Next: full scores of the feels you picked, Make it mine first.",
+      "changed": "Each film you picked a feel for gets its full-length score, starting with Make it mine on the re-cut (if you said yes to it). A film where you picked Neither, or said No to one unified piece, gets two new sketches instead. The narrator follows your answer above; nothing is recorded without your go-ahead.",
+      "notice": "The next deck in this same format plays each full film with its finished music, one film at a time, beginning with Make it mine.",
+      "yes": "Go ahead",
+      "no": "Wait"
+    }
+  ]
+}
