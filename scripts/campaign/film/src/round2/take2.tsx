@@ -12,8 +12,16 @@
 // Mist in this window; those files are kept but unused.) WHAT IS STAGED (brand guide section 8, ads only): what the person makes inside
 // the page view (take2-ui.tsx) and the morning email.
 //
-// Music grid (scripts/campaign/music, composed to these numbers): 120 BPM, bar 2.0 s, beat 0.5 s.
-// Sections: look 0 · home 14 · money 30 · payoff 46 · lines 50 · name 56. Every visible cut sits on a beat.
+// Music grid (round 10 re-cut, 2026-11-25): 128 BPM, beat 0.46875 s, bar 1.875 s; 60 s is exactly 32 bars.
+// Sections: look 0 (bar 0) · home 15 (bar 8) · money 30 (bar 16) · email 43.125 (bar 23) · payoff 46.875
+// (bar 25) · lines 50.625 (bar 27) · name 56.25 (bar 30). Every scene cut (a look change, chat to page, page to
+// chat, a new section) sits on a bar line; every other shot join, send and staged tap sits on a beat (a few
+// on an eighth). WHY 128 and not the old 120 (owner, align deck A2: cuts on bar lines were "probably best,
+// but the music needs to better match the busier/higher-energy nature of this specific video"): the film
+// cuts every 2-4 s, which at 128 is one to two bars; 15, 30, 45 and 60 s all fall on bar lines; and the
+// faster grid lifts the music. The re-time moves cut points and holds; no captured shot plays more than
+// about 8% faster or slower than it did in the 120 cut (each shot's rate change is noted where it differs).
+// The music is the songbook's src/film_r10_mim.py, written to these same numbers.
 //
 // Fourth pass (2026-11-20, review of the third): the film no longer draws anything over the window. The
 // look changes are hard cuts on the beat to the app's own repainted window, with the camera easing back
@@ -127,6 +135,12 @@ const playTo = (clip: string, until: number, at: number, out: number): Seg => ({
 // app shows a file card ("Creating a file · manifest.json"), developer words this film should not spend
 // screen time on. Measured from the 2026-11-20 takes: look 0.25 s, home 0.22 s, money 0.20 s.
 const SENT = { look: 0.24, home: 0.22, money: 0.2 };
+// THE SHARED GRID (round 10): film time of beat n. WHY every time below is written in beats: picture and music
+// read one timing sheet (owner, align deck A3: "yes"), so a cut is a beat number the composer can read off.
+const BPM = 128, BEAT = 60 / BPM, BAR = 4 * BEAT;
+const bt = (n: number) => n * BEAT;
+/** A shot that plays footage from `from` at `rate`, filling film [at, out]. */
+const span = (clip: string, from: number, at: number, out: number, rate = 1): Seg => ({ clip, from, at, out, rate });
 
 // A LOOK (0-14). Opens on the whole plain lilac app (the "before", on screen for a moment) and pushes straight
 // into the message box, where "can i change how this whole thing looks?" starts on the first beat. It is sent,
@@ -136,63 +150,70 @@ const SENT = { look: 0.24, home: 0.22, money: 0.2 };
 // pulls out over a second to show the whole new look. "actuallyyy gimme desert. i'm an ASU boy" gets the same move into
 // Devil's Garden on 10.5. WHY (review 2026-11-20): the change was a one-frame cut seen in a wide shot, small
 // and weightless; seen close on the very bubble the person sent, the change is the subject of the frame.
-const T_LOOK1 = 5.0, T_LOOK2 = 10.5;
-// WHY typing a little faster than filmed (1.15x): the five seconds before the first look change now hold a
-// beat of the plain app, two typed lines and the reply; no one can tell 34 from 39 letters a second.
-const TYPE_RATE = 1.15;
+// ROUND 10 RE-TIME (128 BPM). Every join is a beat number (bt). WHY these shot lengths: each look change
+// moves onto a bar line (5.0 -> bar 3 = 5.625, 10.5 -> bar 6 = 11.25) and the section grows from 14 to 15 s
+// (bar 8), so the extra time goes into holds (the empty box, the breath to read the answer, the new look);
+// typing keeps within 8% of its old speed, and the sped-up waits keep their old speed (their joins move).
+const T_LOOK1 = bt(12), T_LOOK2 = bt(24);
+// WHY typing a little faster than filmed: the opening holds a beat of the plain app, two typed lines and the
+// reply before the first look change; no one can tell 34 from 42 letters a second.
 const lookSegs = (): Seg[] => {
-  const a0 = play(L, m(L, 'type1') - 0.5, 0, m(L, 'type1'));                                     // 0.0: the empty box, its caret blinking
-  const a1 = squeeze(L, m(L, 'type1'), m(L, 'type1', 'end'), 0.5, 0.5 + (m(L, 'type1', 'end') - m(L, 'type1')) / TYPE_RATE); // 0.5: typed
-  const b = squeeze(L, m(L, 'send1') - 0.04, m(L, 'reply1', 'end') + 0.05, a1.out, 2.3);         // sent; the answer lands
-  const c = play(L, m(L, 'reply1', 'end') + 0.05, 2.3, m(L, 'reply1', 'end') + 0.05 + 0.7);      // a breath to read it
-  const d = squeeze(L, m(L, 'type2') - 0.03, m(L, 'type2', 'end'), 3.0, 3.0 + (m(L, 'type2', 'end') - m(L, 'type2') + 0.03) / TYPE_RATE);
-  const e = playTo(L, m(L, 'send2') + (T_LOOK1 - d.out) - 0.06, d.out, T_LOOK1);                  // sent; the camera follows it up
+  const a0 = span(L, m(L, 'type1') - bt(1), 0, bt(1));                                            // 0.0: the empty box, its caret blinking
+  const a1 = squeeze(L, m(L, 'type1'), m(L, 'type1', 'end'), bt(1), bt(3));                        // beat 1: typed (1.23x; was 1.15x)
+  // WHY b keeps the old 1.567x and its join moves instead: slowing the sped-up thinking wait to fill two beats
+  // would have meant 1.28x (18% slower than the cut he heard). It runs on past the reply into c.
+  const bFrom = m(L, 'send1') - 0.04, B_RATE = 1.567;
+  const b = span(L, bFrom, bt(3), bt(5), B_RATE);                                                  // beat 3: sent; the answer lands at ~2.17
+  const c = span(L, bFrom + (bt(5) - bt(3)) * B_RATE, bt(5), bt(7));                               // beat 5: a breath to read it
+  const d = squeeze(L, m(L, 'type2') - 0.15, m(L, 'type2', 'end'), bt(7), bt(10));                 // beat 7: typed (1.10x)
+  const e = span(L, m(L, 'send2') - 0.24, bt(10), T_LOOK1);                                        // beat 10: sent (~4.87); the camera follows it up
   // WHY +0.35 s after the switch: the app repaints in a fallback font for a few frames while the theme's
   // own font loads; the shot starts once the new look is fully itself.
-  // WHY 3.3 s (was 3.6) and a squeeze for the third line (owner 2026-11-20: the line is now "actuallyyy gimme
-  // desert. i'm an ASU boy", 1.25 s of typing instead of 0.78): Golden Sunbreak gives up 0.3 s and the line is
-  // typed at the same 1.15x as the other two, so the camera still has ~0.8 s to follow the sent bubble up
-  // before the 10.5 beat, exactly as before.
-  const f = play(L, m(L, 'swap1') + 0.35, T_LOOK1, m(L, 'swap1') + 0.35 + 3.3);                  // 5.0: Golden Sunbreak
-  const g = squeeze(L, m(L, 'type3') - 0.3, m(L, 'type3', 'end'), f.out, f.out + (m(L, 'type3', 'end') - m(L, 'type3') + 0.3) / TYPE_RATE);   // "actuallyyy gimme desert. i'm an ASU boy"
-  const h = playTo(L, m(L, 'send3') + (T_LOOK2 - g.out) - 0.06, g.out, T_LOOK2);
-  const i = play(L, m(L, 'swap2') + 0.35, T_LOOK2, m(L, 'swap2') + 0.35 + 3.5);                   // 10.5: Devil's Garden
-  return [a0, a1, b, c, d, e, f, g, h, { ...i, out: 14.0 }];
+  const f = span(L, m(L, 'swap1') + 0.35, T_LOOK1, bt(19));                                        // bar 3 (5.625): Golden Sunbreak
+  const g = squeeze(L, m(L, 'type3') - 0.3, m(L, 'type3', 'end'), bt(19), bt(22));                 // "actuallyyy gimme desert. i'm an ASU boy" (1.10x)
+  const h = span(L, m(L, 'send3') - 0.15, bt(22), T_LOOK2);                                        // beat 22: sent (~10.46), followed up
+  // WHY 0.94x: Devil's Garden now holds 3.75 s (was 3.5); at true speed the shot would run past the take's end mark
+  const i = span(L, m(L, 'swap2') + 0.35, T_LOOK2, bt(32), 0.94);                                  // bar 6 (11.25): Devil's Garden
+  return [a0, a1, b, c, d, e, f, g, h, i];
 };
-// THEIR HOME (14-30)
+// THEIR HOME (bar 8 = 15.0 to bar 16 = 30.0)
 const homeSegs = (): Seg[] => {
-  const a = play(HM, m(HM, 'type1') - 0.05, 14.0, m(HM, 'type1', 'end') + 0.1);                   // 14.0: "i want youcoded to manage my smart home"
-  const b = squeeze(HM, m(HM, 'send1') - 0.05, m(HM, 'reply1', 'end') + 0.1, a.out, 16.5);         // sent; the answer arrives (thinking shortened)
-  const e = playTo(HM, m(HM, 'send2') + SENT.home, 20.0 - (m(HM, 'send2') + SENT.home - m(HM, 'type2', 'end')), 20.0);
-  const d = playTo(HM, m(HM, 'type2', 'end'), e.at - (m(HM, 'type2', 'end') - m(HM, 'type2') + 0.04), e.at); // "epic. can we put my room on the front…"
-  const c = play(HM, m(HM, 'reply1', 'end') + 0.1, 16.5, m(HM, 'reply1', 'end') + 0.1 + (d.at - 16.5)); // a breath to read "All on one screen?"
+  const a = span(HM, m(HM, 'type1', 'end') + 0.1 - (bt(35) - bt(32)), bt(32), bt(35));             // bar 8 (15.0): "i want youcoded to manage my smart home"
+  // WHY 1.38x (was 1.50x, 8% slower): the thinking wait now fills three beats, so the send lands on beat 35
+  const bFrom = m(HM, 'send1') - 0.05, B_RATE = 1.38;
+  const b = span(HM, bFrom, bt(35), bt(38), B_RATE);                                               // sent; the answer arrives (~17.7)
+  const c = span(HM, bFrom + (bt(38) - bt(35)) * B_RATE, bt(38), bt(39));                          // a breath to read "All on one screen?"
+  const d = playTo(HM, m(HM, 'type2', 'end'), bt(39), bt(43));                                     // "epic. can we put my room on the front…"
+  // WHY the wait between the last letter and Enter is jumped (as the look already did): it fits the send
+  // into the beat before the bar-line cut to the page
+  const e = playTo(HM, m(HM, 'send2') + SENT.home, bt(43), bt(44));
   const page = (at: number, out: number, rate: number): Seg => ({ clip: HM, from: m(HM, 'pagehold'), at, out, rate });
-  // WHY the page now holds 20.0-24.0 (review 2026-11-20): it opens straight on what was asked for (my room on
-  // the front) and has time to show the second half of the request: "Everything else" is tapped on 22.0,
-  // the rest of the house slides in and is readable for a second and a half, and "My room" comes back on 23.5.
-  const g = playTo(HM, m(HM, 'send3') + SENT.home, 26.5 - (m(HM, 'send3') + SENT.home - m(HM, 'type3', 'end')), 26.5);
-  const f = playTo(HM, m(HM, 'type3', 'end'), 24.0, g.at);                                         // 24.0: "perfect. now make the sliders bigger…"
-  return [a, b, c, d, e, page(20.0, 24.0, 0.75), f, g, page(26.5, 30.0, 0.85)];
+  // WHY the page holds two bars: it opens straight on what was asked for (my room on the front) and has time
+  // to show the second half of the request: "Everything else" is tapped on bar 12 (22.5), the rest of the
+  // house slides in and is readable, and "My room" comes back a bar and a beat later.
+  const f = playTo(HM, m(HM, 'type3', 'end'), bt(52), bt(55.5));                                   // bar 13 (24.375): "perfect. now make the sliders bigger…"
+  const g = playTo(HM, m(HM, 'send3') + SENT.home, bt(55.5), bt(56));                              // sent (the wait jumped)
+  return [a, b, c, d, e, page(bt(44), bt(52), 0.75), f, g, page(bt(56), bt(64), 0.85)];
 };
-// THEIR MONEY (30-46)
+// THEIR MONEY (bar 16 = 30.0 to bar 23 = 43.125), then the email to bar 25
 const moneyPage = (at: number, out: number, rate: number): Seg => ({ clip: MN, from: m(MN, 'pagehold'), at, out, rate });
 const moneySegs = (): Seg[] => [
-  // WHY a squeeze at 0.9x rather than true speed: at true speed the shot had to start 0.3 s before the first
-  // letter, on the empty box's placeholder line; slowed by a tenth the typing fills the whole 2.5 s, unnoticed.
-  squeeze(MN, m(MN, 'type1') - 0.03, m(MN, 'send1') + SENT.money, 30.0, 32.5),                    // 30.0: "can we connect my bank…" typed and sent
-  moneyPage(32.5, 35.5, 0.9),
-  playTo(MN, m(MN, 'reply2', 'end') + 1.04, 35.5, 39.5),                                           // 35.5: "can it pull out my recurring bills…" → "Yes. Found eleven."
-  moneyPage(39.5, 41.5, 0.9),
-  playTo(MN, m(MN, 'type3', 'end') + 0.05, 41.5, 43.0),                                            // 41.5: "send me those numbers every morning…"
-  moneyPage(43.0, 46.0, 0.6),
+  // WHY the typing at 0.97x (was 0.91x) and the wait before Enter jumped: the page now opens on bar 17 (31.875)
+  squeeze(MN, m(MN, 'type1') - 0.03, m(MN, 'type1', 'end'), bt(64), bt(67)),                      // bar 16 (30.0): "can we connect my bank…"
+  playTo(MN, m(MN, 'send1') + SENT.money, bt(67), bt(68)),                                         // sent
+  moneyPage(bt(68), bt(76), 0.9),                                                                  // bar 17 (31.875)
+  span(MN, m(MN, 'type2') - 0.01, bt(76), bt(84)),                                                 // bar 19 (35.625): "can it pull out my recurring bills…" → "Yes. Found eleven."
+  moneyPage(bt(84), bt(88), 0.9),                                                                  // bar 21 (39.375)
+  span(MN, m(MN, 'type3') - 0.3, bt(88), bt(92)),                                                  // bar 22 (41.25): "send me those numbers every morning…"
+  moneyPage(bt(92), bt(100), 0.6),                                                                 // bar 23 (43.125): beside the email
 ];
-// "punchier", one change per beat after the sliders grow (review 2026-11-20: the page sat still for 2.4 s):
-// 27.0 the sliders grow · 28.0 the ceiling light is switched on · 28.5 the thermostat nudged down · 29.0 "Wind down".
-const HOME_T = { build: 20.0, tabOut: 22.0, tabBack: 23.5, bigger: 27.0, ceiling: 28.0, thermo: 28.5, scene: 29.0 };
-// WHY bills 0.15 s before the 39.5 cut: the page opens with the person's tap already sliding the tab across
+// One change per beat after the sliders grow: beat 57 the sliders grow · 59 the ceiling light is switched on ·
+// 60 (bar 15) the thermostat nudged down · 61 "Wind down".
+const HOME_T = { build: bt(44), tabOut: bt(48), tabBack: bt(51), bigger: bt(57), ceiling: bt(59), thermo: bt(60), scene: bt(61) };
+// WHY bills 0.15 s before the bar-21 cut: the page opens with the person's tap already sliding the tab across
 // and the first bills arriving, never on the old tab about to change.
-const MONEY_T = { connect: 32.5, bills: 39.35 };
-const T_EMAIL = 43.0, T_BEFORE = 46.0;
+const MONEY_T = { connect: bt(68), bills: bt(84) - 0.15 };
+const T_EMAIL = bt(92), T_BEFORE = bt(100), T_AFTER = bt(101), T_MONEY2 = bt(104), T_LINES = bt(108), T_NAME = bt(120);
 
 // The sent look lines, measured in the 2026-11-20 re-film (fractions of the window): "idk. kinda rainy anime
 // tokyo…" sits at x 0.57-0.98 / y 0.36 in lilac and x 0.45-0.98 / y 0.35 in Golden Sunbreak; the third line
@@ -205,36 +226,38 @@ const BUB3 = (t: number, z = 1.9, c?: 'out'): Key => [t, z, 0.69, 0.57, c];
 
 const CAM: Key[] = [
   // a look: the whole plain app for a moment, then straight into the message box as the typing starts
-  CHAT(0, 0.93), TYPE(0.95), TYPE(1.5),
+  // WHY these key times (round 10): each keeps its old distance from the event it follows (the typing, the
+  // send, the reply, the look change), moved with that event onto the 128 grid
+  CHAT(0, 0.93), TYPE(0.9), TYPE(1.43),
   // sent: out to the whole window to read the answer, then back in for the reply typed close up
-  CHAT(2.3, 0.95, 'out'), CHAT(2.85, 0.955), TYPE(3.35), TYPE(4.32),
-  // the message is sent and the camera follows it up the chat; a slow push into it until the beat
-  BUB2(4.85), BUB2(T_LOOK1, 1.76),
-  // 5.0: the same framing in the new look, then out to the whole window over a second (decelerating)
-  BUB2(T_LOOK1, 1.76), CHAT(6.4, 0.95, 'out'), CHAT(7.85, 0.925),
-  // "actuallyyy gimme desert. i'm an ASU boy", close; sent, followed up; 10.5 the same move into Devil's Garden
-  TYPE(8.35), TYPE(9.7), BUB3(10.25), BUB3(T_LOOK2, 1.96),
-  BUB3(T_LOOK2, 1.96), CHAT(11.9, 0.95, 'out'), CHAT(14.0, 0.92),
+  CHAT(2.2, 0.95, 'out'), CHAT(3.2, 0.955), TYPE(3.7), TYPE(4.87),
+  // the message is sent and the camera follows it up the chat; a slow push into it until the bar line
+  BUB2(5.42), BUB2(T_LOOK1, 1.76),
+  // bar 3: the same framing in the new look, then out to the whole window over a second (decelerating)
+  BUB2(T_LOOK1, 1.76), CHAT(7.0, 0.95, 'out'), CHAT(8.5, 0.925),
+  // "actuallyyy gimme desert. i'm an ASU boy", close; sent, followed up; bar 6 the same move into Devil's Garden
+  TYPE(9.0), TYPE(10.46), BUB3(11.0), BUB3(T_LOOK2, 1.96),
+  BUB3(T_LOOK2, 1.96), CHAT(12.65, 0.95, 'out'), CHAT(bt(32), 0.92),
   // their home
-  TYPE(14.0), TYPE(15.35), CHAT(16.2, 0.93), CHAT(20.0, 0.955),
-  PAGE(20.0, 0.91), PAGE(24.0, 0.945),
-  CHAT(24.0, 0.93), CHAT(26.5, 0.955),
-  PAGE(26.5, 0.91), PAGE(30.0, 0.95),
+  TYPE(bt(32)), TYPE(16.45), CHAT(17.4, 0.93), CHAT(bt(44), 0.955),
+  PAGE(bt(44), 0.91), PAGE(bt(52), 0.945),
+  CHAT(bt(52), 0.93), CHAT(bt(56), 0.955),
+  PAGE(bt(56), 0.91), PAGE(bt(64), 0.95),
   // their money: close on the box until the send, then straight to the page it made. WHY no pull back here:
   // pulling out before the message is sent showed the empty chat's placeholder line for half a second.
-  TYPE(30.0), TYPE(32.5),
-  PAGE(32.5, 0.91), PAGE(35.5, 0.945),
-  CHAT(35.5, 0.93), CHAT(39.5, 0.955),
-  PAGE(39.5, 0.91), PAGE(41.5, 0.935),
-  CHAT(41.5, 0.93), CHAT(43.0, 0.95),
+  TYPE(bt(64)), TYPE(bt(68)),
+  PAGE(bt(68), 0.91), PAGE(bt(76), 0.945),
+  CHAT(bt(76), 0.93), CHAT(bt(84), 0.955),
+  PAGE(bt(84), 0.91), PAGE(bt(88), 0.935),
+  CHAT(bt(88), 0.93), CHAT(bt(92), 0.95),
   // the email: the window steps back to the left so the morning email can arrive beside it, outside the app
   // (review 2026-11-20: a card laid over the window's title bar read as pasted onto the app)
   // WHY these numbers (review 2026-11-20: the window sat 5% from the left edge): at z 0.648 the window is
   // 1063 px wide; focus x 0.753 puts its left edge at 160 px, and the email (500 wide) ends at 1766, so both
   // sit inside the 8% margins with a 50 px gap between them.
-  // WHY cut straight to this framing on 43.0 (not a step back after the cut): the notification then drops in
+  // WHY cut straight to this framing on the email's bar line (not a step back after the cut): the notification then drops in
   // beside a still window, never over its edge while it is still moving.
-  [43.0, 0.652, 0.753, 0.5], [46.0, 0.636, 0.753, 0.5],
+  [T_EMAIL, 0.652, 0.753, 0.5], [T_BEFORE, 0.636, 0.753, 0.5],
 ];
 
 // ------------------------------------------------------------------ the film
@@ -244,8 +267,8 @@ export const Take2: React.FC<{ narrator?: boolean }> = () => {
   const [, z, fx, fy] = camAt(CAM, t);
   const onPage = (a: number, b: number) => t >= a && t < b;
   const W = BOX.w / CSS, H = BOX.h / CSS;
-  const content = onPage(20, 24) || onPage(26.5, 30) ? <HomeUI W={W} H={H} T={HOME_T} />
-    : onPage(32.5, 35.5) || onPage(39.5, 41.5) || onPage(43, 46) ? <MoneyUI W={W} H={H} T={MONEY_T} /> : undefined;
+  const content = onPage(bt(44), bt(52)) || onPage(bt(56), bt(64)) ? <HomeUI W={W} H={H} T={HOME_T} />
+    : onPage(bt(68), bt(76)) || onPage(bt(84), bt(88)) || onPage(bt(92), bt(100)) ? <MoneyUI W={W} H={H} T={MONEY_T} /> : undefined;
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
@@ -254,20 +277,20 @@ export const Take2: React.FC<{ narrator?: boolean }> = () => {
       <AbsoluteFill><Day /></AbsoluteFill>
       {t < T_BEFORE && <AppWindow segs={segs} content={content} z={z} cx={960} cy={540} fx={fx} fy={fy} />}
       <Email />
-      {t >= T_BEFORE && t < 50 && <Payoff />}
-      {/* 50-56: the two lines, then the name. WHY these times (review 2026-11-20: both lines left before they
-          could be read): line one is on screen 2.5 s (it needs 2.2), line two 3.2 s (it needs 2.95), with a
-          breath between them; the name lands on the 56.0 section start and holds 4 s. */}
-      <Line text="stop waiting for *updates.*" at={50.0} out={52.5} size={6.4} />
-      <Line text="make anything you can imagine, / just by *asking.*" at={52.7} out={55.9} size={5.6} />
-      <EndCard at={56.0} />
+      {t >= T_BEFORE && t < T_LINES && <Payoff />}
+      {/* the two lines, then the name. WHY these times (review 2026-11-20: both lines left before they could be
+          read): line one on bar 27 (50.625) for 2.2 s (it needs 2.2), line two on beat 113 (52.97) for 3.1 s (it
+          needs 2.95), with a breath between them; the name lands on bar 30 (56.25) and holds 3.75 s. */}
+      <Line text="stop waiting for *updates.*" at={T_LINES} out={52.85} size={6.4} />
+      <Line text="make anything you can imagine, / just by *asking.*" at={bt(113)} out={56.1} size={5.6} />
+      <EndCard at={T_NAME} />
     </AbsoluteFill>
   );
 };
 
 /** The kawaii email (43-46). It arrives OUTSIDE the window (laid over the money page it read as pasted on):
- *  the window steps back to the left and, on the 43.0 downbeat, a notification drops in beside it. That
- *  notification IS the email's own pink header (who it is from, "every morning", the subject); on 43.5 it
+ *  the window steps back to the left and, on the bar-23 downbeat (43.125), a notification drops in beside it. That
+ *  notification IS the email's own pink header (who it is from, "every morning", the subject); one beat later it
  *  opens downward into the whole email. WHY one object that grows (review 2026-11-20): a separate toast fading
  *  out over a growing card gave a double image, and the card was seen with empty rows; now the rows build in
  *  order as the card opens around them, and nothing is ever on screen twice. */
@@ -279,7 +302,8 @@ const Email: React.FC = () => {
   // drop-in: from 26 px higher, fully inside the frame from its first frame (no clipping at the edge)
   const drop = spring({ frame: frame - s2f(T_EMAIL), fps: FPS, config: { damping: 16, stiffness: 170 } });
   // open: the header's clip grows to the whole card (a firm spring, a whisker of settle)
-  const open = t < T_EMAIL + 0.5 ? 0 : spring({ frame: frame - s2f(T_EMAIL + 0.5), fps: FPS, config: { damping: 19, stiffness: 120, mass: 0.9 } });
+  // WHY one beat (was 0.5 s): the email opens on the beat after the bar it drops in on (round 10 grid)
+  const open = t < T_EMAIL + BEAT ? 0 : spring({ frame: frame - s2f(T_EMAIL + BEAT), fps: FPS, config: { damping: 19, stiffness: 120, mass: 0.9 } });
   const HEAD = 106 * u, FULL = 533 * u;   // the header's height and the whole card's (measured at 500 px wide), in film px
   const h = HEAD + (FULL - HEAD) * open;
   return (
@@ -292,39 +316,39 @@ const Email: React.FC = () => {
   );
 };
 
-/** 46-50: the payoff, one before-and-after (review 2026-11-20: the old travelling recap of screens seen ten
+/** The payoff (bar 25 to bar 27, 46.875-50.625 on the round 10 grid), one before-and-after (review 2026-11-20: the old travelling recap of screens seen ten
  *  seconds earlier read as a template slideshow, and the plain app it started as never came back).
- *  46.0  the plain lilac app from the opening, alone and still. The music breathes here, so this is the held
+ *  46.875 (bar 25)  the plain lilac app from the opening, alone and still. The music breathes here, so this is the held
  *        breath: "this is where it started".
- *  46.5  on the beat it steps back and up to the left, and the app as it is now rises in front of it, large:
+ *  47.34 (one beat later)  on the beat it steps back and up to the left, and the app as it is now rises in front of it, large:
  *        the desert look, with the Home page the person made open in it.
- *  48.5  on the beat that window switches to their money (Bills & subscriptions, "11 found"), as the app does.
+ *  48.75 (bar 26)  on the bar that window switches to their money (Bills & subscriptions, "11 found"), as the app does.
  *  It holds, readable, until the lines; no split frames, one continuous move. */
 const Payoff: React.FC = () => {
   const frame = useCurrentFrame(); const t = frame / FPS;
-  const outro = ease01(t, 49.55, 49.95, EASE_IN);
+  const outro = ease01(t, T_LINES - 0.4, T_LINES, EASE_IN);   // WHY: gone as line one lands on bar 27
   const W = BOX.w / CSS, H = BOX.h / CSS;
-  const drift = 1 + 0.02 * ease01(t, 46.5, 50, (x) => x);   // a slow push over the whole hold, so it is never a freeze
+  const drift = 1 + 0.02 * ease01(t, T_AFTER, T_LINES, (x) => x);   // a slow push over the whole hold, so it is never a freeze
   // the "before": centred as at the start of the film, then back to its slot top left
-  const k = ease01(t, 46.5, 47.25, EASE_IN_OUT);
+  const k = ease01(t, T_AFTER, T_AFTER + 0.75, EASE_IN_OUT);
   // WHY this slot (x 154-876, y 114-605 at z 0.44): big enough that the plain lilac app reads at a glance,
   // with only its lower right corner tucked behind the "after" (x 684-1766, y 232-969), all inside 8% margins.
-  const before = { x: interpolate(k, [0, 1], [960, 515]), y: interpolate(k, [0, 1], [540, 360]), z: interpolate(k, [0, 1], [0.93 * (1 + 0.015 * ease01(t, 46, 46.5, (x) => x)), 0.44]) };
+  const before = { x: interpolate(k, [0, 1], [960, 515]), y: interpolate(k, [0, 1], [540, 360]), z: interpolate(k, [0, 1], [0.93 * (1 + 0.015 * ease01(t, T_BEFORE, T_AFTER, (x) => x)), 0.44]) };
   // the "after": slides up from below the frame and settles, decelerating, in front. WHY a slide and not a
   // fade: fading in over the lilac window printed one window through the other for a few frames.
-  const r = t < 46.5 ? 0 : spring({ frame: frame - s2f(46.5), fps: FPS, config: { damping: 24, stiffness: 120, mass: 1 } });
+  const r = t < T_AFTER ? 0 : spring({ frame: frame - s2f(T_AFTER), fps: FPS, config: { damping: 24, stiffness: 120, mass: 1 } });
   const after = { x: 1225, y: 600 + 900 * (1 - r), z: 0.66 * drift };
-  const money = t >= 48.5;
+  const money = t >= T_MONEY2;   // bar 26 (48.75)
   // WHY these page times: Home already in its finished state (sliders big, the ceiling light on, "Wind down"
   // lit), its cards building in as the window rises; the money page opens straight on the bills, building.
-  const homeT = { build: 46.55, tabOut: 999, tabBack: 999, bigger: 40, ceiling: 40, thermo: 40, scene: 40 };
-  const moneyT = { connect: 40, bills: 48.35 };
+  const homeT = { build: T_AFTER + 0.05, tabOut: 999, tabBack: 999, bigger: 40, ceiling: 40, thermo: 40, scene: 40 };
+  const moneyT = { connect: 40, bills: T_MONEY2 - 0.15 };
   return (
     <AbsoluteFill style={{ opacity: 1 - outro }}>
-      <AppWindow segs={[{ clip: L, from: m(L, 'open') + 0.2, at: T_BEFORE, out: 50, rate: 0.25 }]} z={before.z * (k > 0 ? drift : 1)} cx={before.x} cy={before.y} />
+      <AppWindow segs={[{ clip: L, from: m(L, 'open') + 0.2, at: T_BEFORE, out: T_LINES, rate: 0.25 }]} z={before.z * (k > 0 ? drift : 1)} cx={before.x} cy={before.y} />
       {r > 0.001 && (
         <div>
-          <AppWindow segs={money ? [{ clip: MN, from: m(MN, 'pagehold'), at: 48.5, out: 50, rate: 0.5 }] : [{ clip: HM, from: m(HM, 'pagehold'), at: 46.5, out: 48.5, rate: 0.5 }]}
+          <AppWindow segs={money ? [{ clip: MN, from: m(MN, 'pagehold'), at: T_MONEY2, out: T_LINES, rate: 0.5 }] : [{ clip: HM, from: m(HM, 'pagehold'), at: T_AFTER, out: T_MONEY2, rate: 0.5 }]}
             content={money ? <MoneyUI W={W} H={H} T={moneyT} /> : <HomeUI W={W} H={H} T={homeT} />} z={after.z} cx={after.x} cy={after.y} />
         </div>
       )}
