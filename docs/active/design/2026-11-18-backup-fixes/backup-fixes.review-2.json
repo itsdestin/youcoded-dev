@@ -1,0 +1,91 @@
+{
+ "title": "Backup fixes, round 2: your changes from the last deck, built",
+ "key": "backup-fixes-review-2",
+ "out": "backup-fixes.review-2.html",
+ "images": "images/backup-fixes.review-2",
+ "stage": "review",
+ "runs": {
+  "after": "runs/after-3"
+ },
+ "labels": {
+  "after": "Built"
+ },
+ "themes": [
+  "meadow-mist"
+ ],
+ "steps": [
+  {
+   "id": "U-1",
+   "new": true,
+   "surface": "Settings, Backup & sync",
+   "path": "The backup's own row, right after you add it",
+   "crop": "settings/sync#uploading@600x648+420+126",
+   "headline": "The backup's row now shows a standard status pill at the right of its box while the first copy runs.",
+   "changed": "You asked for a standard status indicator instead of the bare 'Uploading...' text. The text under the backup's name is gone. A status pill (dot plus word, the same kind used in the friends list and the session switcher) sits at the right of the Google Drive box, beside the cog. It replaces the small status light while it shows, so the box never shows two statuses. When the copy finishes the pill says 'Uploaded!' for a moment, then the usual light returns. (The red 'Couldn't sync' box at the top is practice data.)",
+   "notice": "The box is two lines tall, so 'top right' and 'right' are the same place here. On a phone this section is folded shut by default, so the pill shows only once it is opened.",
+   "risk": "'Changes pending upload' is still plain text under the name; say if you want that as a pill too. The pill's dot follows the theme's colours, so check that it reads as 'in progress' and not 'done'."
+  },
+  {
+   "id": "U-2",
+   "new": true,
+   "surface": "Chat",
+   "path": "The strip along the bottom of the window",
+   "crop": "chat#backup-chip@1440x110+0+790",
+   "headline": "The 'Backing up…' chip in the bottom strip is now switched on.",
+   "changed": "You said yes. The grey chip appears while any backup copy runs, then disappears. Clicking it opens Backup & sync. Nothing else about it changed since the last deck.",
+   "notice": "It appears during the automatic hourly and daily copies too. It follows the existing 'Sync warnings' switch in Customize.",
+   "highlight": {
+    "box": [
+     14.5,
+     68,
+     6.6,
+     30
+    ]
+   }
+  },
+  {
+   "id": "U-3",
+   "new": true,
+   "surface": "Settings, Backup & sync",
+   "path": "Warnings, after the app repaired a damaged settings file",
+   "crop": "settings/sync#config-restored@600x648+420+126",
+   "headline": "'Backup settings restored': Dismiss is now at the bottom right.",
+   "changed": "You asked for Dismiss at the bottom right. The words now run the full width and the button sits on its own line below them, at the right.",
+   "notice": "Your backups keep working with nothing to set up again. The notice stays until you dismiss it, and an amber chip shows in the bottom strip until then.",
+   "risk": "The restored copy is from the last successful save, so a change made in the same moment the file was damaged could be missing."
+  },
+  {
+   "id": "U-4",
+   "new": true,
+   "surface": "Settings, Backup & sync",
+   "path": "Warnings, when no saved copy exists yet",
+   "crop": "settings/sync#config-salvaged@600x648+420+126",
+   "headline": "'Please check your backups': button moved to the bottom right to match (you did not ask for this one).",
+   "changed": "You approved this notice as it was. I moved its button to the bottom right so all four notices in this set look the same. Say No to put it back beside the words.",
+   "notice": "Most people keep their backups. You are asked to check the list and add any that are missing.",
+   "risk": "A backup that was cut off halfway in the damaged file is dropped, so the list can be short by one. The notice says so, but someone who dismisses it without looking would not know."
+  },
+  {
+   "id": "U-5",
+   "new": true,
+   "surface": "Settings, Backup & sync",
+   "path": "Warnings, when nothing in the file can be read",
+   "crop": "settings/sync#config-damaged@600x648+420+126",
+   "headline": "'Backup settings couldn't be read': Start fresh is now at the bottom right.",
+   "changed": "You asked for the button at the bottom right. Same layout as the others: words full width, button below at the right.",
+   "notice": "No dead end any more. Your copies in Drive or iCloud are untouched; only the app's list of them is reset.",
+   "risk": "After Start fresh you add your backups again by hand. This should be very rare now that the two repairs come first. Start fresh refuses to run if a saved copy or readable backups exist."
+  },
+  {
+   "id": "U-6",
+   "new": true,
+   "surface": "Settings, Backup & sync",
+   "path": "Warnings, when the repair itself could not be saved",
+   "crop": "settings/sync#config-write-failed@600x648+420+126",
+   "headline": "'Backup settings couldn't be saved': Try again moved to the bottom right to match (you did not ask for this one).",
+   "changed": "You approved this notice as it was. Its button moved to the bottom right so the set matches. Say No to put it back.",
+   "notice": "Nothing is changed while it cannot save. Try again repairs it once there is room.",
+   "risk": "The notice does not say why saving failed, because the app cannot always know. Someone with a full disk has to work that out themselves."
+  }
+ ]
+}
