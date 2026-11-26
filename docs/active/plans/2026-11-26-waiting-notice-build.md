@@ -80,3 +80,33 @@ Toast timer fix + `dismissible`, `announce(..., {untilClosed})`, Enter/chat-swit
 ## Order
 T1 → T2 → T3 → T4 → T5 → T6. Each task: tests first where behaviour is testable, WHY comments,
 `verify.sh` green, commit onto `session/waiting-notice`.
+
+## Revision 1 (after review 1 — every finding accepted)
+- **T5 commands (B1):** add `runsIn?: 'claude-code' | 'both'` to `CommandEntry`; set it in
+  `cc-builtin-commands.ts` (all `claude-code`) and `youcoded-commands.ts` from the dispatcher's own table,
+  with a test that every dispatcher case is classified. The drawer/completion filters by the chat's
+  provider; in a native chat the misleading "run in Terminal View" rows are hidden. Filesystem commands
+  stay unknown until run, so the typed-anyway strip stays. Drop the "terminal sessions" clause (N3: a
+  shell session has no composer).
+- **T1 re-check (B2, S5, N2):** `screen-input-store` gains `subscribe`; the strip evaluates `stillTrue`
+  as a plain function against `store.getSession(id)` on `store.subscribeSession` + the screen-input
+  subscribe, through a derived-boolean snapshot (the `useStreamingGate` idiom) — never `useChatState`.
+  No interval. Busy predicate = `isThinking && !TURN_IS_OVER` as `useStreamingGate`; tested in the
+  lost-message state. Busy-app render-budget check: a streamed reply causes zero strip renders.
+- **T3 floating (B3, N4):** two slots. The routine slot is unchanged (string/state/null, normalised at
+  the one `setToast` wrapper) and never waits. "Needs you" notices go to their own list: the first shows
+  with "1 more" when others wait; none is ever dropped; Dismiss/action closes only that one.
+  `setToast(null)` touches only the routine slot.
+- **T1 held back on a chat you're not in (S3):** the strip of that chat, plus a short floating notice
+  naming the chat (the old behaviour, so a background refusal is never invisible). All callers of
+  `showBlockedSend`/`notifyIfPtyBlocked` and BuddyChat switched together.
+- **T2 red dot (S1, N5):** store-level `unseenFailureIds` set read by ONE subscription in App, fed into
+  `mergeSummaryStatuses` with red priority; cleared where `viewedSessions` is set; table test extended.
+  Renderer-local: a phone shows failures raised on that phone. `claude-control.ts` /
+  `conversation-queue-actions.ts` take the session id in their options.
+- **T4 card (S2):** data-only entry `{kind:'control-failure', op, detail?}`, inserted with
+  `appendAbovePending`, Try again wired by the renderer from `op`; added to every exhaustive consumer
+  (with a `never` check); kept through `SESSION_FILL_RESET` like pending entries; excluded from
+  `serializeChatState`.
+- **Theme popup (S4):** `PageCreateDialog` gets a `screen` override (`settings/theme-new-chat`) and a
+  theme subtitle; verify it opens a normal chat with `/theme-builder ` waiting.
