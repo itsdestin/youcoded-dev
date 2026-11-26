@@ -1,0 +1,129 @@
+{
+ "deck": "waiting-notice",
+ "started": "2026-11-26T02:34:16.466Z",
+ "submitted": "2026-11-26T02:35:38Z",
+ "cur": 4,
+ "answers": {
+  "W-asked": {
+   "ok": {
+    "stuck": true,
+    "held": true,
+    "buttons": true,
+    "rule": true,
+    "cant": true,
+    "prevent": true,
+    "limits": true,
+    "unsure": true,
+    "words": true,
+    "fyi": true,
+    "theme": true,
+    "screen": true,
+    "card": true,
+    "dot": true,
+    "turns": true,
+    "phone": true,
+    "times": true,
+    "review": true
+   },
+   "t": 1795660486445,
+   "v": "yes",
+   "seconds": 30,
+   "theme": "halftone-dimension"
+  },
+  "W-screens": {
+   "ok": {
+    "g-held": true,
+    "g-cant": true,
+    "g-failed": true,
+    "g-k7": true,
+    "g-theme": true
+   },
+   "t": 1795660496571,
+   "v": "yes",
+   "seconds": 10,
+   "theme": "halftone-dimension"
+  },
+  "W-behind": {
+   "ok": {
+    "b1": true,
+    "b2": true,
+    "b3": true,
+    "b4": true,
+    "b5": true
+   },
+   "t": 1795660511329,
+   "v": "yes",
+   "seconds": 15,
+   "theme": "halftone-dimension"
+  },
+  "W-choices": {
+   "ok": {
+    "c-elsewhere": true,
+    "c-queue": true,
+    "c-card": true,
+    "c-strip-red": true,
+    "c-buddy": true,
+    "c-model": true
+   },
+   "t": 1795660522414,
+   "v": "yes",
+   "seconds": 11,
+   "theme": "halftone-dimension"
+  },
+  "W-checks": {
+   "v": "yes",
+   "accepted": true,
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "t": 1795660536994
+  }
+ },
+ "built": {
+  "at": "2026-11-26T02:18:58Z",
+  "branch": "session/waiting-notice",
+  "commit": "8ee0865d1596f2fb9b26ca6e82f0802aaf68c8ad",
+  "spec_sha256": "dc550996a337289e0a33597f60e565cbfcb978b6e867bdbd7d33fb7d5157fcee",
+  "spec_dirty": true,
+  "ids": [
+   "R-unsure",
+   "R-words",
+   "R-newchat",
+   "R-fyi",
+   "R-remote",
+   "R-screen",
+   "R-card",
+   "R-elsewhere",
+   "R-queue",
+   "R-phone",
+   "L-drawn",
+   "L-sort-failed",
+   "L-sort-cant",
+   "K-1",
+   "K-2",
+   "K-3",
+   "K-4",
+   "K-5",
+   "K-6",
+   "K-7",
+   "L-ref-held",
+   "L-ref-unsure",
+   "L-ref-cant",
+   "L-ref-chatfail",
+   "L-ref-appfail",
+   "L-ref-done",
+   "L-ref-heads",
+   "L-0",
+   "S-2",
+   "L-1",
+   "Q-1",
+   "Q-2",
+   "Q-3",
+   "Q-4",
+   "W-asked",
+   "W-screens",
+   "W-behind",
+   "W-choices",
+   "W-checks"
+  ]
+ }
+}
