@@ -13,87 +13,60 @@ paths:
   - "scripts/ui-review/tester-kit.md"
   - "docs/active/design/**"
   - "scripts/close-out.sh"
-last_verified: 2026-09-04
+last_verified: 2026-11-10
 verify:
   - path: scripts/ui-review/deck/contract.py
     contains: "def check_contract"
   - path: scripts/ui-review/contract-agent.md
   - test: scripts/ui-review/tests/test_contract.py
   - test: scripts/ui-review/tests/test_words.py
+  - path: scripts/ui-review/templates/walkthrough.json
+  - test: scripts/ui-review/tests/test_rethink.py
+  - path: scripts/ui-review/deck/gate.py
+    contains: "def check_gate"
+  - test: scripts/ui-review/tests/test_gate.py
 ---
-
 # Feature flow — the deck is the one surface
 
-Design: `docs/archive/specs/2026-09-01-feature-flow-design.md`. Order: questions → mockups →
-UX tester 1 → review deck(s) → contract → design + capped review → build → code reviewer +
-UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
+No signed contract: the walkthroughs replace it. Depth: `scripts/ui-review/deck/AUTHORING.md`.
 
-**Full-route cost, 3 tasks: ~13 subagents** — UX tester ×2, contract ×1, design-review ×1–3,
-builder+reviewer ×2/task, code reviewer ×1, grader ×1. Short route: 0.
+## The order
+1. **Explore first:** screens, code, his earlier decisions.
+2. **First deck.** "Here is how I understand this" (Holds / Fails), then scope and hard-rule questions, and one skippable box for how he pictures the screens.
+3. **Design.** Two to four drawn designs per screen. Steps 2-7 are ONE growing deck per feature (`"grows": true`), AT one `"stage"` you advance; never a new deck per step.
+4. **Before-build walkthrough**, ending in the checks menu.
+5. **Build**; the checks he switched on run, then the grader, then a list "What changed while building": each row built as planned, or adjusted and why.
+6. **After-build walkthrough**, the main steering round. Finished when `review-cards.py walkthrough-check <before.json>` passes: every request is a row (`"from"`, or `"dropped"` with why), every check left on has a result, both lists are there and answered, and he changes nothing. No merge without his word.
+7. **Wording pass** on the real screens (`screen` steps), last.
 
-## Short route for small work
-**Invariant:** small changes, features or bug fixes with clear direction may skip every step
-but the UI review deck. Ask first. **Why:** "just
-show them to me. this is a simple feature" (2026-09-10). "Wait on the deck" = keep building,
-no deck until he asks. **Guard:** none — candidate.
+**Hands-off:** when he tells a session to do the work without him (no questions, no feedback), that is the go-ahead: skip steps 2-4, ask nothing, bring no earlier deck. Still explore, follow the design guide, run the default checks and stop for money, deletion, privacy or anything hard to undo. End with ONE growing deck at stage `after` with `"hands_off": "<his exact words>"` and the lists "What you asked for" and "Choices I made for you" (`templates/hands-off.json`); `walkthrough-check <deck>.json` gates it. Otherwise small clear work may start at step 6; ask first. **Guard:** `test_gate.py`, `test_rethink.py`, `test_hands_off.py`.
 
-## Questions before drawing
-**Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`), submitted
-before any UI is drawn, with the fields `.claude/rules/review-deck.md` requires. **Why:** a chat
-answer is not a source; a row must resolve to an answered step. **Guard:** `test_words.py`.
+## What is asked, shown, listed, never shown
+**Invariant:**
+- **Asked in words, early:** scope and hard rules (money, privacy, anything that removes or changes a control, where understandings differ).
+- **Decided on drawings, early, never in words:** layout, placement, the path between screens, how parts interact.
+- **Listed as rows:** defaults and phone layout first, then failure states, sizes, order, speed. Unsure: list it.
+- **Wording:** last, on real screens (early only if he asks, on a mockup).
+- **Never shown:** code organisation, libraries, a reviewer's raw report. Tests added or removed ARE shown, plainly.
 
-## The UX tester runs before the first deck and after the build
-**Invariant:** a fresh subagent given ONLY `scripts/ui-review/ux-tester.md`'s briefing and
-`scripts/ui-review/tester-kit.md` drives the mockups before
-the first deck and the built branch after the code review; each finding is triaged
-`accepted` / `rejected` / `already handled`.
-**Why:** a tester who read the design doc is not a beta tester.
-**Guard:** none — candidate.
 
-## Sources are answered steps or accepted findings
-**Invariant:** `<feature>.contract.json` is a one-step `rows` deck. A row's `source` is
-`<deck key>#<step id>` of a submitted, non-skipped answer, or `review:<file>#<id>` naming a line
-marked `accepted` in a review file. A FRESH agent writes it from
-`scripts/ui-review/contract-agent.md`, never from the spec, plan or transcript.
-**Why:** provenance — rows are Destin's decisions, or promises he can veto.
-**Guard:** `review-cards.py contract-check`; `test_contract.py` (`ReviewSourcedRowTests`).
+## Reuse the app's own parts
+**Invariant:** per screen, adopt every existing part that could do the job and record what is reused and new behind each design's (i), never in chat.
 
-## Answers files are committed
-**Invariant:** `docs/**/*.answers.json` (and stamped rotations) are tracked; only `scratch/` is
-ignored.
-**Why:** the only record of decisions.
-**Guard:** none — candidate.
+## The walkthrough, before and after
+**Invariant:** one deck (`templates/walkthrough.json`), same pages both times: what you asked for (his words) · every changed screen · behind the scenes · choices I made · checks, then what is left for him.
+**Guard:** `test_build.py`, `test_rethink.py`.
 
-## Reopen only through a deck
-**Invariant:** when implementation contradicts approved UI, serve a one-step QUESTION deck and
-wait; the answer amends the row's `source`.
-**Why:** a chat answer is not a source.
-**Guard:** none — candidate.
+## The checks menu
+**Invariant:** before the build the Checks page lists every check and reviewer (`scripts/ui-review/{code-reviewer,ux-tester}.md`) with Will run / Skip and why for THIS build. **On unless he switches them off:** code review, tracing rows to answers, the fresh grader (`grader.md`), the done gate; the UX tester is off unless asked. A comment on a check goes to that checker. After the build each chosen check is a row with status and proof; the code review's row carries `"check": "code-review"`. Never report a check not run.
+**Guard:** `test_gate.py`.
 
-## The gate is three facts, one command reports them
-**Invariant:** `review-cards.py contract-check` is the only reader: every source resolves and every
-`mechanical` guard exists on disk or on the contract's `branch` (exit 1 otherwise); the contract
-signed (`.contract.answers.json`, step `yes`); the acceptance deck submitted.
-**Why:** a branch's guard is absent from the main checkout until merge; unsigned is not done.
-**Guard:** `test_contract.py` (ContractCheckTests); `close-out-contract.test.sh`.
+## Records
+**Invariant:** `docs/**/*.answers.json` are tracked; older separate decks of a feature live in its `earlier-rounds/`. **Guard:** `test_grows.py`.
 
-## The build stage is reviewed, capped, recorded
-**Invariant:** technical design → reviewer rounds writing
-`docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings marked accepted /
-rejected / already handled; stop on a round accepting nothing, cap three) → task breakdown → subagent build, per-task reviewer, both checking `.claude/rules/performance.md`.
-Every design reviewer gets the signed contract and names any row the design does not deliver.
-**Why:** round counts are unmeasured; #183's design rounds never saw the contract and missed a row.
-**Guard:** none — candidate.
+## The build stage
+**Invariant:** design → reviewer rounds in `docs/active/reviews/` (cap three) → tasks → build (`.claude/rules/performance.md`).
 
-## Two reviewers, a stranger grades, then the deck
-**Invariant:** after the build, a code reviewer (`scripts/ui-review/code-reviewer.md`) and the
-UX tester's second run report in parallel to
-`docs/active/reviews/<date>-<feature>-code-review.md` / `-ux-review-<run>.md`. The implementing
-session triages; accepted findings become `review:` rows. A fresh grader
-(`scripts/ui-review/grader.md`) writes `<feature>.contract.verdicts.json`, failing a `mechanical`
-row whose test exists but tests something else. The acceptance deck shows every verdict, tags
-`review:` rows **found in review**, and asks one yes/no per `human` row. Destin opens no review
-session; nothing merges without his word.
-**Why:** the builder is the worst reviewer of its branch; an existing guard isn't a checked
-criterion.
-**Guard:** `review-cards.py acceptance` refuses ungraded rows; `test_contract.py` (AcceptanceTests).
+## Older work with a contract
+**Invariant:** a feature with a signed `<feature>.contract.json` finishes under it (`contract-check`, `close-out.sh`). Write no new contract.
+**Guard:** `test_contract.py`, `close-out-contract.test.sh`.

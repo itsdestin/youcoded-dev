@@ -1,0 +1,265 @@
+{
+  "title": "Comment box in the wrong place — after the fix",
+  "key": "comment-box-position-after",
+  "out": "comment-box.walkthrough.after.html",
+  "build": "after",
+  "steps": [
+    {
+      "id": "p1",
+      "page": "What you asked for, and what you got",
+      "intro": "One row per thing you asked for, in your own words."
+    },
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "What you asked for, and what you got",
+      "calls": [
+        {
+          "id": "box",
+          "call": "The new-comment box opens right under the words you picked, never in the bottom-left corner.",
+          "why": "It now sits under the new comment's highlight instead of under your text selection, which adding the comment often wiped out.",
+          "decided": "comment boxes sometimes show up in weird places, like the bottom left",
+          "before": "pictures/before-markdown.png",
+          "picture": "pictures/after-markdown.png"
+        },
+        {
+          "id": "word",
+          "call": "Word files and second comments work too: the cases that failed almost every time.",
+          "why": "A comment on words right next to an existing highlight now gets its own highlight, and the box sits under it.",
+          "decided": "please investigate further to see if there's anything else you may have missed",
+          "before": "pictures/before-word.png",
+          "picture": "pictures/after-word.png"
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "page": "Every screen that changed",
+      "intro": "Click a picture to open it large; drag on it to comment on a part."
+    },
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "Every screen that changed",
+      "gallery": true,
+      "calls": [
+        {
+          "id": "md",
+          "call": "A markdown file",
+          "why": "Box under the highlight instead of over the table at the bottom left.",
+          "before": "pictures/before-markdown.png",
+          "picture": "pictures/after-markdown.png"
+        },
+        {
+          "id": "docx",
+          "call": "A Word file, commenting next to an existing highlight",
+          "why": "Before: no highlight and the box at the bottom left. After: the words are highlighted and the box sits under them.",
+          "before": "pictures/before-word.png",
+          "picture": "pictures/after-word.png"
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "page": "Behind the scenes",
+      "intro": "What happens now when you add a comment, in order."
+    },
+    {
+      "id": "W-3",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "What happens when you press Add comment",
+      "numbered": true,
+      "calls": [
+        {
+          "id": "s1",
+          "call": "The comment is created and its words are highlighted.",
+          "why": "Each highlight now finds its words even after another highlight on the same line cut them apart, so both get drawn."
+        },
+        {
+          "id": "s2",
+          "call": "The box is placed under that highlight, or just above it when there is no room below.",
+          "why": "Your text selection is no longer needed, so it no longer matters that it disappears."
+        },
+        {
+          "id": "s3",
+          "call": "The box stays inside the part of the file panel you can see, clear of the Edit button.",
+          "why": "Before, it could go anywhere in the window, including over the chat box."
+        },
+        {
+          "id": "s4",
+          "call": "If you scroll while typing, the box moves with its words.",
+          "why": "When the words scroll out of view, the box waits at the panel's edge."
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "page": "Choices I made",
+      "intro": "Things you could notice that I decided without asking."
+    },
+    {
+      "id": "W-4",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "Choices I made",
+      "calls": [
+        {
+          "id": "left",
+          "call": "The box lines up with the left edge of the highlight. When the highlight wraps onto a second line, that is the start of the line.",
+          "why": "The same rule the card you see when hovering a highlight already uses, so the two match."
+        },
+        {
+          "id": "follow",
+          "call": "The box follows its words when you scroll.",
+          "why": "You named this as a small new behaviour; say here if you would rather it stayed put."
+        },
+        {
+          "id": "nohl",
+          "call": "If a comment's words cannot be highlighted (only in files too large to check), the box opens at the top-left of the panel.",
+          "why": "Before, this case went to the bottom-left corner. Without a highlight there is nothing to sit under."
+        },
+        {
+          "id": "hover",
+          "call": "The hover card on an existing highlight also stays inside the visible panel now.",
+          "why": "It shares the same placement code. Before, near the bottom of the panel it could hang below what you can see."
+        },
+        {
+          "id": "code",
+          "call": "Code files' comment box follows its line when the editor scrolls, too.",
+          "why": "It uses the same box, so it got the same behaviour."
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "page": "Checks",
+      "intro": "What each check showed."
+    },
+    {
+      "id": "W-5",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "Checks I ran, and what they showed",
+      "calls": [
+        {
+          "id": "c1",
+          "call": "New automatic check: comment twice in a markdown file and twice in a Word file, then measure the box, also after scrolling.",
+          "why": "Uses the app's real screens and a real click. Passed 3 runs in a row; on the old code both versions fail, one with the box at exactly your screenshot's spot.",
+          "result": "pass",
+          "picture": "pictures/after-word.png"
+        },
+        {
+          "id": "c2",
+          "call": "New tests: two comments on one line, and one comment inside another, both keep whole highlights.",
+          "why": "The first fails on the old code; both pass now.",
+          "result": "pass"
+        },
+        {
+          "id": "c3",
+          "call": "The full desktop check suite: types, tests, dead code, lint, all 571 screens, all saved click paths.",
+          "why": "All passed. The screens check first failed to download a helper; it passed once that was fetched.",
+          "result": "pass"
+        },
+        {
+          "id": "c4",
+          "call": "A fresh reviewer read the finished change.",
+          "why": "Found three things worth fixing and two to confirm with you; all are listed below under Found in review.",
+          "result": "pass",
+          "check": "code-review"
+        }
+      ]
+    },
+    {
+      "id": "W-7",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "What changed while building",
+      "list": "changed-while-building",
+      "calls": [
+        {
+          "id": "b1",
+          "call": "The box sits under the new highlight, stays inside the visible panel, and follows scrolling.",
+          "why": "As proposed in chat.",
+          "built": "as planned"
+        },
+        {
+          "id": "b2",
+          "call": "Also fixed: a comment next to an existing highlight on the same line got no highlight at all.",
+          "why": "The new automatic check found it; it was the real reason Word files and second comments failed.",
+          "built": "adjusted"
+        },
+        {
+          "id": "b3",
+          "call": "Review follow-ups: nested comments, scroll cost and closed code editors.",
+          "why": "A fresh reviewer found these after the first build; all three are fixed and every check was run again.",
+          "built": "adjusted"
+        }
+      ]
+    },
+    {
+      "id": "W-8",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "Found in review",
+      "list": "found-in-review",
+      "calls": [
+        {
+          "id": "f1",
+          "call": "When one comment sat inside another, the outer one's highlight was cut short.",
+          "why": "Fixed: each highlight now follows its words wherever drawing moved them. A new test covers both orders."
+        },
+        {
+          "id": "f2",
+          "call": "The box re-measured itself whenever anything in the app scrolled, even the chat.",
+          "why": "Fixed: it now reacts only to scrolling that can move its words."
+        },
+        {
+          "id": "f3",
+          "call": "A code file whose editor had just closed could have been measured.",
+          "why": "Fixed: a closed editor is skipped and the box stays where it was."
+        },
+        {
+          "id": "f4",
+          "call": "When a comment's words cannot be highlighted, the box opens at the panel's top-left.",
+          "why": "Kept, and listed under Choices I made. It only happens in very large files."
+        },
+        {
+          "id": "f5",
+          "call": "When its words scroll out of view, the box waits at the panel's edge rather than hiding.",
+          "why": "Kept, and listed under Behind the scenes; say if you would rather it hid."
+        }
+      ]
+    },
+    {
+      "id": "W-6",
+      "words": true,
+      "surface": "Files panel",
+      "path": "Open a file, select some words, press Add comment",
+      "headline": "Left for you to try",
+      "calls": [
+        {
+          "id": "v1",
+          "call": "In a dev window, comment on a few of your own files, including a whole line and a second comment in the same file.",
+          "why": "I tested sample files, not yours.",
+          "result": "todo"
+        },
+        {
+          "id": "v2",
+          "call": "On the phone: select words, press Add comment.",
+          "why": "Not tested on a phone.",
+          "result": "todo"
+        }
+      ]
+    }
+  ]
+}

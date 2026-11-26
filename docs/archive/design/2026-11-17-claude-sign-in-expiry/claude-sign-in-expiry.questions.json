@@ -1,0 +1,285 @@
+{
+  "title": "When your Claude sign-in runs out: picking up the September plan",
+  "key": "claude-sign-in-expiry-questions",
+  "out": "claude-sign-in-expiry.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-history",
+      "words": true,
+      "surface": "This piece of work",
+      "path": "Card #236, answered on 2026-09-14",
+      "headline": "The September plan stopped because that session hit your weekly usage limit while drawing the pictures.",
+      "changed": "You answered 13 questions on 2026-09-14. The session went on to draw mockups, ran out of your weekly limit partway through, and nobody picked it up. The answers sat on a side branch until the November clean-up rescued them and filed card #236. One part was fixed separately on 2026-09-23: the app now recognises the trust-folder and skip-permissions startup screens again, so typing no longer ends a new conversation. Everything about expired sign-ins and \"no internet\" was never built.",
+      "notice": "Nothing you decided was lost. This deck re-asks only what new facts change, and keeps your September route: answers, then pictures, then build, then you try it.",
+      "yes": "Makes sense",
+      "no": "Doesn't match"
+    },
+    {
+      "id": "S-facts",
+      "words": true,
+      "surface": "Claude sign-in",
+      "path": "Facts checked on 2026-11-17",
+      "headline": "Three facts found today change some of the September answers.",
+      "changed": "1) A conversation that is already open notices a new sign-in by itself (read from Claude Code's own program, not yet tried live), so signing in again should not mean reopening anything. 2) Claude Code says when your sign-in will end; yours ends in about 6 days. Your past conversations show it running out about every 2 to 4 weeks since July (13 times). 3) Every \"please run /login\" reply carries the same hidden \"sign-in failed\" label, whatever its wording, so the app can recognise it reliably.",
+      "notice": "The September worry that open conversations would need reopening goes away, and warning you before the sign-in runs out becomes possible.",
+      "yes": "Understood",
+      "no": "Questions"
+    },
+    {
+      "id": "Q-scope",
+      "words": true,
+      "surface": "This piece of work",
+      "path": "What gets built in this round",
+      "headline": "How much of the September plan should this round build?",
+      "today": "Card #236 holds three topics: expired sign-ins (Claude, ChatGPT, OpenRouter), \"no internet\" messages, and a leftover startup question about messages typed too early.",
+      "problem": "Building all three at once makes a long review for you and delays the part you asked about today.",
+      "proposal": "Pick what this round covers. Anything left out stays on card #236 for later.",
+      "options": [
+        {
+          "id": "claude-only",
+          "label": "Claude sign-in only",
+          "pros": [
+            "The thing you hit every few weeks gets fixed soonest.",
+            "One short set of pictures to review."
+          ],
+          "cons": [
+            "An expired ChatGPT or OpenRouter sign-in still only shows in Settings."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all-sign-ins",
+          "label": "All three sign-ins",
+          "pros": [
+            "Claude, ChatGPT and OpenRouter all behave the same way when they run out."
+          ],
+          "cons": [
+            "About twice the pictures and build time.",
+            "ChatGPT and OpenRouter already show an expired state in Settings, so the gain is smaller."
+          ]
+        },
+        {
+          "id": "whole-card",
+          "label": "The whole card",
+          "pros": [
+            "Card #236 is finished in one go."
+          ],
+          "cons": [
+            "The longest wait and the longest review.",
+            "\"No internet\" touches sign-in, new conversations and running ones, a big change on its own."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-expired",
+      "page": "When the sign-in runs out mid-conversation",
+      "intro": "You send a message and Claude Code answers \"Login expired · Please run /login\" instead."
+    },
+    {
+      "id": "Q-where",
+      "words": true,
+      "surface": "Chat",
+      "path": "A Claude Code conversation, right after a message fails",
+      "headline": "Where should \"Sign in again\" appear when a message fails because the sign-in ran out?",
+      "today": "The reply shows as an ordinary chat bubble reading \"Login expired · Please run /login\", sometimes followed by technical error text. There is no button.",
+      "problem": "In September you chose a notice above the message box. You have now asked for the button on the reply itself, and showing both would offer the same thing twice.",
+      "proposal": "Pick where the button lives. In every option the Settings gear also gets a dot until you are signed in again, as decided in September.",
+      "options": [
+        {
+          "id": "card-in-chat",
+          "label": "On the reply",
+          "summary": "The bubble becomes a small card: \"Your Claude sign-in has ended\" with a Sign in again button. Once you are back in, the button turns into \"Signed in\".",
+          "pros": [
+            "Right where your eyes already are when the message fails.",
+            "Replaces the confusing technical text with one plain sentence."
+          ],
+          "cons": [
+            "Scrolled out of view once more messages arrive, though the Settings dot stays."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "notice-above-box",
+          "label": "Notice above the box",
+          "summary": "Your September answer: a strip above the message box, only in Claude Code conversations.",
+          "pros": [
+            "Stays visible however far the chat scrolls.",
+            "Also covers a sign-in found expired when the app opens, before any message fails."
+          ],
+          "cons": [
+            "The reply above it still shows the confusing technical text."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both",
+          "pros": [
+            "Impossible to miss."
+          ],
+          "cons": [
+            "Two buttons for one problem, which reads as clutter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-how",
+      "words": true,
+      "surface": "Claude sign-in",
+      "path": "Pressing Sign in again",
+      "headline": "Should Sign in again open the browser sign-in from your first launch, as you chose in September?",
+      "today": "Signing in to Claude inside the app exists only on the first-launch screen. It runs Claude Code's own sign-in for you, opens your browser and notices when you are done. After first launch the only way is typing /login in the terminal view.",
+      "problem": "Most people will never find the terminal view, so an expired sign-in is a dead end for them.",
+      "proposal": "Yes reuses the first-launch sign-in behind the new button: the browser opens, you sign in, the app notices, and every open conversation carries on. No keeps it as it is today.",
+      "yes": "Yes, reuse it",
+      "no": "No"
+    },
+    {
+      "id": "Q-retry",
+      "words": true,
+      "surface": "Chat",
+      "path": "The message that failed",
+      "headline": "After you sign in again, should a Retry button resend the message that failed?",
+      "today": "The failed message stays in the chat but was never answered. You have to type it again yourself.",
+      "problem": "In September you said no to resending it for you, but wrote \"should have a retry button\".",
+      "proposal": "Yes: once you are signed back in, the card shows Retry, and one press sends the same message again. Nothing is sent without that press. No: you retype it.",
+      "yes": "Yes, add Retry",
+      "no": "No"
+    },
+    {
+      "id": "P-ahead",
+      "page": "Finding out before a message fails",
+      "intro": "In September you chose: check when the app opens and when a message fails, never on a timer."
+    },
+    {
+      "id": "Q-warn-ahead",
+      "words": true,
+      "surface": "Claude sign-in",
+      "path": "Settings, Model Providers, and the app opening",
+      "headline": "Now that the app can read when your Claude sign-in ends, should it warn you before it does?",
+      "today": "You find out only when a message fails. Settings says \"Signed in\" right up to that moment.",
+      "problem": "A message that fails mid-thought costs more than a heads-up a day earlier would have.",
+      "proposal": "The app reads the end date when it opens, the same check you approved in September, so no new timer is added.",
+      "options": [
+        {
+          "id": "settings-line",
+          "label": "A line in Settings",
+          "summary": "The Claude card in Model Providers says \"Sign-in ends Nov 23\" and offers Sign in again. Nothing appears in chat until it actually runs out.",
+          "pros": [
+            "Quiet; never interrupts.",
+            "There when you go looking."
+          ],
+          "cons": [
+            "You will rarely see it before the day it runs out."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "dot-a-day-before",
+          "label": "Settings dot a day early",
+          "summary": "The same line, plus the Settings gear dot when less than a day is left.",
+          "pros": [
+            "A real heads-up without a pop-up."
+          ],
+          "cons": [
+            "Untested: the end date may move forward on its own as you use Claude, making a warning that turns out unnecessary."
+          ]
+        },
+        {
+          "id": "no-warning",
+          "label": "No warning",
+          "pros": [
+            "Nothing new on screen."
+          ],
+          "cons": [
+            "You keep finding out from a failed message."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-typed",
+      "page": "Typing /login yourself",
+      "intro": "Some people will type /login because Claude Code's reply tells them to."
+    },
+    {
+      "id": "Q-slash-login",
+      "words": true,
+      "surface": "Chat message box",
+      "path": "Typing /login in a Claude Code conversation",
+      "headline": "When you type /login in chat, should the app run the same friendly sign-in as the button?",
+      "today": "/login goes straight to Claude Code, which shows a card asking you to pick a login type (Claude account, Console account, other platform). After you pick, the browser should open, but that step has never been tested in the app, and if Claude Code asks you to paste a code there is no box for it outside terminal view. /login is also missing from the command list; only /logout is there, marked \"run in Terminal View\".",
+      "problem": "Doing what the reply says leads into a less tested path with a choice most people cannot answer.",
+      "proposal": "Pick what typing /login does.",
+      "options": [
+        {
+          "id": "same-as-button",
+          "label": "Same as the button",
+          "summary": "Typing /login starts the browser sign-in directly. /login is added to the command list with the description \"Sign in to Claude again\".",
+          "pros": [
+            "One path, the tested one, whichever way you start it.",
+            "No login-type question for people who just use their Claude plan."
+          ],
+          "cons": [
+            "Someone signing in with a Console (API billing) account would use the terminal view instead."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave-to-claude",
+          "label": "Leave it to Claude Code",
+          "summary": "Keep today's login-type card, and test and fix the steps after it.",
+          "pros": [
+            "Every login type stays available from chat."
+          ],
+          "cons": [
+            "Depends on Claude Code's sign-in screens, which change between versions."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-elsewhere",
+      "page": "On the phone, and from another device",
+      "intro": "The same chat runs in the Android app and in a browser connected to your computer."
+    },
+    {
+      "id": "Q-remote",
+      "words": true,
+      "surface": "Remote access",
+      "path": "A phone or browser connected to your computer",
+      "headline": "If you press Sign in again from a phone connected to your computer, what should happen?",
+      "today": "Claude Code runs on the computer, so its sign-in has to finish on the computer. The ChatGPT card already handles this case by saying \"To connect ChatGPT, sign in on the host device.\"",
+      "problem": "A button that opens a browser on a computer across the room looks like it did nothing.",
+      "proposal": "This is only for a phone or browser connected to your computer. The Android app on its own runs Claude Code on the phone, so there the button opens the phone's browser and returns to the app when done.",
+      "options": [
+        {
+          "id": "say-host",
+          "label": "Say where to sign in",
+          "summary": "The card reads \"Sign in again on your computer\" with no button.",
+          "pros": [
+            "Matches the ChatGPT card, so the two read as one system.",
+            "Never opens anything you cannot see."
+          ],
+          "cons": [
+            "You have to walk to the computer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "open-on-host",
+          "label": "Open it on the computer",
+          "summary": "The button opens the browser on the computer and the phone says \"Finish signing in on your computer\".",
+          "pros": [
+            "One press starts it, ready when you get there."
+          ],
+          "cons": [
+            "Opens a browser tab on a computer someone else may be using."
+          ]
+        }
+      ]
+    }
+  ]
+}

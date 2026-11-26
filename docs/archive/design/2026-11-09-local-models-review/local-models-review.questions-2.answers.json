@@ -1,0 +1,48 @@
+{
+ "deck": "local-models-review-questions-2",
+ "started": "2026-11-12T11:18:41.068Z",
+ "submitted": "2026-11-12T11:22:37Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794482555333,
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "ends-and-file",
+   "t": 1794482555333,
+   "note": "",
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "everywhere",
+   "t": 1794482555333,
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "drop-then-continue",
+   "t": 1794482555333,
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "yes",
+   "t": 1794482555333,
+   "seconds": 39,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "yes",
+   "t": 1794482555333,
+   "seconds": 39,
+   "theme": "midnight"
+  }
+ }
+}

@@ -67,6 +67,47 @@ dev_isolation_cleanup() {
   return 0
 }
 
+# Tokens and agents a dev instance has no reason to inherit from the shell that launched it. Shared by both isolation modes.
+_dev_drop_inherited_credentials() {
+  unset GH_TOKEN GITHUB_TOKEN GH_ENTERPRISE_TOKEN GITHUB_ENTERPRISE_TOKEN SSH_AUTH_SOCK GIT_ASKPASS SSH_ASKPASS \
+        GOOGLE_APPLICATION_CREDENTIALS NPM_TOKEN NODE_AUTH_TOKEN ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN OPENAI_API_KEY OPENROUTER_API_KEY
+  local v
+  for v in $(compgen -e); do
+    case "$v" in AWS_*|AZURE_*|CLAUDE_CODE_*TOKEN*|CLAUDE_CODE_*KEY*|CLAUDE_CODE_*SECRET*|CLAUDE_CODE_*OAUTH*|CLAUDE_CODE_*AUTH*) unset "$v" ;; esac
+  done
+}
+
+# dev_private_home_env <private home> <github: keep|off> — switch THIS shell (and so the app it starts) into a private home.
+#
+# WHY (card #17, Destin 2026-11-11): every test copy now runs in a private throwaway home, so its chats, settings, themes
+# and provider list can never land in — or change — the real app's. Unlike dev_isolate_accounts below (a caller's own
+# throwaway HOME, where NOTHING is lent and the keychain is hidden behind a private bus), this mode keeps the real session
+# bus: the sign-ins run-dev.sh lends (saved API keys, ChatGPT) are locked with the system keychain, and the test copy has
+# to be able to unlock its own copies. GitHub is therefore blocked a different way: a decoy token, which `gh` prefers
+# over the keychain, so the app's GitHub calls fail with a 401 instead of acting as Destin.
+# With `keep`, the real GitHub token is read once (before HOME changes) and handed over in GH_TOKEN: the test copy can then
+# publish and open pull requests AS DESTIN — only for a test that needs exactly that.
+dev_private_home_env() {
+  local home="$1" github="${2:-off}" token=""
+  if [[ "$github" == "keep" ]] && command -v gh >/dev/null 2>&1; then token="$(gh auth token 2>/dev/null)" || token=""; fi
+  mkdir -p "$home"
+  export HOME="$home"
+  export XDG_CONFIG_HOME="$HOME/.config" XDG_DATA_HOME="$HOME/.local/share" XDG_CACHE_HOME="$HOME/.cache" XDG_STATE_HOME="$HOME/.local/state"
+  export GH_CONFIG_DIR="$XDG_CONFIG_HOME/gh"
+  mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
+  _dev_drop_inherited_credentials
+  # WHY: Claude Code would otherwise download a whole copy of itself into the private home to "update" (its real install
+  # lives in the real home, which this process can no longer see as its own).
+  export DISABLE_AUTOUPDATER=1
+  if [[ -n "$token" ]]; then
+    export GH_TOKEN="$token"; DEV_GITHUB_STATE="kept"
+  else
+    export GH_TOKEN="isolated-dev-home-decoy-token"
+    if [[ "$github" == "keep" ]]; then DEV_GITHUB_STATE="unavailable"; else DEV_GITHUB_STATE="off"; fi
+  fi
+  DEV_ISOLATION_MODE="private-home"
+}
+
 dev_isolate_accounts() {
   local state="${1:-}" real_home real_resolved home_resolved
   # WHY: a state file left by a crashed earlier launch describes a bus that is gone (or a pid that now belongs to something else);
@@ -91,12 +132,7 @@ dev_isolate_accounts() {
   mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
   # Tokens and agents a dev instance has no reason to inherit (nothing in run-dev.sh, the app's dev path or the fake-model smokes reads
   # them; a keyed provider is added inside the throwaway HOME instead).
-  unset GH_TOKEN GITHUB_TOKEN GH_ENTERPRISE_TOKEN GITHUB_ENTERPRISE_TOKEN SSH_AUTH_SOCK GIT_ASKPASS SSH_ASKPASS \
-        GOOGLE_APPLICATION_CREDENTIALS NPM_TOKEN NODE_AUTH_TOKEN ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN OPENAI_API_KEY OPENROUTER_API_KEY
-  local v
-  for v in $(compgen -e); do
-    case "$v" in AWS_*|AZURE_*|CLAUDE_CODE_*TOKEN*|CLAUDE_CODE_*KEY*|CLAUDE_CODE_*SECRET*|CLAUDE_CODE_*OAUTH*|CLAUDE_CODE_*AUTH*) unset "$v" ;; esac
-  done
+  _dev_drop_inherited_credentials
   if command -v dbus-daemon >/dev/null 2>&1 && [[ "$(uname -s)" == "Linux" ]]; then
     # An empty private session bus has no keyring on it, so `gh auth token` finds nothing. It is started here (not via dbus-run-session)
     # so its pid and address are known and `--stop` can end it and the services it activates.

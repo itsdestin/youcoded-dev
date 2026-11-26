@@ -1,0 +1,107 @@
+[
+  {
+    "name": "library#update-check-failed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/tmp/claude-1000/-home-destin-youcoded-dev/70e9539f-2806-4f1b-8145-f3fccc37f380/scratchpad/overnight/look/before-after/before/library#update-check-failed/light.png",
+    "ms": 915,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/conversations#load-failed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/tmp/claude-1000/-home-destin-youcoded-dev/70e9539f-2806-4f1b-8145-f3fccc37f380/scratchpad/overnight/look/before-after/before/projects/conversations#load-failed/light.png",
+    "ms": 1110,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 381,
+      "w": 1100,
+      "h": 509
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#friends-failed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/tmp/claude-1000/-home-destin-youcoded-dev/70e9539f-2806-4f1b-8145-f3fccc37f380/scratchpad/overnight/look/before-after/before/chat/games#friends-failed/light.png",
+    "ms": 1118,
+    "errors": [
+      "Error: Mock failure (social.listFriends)\n    at Od.r.<computed> (http://127.0.0.1:46681/assets/mock-shim-BAAcXbwr.js:8683:20180)\n    at Proxy.<anonymous> (http://127.0.0.1:46681/assets/mock-shim-BAAcXbwr.js:8683:19147)\n    at http://127.0.0.1:46681/assets/GamePanel-L611R1He.js:2:7159\n    at http://127.0.0.1:46681/assets/GamePanel-L611R1He.js:2:7271\n    at Wc (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:91937)\n    at kl (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:107113)\n    at Ol (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:106997)\n    at kl (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:107877)\n    at Ol (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:106997)\n    at kl (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:107093)",
+      "Error: Mock failure (social.listFriends)\n    at Od.r.<computed> (http://127.0.0.1:46681/assets/mock-shim-BAAcXbwr.js:8683:20180)\n    at Proxy.<anonymous> (http://127.0.0.1:46681/assets/mock-shim-BAAcXbwr.js:8683:19147)\n    at http://127.0.0.1:46681/assets/GamePanel-L611R1He.js:2:7159\n    at http://127.0.0.1:46681/assets/GamePanel-L611R1He.js:2:7452\n    at Wc (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:91937)\n    at kl (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:107113)\n    at Ol (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:106997)\n    at kl (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:107877)\n    at Ol (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:106997)\n    at kl (http://127.0.0.1:46681/assets/startup-Dn2LNEOT.js:9:107093)"
+    ],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 748
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/context#load-failed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/tmp/claude-1000/-home-destin-youcoded-dev/70e9539f-2806-4f1b-8145-f3fccc37f380/scratchpad/overnight/look/before-after/before/projects/context#load-failed/light.png",
+    "ms": 1118,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 381,
+      "w": 1100,
+      "h": 509
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/local#list-failed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/tmp/claude-1000/-home-destin-youcoded-dev/70e9539f-2806-4f1b-8145-f3fccc37f380/scratchpad/overnight/look/before-after/before/settings/assistant/local#list-failed/light.png",
+    "ms": 1200,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/general#search-failed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/tmp/claude-1000/-home-destin-youcoded-dev/70e9539f-2806-4f1b-8145-f3fccc37f380/scratchpad/overnight/look/before-after/before/settings/assistant/general#search-failed/light.png",
+    "ms": 1731,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  }
+]

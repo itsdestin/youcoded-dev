@@ -1,0 +1,836 @@
+{
+ "title": "Overnight results: six things to land and fourteen choices",
+ "key": "overnight-results-2026-11-12",
+ "out": "overnight.questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-2",
+   "page": "Land or hold: the work with nothing new to look at",
+   "intro": "Seven sessions ran overnight. Nothing is landed. Every branch is saved on GitHub and passes the full desktop check; I confirmed they combine with today's app and with each other (one small bookkeeping file needs a routine tidy when combined). A Yes on the pictures deck lands that item; a No removes it. These questions cover the rest."
+  },
+  {
+   "id": "L-1",
+   "words": true,
+   "surface": "Files and Office",
+   "path": "Word and Excel previews, closing a window, Office autosave",
+   "headline": "Land the Files fixes, now that the stuck check is solved?",
+   "today": "This is the branch that was stuck after wave 2 (the one you approved on the wave 2 deck). The stray error is found: one Word-preview test ran a real conversion by accident and ended while it was still going. The fault was in the test, not the app. GitHub now passes all four Linux test runs. Added overnight, all from your wave 2 answers: Excel previews stop after 60 seconds like Word; closing a second window no longer ends its chats when the window in fact stays open; an Office autosave over a change made outside the app always keeps the overwritten version in Versions; and closing any window with unsaved files shows the existing \"Unsaved changes\" popup first.",
+   "problem": "The close popup counts unsaved Office documents as well as typed text, the same rule as quitting the app. An Office document edited in the last second could briefly trigger it. I kept one rule for both rather than two. The window-close fixes passed their tests but nobody clicked through them with a real second window. Windows, Mac and the phone app were not run.",
+   "proposal": "Landing puts the six wave 2 fixes and these four in the next release.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "The Word preview hang and the lost-work cases close.",
+      "GitHub's checks pass, including the Linux run that failed before.",
+      "No new screen; the popup is the one you already know."
+     ],
+     "cons": [
+      "Window-close behaviour is proven by tests only.",
+      "A genuine Excel file needing over 60 seconds to preview would now fail with a message."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes until you have tried a second window yourself."
+     ],
+     "cons": [
+      "The faults stay; the branch falls behind again."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-2",
+   "words": true,
+   "surface": "Chat",
+   "path": "File sizes across the app; picture previews when attaching from a phone browser",
+   "headline": "Land the sizes change and the phone-browser picture previews?",
+   "today": "Both come from your wave 2 answers. Sizes: 17 places now count 1000 per step, the way websites and Hugging Face do, through one shared piece of code. Example: a model shown as 74.2 of 113.0 GB now reads 79.7 of 121.3 GB. Places: Local models (sizes, progress, delete confirmation), the model loading bar, file drawer, session card, the too-large-file messages, phone file card, project instruction files, theme publish list, the sync \"history is large\" notice, the memory and free-space warnings, and the assistant's own file-reading notes. Phone browser: a picture you pick there now shows a small preview in the message box.",
+   "problem": "Limit sentences such as \"50 MB\" were left as they are (the true limit is about 5% higher than the label; changing limits would shrink them). The phone preview cannot be pictured here; it is proven by tests only. An Android app connected to a computer gets the previews too, because it uses the same path. A card (#254) is filed for full previews on phones later.",
+   "proposal": "Landing puts both in the next release.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Sizes match what download pages show.",
+      "A test now fails if anyone adds an old-style size again."
+     ],
+     "cons": [
+      "Every size reads about 5 to 7% larger than before for the same file.",
+      "Phone preview unseen on a real phone."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "Sizes keep disagreeing with download pages."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-3",
+   "words": true,
+   "surface": "Chat engine",
+   "path": "What the assistant is told after a crash; OpenRouter replies",
+   "headline": "Land the crash-recovery change and the OpenRouter record?",
+   "today": "Crash recovery: you asked for a proper review of the leftover change. Result: it is sound, the app has nothing equivalent, and it changes nothing you see. After a crash, a step whose result was lost is described to the assistant as \"completion unknown, check before retrying\" instead of \"Canceled\", so it does not redo an edit or a send that did happen. It also stops a reopened chat from ballooning (one real chat had grown to about 1.09 million tokens from this). It is now on today's app with two more tests. OpenRouter: the app now records which company served each reply, beside the cost figures it already keeps. No chat text is recorded and nothing is shown.",
+   "problem": "The research confirmed your memory: cost work was done in September (two rounds of fixes; ChatGPT follow-up reuse went from 13 of 20 to 18 of 20). What is still unknown is why OpenRouter re-reads the whole chat on roughly 1 in 5 quick follow-ups, because the serving company was never recorded. With this record, one or two weeks of your normal use answers that for free. No live crash was replayed; the proof is tests plus three real damaged chats repaired offline.",
+   "proposal": "Landing both means no paid test is needed for the OpenRouter question; I would re-measure two weeks after the release.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Removes a real double-action risk after crashes.",
+      "Answers the OpenRouter question without spending."
+     ],
+     "cons": [
+      "Not seen with a live crash.",
+      "The OpenRouter answer takes two weeks of use."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "The crash hazard stays; the cost question stays unanswerable."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-4",
+   "words": true,
+   "surface": "Chat engine",
+   "path": "Chats on YouCoded's own engine that use helpers or background commands",
+   "headline": "What should happen with the early-stop fix?",
+   "today": "The fault: a helper or background command finishes, but its report reaches the assistant late or is lost as the turn ends, so the assistant sits idle until you type. The research found a fix had been built and tested in October in a test lab but never reached the app. Overnight it was rebuilt on today's app. Without it, 19 of the 22 tests written for this fault fail; with it all pass. I then had a second, independent reviewer go through it. It found one real fault (an answer cut off at its length limit could be left unfinished when a report arrived at the same moment), which is fixed with its own test.",
+   "problem": "It is about 140 lines of timing logic in the heart of the engine. Nobody has watched a real model with it, and it is not proven that this is what caused the stalls you saw. One side effect: when a report is waiting and you send a message, both now go to the model together instead of in two steps (slightly cheaper, same order).",
+   "proposal": "A paid check would run 20 scripted chats on today's app and 20 with the fix, on a cheap model, in a private test copy: \"start a helper, then write a file without being nudged\". Estimated under 1 USD; I would cap it at 3 USD. It would use a cheaper model than the one that stalled for you, so a clean result is good evidence, not proof.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it now",
+     "pros": [
+      "Fixes a fault the tests reproduce on today's app.",
+      "Reviewed twice.",
+      "No spending."
+     ],
+     "cons": [
+      "A subtle timing mistake would only show in real use."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "paid",
+     "label": "Run the paid check first (cap 3 USD), then land if clean",
+     "pros": [
+      "More confidence before it reaches a release."
+     ],
+     "cons": [
+      "Costs up to 3 USD and a day.",
+      "Still not proof for the model you saw stall."
+     ]
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "No risk."
+     ],
+     "cons": [
+      "Idle stalls after helpers stay possible."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-5",
+   "words": true,
+   "surface": "Look and wording",
+   "path": "Hover hints and failed-load messages across settings, marketplace and the new-session form",
+   "headline": "Land the look-and-wording changes the approved guide already calls for?",
+   "today": "Two kinds of change. Hover hints: about 90 plain browser hints (the small grey system box) now use the app's own hint, with the same words. Honest failure messages: places that showed an empty list or nothing when a load failed now say \"Couldn't load ...: <the real reason>\" with a Try again button, in the standard red-tinted box. Done so far: the new-session model lists (before, Create was greyed out with no reason), Local models, the sync log (before, it said \"No sync log entries yet\"), Blocked users and Web search keys. Also: the Library update check, vote counts (before, a failed read said \"No votes yet\"), a project's conversations and context files, and friends and friend requests (before, a failed read left \"Loading your friends...\" for ever). Ten places in all. Pictures 5 and 6 on the pictures deck show two of them.",
+   "problem": "A No on picture 5 or 6 removes only that one. No before and after pictures of the hover hints exist: a hint cannot be caught in a still picture. Contrast colours and button alignment were not touched (your deferred decisions). The error-message card is large; what remains after this stays on the card.",
+   "proposal": "Landing puts these in the next release. Each group is separate, so any one can be taken out later.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Failures stop looking like \"you have none\".",
+      "Hints match the rest of the app.",
+      "A test now fails if a plain browser hint is added again."
+     ],
+     "cons": [
+      "Hover hints proven by tests, not seen by you."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing changes until you have hovered around a test copy."
+     ],
+     "cons": [
+      "Empty-looking failures stay."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "L-6",
+   "words": true,
+   "surface": "Workspace tools",
+   "path": "Speed-measuring tools and the research notes (nothing here ships to users)",
+   "headline": "Land the speed-tool repairs and the research notes?",
+   "today": "Speed session: the first try measured nothing because the computer was too busy, so I re-ran it later. It found and fixed two faults in the measuring tool itself (a safety check that wrongly refused every run, and a memory limit that counted shared memory several times). Then it measured, in the packaged app on practice data: switching chats shows the first picture in 25 to 35 thousandths of a second; typing appears in 3 to 15; the app's window stops being blank after about 0.2 seconds and lists sessions after about 0.7 (the card said 1.3). Nothing was slow enough to justify a risky change, so no app code changed. Research notes: the history of the cost and early-stop cards, the test plan, the review of the crash change.",
+   "problem": "All numbers are from this computer without its real graphics card in use, on practice chats smaller than yours. Windows, Mac, phone and real-graphics numbers do not exist. Older history pages do get slower to load when you scroll thousands of messages back; the cause is the page itself growing, and the only cure is showing part of a long chat, which is a visible redesign you would need to approve. I left it.",
+   "proposal": "Landing only changes workspace tools and notes.",
+   "options": [
+    {
+     "id": "land",
+     "label": "Land it",
+     "pros": [
+      "Later speed sessions can measure terminal, files and history, which was impossible before.",
+      "The research is kept where sessions will find it."
+     ],
+     "cons": [
+      "None for users."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "hold",
+     "label": "Hold it",
+     "pros": [
+      "Nothing."
+     ],
+     "cons": [
+      "The next speed session hits the same broken checks."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Choices the sessions left for you: chat and phone",
+   "intro": "Each of these is a product choice I should not make for you. Nothing here is built unless the question says so."
+  },
+  {
+   "id": "C-1",
+   "words": true,
+   "surface": "Chat",
+   "path": "The damaged-settings notice from the second picture",
+   "headline": "Should phones and the Android app get the damaged-settings notice too?",
+   "today": "The notice appears in the computer's own window only.",
+   "problem": "The Android app does the same repair, and that is where a silent reset is most likely to go unnoticed. Showing it there means letting phones ask the computer one more question (\"was a settings file replaced?\"); the answer is only the kept file's location.",
+   "proposal": "Yes builds it for phones; No leaves the notice on the computer only.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, phones too",
+     "pros": [
+      "Android users are told as well."
+     ],
+     "cons": [
+      "One more thing a connected phone is allowed to ask."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "Computer only",
+     "pros": [
+      "Phone abilities unchanged."
+     ],
+     "cons": [
+      "A reset on Android stays silent."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-2",
+   "words": true,
+   "surface": "Chat",
+   "path": "Right-clicking a picture in a chat",
+   "headline": "Design 1 of 3: what should right-click on a picture offer?",
+   "today": "You approved designing this on the wave 2 deck. Today right-clicking a picture gives only the general chat menu. Looked at for reference: the chat right-click menu, the Browser panel's Copy and Paste menu, and the file-chip menu.",
+   "problem": "There is no quick way to copy or save a picture the assistant made or you attached.",
+   "proposal": "The same small menu at the pointer. On a phone browser, saving hides (as file chips already do).",
+   "options": [
+    {
+     "id": "four",
+     "label": "Copy image, Save image as, Copy image address (web pictures only), Ask about this",
+     "pros": [
+      "Covers everything you listed."
+     ],
+     "cons": [
+      "A save window on each system to get right."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "two",
+     "label": "Only Copy image and Ask about this",
+     "pros": [
+      "Small; works the same everywhere."
+     ],
+     "cons": [
+      "No way to save."
+     ]
+    },
+    {
+     "id": "drop",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to build."
+     ],
+     "cons": [
+      "No picture menu."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-3",
+   "words": true,
+   "surface": "Chat",
+   "path": "The folder chooser when starting or switching a session",
+   "headline": "Design 2 of 3: how should recent folders come first?",
+   "today": "The folder dropdown lists every saved folder in a fixed order. Looked at for reference: the folder switcher, the Project View list and the Resume browser's grouping.",
+   "problem": "With many folders, the two or three you use daily are scattered through the list.",
+   "proposal": "Rows, dots and the footer stay as they are either way.",
+   "options": [
+    {
+     "id": "group",
+     "label": "A small \"Recent\" group of the last five on top, then the full list",
+     "pros": [
+      "Clear; the full list never moves."
+     ],
+     "cons": [
+      "A recent folder appears twice."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "reorder",
+     "label": "Reorder the one list by last use",
+     "pros": [
+      "No duplicates."
+     ],
+     "cons": [
+      "The list rearranges itself, so a folder is never where it was."
+     ]
+    },
+    {
+     "id": "drop",
+     "label": "Leave it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "Scrolling stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-4",
+   "words": true,
+   "surface": "Chat",
+   "path": "Pressing a quick chip (Journal, Inbox, Git Status ...) when the message box already has text",
+   "headline": "Design 3 of 3: what should a quick chip do when you have already typed something?",
+   "today": "With an empty box a chip fills it. With text in the box, the chip's words are added in a way that is easy to get wrong. Looked at for reference: the quick chips and the Edit strip on waiting messages.",
+   "problem": "You can lose or mangle what you had typed.",
+   "proposal": "With an empty box nothing changes in any option.",
+   "options": [
+    {
+     "id": "strip",
+     "label": "A slim strip above the box: Replace, Add to end, or cancel",
+     "pros": [
+      "Nothing is lost by accident.",
+      "Same strip as editing a waiting message."
+     ],
+     "cons": [
+      "One extra tap whenever the box has text."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "append",
+     "label": "Always add to the end",
+     "pros": [
+      "No question asked."
+     ],
+     "cons": [
+      "You cannot swap what you typed for the chip."
+     ]
+    },
+    {
+     "id": "drop",
+     "label": "Leave it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "The awkward merge stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-5",
+   "words": true,
+   "surface": "Phone",
+   "path": "The red dot and chime on the phone",
+   "headline": "Should the phone chime and show red when the browser asks for approval?",
+   "today": "With the fourth picture landed, the approval card appears in the chat on the phone, but the phone does not chime and its dot does not turn red.",
+   "problem": "If you are not looking at that chat, you may not notice the assistant is waiting. The red-dot rules belong to the notifications work (built, waiting for your testing), and changing them here too would mean two pieces of work editing the same rules.",
+   "proposal": "Either way the card itself works.",
+   "options": [
+    {
+     "id": "later",
+     "label": "Add it with the notifications work",
+     "pros": [
+      "One consistent meaning of red.",
+      "No clash between two branches."
+     ],
+     "cons": [
+      "Until then the phone stays quiet for browser questions."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "now",
+     "label": "Add it now",
+     "pros": [
+      "Alerted straight away."
+     ],
+     "cons": [
+      "A visible change beyond the card.",
+      "Likely rework when notifications land."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-6",
+   "words": true,
+   "surface": "Phone",
+   "path": "The phone while your computer is asleep or off",
+   "headline": "What should the phone say when it cannot reach your computer?",
+   "today": "A sleeping or switched-off computer just shows \"reconnecting\" and then \"can't connect\".",
+   "problem": "The app cannot know the computer is asleep; it only knows it is silent. Nothing tells you what is likely wrong or whether to wait. The session found no new bug in the reconnect code; earlier fixes are in.",
+   "proposal": "Wording only, shown after about 20 seconds of silence. Not built.",
+   "options": [
+    {
+     "id": "maybe",
+     "label": "\"Can't reach your computer. It may be asleep or off. YouCoded will keep trying.\"",
+     "pros": [
+      "Tells you the likely cause and that waiting is fine."
+     ],
+     "cons": [
+      "\"May be\" is a guess, though labelled as one."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "plain",
+     "label": "\"Your computer isn't answering.\"",
+     "pros": [
+      "Strictly true."
+     ],
+     "cons": [
+      "No hint what to do."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave as is",
+     "pros": [
+      "Nothing new."
+     ],
+     "cons": [
+      "The confusion stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Choices: models, themes and looks",
+   "intro": "Same as the page before: product choices, nothing built unless the question says so."
+  },
+  {
+   "id": "C-7",
+   "words": true,
+   "surface": "Models",
+   "path": "Adding your own model from a provider the app does not know",
+   "headline": "What size should the app assume for a model whose size it cannot find out?",
+   "today": "When a hosted model's conversation size is unknown, the app assumes 250 thousand and starts summarising near 231 thousand. A model on your own computer is assumed to be 32 thousand.",
+   "problem": "Most hosted models are smaller than 250 thousand (many are 128 thousand; Claude is 200; DeepSeek 64). They refuse a long chat before the app ever summarises, and some word the refusal in a way the app does not recognise, so there is no Summarise button and the chat is a dead end.",
+   "proposal": "Pick what to do now; the options can be combined later.",
+   "options": [
+    {
+     "id": "128",
+     "label": "Assume 128 thousand now, and add a size box to the add-model screen later",
+     "pros": [
+      "Fixes the common 128 and 200 thousand models at once.",
+      "The size box makes any model exact."
+     ],
+     "cons": [
+      "Very large models get summarised earlier (near 111 thousand instead of 231).",
+      "64 and 32 thousand models still fail until the size box exists.",
+      "The size box needs a small design round."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep 250 thousand",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "Most unknown models keep failing in long chats."
+     ]
+    },
+    {
+     "id": "small",
+     "label": "Assume 32 or 64 thousand",
+     "pros": [
+      "Almost nothing fails."
+     ],
+     "cons": [
+      "Every unknown model summarises constantly during file work."
+     ]
+    },
+    {
+     "id": "learn",
+     "label": "Learn the size from the first failure",
+     "pros": [
+      "Fixes itself."
+     ],
+     "cons": [
+      "One failure per model first, and only for refusals the app recognises."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-8",
+   "words": true,
+   "surface": "Themes",
+   "path": "The model name chip in the bar under the message box, on light themes",
+   "headline": "Provider brand colours are hard to read on five light themes. How should that be fixed?",
+   "today": "The model chip uses each provider's brand colour (Claude's orange, and so on). All 14 themes pass the main contrast checks, but these brand colours fail the readable-text mark in 27 places on Kuromi Dreamer, Cotton Candy Sky, Meadow Mist, Strawberry Kitty and Morning Rounds.",
+   "problem": "The provider name is faint on those themes.",
+   "proposal": "Not built; this is one of the contrast decisions you deferred.",
+   "options": [
+    {
+     "id": "derive",
+     "label": "Adjust each brand colour to the theme it sits on",
+     "pros": [
+      "Readable on every theme, including community ones."
+     ],
+     "cons": [
+      "A brand colour is slightly darker or lighter from theme to theme."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "darken",
+     "label": "Darken the brand colours used on all light themes",
+     "pros": [
+      "Simple; one fixed set."
+     ],
+     "cons": [
+      "Also changes the built-in Light and Creme themes, which you were told would not move."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "Faint names stay."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-9",
+   "words": true,
+   "surface": "Help",
+   "path": "The Known issues row in the Help popup",
+   "headline": "Known issues closes Help and opens a web page with no word in the app. Change it?",
+   "today": "Pressing Known issues closes the Help popup and opens your browser.",
+   "problem": "If the browser opens behind the app, it looks like the click did nothing and Help vanished.",
+   "proposal": "The help bubbles themselves were checked and had no fault.",
+   "options": [
+    {
+     "id": "notice",
+     "label": "Keep it, and show a short \"Opening in your browser\" notice",
+     "pros": [
+      "You know what happened."
+     ],
+     "cons": [
+      "One small new message."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "open",
+     "label": "Keep Help open behind",
+     "pros": [
+      "Nothing vanishes."
+     ],
+     "cons": [
+      "Help stays in the way when you come back."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "The small surprise stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-10",
+   "words": true,
+   "surface": "Themes",
+   "path": "The published list of themes that every copy of the app downloads",
+   "headline": "When should the rebuilt theme list be published?",
+   "today": "In wave 1 you landed a fix so a theme shows Update when its files change. It needs the published theme list rebuilt with a fingerprint for every theme file, which nobody had done since 5 October. The rebuilt list is ready on a branch: 131 files fingerprinted, each checked against the real file, version numbers unchanged. I also had the build corrected so it no longer marks all 8 themes as updated today (that would have made the marketplace's New sort treat them all as fresh).",
+   "problem": "Publishing reaches every user at once. What they would see: nothing. No installed theme shows Update, nothing is downloaded again. Only themes installed afterwards by a newer app can show Update on a later edit. Apps that check fingerprints refuse a file that does not match; none mismatch today.",
+   "proposal": "The app fix itself is not in a release yet.",
+   "options": [
+    {
+     "id": "with",
+     "label": "Publish when the release containing the fix goes out",
+     "pros": [
+      "List and app change together.",
+      "Nothing visible either way."
+     ],
+     "cons": [
+      "One more step to remember at release time (I will put it on the release card)."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "now",
+     "label": "Publish now",
+     "pros": [
+      "Done and out of the way."
+     ],
+     "cons": [
+      "Live for everyone before any app can use it."
+     ]
+    },
+    {
+     "id": "wait",
+     "label": "Wait for the next real theme change",
+     "pros": [
+      "No separate publish."
+     ],
+     "cons": [
+      "The Update fix stays inert until then."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-11",
+   "words": true,
+   "surface": "Themes",
+   "path": "The preview picture of a theme you built yourself, when you share it",
+   "headline": "Self-built themes get a drawn preview, not a real screenshot. What should happen?",
+   "today": "Built-in and community themes show a real screenshot. A theme you build gets a picture the app draws from its colours.",
+   "problem": "The drawn picture does not look like the real app, so your theme looks different from the others in the list.",
+   "proposal": "Nothing was built: a real screenshot means the app photographing itself with the theme on, which is a feature of its own.",
+   "options": [
+    {
+     "id": "real",
+     "label": "Make it a card: the app captures a real picture of itself, as its own approved feature later",
+     "pros": [
+      "Self-built themes look like the rest."
+     ],
+     "cons": [
+      "A sizeable feature touching every share."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "restyle",
+     "label": "Restyle the drawing to look more like the app",
+     "pros": [
+      "Small."
+     ],
+     "cons": [
+      "Still a drawing."
+     ]
+    },
+    {
+     "id": "leave",
+     "label": "Leave it",
+     "pros": [
+      "Nothing to do."
+     ],
+     "cons": [
+      "The mismatch stays."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-12",
+   "words": true,
+   "surface": "Themes",
+   "path": "Particle and glass effects on slower computers",
+   "headline": "Should themes' particle and glass effects stay on by default on weaker computers?",
+   "today": "Effects are on for everyone unless Reduced Effects is switched on. They are already capped at 30 pictures a second and stop when the window is hidden.",
+   "problem": "Earlier readings (5 October): glass themes used 11 to 15% of the processor while the assistant was writing, against 2.4% for a plain theme. On a weak laptop that means heat and battery.",
+   "proposal": "No defaults were changed. Real-graphics-card numbers were not taken overnight.",
+   "options": [
+    {
+     "id": "on",
+     "label": "Keep them on",
+     "pros": [
+      "Themes look as designed for everyone."
+     ],
+     "cons": [
+      "Weak laptops pay in battery unless the user finds Reduced Effects."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "weak",
+     "label": "Off by default on weak hardware",
+     "pros": [
+      "Cooler and smoother there."
+     ],
+     "cons": [
+      "New users on such machines see plainer themes.",
+      "\"Weak\" has to be guessed."
+     ]
+    },
+    {
+     "id": "ask",
+     "label": "Ask once at first run",
+     "pros": [
+      "The user chooses."
+     ],
+     "cons": [
+      "One more first-run screen."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C-13",
+   "words": true,
+   "surface": "Chat",
+   "path": "A chat message that lists thousands of file paths",
+   "headline": "Should very long file lists in a message be shortened with a \"show all\" control?",
+   "today": "A message listing 10,000 file paths froze the window for about 0.7 seconds in the speed tests (1.5 seconds at 20,000), because each path is drawn as a button. Measured once, on practice data.",
+   "problem": "A brief freeze when such a message appears. It is rare.",
+   "proposal": "The cure is visible: show the first 500 and a \"show all\" control.",
+   "options": [
+    {
+     "id": "leave",
+     "label": "Leave it for now",
+     "pros": [
+      "No change to how lists look.",
+      "It is rare and was measured only once."
+     ],
+     "cons": [
+      "The freeze stays for huge lists."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "design",
+     "label": "Bring me a small design for it",
+     "pros": [
+      "Removes the freeze."
+     ],
+     "cons": [
+      "Long lists are no longer fully shown at first."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "How I work from here",
+   "intro": "One question about how the next waves run."
+  },
+  {
+   "id": "W-1",
+   "words": true,
+   "surface": "How we work",
+   "path": "Landing work without waiting for you",
+   "headline": "From now on, may I land invisible fixes myself once GitHub's checks pass?",
+   "today": "Your rule is that nothing lands without your word, except records (cards, archived decks). You told me last night to manage the remaining sessions myself; I ran them, checked them, and held every branch.",
+   "problem": "Held branches fall behind and start clashing with each other. Five branches are waiting on this deck this morning.",
+   "proposal": "This would cover only changes with nothing to see: fixes proven by tests, tools, notes. Anything you could see or feel still comes to you first with pictures, and I report each landing afterwards. Paid runs still need your OK.",
+   "options": [
+    {
+     "id": "green",
+     "label": "Yes, land invisible fixes when checks pass",
+     "pros": [
+      "Fixes reach the app sooner; fewer questions for you.",
+      "Visible changes still wait for you."
+     ],
+     "cons": [
+      "You learn about those fixes after they are in.",
+      "My judgement of \"invisible\" could be wrong; overnight a second look found two small side effects in work first reported as invisible, both caught and removed before reaching you."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "ask",
+     "label": "No, keep asking per wave",
+     "pros": [
+      "You approve everything."
+     ],
+     "cons": [
+      "Work waits for you; branches pile up."
+     ]
+    }
+   ]
+  }
+ ]
+}

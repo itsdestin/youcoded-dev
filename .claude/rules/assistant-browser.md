@@ -6,7 +6,7 @@ paths:
   - "**/desktop/src/renderer/components/browser/**"
   - "**/desktop/src/renderer/state/browser-store.ts"
   - "**/desktop/src/shared/browser-types.ts"
-last_verified: 2026-10-13
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/assistant-browser/browser-tool-runners.ts
     contains: "export async function runBrowserTool"

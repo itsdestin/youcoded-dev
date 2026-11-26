@@ -1,0 +1,126 @@
+# What users will notice
+
+One to three lines per merged change, written when it lands by `node scripts/cards.mjs notice`. Read by the Work board's "Since the last release" list and its changelog draft.
+
+- youcoded#694 fixes | Welcome back now reopens each session with Skip permissions the way you left it.
+- youcoded#695 fixes | Very large replies no longer freeze the app for minutes when they finish.
+- youcoded#695 fixes | The chat no longer jumps around while a page is still drawing.
+- youcoded#695 fixes | Code blocks over 1,500 lines now show without colour, to keep the app fast.
+- youcoded#696 behind | Website: new Security and Changelog pages; the licence now shows as MIT on GitHub.
+- youcoded#697 behind | Readme screenshots now use the default theme.
+- youcoded#699 behind | Readme, public docs and website wording refreshed.
+- youcoded#679 behind | Nothing visible.
+- youcoded#701 behind | Nothing visible.
+- youcoded#706 behind | Nothing visible.
+- youcoded#708 behind | Nothing visible.
+- youcoded#710 behind | Nothing visible.
+- youcoded#715 behind | Nothing visible.
+- youcoded#738 behind | Nothing visible.
+- youcoded@b666f6de4 behind | Nothing visible.
+- youcoded#705 fixes | Tapping a file name in chat now finds the file even when the assistant gave only a short path.
+- youcoded#705 fixes | When a file cannot be opened, the reason now shows even while another file is open.
+- youcoded#707 new | The assistant can now comment on files outside your project, after asking you: Yes, Allow for this chat, or No.
+- youcoded#709 new | The buddy window now shows your main chat, with the same cards, questions and session list.
+- youcoded#709 new | The buddy chat comes in two sizes and remembers which one you chose.
+- youcoded#711 new | Anonymous usage counts now come only from official builds; fresh installs also send a few one-time setup milestones (About, Privacy).
+- youcoded#712 new | Voice input now warns when the microphone hears no sound, and says why nothing was written after you stop.
+- youcoded#713 new | Permission cards offer more precise Always-allow choices.
+- youcoded#713 new | New "Sign out everywhere" option; phones are signed out after 90 days.
+- youcoded#716 fixes | Background commands and watchers no longer show as Running or Watching forever after they end.
+- youcoded#717 new | The privacy policy has been rewritten to describe exactly what the app and server record.
+- youcoded#718 new | Installed plugins found to be unsafe can now be switched off.
+- youcoded#718 new | Themes and official plugins are checked against the published copy before they install.
+- youcoded#719 fixes | Claude Code chats no longer lock up with "Queue identity is not ready"; a send waits up to 10 seconds and goes out.
+- youcoded#721 fixes | Windows: the "found beside your chat's files" message now shows the folder's real capitalisation.
+- youcoded#722 fixes | Linux: when no secure password storage is installed, the app now says so and what to install.
+- youcoded#723 behind | The phone app's built-in system library now includes Alpine's security fixes.
+- youcoded#724 new | A theme whose files changed without a new version number now shows the Update button.
+- youcoded#725 fixes | Messages over 10,000 characters now send instead of sitting marked Unconfirmed.
+- youcoded#726 fixes | After a window reloads, it reopens the chat you were in.
+- youcoded#726 fixes | The Office error log, which goes into bug reports, no longer contains your document's text.
+- youcoded#727 fixes | Arch Linux: a copy installed from another package no longer downloads an update that fails; it says to use the package manager.
+- youcoded#727 fixes | Windows sign-in now retries when Windows refuses a local port.
+- youcoded#727 fixes | The same folder in different capitals is no longer saved twice on Windows and Mac.
+- youcoded#730 fixes | Phone: first-run Claude Code questions show as cards, and every sign-in returns to the app.
+- youcoded#730 fixes | Phone: Connect to Desktop now checks whether Tailscale is on and explains plainly when it cannot connect.
+- youcoded#730 fixes | Phone: the lock screen shows only "A session needs you"; attachments are kept seven days.
+- youcoded#735 behind | Website: smoother scrolling, theme clicks and FAQ.
+- youcoded#736 fixes | Editing a waiting message keeps its file chips, and the title card no longer covers a short chat.
+- youcoded#736 fixes | Terminals keep their graphics when more than 16 Claude Code chats are open.
+- youcoded#736 fixes | The assistant's Edit tool now copes with curly quotes and dashes.
+- youcoded#737 fixes | Word and Excel previews now stop after 60 seconds and say the file took too long, instead of hanging.
+- youcoded#737 fixes | Hovering a comment's "5h ago" shows the full date and time.
+- youcoded#737 fixes | Closing any window with unsaved files now asks first.
+- youcoded#739 fixes | Clicking a quote chip while a reply is streaming no longer snaps the chat back to the bottom.
+- youcoded#739 fixes | Jump to bottom no longer flashes when you drag in a chat that cannot scroll.
+- youcoded#740 new | "What the assistant was given" now has three tabs: Overview, Global context and Project context.
+- youcoded#744 behind | Website: new opening intro and a redesigned phone page.
+- youcoded#746 new | When the assistant's browser asks for approval, you can now answer from your phone.
+- youcoded#747 new | Waiting messages show their file names as chips.
+- youcoded#747 new | A confirmation popup appears before a Gemma model downloads.
+- youcoded#747 new | A one-time notice tells you when a damaged Claude Code settings file was replaced.
+- youcoded#748 new | Hover hints across the app now use the app's own style.
+- youcoded#748 new | Ten places that showed an empty list when loading failed now say what went wrong, with Try again.
+- youcoded#750 fixes | After a crash, an interrupted step reads "completion unknown, inspect before retrying" instead of "Canceled".
+- youcoded#750 fixes | Reports from finished helpers and background commands reach the assistant without waiting for you to type.
+- youcoded#751 behind | Website: faster intro, better layout at in-between widths, smoother FAQ.
+- youcoded#753 behind | Website: demo flicker and end-of-intro hitch fixed; demo page restyled.
+- youcoded#754 new | Local models respond faster: each chat keeps its place, and the default context is now 64k (was 32k).
+- youcoded#754 new | A local chat that grows too long now shows one clear card with Summarise.
+- youcoded#754 new | The local engine no longer gets stuck showing as busy.
+- youcoded#756 new | Right-click a picture in chat for a menu.
+- youcoded#756 new | The folder list is now ordered by last use.
+- youcoded#756 new | Picking a quick chip over words you have typed asks Replace or Add to end.
+- youcoded#755 fixes | More places now say so when something fails to load or save, instead of showing nothing.
+- youcoded#755 fixes | A crashed chat now shows "Session ended unexpectedly".
+- youcoded#758 new | Office Home: rename, copy, show in folder, ask about a file, or remove it from Recent, from a hover button or right-click; plus search and Show all.
+- youcoded#758 new | Save As now opens the copy in a new tab beside the original.
+- youcoded#758 new | Saving is more reliable: Save is never greyed out, a failed save retries by itself, and unsaved typing survives moved files and unplugged drives.
+- youcoded#760 fixes | A long message sent in a new chat no longer gets stuck as "Paused" — it sends right away.
+- youcoded#762 fixes | The first-run cards read the newest Claude Code's sign-in and 'New MCP Server Found' screens again.
+- youcoded#762 fixes | Reopening an old chat no longer makes the assistant reply on its own; a finished helper's report goes in with your next message.
+- youcoded#762 fixes | Phone: attached file names keep their accents, and a failed connection says whether your computer needs updating or can't be reached.
+- youcoded#757 behind | Nothing visible.
+- youcoded#741 behind | Nothing visible.
+- youcoded#732 behind | Nothing visible.
+- youcoded#752 behind | Nothing visible.
+- youcoded#745 behind | Nothing visible.
+- youcoded#761 fixes | Pressing Ctrl+V in the message box after copying an image in a web browser now attaches the picture.
+- youcoded#764 behind | Nothing visible.
+- youcoded#765 behind | Nothing visible.
+- youcoded#766 fixes | The Effort and Fast chips stay hidden until the app has really read your saved choice, instead of showing a guess.
+- youcoded#767 new | When your Claude, ChatGPT or OpenRouter sign-in runs out, the chat shows a card with a Sign in button instead of an error you have to decode.
+- youcoded#767 new | With no internet, the app says "No internet connection" right away, and sign-in buttons stop before opening a page that can't load.
+- youcoded#767 new | Settings shows when your Claude sign-in expires, and a signed-out Claude can now be signed in from Settings.
+- youcoded#768 fixes | Clicking a link to a file outside the chat's folder now opens it, even when a different file with the same name was opened before.
+- youcoded#771 new | Pasting a picture in the phone browser now attaches it, just like the paperclip.
+- youcoded#772 behind | Shrunk copies of big pictures are cleaned up after 90 days unused; in chats older than that, those pictures may show as no longer available.
+- youcoded#773 behind | Nothing visible.
+- youcoded#780 behind | Nothing visible.
+- youcoded#774 fixes | Dragging a file onto the message box attaches it again.
+- youcoded#775 fixes | On Android, the camera switches off when the QR scanner closes.
+- youcoded#776 fixes | In online games, you can accept a rematch your opponent asked for.
+- youcoded#777 fixes | A plugin install that fails partway cleans up, so trying again works.
+- youcoded#778 fixes | The phone switches to a new chat after reconnecting to a computer with no chats open.
+- youcoded#779 fixes | Deleting comments in a Word document no longer leaves markers that make Word ask to repair it.
+- youcoded#781 fixes | Messages you queue in a chat no longer get stuck while a background helper waits for your permission.
+- youcoded#781 fixes | Pressing Send now on a waiting message tells you why it can't send yet.
+- youcoded#782 fixes | A picture or file sent with no words no longer gets stuck at the bottom of the chat.
+- youcoded#782 fixes | A message the computer never confirms now shows a note inside its bubble after 30 seconds, with Send again and Dismiss or Discard.
+- youcoded#783 fixes | The voice custom-words setting no longer shows on the phone app, where it didn't work.
+- youcoded#784 fixes | Sign-in no longer says "No internet" on school or work networks that reach the internet through a proxy.
+- youcoded#784 fixes | Pictures in chats you keep using are no longer forgotten by the assistant after 90 days.
+- youcoded#769 behind | Nothing visible.
+- youcoded#770 behind | Nothing visible.
+- youcoded#787 behind | Closing a chat frees everything it held, and a backup lock left behind by a crash clears itself after about two hours.
+- youcoded#787 behind | If backups are skipped for over a day, Settings → Backup now says so.
+- youcoded#789 fixes | Fast mode, effort level, and a chat's tags and note now say so when they can't be saved, instead of silently not saving.
+- youcoded#789 fixes | If closing a chat can't save its tags or note, the chat stays open with Try again or Close anyway.
+- youcoded#790 behind | Nothing visible.
+- youcoded#788 behind | Nothing visible.
+- youcoded#791 behind | Website: demo recordings rebuilt from 1.3.4; privacy policy corrected for the phone app.
+- youcoded#792 behind | Nothing visible.
+- youcoded#794 fixes | “Sign in again” for Claude now works when your login runs out, instead of failing with “Could not get login URL.”
+- youcoded#795 fixes | The release notes behind the version chip no longer open with a stray title, an empty “[Unreleased]” heading or a technical line.
+- youcoded#796 fixes | Commenting on words next to (or inside) an existing highlight now highlights them too.
+- youcoded#797 fixes | Resuming a chat after a crash or restart no longer shows a stray "No response requested." reply; the reply that was cut off now says "Interrupted."

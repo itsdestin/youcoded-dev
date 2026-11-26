@@ -27,6 +27,7 @@ The script sets three env vars and runs `npm run dev` in `<checkout>/desktop/`:
 | Window title (taskbar / Alt-Tab) | YouCoded | `YouCoded - <label>` (from `--label`, else the branch name; bare env-var launch with no label → `YouCoded Dev`) |
 | localStorage (theme, font, recents) | untouched | dev-only, starts empty |
 | `~/.claude/settings.json` hooks | written by the built app | **not touched by dev** (see below) |
+| Home folder (chats, settings, themes, plugins, providers, synced folder) | the real one | **private**: `~/.cache/youcoded-test-copies/<profile>/home` (see below) |
 
 ## Inspecting a live renderer
 
@@ -99,40 +100,38 @@ The built app also self-checks on every startup: if it finds a hook command whos
 
 If you ever see errors like `Cannot find module 'C:\...\.worktrees\...\relay.js'` in the terminal, that's the smoking gun — **close the dev app and relaunch the built app once**.
 
-## What is shared (intentional)
+## The private home: what a test copy keeps to itself, and what it borrows
 
-Dev and built both read and write `~/.claude/`:
+**Every `run-dev.sh` launch runs in a private home folder** (card #17, Destin 2026-11-11):
+`~/.cache/youcoded-test-copies/<profile>/home`. The app finds `~/.claude` (Claude Code chats, settings, plugins,
+themes), `~/.youcoded` (native chats, providers), `~/YouCoded` (the synced folder) and its own data folder through
+`HOME`, so all of them live inside that folder. The real app never reads it; the test copy never writes the real ones.
 
-- `settings.json`, `enabledPlugins`
-- `installed_plugins.json`, `known_marketplaces.json`, `marketplaces/youcoded/`
-- Plugin skills, themes, memory, sync state
-- Claude Code CLI sessions, projects, credentials
+- **It starts like a fresh install**: default theme, no installed plugins or skills, no past chats, sync off. The folder
+  is reused by the next launch of the same `--profile`; `--fresh` empties it first.
+- **Sign-ins are lent, by default all three**: `claude-code`, `chatgpt`, `api-keys`. Switch any off for one launch with
+  `--without chatgpt,api-keys` (or `--without all`). The launch prints one line per sign-in: kept, OFF, or NOT AVAILABLE
+  with the reason.
+- **Lent means a pass, never the renewal key.** Claude Code and ChatGPT each store a short-lived pass and a renewal key
+  that is replaced every time it is used. A test copy holding the renewal key could sign the real app out, so
+  `scripts/dev-signins/prepare-home.mjs` copies the pass only (ChatGPT's is unlocked and re-locked through the system
+  keychain by `keychain-tool.cjs`, with a dud in place of the renewal key). When the pass runs out (Claude Code: hours;
+  ChatGPT: days) the test copy is signed out; relaunch to borrow a fresh one. If the real pass has already run out
+  (the real app has not used that service lately), the line says NOT AVAILABLE. API keys do not renew and are copied.
+- **GitHub is OFF unless `--with github`**: with it the test copy can publish themes and open pull requests as Destin
+  (it did, unasked, on 2026-10-01). Off, the app's GitHub calls fail with a 401 (a decoy token).
+- **Never lent**: bank connections, page connections, the marketplace sign-in, Google.
+- Switching a sign-in off on a reused home removes what an earlier launch lent; a key or sign-in the tester added
+  inside the test copy stays.
+- **A caller that sets its own throwaway `HOME`** (a smoke, the perf lab) is left as before: nothing is lent and GitHub
+  is hidden behind a private bus (`scripts/dev-isolation.sh`). `--without`, `--with` and `--fresh` are refused there.
 
-They also share `~/.youcoded/` (native sessions, config, providers — resolved
-straight from `os.homedir()` in `native-home.ts`, no profile component) and
-`~/YouCoded/` (the sync spaces and Conversation Store,
-`sync-spaces/managed-roots.ts`). `--profile` gives no isolation for any of
-these — anything that writes under them must go through `NativeHome`'s
-mkdir-based file lock (ADR 008), which exists precisely because dev + built
-can both be running against the same home dir.
-
-**Not shared: saved API keys and the ChatGPT sign-in.** Both live in the
-profile's userData (`native-secrets.json`, `chatgpt-account.json` —
-`providers/secrets-store.ts`, `providers/chatgpt-auth.ts`), so a NEW
-`--profile` has none. Every native provider then reads not-ready, and a native
-conversation's model menu says "You have not set up any model providers" — while
-Claude Code, which reads `~/.claude/`, still works. That is the profile, not a
-regression: on 2026-09-11 it was reported as the Claude Code sign-in bug coming
-back. Reuse a profile that already has keys when a native model has to run.
-
-This is intentional — isolating these would mean dev can't test against your real plugins and settings, which defeats the point. Two coordination mechanisms keep it safe:
-
-1. **`.sync-lock` is a `mkdir`-based atomic lock.** Only one instance syncs at a time.
-2. **`write-guard.sh`** (a PreToolUse hook contributed by the bundled `youcoded-core` plugin — being folded into the app natively) tracks per-file writes in `.write-registry.json` and blocks a second session from writing a file another live session just wrote. Cross-instance concurrent writes surface as `WRITE BLOCKED` messages — friction, not corruption. Re-read the file and retry.
+Proven 2026-11-11 with a real window: a Claude Code chat answered in the test copy; the real chat list, native chats,
+synced folder, settings files, provider list, theme list and keychain entries were identical before and after, and the
+chat's code word existed only under the private home. Guards: `scripts/dev-signins/prepare-home.test.mjs`.
 
 ## Caveats
 
-- **Plugin install/uninstall mutates your real state.** Installing a plugin in dev adds it to your built app's enabled plugins too. Clean up after testing if you don't want that to stick.
 - **Windows OneDrive.** If `~/.claude/` lives under a OneDrive-synced folder, two writers can produce conflict copies. Check with `(Resolve-Path ~/.claude).Path` in PowerShell — if the path starts with a OneDrive folder, either exclude `.claude` from sync or accept the occasional conflict file.
 - **Concurrent Claude sessions share the defaults — give each its own offset.** `run-workbench.sh`
   defaults to Vite 5233 and `workbench-boot-check.mjs` used to pin Chrome's debugging port at
@@ -202,20 +201,11 @@ live-acceptance run):
    synthetic KeyboardEvents).
 5. Never do any of this against the live app (live-app-safety rule) — the flag-launched
    dev instance only.
-6. **A session you create here is a REAL conversation in Destin's synced archive.** `--profile`
-   isolates `userData` only (see "What is shared" above): the transcript lands in the real
-   `~/.claude/projects`, the reconciler mirrors it into `~/YouCoded/Personal`, and sync pushes
-   it to his other machines. On 2026-09-10 three throwaway "Reply with just the word ok."
-   runtime checks did exactly that. For scripted checks that must create sessions, launch
-   against a throwaway `HOME` the way `scripts/perf-lab/launch.mjs` does, or say so to Destin first.
-   A throwaway `HOME` does NOT hide the GitHub login (`gh` keeps it in the OS keyring), so a smoke could publish a theme or open a pull
-   request on his real account (it did, 2026-10-01). `run-dev.sh` handles this whenever `HOME` is not the real home (`scripts/dev-isolation.sh`):
-   XDG dirs and `GH_CONFIG_DIR` inside the HOME, the GitHub, SSH-agent, AWS, npm and API-key variables unset, a KWallet "create wallet" prompt
-   switched off, and a private empty D-Bus session (`--stop` ends it and the services it started, by exact pid; without a `dbus-daemon` it falls
-   back to a decoy token, so calls fail with a 401). `XDG_RUNTIME_DIR` stays because the window's display socket lives there; the bus is chosen
-   by its explicit address. A HOME that resolves to the real home (trailing slash, link) is NOT isolated, with a warning. This hides credentials;
-   it is not a sandbox. Any other launcher: `HOME=<throwaway> bash scripts/dev-isolation.sh <command>`.
-   Check with `HOME=<throwaway> bash scripts/dev-isolation.sh gh auth status`, which must say not logged in.
+6. A session you create here lands in the test copy's private home (see "The private home" above), not in Destin's
+   chats. A launcher other than `run-dev.sh` gets no private home by itself: give it a throwaway `HOME` and run it
+   through `HOME=<throwaway> bash scripts/dev-isolation.sh <command>`, which also hides the GitHub login (`gh` keeps it
+   in the OS keyring, so a different `HOME` alone does not). Check with
+   `HOME=<throwaway> bash scripts/dev-isolation.sh gh auth status`, which must say not logged in.
 
 ## Driving a dev window's Claude Code chat
 
@@ -231,9 +221,9 @@ thing and detaches:
 - `shot [file.png]`: a picture (default `scratch/dev-chat/`).
 
 It reaches a window only through the marker `run-dev.sh` writes (the same rule `explore --dev`
-follows), so it cannot attach to the installed app. **Unproven against a real window** (written
-without launching one). A session it makes is a real conversation in the profile's transcripts
-(see item 6 above), so launch the window against a throwaway `HOME`. The first real run must confirm:
+follows), so it cannot attach to the installed app. First real run 2026-11-11 (card #17): `new` opened the chat but
+did NOT answer the trust-folder prompt (`click "Yes, I trust this folder"` did), `say` sent once and the reply
+arrived, `shot` worked. Still to confirm:
 (1) `new` reaches a chat on screen and the trust button's label contains "trust"; (2) the chip
 is found and `mode normal` / `mode auto` both land; (3) `say` with a very long message (a long
 file path, card #7) is sent by the real Enter and the box empties; (4) `click` finds a permission

@@ -11,8 +11,8 @@ area: Marketplace & library
 work: session/security-server-batch
 ---
 Progress
-Done: Landed 2026-11-10: Google Messages tool server registers on Windows only (Messaging 1.0.1, wecoded-marketplace#122); theme Update check for files changed without a version bump (youcoded#724, unreleased). Already on master, unreleased: the unsafe-plugin warning (youcoded#718).
-Next: Destin chooses on the four open items below. The theme registry still needs a rebuild with file fingerprints before the theme Update check can work.
+Done: 2026-11-13: update faults F1-F6 confirmed plus 9 more (uninstall reports success on failure, interrupted installs, no locks, drift, delisted plugins unflagged). Destin answered the marketplace-overhaul questions deck: updates follow the author's newest, only built-ins update by themselves, plugins move to an app-owned folder, hide 77 dead Docker listings, Messaging marked Windows only, badge reworded with a What-we-checked section, Library warns on Caution. Draft design: docs/active/specs/2026-11-13-marketplace-foundation-design.md on session/marketplace-update-faults.
+Next: Destin confirms two scope points (plugins under YouCoded's own engine; key entry for Todoist), then mockups of the visible changes.
 Blocked: nothing.
 
 Open choices for Destin (2026-11-10)

@@ -15,7 +15,7 @@ paths:
   - "**/desktop/src/renderer/session-drag-model.ts"
   - "**/desktop/src/renderer/components/SessionStrip.tsx"
   - "**/desktop/src/renderer/components/SessionDropZone.tsx"
-last_verified: 2026-09-04
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/renderer/session-drag-model.ts
     contains: "chooseTearOffModel"

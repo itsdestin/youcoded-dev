@@ -1,0 +1,27 @@
+{
+ "deck": "office-home-conveniences-tryit",
+ "started": "2026-11-14T23:21:14.795Z",
+ "submitted": "2026-11-15T00:59:50Z",
+ "cur": 0,
+ "answers": {
+  "T-1": {
+   "note": "",
+   "t": 1794704388525,
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight"
+  },
+  "T-2": {
+   "v": "yes",
+   "t": 1794704388525,
+   "seconds": 5,
+   "theme": "midnight"
+  },
+  "T-3": {
+   "v": "yes",
+   "t": 1794704388525,
+   "seconds": 5,
+   "theme": "midnight"
+  }
+ }
+}

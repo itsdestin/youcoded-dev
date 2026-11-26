@@ -1,0 +1,57 @@
+{
+ "deck": "small-leftover-choices",
+ "started": "2026-11-18T11:40:39.247Z",
+ "submitted": "2026-11-18T11:42:05Z",
+ "cur": 0,
+ "answers": {
+  "C-1": {
+   "v": "pick",
+   "pick": "wait",
+   "t": 1795002124570,
+   "seconds": 12,
+   "theme": "midnight"
+  },
+  "C-2": {
+   "v": "pick",
+   "pick": "offline",
+   "t": 1795002124570,
+   "seconds": 12,
+   "theme": "midnight"
+  },
+  "C-3": {
+   "v": "pick",
+   "pick": "delete",
+   "t": 1795002124570,
+   "seconds": 12,
+   "theme": "midnight"
+  },
+  "C-4": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1795002124570,
+   "seconds": 12,
+   "theme": "midnight"
+  },
+  "C-5": {
+   "v": "pick",
+   "pick": "remove",
+   "t": 1795002124570,
+   "seconds": 12,
+   "theme": "midnight"
+  },
+  "C-6": {
+   "v": "pick",
+   "pick": "remove",
+   "t": 1795002124570,
+   "seconds": 12,
+   "theme": "midnight"
+  },
+  "C-7": {
+   "v": "pick",
+   "pick": "remove",
+   "t": 1795002124570,
+   "seconds": 12,
+   "theme": "midnight"
+  }
+ }
+}

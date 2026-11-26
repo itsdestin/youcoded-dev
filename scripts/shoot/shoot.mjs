@@ -13,6 +13,7 @@
 //   shoot --all                                       everything
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
 //
+//   shoot settings/about --page                       also save the screen as one still web page (words editable on a deck)
 // Also: --freeze (switch off animations and transitions for a steady picture) · --no-elements (skip the <theme>.elements.json list written beside each picture) · --no-montage (before/after: skip the side-by-sides)
 // Options: --worktree <name|branch|path> (default: the checkout this script sits in, else
 // the main one) · --themes a,b | all · --width N [--height N] · --contrast · --collect <classes.json> · --out <dir>
@@ -33,6 +34,8 @@ import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
 import { MEASURE_ELEMENTS } from './elements.mjs';
 import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES, themeAppliedExpr } from './themes.mjs';
+import { FREEZE } from './freeze.mjs';
+import { markShot } from './shotmark.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -49,7 +52,7 @@ const THUMB_W = 480;
 const args = process.argv.slice(2);
 // The instant a frozen page's clock starts at (shoot --freeze): 29 Jul 2026, 18:00 local time.
 const FROZEN_NOW = new Date(2026, 6, 29, 18, 0, 0).getTime();
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, freeze: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], except: [], list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, freeze: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], except: [], list: false, all: false, check: false, page: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -76,6 +79,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--except') opt.except.push(next());
   else if (a === '--all') opt.all = true;
   else if (a === '--check') opt.check = true;
+  else if (a === '--page') opt.page = true;
   else if (a === '-h' || a === '--help') { console.log(readHelp()); process.exit(0); }
   else if (a.startsWith('--')) die(`unknown option ${a} (see shoot --help)`);
   // WHY (submit-ticket friction, proposal 17): a zsh variable holding several names arrives as
@@ -149,12 +153,35 @@ async function side(checkout, outDir, pick, which = null) {
   } finally { pool?.close(); server.close(); editor?.stop(); }
 }
 
+// WHY (2026-11-18, load-flaky-tests): the mark probe used to be a bare 5 s evaluate that THREW on a timeout. At load
+// 60-150 a busy page needs longer than 5 s to answer a one-line query (office/presentation failed "Runtime.evaluate
+// timed out after 5s" while opening in seconds alone). A probe that gets no answer is "not showing yet", not a failure:
+// the loops that poll it already have their own deadlines, and a screen that never shows still fails with the reason.
+const MARK_PROBE_MS = 20_000;
+const markNow = (tab, screen) => tab.evaluate(MARK_CHECK(markOf(screen)), MARK_PROBE_MS).catch((e) => `the page gave no answer: ${e.message}`);
+
 async function waitFor(tab, expr, ms) {
   for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 50))) {
     const v = await tab.evaluate(`(() => { try { return ${expr}; } catch { return null; } })()`, 5000).catch(() => null);
     if (v) return v;
   }
   return null;
+}
+
+// Waits until `selector` exists inside the Page iframe. The frame is sandboxed (opaque origin), so the outer document cannot
+// read it: it is its own Chrome target, reached by auto-attach (same route as ui-review/record.mjs) and read over the browser connection.
+async function waitForFrame(tab, selector, ms) {
+  let session = null;
+  const off = tab.on((m) => { if (m.method === 'Target.attachedToTarget' && m.params.targetInfo.type === 'iframe') session = m.params.sessionId; });
+  try {
+    await tab.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
+    for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 100))) {
+      if (!session) continue;
+      const r = await tab.browser.send('Runtime.evaluate', { expression: `!!document.querySelector(${JSON.stringify(selector)})`, returnByValue: true }, session).catch(() => null);
+      if (r?.result?.value === true) return true;
+    }
+    return false;
+  } finally { off(); await tab.send('Target.setAutoAttach', { autoAttach: false, waitForDebuggerOnStart: false, flatten: true }).catch(() => {}); }
 }
 
 // Is the screen's mark on screen? Its surface is the nearest dialog / layer / drawer around it.
@@ -263,7 +290,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
       for (const t1 = Date.now(); Date.now() - t1 < 2500;) {
         await tab.still(1500);
-        why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);   // a #state is marked as its plain screen, unless it names its own `mark`
+        why = await markNow(tab, screen);   // a #state is marked as its plain screen, unless it names its own `mark`
         if (why?.panel) break;
       }
     }
@@ -274,7 +301,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // screen that is truly missing still fails, just later; one that shows is unaffected.
     for (const t2 = Date.now(); !why?.panel && Date.now() - t2 < 12_000;) {
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     // "Open this first" (screen list `open`): clicks replayed like a journey once the screen
@@ -290,7 +317,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // picture (submit-ticket friction, proposal 14) — move it off the page. A `hover` step
       // ending the list is kept: that hover is what the picture is for.
       if (pointerRestsOnClick(steps)) { await driver.pointerAway(); await tab.still(1000); }
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its open steps: ${why}`);
     }
     // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
@@ -300,9 +327,12 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     if (screen.waitMs) {
       await new Promise((res) => setTimeout(res, screen.waitMs));
       await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      why = await markNow(tab, screen);
       if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
     }
+    // WHY (frameReady): the mark above is the app's; a Page's own content is drawn by its iframe a moment later (under load, a
+    // long moment). Wait on the thing itself — the selector appearing inside the frame — never a fixed sleep. Refuse, not skip.
+    if (screen.frameReady && !(await waitForFrame(tab, screen.frameReady, 30_000))) throw new Error(`the page frame never drew ${screen.frameReady} within 30 s, so the picture would show an unfinished page`);
     r.panel = why.panel;
     // WHY wait for the theme itself, and refuse the picture if it never arrives (2026-11-03): see
     // themes.mjs. A screen whose theme list loads slowly shows Light first; shooting it labelled
@@ -360,8 +390,23 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const elements = measured?.elements ?? null, outOfView = measured?.outOfView ?? [];
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
-    r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
+    r.file = join(dir, `${theme}.png`);
+    // WHY the label (shotmark.mjs): a deck accepts a design picture only when it proves it is the real app.
+    writeFileSync(r.file, markShot(png, { by: 'shoot', screen: screen.name, theme }));
     if (elements) writeFileSync(join(dir, `${theme}.elements.json`), JSON.stringify({ screen: screen.name, theme, scale: shotScale(), viewport: { w, h }, elements, outOfView }));
+    // --page: the same screen as one still web page beside its picture, for a deck's
+    // edit-the-words-in-place step (freeze.mjs says why). A failure here is reported on the
+    // record and does not cost the picture.
+    if (opt.page) {
+      try {
+        // Where the screen's own panel sits (the popup, the menu) rides in the file, so the
+        // deck can open zoomed on it instead of showing a small popup in a large window.
+        const box = r.panel ? ` data-frozen-panel="${[r.panel.x, r.panel.y, r.panel.w, r.panel.h].map(Math.round).join(',')}"` : '';
+        r.page = join(dir, `${theme}.html`);
+        writeFileSync(r.page, (await tab.evaluate(FREEZE, 60_000)).replace(' data-frozen="', `${box} data-frozen="`));
+      }
+      catch (e) { r.page = null; r.pageError = String(e.message || e); }
+    }
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     // WHY a byte array (what-changed full run, 2026-11-03): a plain array of numbers is 8 bytes a
     // pixel; ~900 pictures of it, held for both sides of a before/after, ran node out of its 4 GB.
@@ -466,7 +511,12 @@ function fullSizeAlike(a, b) {
 
 function lookalikes(results, screens) {
   const same = new Map(screens.filter((s) => s.sameAs).map((s) => [s.name, s.sameAs.name]));
-  const expected = (a, b) => same.get(a) === b || same.get(b) === a;
+  // WHY follow the chain to its end (2026-11-11, chat-engine batch): a screen can name only ONE
+  // sameAs. `dev/toast#none` names `chat#queue-idle-after`, which names `chat`, so all three are
+  // one picture on purpose; comparing direct partners only flagged `chat = dev/toast#none` in
+  // some runs and turned verify.sh red on a branch that had not touched any of them.
+  const root = (n) => { const seen = new Set(); while (same.has(n) && !seen.has(n)) { seen.add(n); n = same.get(n); } return n; };
+  const expected = (a, b) => same.get(a) === b || same.get(b) === a || root(a) === root(b);
   const out = [];
   for (const theme of themes) {
     const got = results.filter((r) => r.ok && r.theme === theme && r.thumb);

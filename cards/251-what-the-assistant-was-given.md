@@ -1,7 +1,7 @@
 ---
 id: 251
 title: "What the assistant was given" pop-up: three tabs (Overview, Global, Project)
-stage: planning
+stage: merged
 tags: user-interface, desktop, native-harness, claude-code-integration, feature
 vision: chat.steer.given
 branch: 251-what-the-assistant-was-given
@@ -10,8 +10,8 @@ why: overview, global context, project context — global CLAUDE.md and skills t
 work: session/251-context-popup-three-tabs
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Three tabs built (Overview, Global context, Project context) on session/251-context-popup-three-tabs; Destin approved every slide across three review decks (2026-11-12); desktop verify passes.
+Next: Destin's word on landing it. Later: list project commands, rules folders and helpers on Project context (the app does not collect them yet).
 Blocked: nothing.
 
 Chats

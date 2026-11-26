@@ -1,5 +1,5 @@
 #!/bin/bash
-# site-idea-stills.test.sh — card #175: the release step must produce exactly the four ideas-wall
+# site-idea-stills.test.sh — card #175: the hand-run script (no longer a release step) must produce exactly the four ideas-wall
 # pictures at the site's 1216x760, refuse (writing nothing) when a shot failed, and leave every
 # other file in the gallery alone.
 #

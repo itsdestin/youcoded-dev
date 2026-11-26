@@ -1,0 +1,23 @@
+{
+  "title": "Pasting a picture on a phone",
+  "key": "phone paste picture",
+  "out": "phone-paste.review.html",
+  "images": "images/phone-paste.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "After" },
+  "themes": ["light", "midnight"],
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Message box on a phone",
+      "path": "Chat, on a phone or a phone browser: copy a picture, then paste into the message box",
+      "crop": "chat#phone-pasted-picture@390x330+0+520",
+      "new": true,
+      "highlight": "panel",
+      "headline": "Pasting a picture into the message box now attaches it, the same as the paperclip does.",
+      "changed": "A picture pasted on a phone is sent up to your computer and attached above the message box. Before, nothing happened. The right-click Paste menu does the same where the phone browser allows it.",
+      "notice": "The picture shows as a small card with a remove button, like one added with the paperclip. Pasting words works as before.",
+      "risk": "The YouCoded Android app itself is unchanged, so pasting a picture there still does nothing."
+    }
+  ]
+}

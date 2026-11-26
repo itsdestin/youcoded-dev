@@ -1,0 +1,43 @@
+{
+ "deck": "round-four-pictures",
+ "started": "2026-11-15T01:02:28.753Z",
+ "submitted": "2026-11-15T01:03:14Z",
+ "cur": 4,
+ "answers": {
+  "R4-1": {
+   "v": "yes",
+   "t": 1794704559040,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R4-2": {
+   "v": "yes",
+   "t": 1794704569766,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R4-3": {
+   "v": "yes",
+   "t": 1794704579222,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R4-4": {
+   "v": "yes",
+   "t": 1794704585464,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R4-5": {
+   "v": "yes",
+   "t": 1794704593685,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -197,15 +197,16 @@ def build(here, names, place_of, desc, efforts, release_pats, questions, matches
 # ---------------------------------------------------------------------------------------- page parts
 SHOW_ME = ['Talks to the AI', 'Changes how it behaves', 'Add-ons', 'Permissions']
 
-def head_controls(tip, changes=None):
+def head_controls(tip, changes=None, work=True):
     """The one control row, in the tab's fixed head. WHY this few (2026-10-13, Destin: "this is a
     confusing fucking disaster to navigate.... just wayyy too many controls"): a search box, five
     filter pills and one "Show me…" question. The Pictures/Tree/Trail switch, Group by, the sort
     menu and eleven more pills were cut; the click path now lives inside each screen's popup."""
     T = lambda k: E(tip[k])
-    pills = ''.join(f'<button class="fchip" data-f="{f}" aria-pressed="false" data-tip="{T(k)}">{E(lbl)}</button>' for f, lbl, k in (
-        ('kind:popup', 'Popups', 'scr.popups'), ('kind:menu', 'Menus', 'scr.menus'), ('first', 'First launch', 'scr.first'),
-        ('phone', 'Phone', 'scr.phone'), ('work', 'Changing now', 'scr.work')))
+    kinds = [('kind:popup', 'Popups', 'scr.popups'), ('kind:menu', 'Menus', 'scr.menus'), ('first', 'First launch', 'scr.first'), ('phone', 'Phone', 'scr.phone')]
+    if work: kinds.append(('work', 'Changing now', 'scr.work'))
+    pills = ''.join(f'<button class="fchip" data-f="{f}" aria-pressed="false" data-tip="{T(k)}">{E(lbl)}</button>' for f, lbl, k in kinds)
+    # WHY optional (2026-11-11): the live board has no record of which screens a work item changes, and this chip read a typed Oct 12 list
     # WHY two pills only when a run is given: the filter Destin asked for (2026-11-03, "what changed since
     # last release"). New screens sit beside it as a pill, not inside "Show me…" (2026-11-05 review: the same
     # idea in two different controls, one of them hard to find); pressed together they show both.
@@ -593,9 +594,9 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
     <div><div class="eyebrow" data-tip="${T('pop.where')}">Where it is</div><div class="crumbs">${where}</div></div>
     ${g.desc?`<p class="t-sm">${esc(g.desc)}</p>`:''}
     <dl class="factlist"><dt data-tip="${T('pop.kind')}">Kind</dt><dd>${KINDW[g.kind]}</dd><dt data-tip="${T('pop.place')}">Place</dt><dd>${esc(g.place)}</dd><dt data-tip="${T('pop.clicks')}">Clicks to reach</dt><dd>${g.depth}</dd>${flags.length?`<dt data-tip="${T('pop.also')}">Also</dt><dd>${flags.join('<br>')}</dd>`:''}</dl>
-    <div><div class="eyebrow" data-tip="${T('pop.work')}">Work changing it</div>${work.length?work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${esc(w.title)}</div><div class="hint">last worked on ${w.days===0?'today':w.days+' days ago'}</div></div></div>`).join(''):'<div class="t-xs muted">Nothing open.</div>'}</div>
+    <div><div class="eyebrow" data-tip="${T('pop.work')}">Work changing it</div>${work.length?work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${esc(w.title)}</div><div class="hint">last worked on ${w.days===0?'today':w.days+' days ago'}</div></div></div>`).join(''):EFF.length?'<div class="t-xs muted">Nothing open.</div>':'<div class="t-xs muted">Work items do not say yet which screens they change.</div>'}</div>
   </div></div>${DPATH?pathHTML(g):''}`;
-  $('#dfoot').innerHTML=`<button class="btn" id="dpathbtn" aria-expanded="${DPATH}" data-tip="${DPATH?T('pop.path.hide'):T('pop.path')}">${DPATH?'Hide the way here':'How do I get here?'}</button>${CM?(since==='changed'?`<button class="btn" id="dcmpbtn" aria-expanded="${cmpOn}" data-tip="${cmpOn?T('pop.compare.hide'):T('pop.compare')}">${cmpOn?'Back to the screen':'Compare with '+esc(CM.release)}</button>`:''):`<button class="btn" data-does data-tip="${T('pop.changed')}">What changed last time</button>`}<button class="btn" data-does data-tip="${T('pop.ask')}">Ask the assistant about it</button><button class="btn primary" data-does data-tip="${T('pop.note')}">Leave a note</button>`;
+  $('#dfoot').innerHTML=`<button class="btn" id="dpathbtn" aria-expanded="${DPATH}" data-tip="${DPATH?T('pop.path.hide'):T('pop.path')}">${DPATH?'Hide the way here':'How do I get here?'}</button>${CM&&since==='changed'?`<button class="btn" id="dcmpbtn" aria-expanded="${cmpOn}" data-tip="${cmpOn?T('pop.compare.hide'):T('pop.compare')}">${cmpOn?'Back to the screen':'Compare with '+esc(CM.release)}</button>`:''}<button class="btn primary" data-does data-tip="${T('pop.ask')}">Ask the assistant about it</button>`;  // WHY two buttons (Destin, 2026-11-14: "remove"): "What changed last time" and "Leave a note" were placeholders that did nothing; Ask is now the popup's one filled button
   $$('#dbody [data-st]').forEach(b=>b.onclick=()=>{DST=+b.dataset.st;drawShot()});
   const z=$('#dzoom');if(z)z.onclick=()=>{DWIN=!DWIN;drawShot()};
   $$('#dpath .tile:not(.here)').forEach(t=>{t.onclick=()=>openShot(t.dataset.id);t.onkeydown=e=>{if(e.key==='Enter')openShot(t.dataset.id)}});

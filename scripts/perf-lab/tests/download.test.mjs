@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { downloadAsset, completedAsset } from '../download.mjs';
+import { createHash } from 'node:crypto';
+import { downloadAsset, completedAsset, adoptVerifiedAsset } from '../download.mjs';
 
 function fixture(t) {
   const dir = mkdtempSync(join(tmpdir(), 'lab-download-'));
@@ -53,4 +54,29 @@ test('rejects a response shorter than its declared length', async t => {
     fetchImpl: async () => new Response('short', { headers: { 'content-length': '10' } }), maximumBytes: 100,
   }), /length/);
   assert.equal(existsSync(dest), false);
+});
+
+// A whole file from before the receipt existed is accepted only when its SHA-256 is the published one.
+test('a receipt-less file earns a receipt only when its checksum matches', t => {
+  const dir = mkdtempSync(join(tmpdir(), 'adopt-asset-')); t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const body = Buffer.from('whole model bytes');
+  const sha256 = createHash('sha256').update(body).digest('hex');
+  const good = join(dir, 'good.gguf'), bad = join(dir, 'bad.gguf'), short = join(dir, 'short.gguf');
+  writeFileSync(good, body); writeFileSync(bad, Buffer.from('whole model byteX')); writeFileSync(short, body.subarray(0, 5));
+  const pin = { sha256, bytes: body.length, url: 'https://example.invalid/m.gguf' };
+  assert.equal(adoptVerifiedAsset(good, pin), true);
+  assert.equal(JSON.parse(readFileSync(`${good}.complete`, 'utf8')).sha256, sha256);
+  assert.equal(completedAsset(good), true);
+  assert.equal(adoptVerifiedAsset(bad, pin), false);       // same size, wrong bytes
+  assert.equal(adoptVerifiedAsset(short, pin), false);     // a cut-off download
+  assert.equal(existsSync(`${bad}.complete`), false);
+  assert.equal(existsSync(`${short}.complete`), false);
+});
+
+test('an existing receipt that disagrees is never overwritten', t => {
+  const dir = mkdtempSync(join(tmpdir(), 'adopt-asset-')); t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const body = Buffer.from('whole model bytes'), dest = join(dir, 'm.gguf');
+  writeFileSync(dest, body); writeFileSync(`${dest}.complete`, '{"version":1,"bytes":3}');
+  assert.equal(adoptVerifiedAsset(dest, { sha256: createHash('sha256').update(body).digest('hex'), bytes: body.length, url: 'u' }), false);
+  assert.equal(readFileSync(`${dest}.complete`, 'utf8'), '{"version":1,"bytes":3}');
 });

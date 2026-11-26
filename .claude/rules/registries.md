@@ -12,7 +12,7 @@ paths:
   - "**/desktop/src/main/announcement-service.ts"
   - "**/desktop/src/shared/announcement.ts"
   - "**/desktop/src/shared/bundled-plugins.ts"
-last_verified: 2026-09-01
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/claude-code-registry.ts
   - path: youcoded/desktop/src/main/local-theme-synthesizer.ts

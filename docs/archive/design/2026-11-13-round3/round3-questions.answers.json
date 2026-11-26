@@ -1,0 +1,115 @@
+{
+ "deck": "round-three-questions",
+ "started": "2026-11-14T07:02:32.182Z",
+ "submitted": "2026-11-14T07:08:29Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "all",
+   "t": 1794640067048,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1794640067048,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "inline",
+   "t": 1794640067048,
+   "note": "need to make sure we dont get false error warnings and they dismiss properly when the problem is dealt with or the popup has been dismissed",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "scroll",
+   "t": 1794640067048,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "hide",
+   "t": 1794640067048,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "notice",
+   "t": 1794640067048,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "leave",
+   "t": 1794640067048,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "other",
+   "t": 1794640067048,
+   "note": "i'm confused",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "block",
+   "t": 1794640067048,
+   "note": "what pages are we talking about here?",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "sample",
+   "t": 1794640067048,
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "L-1": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794640108864,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "L-2": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794640108864,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "L-3": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794640108864,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "L-4": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794640108864,
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "L-5": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794640108864,
+   "seconds": 8,
+   "theme": "midnight"
+  }
+ }
+}

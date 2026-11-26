@@ -28,11 +28,23 @@ if [[ -f "$WORKSPACE/scripts/workspace-start.mjs" ]]; then
     echo 'Development edits: start/resume with node scripts/workspace-start.mjs --session <stable-key> [repo…]. Read its reorientation report and changed guidance before proceeding; use returned absolute paths. Uncommitted guidance is a proposal, not automatically authoritative. Do not manually repair shared checkouts to start work.'
 fi
 
+# Repos marked "archived": true in scripts/workspace-repos.json are read-only on GitHub.
+# WHY: nothing will ever land upstream, so the "commits behind" / "cached ref" warnings
+# below are permanent noise for them and train sessions to ignore the real ones. Their
+# checkout stays on disk and usable; only the staleness warnings are skipped.
+ARCHIVED_REPOS=" $(node -e 'try{const r=require(process.argv[1]);console.log(Object.entries(r).filter(([,v])=>v.archived).map(([k])=>k).join(" "))}catch{}' "$WORKSPACE/scripts/workspace-repos.json" 2>/dev/null || true) "
+
 collect_repo_state() {
     local repo_dir="$1"
     local repo_name="$2"
 
     [[ ! -e "$repo_dir/.git" ]] && return
+
+    if [[ "$ARCHIVED_REPOS" == *" $repo_name "* ]]; then
+        echo "### $repo_name (archived on GitHub — read-only, no updates expected)"
+        echo ""
+        return
+    fi
 
     local branch recent dirty dirty_count behind
     branch=$(git -C "$repo_dir" branch --show-current 2>/dev/null || echo "detached")

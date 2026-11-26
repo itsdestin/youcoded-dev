@@ -1,7 +1,7 @@
 ---
 paths:
   - "**/desktop/src/renderer/**"
-last_verified: 2026-09-23
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/renderer/App.tsx
   - path: youcoded/desktop/src/renderer/components/HeaderBar.tsx

@@ -37,6 +37,7 @@ import { fileURLToPath } from 'node:url';
 import { attachPage, ensureBuild, findDevWindow, openBrowser, resolveCheckout, serve } from './engine.mjs';
 import { hideTags, inPage, listControls, listLayers, showTags } from './explore-page.mjs';
 import { makeDriver, openApp, stepText } from './driver.mjs';
+import { markShot } from './shotmark.mjs';
 
 const SELF = fileURLToPath(import.meta.url);
 const HERE = dirname(SELF);
@@ -225,7 +226,9 @@ async function daemon(o) {
     lastList = controls;
     const file = join(outDir, `${String(stepNo).padStart(2, '0')}-${label.replace(/[^a-z0-9-]+/gi, '-').slice(0, 40)}`);
     const png = await tab.png();
-    writeFileSync(`${file}.png`, png);
+    // WHY the label (shotmark.mjs): a deck accepts a design picture only when it proves it is the real app. The
+    // .numbers.png copy below has tags drawn over the controls, so it stays unlabelled.
+    writeFileSync(`${file}.png`, markShot(png, { by: 'explore', step: label }));
     await tab.evaluate(inPage(showTags, controls));
     try { writeFileSync(`${file}.numbers.png`, await tab.png()); } finally { await tab.evaluate(inPage(hideTags)).catch(() => {}); }
     const unchanged = !first && lastPng && png.equals(lastPng);
@@ -288,7 +291,7 @@ async function daemon(o) {
         try { await perform(s); steps.push(s); }
         catch (e) { return { text: `JOURNEY FAILED at step ${i + 1} of ${journeySteps.length}: ${stepText(s)}\n${e.message}\n\n${await report(`failed-${s.do}`)}`, exit: 1 }; }
         await tab.still(3000);
-        const png = await tab.png(); writeFileSync(join(outDir, `${String(stepNo).padStart(2, '0')}-${s.do}.png`), png);
+        const png = await tab.png(); writeFileSync(join(outDir, `${String(stepNo).padStart(2, '0')}-${s.do}.png`), markShot(png, { by: 'explore', step: s.do }));
       }
       return `journey passed: ${journeySteps.length} step(s), pictures in ${outDir}\n\n${await report('end')}`;
     }

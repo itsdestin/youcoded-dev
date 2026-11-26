@@ -1,7 +1,7 @@
 ---
 id: 143
 title: Small missing conveniences and wording fixes
-stage: planning
+stage: merged
 priority: P3
 tags: user-interface, feature
 branch: 143-small-missing-conveniences-and-copy
@@ -10,13 +10,15 @@ created: 2026-10-15
 summary: No right-click menu on images, no recent-folder list, no replace-or-add choice for quick chips, and sizes that differ from websites.
 area: Chat
 side: screens
+work: session/143-office-home-conveniences
 ---
 Progress
-Done: nothing recorded. 2026-11-11 chat-engine batch: checked against code, nothing built. All still happen. (b) is outdated: a folder dropdown exists (saved folders); only a recently-used order is missing.
-Next: Destin yes/no on each: (a) right-click menu on images (new feature); (b) recent folders in the dropdown (new feature); (c) Replace or Append when a quick chip is tapped over typed text (today it silently replaces what was typed); the git-branch popup (new feature). (d) sizes: every size in the app is 1024-based today; going 1000-based changes numbers in about 20 places (model sizes, download progress, memory and disk warnings, file sizes, the 1 MB / 10 MB / 25 MB / 100 MB limit wording); already decided in principle, but it is a visible change across many screens, so confirm before building.
+Done: Round 3 LANDED (youcoded PR #756, bae77364f): picture right-click menu, quick-chip strip (design A), folder list by last use incl. synced projects (stamps in youcoded-folder-usage.json)
+Next: real phone / Windows / Mac / real synced project untested
 Blocked: nothing recorded.
 
 Chats
+- 2026-11-14 session/143-office-home-conveniences: chat started
 
 From the old roadmap (user-interface, status needs-verify, seen on all, last checked 2026-09-01)
 Small missing conveniences and copy fixes (4 things). (a) Right-clicking an image offers no Copy image, Save as, Copy address or Ask about this; (b) the project-folder picker should be a dropdown of recent folders, but no recents list exists; (c) tapping a quick chip over existing text should offer Replace or Append (Destin, 2026-09-02); (d) file and model sizes disagree with websites (74.2 GB vs 79.7 GB); decided to count 1000-based everywhere.
