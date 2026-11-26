@@ -4,7 +4,7 @@
  "out": "waiting-notice.html",
  "grows": true,
  "tag": "bug",
- "stage": "before",
+ "stage": "after",
  "rounds_before": 1,
  "retired": {},
  "steps": [
@@ -2695,6 +2695,634 @@
       "does": "Builds and tests the phone app.",
       "why": "Off: these are shared screens with no phone-only code, and the phone build tools may not be on this computer today; I'll say so plainly if it's unverified."
      }
+    }
+   ]
+  },
+  {
+   "id": "P-a1",
+   "page": "What you asked for, and what you got",
+   "intro": "One row per request, in your words. Tick or change each.",
+   "stage": "after"
+  },
+  {
+   "id": "A-asked",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "What you asked for, and what you got",
+   "calls": [
+    {
+     "id": "stuck",
+     "call": "Floating notices leave on time and never follow you between chats; chat notices belong to their chat.",
+     "why": "Closing a chat throws its notice away.",
+     "from": "W-asked/stuck"
+    },
+    {
+     "id": "held",
+     "call": "\"Held back\" sits in that chat's strip and leaves as soon as the question is answered or you send.",
+     "why": "If it's for a chat you aren't in, a short floating notice also names that chat.",
+     "from": "W-asked/held",
+     "picture": "pictures/a/dev-toast-strip-held.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "buttons",
+     "call": "Dismiss is leftmost and outlined; the main button is filled, on the right.",
+     "why": "On the strip, on the resume and move-a-chat screens, and on floating notices that need you.",
+     "from": "W-asked/buttons",
+     "picture": "pictures/a/dev-toast-strip-failed.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "rule",
+     "call": "Failures follow your rule: stopped a send → strip; after your message is in → in the chat; nothing to do → short floating notice.",
+     "why": "All 20, as you ticked them.",
+     "from": "W-asked/rule"
+    },
+    {
+     "id": "cant",
+     "call": "\"Can't do that here\" notices sit in the strip with Dismiss, plus Stop or Browse skills where useful.",
+     "why": "Busy ones leave by themselves when the reply ends; the rest on your next action.",
+     "from": "W-asked/cant",
+     "picture": "pictures/a/dev-toast-n-compact-busy.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "prevent",
+     "call": "Commands that can't work in a chat aren't offered there; skills that can't start are greyed with a reason; unreadable skills are marked; two skills with one name asks which.",
+     "why": "Pictures on the next page.",
+     "from": "W-asked/prevent",
+     "picture": "pictures/a/chat-skills-native-greyed.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "limits",
+     "call": "Known limits say what works instead, e.g. \"Theme browsing only works on the computer running YouCoded for now.\"",
+     "why": "Short floating, no button.",
+     "from": "W-asked/limits"
+    },
+    {
+     "id": "unsure",
+     "call": "The 20 \"not sure it went through\" notices moved as you ticked, with the shared wording.",
+     "why": "A failed model switch stays floating until you close it.",
+     "from": "W-asked/unsure",
+     "picture": "pictures/a/dev-toast-n-send-unconfirmed.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "words",
+     "call": "Notices that mean the same thing share one sentence; technical text is never shown.",
+     "why": "One exception: the red compact/clear card keeps the computer's reason under a closed Details.",
+     "from": "W-asked/words"
+    },
+    {
+     "id": "theme",
+     "call": "\"Build new theme with Claude\" with no chat open opens the new-chat popup Pages uses, titled \"Build a new theme\".",
+     "why": "The new chat starts with /theme-builder waiting.",
+     "from": "W-asked/theme",
+     "picture": "pictures/a/settings-theme-new-chat.png",
+     "before": "pictures/r4/new-chat-popup.png"
+    },
+    {
+     "id": "fyi",
+     "call": "\"Attachments were left out of /compact.\" and \"There's no reply to copy yet.\" are short floating notices.",
+     "why": "They blocked nothing.",
+     "from": "W-asked/fyi"
+    },
+    {
+     "id": "screen",
+     "call": "Notices from the resume list and the move-a-chat screen show on that screen, with its own buttons.",
+     "why": "Never in an unrelated chat's strip.",
+     "from": "W-asked/screen",
+     "picture": "pictures/a/chat-resume-failed.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "card",
+     "call": "A failed compact or clear shows the red card in the chat with Try again.",
+     "why": "It leaves when Try again works or you send your next message; never saved into the chat's history.",
+     "from": "W-asked/card",
+     "picture": "pictures/a/chat-control-failure-compact-detail.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "dot",
+     "call": "A failure in a chat you're not looking at puts a red dot on it in the list.",
+     "why": "Opening the chat clears it.",
+     "from": "W-asked/dot",
+     "picture": "pictures/a/chat-sessions-failure-dot.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "turns",
+     "call": "\"Needs you\" notices take turns; quick ones like \"Copied\" show above them and never push them out.",
+     "why": "The first shows \"1 more\" while others wait.",
+     "from": "W-asked/turns",
+     "picture": "pictures/a/dev-toast-two-needs-you-and-quick.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "phone",
+     "call": "On a phone, the strip's buttons sit below the words.",
+     "why": "Desktop keeps them beside the words.",
+     "from": "W-asked/phone",
+     "picture": "pictures/a/dev-toast-strip-failed-phone.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "times",
+     "call": "Floating notice times: done 3 s, button failed 5 s, \"needs you\" until closed.",
+     "why": "As you picked.",
+     "from": "W-asked/times"
+    },
+    {
+     "id": "review",
+     "call": "Two independent reviewers checked the finished work: one for bugs, one that every row here was built.",
+     "why": "What they found is on the Checks page.",
+     "from": "W-asked/review"
+    }
+   ]
+  },
+  {
+   "id": "P-a2",
+   "page": "Every screen that changed",
+   "intro": "Photographed in the practice app. Click one to open it large.",
+   "stage": "after"
+  },
+  {
+   "id": "A-screens",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Every screen that changed",
+   "gallery": true,
+   "calls": [
+    {
+     "id": "g-held",
+     "call": "Held back, in the strip",
+     "why": "Leaves once the question is answered or you send.",
+     "from": "W-screens/g-held",
+     "picture": "pictures/a/dev-toast-strip-held.png",
+     "before": "pictures/r4/strip-held.png"
+    },
+    {
+     "id": "g-held-else",
+     "call": "Held back in a chat you aren't in",
+     "why": "A short floating notice names the chat.",
+     "picture": "pictures/a/dev-toast-held-elsewhere.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-cant",
+     "call": "Can't do that here, busy",
+     "why": "Stop on the right; leaves when the reply ends.",
+     "from": "W-screens/g-cant",
+     "picture": "pictures/a/dev-toast-n-compact-busy.png",
+     "before": "pictures/r4/strip-cant.png"
+    },
+    {
+     "id": "g-failed",
+     "call": "Something failed before sending",
+     "why": "Red, with Dismiss and Try again.",
+     "from": "W-screens/g-failed",
+     "picture": "pictures/a/dev-toast-strip-failed.png",
+     "before": "pictures/r4/strip-failed.png"
+    },
+    {
+     "id": "g-unsure",
+     "call": "Not sure it went through",
+     "why": "Amber; no red dot.",
+     "picture": "pictures/a/dev-toast-n-send-unconfirmed.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-phone",
+     "call": "The strip on a phone",
+     "why": "Buttons below the words.",
+     "picture": "pictures/a/dev-toast-n-compact-busy-phone.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-k7",
+     "call": "A notice that needs you, with a quick one above",
+     "why": "\"1 more\" when others wait.",
+     "from": "W-screens/g-k7",
+     "picture": "pictures/a/dev-toast-two-needs-you-and-quick.png",
+     "before": "pictures/r4/k7-plugin-turned-off.png"
+    },
+    {
+     "id": "g-dot",
+     "call": "Red dot on a chat in the list",
+     "why": "Opening the chat clears it.",
+     "picture": "pictures/a/chat-sessions-failure-dot.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-card",
+     "call": "Compact failed, card in the chat",
+     "why": "Details opened here; it starts closed.",
+     "picture": "pictures/a/chat-control-failure-compact-detail.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-resume",
+     "call": "Couldn't resume, on the resume list",
+     "why": "Dismiss and Try again on that screen.",
+     "picture": "pictures/a/chat-resume-failed.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-handoff",
+     "call": "Couldn't finish moving a chat",
+     "why": "The move screen's own Try again; the sentence on top.",
+     "picture": "pictures/a/chat-handoff-note.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-theme",
+     "call": "The theme button's new-chat popup",
+     "why": "\"Build a new theme\".",
+     "from": "W-screens/g-theme",
+     "picture": "pictures/a/settings-theme-new-chat.png",
+     "before": "pictures/r4/new-chat-popup.png"
+    },
+    {
+     "id": "g-cmds",
+     "call": "Command list in a YouCoded-assistant chat",
+     "why": "No Claude Code-only commands.",
+     "picture": "pictures/a/chat-commands-native.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-grey",
+     "call": "A skill that can't start here",
+     "why": "Greyed, with the reason.",
+     "picture": "pictures/a/chat-skills-native-greyed.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-unread",
+     "call": "A skill whose instructions can't be read",
+     "why": "Greyed in every chat.",
+     "picture": "pictures/a/chat-skills-unreadable.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "g-which",
+     "call": "Two skills with one name",
+     "why": "One button per skill.",
+     "picture": "pictures/a/chat-which-skill.png",
+     "picture_name": "Now"
+    }
+   ]
+  },
+  {
+   "id": "P-a3",
+   "page": "Behind the scenes",
+   "intro": "What happens without a screen of its own.",
+   "stage": "after"
+  },
+  {
+   "id": "A-behind",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "What happens behind the scenes",
+   "numbered": true,
+   "calls": [
+    {
+     "id": "b1",
+     "call": "You press Send while Claude waits on a question. Your message stays in the box and the strip says so.",
+     "why": "The strip leaves the moment the question is gone (the phone's own app also re-checks once a second).",
+     "from": "W-behind/b1"
+    },
+    {
+     "id": "b2",
+     "call": "A command or skill that can't run here puts its notice in this chat's strip only.",
+     "why": "Switching chats or typing puts it away.",
+     "from": "W-behind/b2"
+    },
+    {
+     "id": "b3",
+     "call": "A failure that arrives late goes to the chat it belongs to.",
+     "why": "If you aren't looking at that chat, or Settings or the Marketplace covers it, it gets a red dot.",
+     "from": "W-behind/b3"
+    },
+    {
+     "id": "b4",
+     "call": "Technical messages are written to the log, never shown.",
+     "why": "Except under Details on the red compact/clear card.",
+     "from": "W-behind/b4"
+    },
+    {
+     "id": "b5",
+     "call": "Closing a chat throws away its notice, and a failure arriving after it closed is ignored.",
+     "why": "Reopening that chat starts clean.",
+     "from": "W-behind/b5"
+    }
+   ]
+  },
+  {
+   "id": "P-a4",
+   "page": "Choices I made",
+   "intro": "Things you could notice that I decided without asking.",
+   "stage": "after"
+  },
+  {
+   "id": "A-choices",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Choices I made",
+   "calls": [
+    {
+     "id": "c-elsewhere",
+     "call": "The red dot uses the app's existing red \"needs attention\" dot, one per chat.",
+     "why": "It shows in the window where the failure happened.",
+     "from": "W-choices/c-elsewhere"
+    },
+    {
+     "id": "c-queue",
+     "call": "\"Needs you\" notices are never dropped: the first shows \"1 more\" while others wait.",
+     "why": "The design review found dropping any could hide a real failure.",
+     "from": "W-choices/c-queue",
+     "picture": "pictures/a/dev-toast-two-needs-you-and-quick.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "c-card",
+     "call": "The in-chat failure card is the app's existing red error card, see-through as everywhere else.",
+     "why": "Over a busy wallpaper its title is hard to read; that's the standard card, not new here.",
+     "from": "W-choices/c-card",
+     "picture": "pictures/a/chat-control-failure-compact.png",
+     "picture_name": "Now"
+    },
+    {
+     "id": "c-strip-red",
+     "call": "The red strip is written into the design guide as an allowed exception to the error card.",
+     "why": "So nobody \"fixes\" it back.",
+     "from": "W-choices/c-strip-red"
+    },
+    {
+     "id": "c-buddy",
+     "call": "The small floating buddy chat has the same strip.",
+     "why": "Otherwise it kept the old stuck notice.",
+     "from": "W-choices/c-buddy"
+    },
+    {
+     "id": "c-model",
+     "call": "A failed model switch has Try again; a second failure has Report bug.",
+     "why": "It floats until closed, and Try again retries the chat it failed in.",
+     "from": "W-choices/c-model"
+    },
+    {
+     "id": "c-handoff",
+     "call": "The move-a-chat screen's sentence sits over the last message as that screen already drew it.",
+     "why": "It's hard to read there; I didn't restyle that screen.",
+     "picture": "pictures/a/chat-handoff-note.png",
+     "picture_name": "Now"
+    }
+   ]
+  },
+  {
+   "id": "P-a5",
+   "page": "Checks",
+   "intro": "What each check showed, what moved while building, and what's left for you.",
+   "stage": "after"
+  },
+  {
+   "id": "A-checks",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Checks I ran, and what they showed",
+   "calls": [
+    {
+     "id": "k-review",
+     "call": "A fresh reviewer read the finished change.",
+     "why": "10 found (7 fixed, 3 explained), plus your simplify question and a gap it suspected, both done. All in \"Found in review\".",
+     "from": "W-checks/k-review",
+     "result": "pass",
+     "check": "code-review"
+    },
+    {
+     "id": "k-trace",
+     "call": "Every row on the first page was traced to what was built.",
+     "why": "All 18 traced; the two wording gaps it found are fixed.",
+     "from": "W-checks/k-trace",
+     "result": "pass"
+    },
+    {
+     "id": "k-grader",
+     "call": "A fresh grader compared the build with your approved rows.",
+     "why": "30 of 34 as approved; 2 fixed after, 2 explained under \"What changed while building\".",
+     "from": "W-checks/k-grader",
+     "result": "pass"
+    },
+    {
+     "id": "k-gate",
+     "call": "The done gate.",
+     "why": "Run on this deck before you saw it: all that's left is your own pass through it.",
+     "from": "W-checks/k-gate",
+     "result": "pass"
+    },
+    {
+     "id": "k-verify",
+     "call": "The app's own code checks and every screen opened.",
+     "why": "All passed on the final code: types, tests, dead code, lint, screens, click paths.",
+     "from": "W-checks/k-verify",
+     "result": "pass"
+    }
+   ]
+  },
+  {
+   "id": "A-changed",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "What changed while building",
+   "list": "changed-while-building",
+   "calls": [
+    {
+     "id": "x-held",
+     "call": "Held back for a chat you aren't in also shows a short floating notice naming it.",
+     "why": "So a refused send in the background is never invisible.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-amber",
+     "call": "Only red failures put a dot on a chat; amber \"not sure\" ones don't.",
+     "why": "The dot is for failures, as approved.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-busy",
+     "call": "Busy and not-running notices leave on their own when the app sees the change; otherwise on your next action.",
+     "why": "Some changes the app can't see right away.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-queue",
+     "call": "\"Needs you\" notices: none dropped, \"1 more\" shown.",
+     "why": "Was \"up to three, extras dropped\"; the design review found that could hide a failure.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-office",
+     "call": "Repeated Office save failures merge into one notice.",
+     "why": "Otherwise a stuck file filled the queue.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-card",
+     "call": "The red card leaves when Try again works or you send; its Details hold the computer's reason.",
+     "why": "The only place technical text shows.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-term",
+     "call": "\"Not available in a terminal session\" stays floating.",
+     "why": "Terminal sessions have no message box to hold a strip.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-which",
+     "call": "\"Which one?\" is a strip question, not a pop-up in the command list.",
+     "why": "By the time you press Enter the list has closed.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-grey",
+     "call": "Greyed skills are greyed in a chat's command list; the Skills library page is unchanged.",
+     "why": "Kept to where the skill is started.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-unread",
+     "call": "Unreadable skills are greyed in every kind of chat.",
+     "why": "Every chat reads the same file.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-recheck",
+     "call": "The held-back strip re-checks instantly; once a second only on the phone's own app.",
+     "why": "Instant needs no timer where the app is told.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-covered",
+     "call": "A chat covered by Settings, the Marketplace or a page counts as not seen.",
+     "why": "Found in review: a failure then showed nothing.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-close",
+     "call": "A refused close says \"Couldn't close X. Your computer didn't accept the request.\"",
+     "why": "The technical reason was removed; the second sentence is new and in the wording pass.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-dl",
+     "call": "A refused download with an unknown reason says only \"Couldn't download X.\"",
+     "why": "Found by the grader: it showed technical text.",
+     "built": "adjusted"
+    },
+    {
+     "id": "x-dot-window",
+     "call": "The red dot shows in the window where the failure happened.",
+     "why": "As planned and listed before the build.",
+     "built": "as planned"
+    }
+   ]
+  },
+  {
+   "id": "A-found",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Found in review",
+   "list": "found-in-review",
+   "calls": [
+    {
+     "id": "f1",
+     "call": "Try again after a skill failed left the red notice up even when it worked.",
+     "why": "Fixed: it now leaves."
+    },
+    {
+     "id": "f2",
+     "call": "The \"three wait, extras dropped\" row didn't match the build.",
+     "why": "Explained: none are dropped (see What changed while building)."
+    },
+    {
+     "id": "f3",
+     "call": "A failed model switch floats instead of sitting in its chat.",
+     "why": "Kept as you approved; Try again retries the right chat."
+    },
+    {
+     "id": "f4",
+     "call": "Queued-message notices in YouCoded-assistant chats used old words and floated.",
+     "why": "Fixed: same sentence and strip as other chats."
+    },
+    {
+     "id": "f5",
+     "call": "A refused close showed the computer's technical text.",
+     "why": "Fixed: plain sentence; the detail goes to the log."
+    },
+    {
+     "id": "f6",
+     "call": "A failure arriving after its chat closed left a hidden leftover.",
+     "why": "Fixed: ignored."
+    },
+    {
+     "id": "f7",
+     "call": "A red dot could stay after its red notice was replaced by a milder one.",
+     "why": "Fixed."
+    },
+    {
+     "id": "f8",
+     "call": "A test unrelated to this work failed at random.",
+     "why": "Fixed the likely cause; I couldn't make it fail on demand."
+    },
+    {
+     "id": "f9",
+     "call": "The red card's Try again: a \"still working\" notice didn't leave by itself.",
+     "why": "Fixed."
+    },
+    {
+     "id": "f10",
+     "call": "The red card shows the computer's reason under Details.",
+     "why": "Kept; now written as the one exception."
+    },
+    {
+     "id": "f11",
+     "call": "Your question: simplify the message types.",
+     "why": "Done: the two look-alike notice bars are one piece, three helpers are one, sentences live in one file."
+    },
+    {
+     "id": "f12",
+     "call": "A chat covered by Settings counted as seen.",
+     "why": "Fixed: it now gets the red dot."
+    }
+   ]
+  },
+  {
+   "id": "A-left",
+   "words": true,
+   "surface": "Notices",
+   "path": "Every chat, the strip above the message box, and floating notices",
+   "headline": "Left for you to try",
+   "calls": [
+    {
+     "id": "v-theme",
+     "call": "In the dev app, close every chat, press \"Build new theme with Claude\", pick a folder, press Create.",
+     "why": "You should land in a new chat with /theme-builder waiting. I photographed the popup but didn't press Create.",
+     "result": "todo"
+    },
+    {
+     "id": "v-phone",
+     "call": "On your phone, trigger a notice (e.g. press Send while a question is open).",
+     "why": "The buttons should sit below the words. Android's own build wasn't run here.",
+     "result": "todo"
     }
    ]
   }

@@ -1,0 +1,146 @@
+{
+ "W-asked/stuck": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/chat-notice-store.ts (notices keyed by session id, markChatClosed); components/ChatNoticeStrip.tsx:46; components/ui/Toast.tsx timer keyed on message/duration (not on onDismiss); vitest (8 files: floating-notices, chat-notice-strip, waiting-notice-review-fixes, send-blocked-by-popup, skill-scanner, slash-command-dispatcher, session-summary-dots, RemoteUnsupportedNotice) — 102 passed"
+ },
+ "W-asked/held": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/hooks/useBlockedSend.ts:42-52 (stillTrue = sendBlock(...) re-read; strip cleared on send); components/ChatNoticeStrip.tsx useNoticeRecheck; tests/send-blocked-by-popup.test.tsx; picture docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#strip-held/halftone-dimension.png; vitest (8 files: floating-notices, chat-notice-strip, waiting-notice-review-fixes, send-blocked-by-popup, skill-scanner, slash-command-dispatcher, session-summary-dots, RemoteUnsupportedNotice) — 102 passed"
+ },
+ "W-asked/buttons": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/NoticeBand.tsx:40-47 (Dismiss secondary first, primary last); components/ui/Toast.tsx:150-ish ordered actions with outlined Dismiss first; picture docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#strip-failed/halftone-dimension.png"
+ },
+ "W-asked/rule": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/raise-notice.ts (warn/error strip raisers), state/native-slash-actions.ts, state/control-failure-retry.ts + ControlFailureCard (after message is in), announce() floating for nothing-to-do; tests/chat-notice-strip.test.tsx. Not individually re-traced for all 20 failures: one spot-check per route (strip, card, floating) found each in place"
+ },
+ "W-asked/cant": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/raise-notice.ts raiseBusy (Stop, leaves when reply ends), raiseNotRunning, raiseNotice leave:'next-action'; NoticeBand always draws Dismiss; Browse skills at raise-notice.ts browseSkillsAction; picture docs/active/design/2026-11-22-waiting-notice/pictures/after/chat/commands#native/halftone-dimension.png"
+ },
+ "W-asked/prevent": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/utils/drawer-availability.ts (commandOfferedIn hides claude-code-only commands in native chats; skillUnavailableReason greys with reason; unreadable mark); components/CommandDrawer.tsx:16; state/native-slash-actions.ts:183 raiseWhichSkill; pictures docs/active/design/2026-11-22-waiting-notice/pictures/after/chat/skills#native-greyed, chat/skills#unreadable, chat#which-skill; tests skill-scanner, command-drawer-add-skills"
+ },
+ "W-asked/limits": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/RemoteUnsupportedNotice.tsx:25-44 'Theme browsing only works on the computer running YouCoded for now.' short floating, no button; RemoteUnsupportedNotice.test.tsx passed. Wording is 'Theme browsing...' rather than the row's 'Browsing themes...' (same meaning; wording pass is last)"
+ },
+ "W-asked/unsure": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/utils/notice-words.ts MESSAGE_UNSURE/commandUnsure/STOP_UNSURE (shared wording); state/submit-outgoing.ts:~152 raiseNotice('send-unconfirmed', leave:'resolved'); App.tsx:2378-2380 model switch announce untilClosed; tests/native-send-unconfirmed.test.tsx, native-compact.test.ts. 20 rows not each traced individually; the three groups in the row were each found"
+ },
+ "W-asked/words": {
+  "verdict": "built differently",
+  "what": "Shared sentences exist (utils/notice-words.ts) and the catalogued failures use them, but a few floating notices still show text that came from the computer: download-file.ts:45-48 appends the host's reason / err.message; remote-gate.tsx:353 shows err.message; remote-shim.ts:2167 shows result.error. Row says 'no technical text ever shows'.",
+  "why": "reason not found; these three sites were not touched beyond the announce() signature change (download-file.ts, remote-shim.ts). They may be intentional plain-sentence reasons, but nothing proves it",
+  "proof": "youcoded/desktop/src/renderer/components/artifact-views/download-file.ts:45-48; youcoded/desktop/src/renderer/remote-gate.tsx:353; youcoded/desktop/src/renderer/state/submit-outgoing.ts:157 (the one site that does console.warn instead)",
+  "fixed_after": "download-file.ts now logs unknown/thrown reasons and shows only the plain sentence (test updated). remote-gate.tsx and remote-shim.ts show sentences the app itself writes (pairing-form words; the size-cap refusal), not technical text — kept."
+ },
+ "W-asked/theme": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/App.tsx:4235-4237 (no session -> setPageCreate(THEME_NEW_CHAT)); components/pages/PageCreateDialog.tsx:38-45 title 'Build a new theme'; picture docs/active/design/2026-11-22-waiting-notice/pictures/after/settings/theme-new-chat/halftone-dimension.png (also approved drawing pictures/r4/new-chat-popup.png)"
+ },
+ "W-asked/fyi": {
+  "verdict": "built differently",
+  "what": "Both are floating timed notices (not in the strip), as asked, but their words are the old ones: 'Attachments ignored with /compact' (/clear, /copy) and 'No response to copy', not 'Attachments were left out' / 'No reply to copy yet'.",
+  "why": "reason not found (wording pass is last per feature-flow; may be deliberate)",
+  "proof": "youcoded/desktop/src/renderer/state/slash-command-dispatcher.ts:158,193,288; youcoded/desktop/src/renderer/dev/workbench/notice-catalogue.ts:170-181 (strip: null)",
+  "fixed_after": "Now \"Attachments were left out of /compact.\" (also /clear, /copy) and \"There's no reply to copy yet.\" (notice-words.ts)."
+ },
+ "W-asked/screen": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/ScreenNotice.tsx; components/ResumeBrowser.tsx; App.tsx:2748-2756 raiseResumeNotice (screen if open, else floating); PendingHandoffView.tsx; pictures docs/active/design/2026-11-22-waiting-notice/pictures/after/chat/resume#failed, chat/resume#unavailable, chat/handoff#note"
+ },
+ "W-asked/card": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/ControlFailureCard.tsx (ErrorState + Try again); state/control-failure-retry.ts:24 dispatches CONTROL_FAILURE_CLEARED on success; tests/native-compact.test.ts, chat-reducer.test.ts; pictures docs/active/design/2026-11-22-waiting-notice/pictures/after/chat#control-failure-compact/halftone-dimension.png"
+ },
+ "W-asked/dot": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/chat-notice-store.ts addUnseenFailure/markFailureSeen; hooks/useSessionAttention.ts:60 withFailureDots; App.tsx:986,1030; tests/session-summary-dots.test.tsx; picture docs/active/design/2026-11-22-waiting-notice/pictures/after/chat/sessions#failure-dot/halftone-dimension.png"
+ },
+ "W-asked/turns": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/floating-notices.ts (routine slot + needsYou list, closeNeedsYou brings next); components/FloatingNotices.tsx; tests/floating-notices.test.tsx; picture docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#two-needs-you-and-quick/halftone-dimension.png"
+ },
+ "W-asked/phone": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/NoticeBand.tsx:33-47 (actionBelow when narrow); pictures docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#strip-held-phone, dev/toast#strip-failed-phone, dev/toast#n-compact-busy-phone"
+ },
+ "W-asked/times": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/ui/Toast.tsx durationMs default 3000; utils/announce.ts:44 durationMs 5000 for 'Couldn't ...'; FloatingNotices.tsx untilClosed -> durationMs null"
+ },
+ "W-asked/review": {
+  "verdict": "built",
+  "proof": "docs/active/reviews/ and commits 9ca57c61e, 1ab4303e8 (fixes from independent reviews); git log shows 'Waiting-notice: fresh code review and its triage' 7db2d2c74"
+ },
+ "W-screens/g-held": {
+  "verdict": "built",
+  "proof": "picture docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#strip-held/halftone-dimension.png beside docs/active/design/2026-11-22-waiting-notice/pictures/r4/strip-held.png; code useBlockedSend.ts"
+ },
+ "W-screens/g-cant": {
+  "verdict": "built",
+  "proof": "picture docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#n-compact-busy/halftone-dimension.png beside pictures/r4/strip-cant.png; code raise-notice.ts raiseBusy"
+ },
+ "W-screens/g-failed": {
+  "verdict": "built",
+  "proof": "picture docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#strip-failed/halftone-dimension.png beside pictures/r4/strip-failed.png (Dismiss + Try again); not re-shot"
+ },
+ "W-screens/g-k7": {
+  "verdict": "built",
+  "proof": "pictures docs/active/design/2026-11-22-waiting-notice/pictures/after/dev/toast#... and docs/.../pictures/r4/k7-saved-password-expired.png; code FloatingNotices.tsx + Toast.tsx (Dismiss left outlined, main filled right)"
+ },
+ "W-screens/g-theme": {
+  "verdict": "built",
+  "proof": "picture docs/active/design/2026-11-22-waiting-notice/pictures/after/settings/theme-new-chat/halftone-dimension.png beside pictures/r4/new-chat-popup.png; PageCreateDialog.tsx:38-45"
+ },
+ "W-behind/b1": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/hooks/useBlockedSend.ts:42-52; components/ChatNoticeStrip.tsx:20-35. Note: the once-a-second timer runs only on the Android app's own runtime (no session record); on desktop and the phone's remote view the strip re-checks the moment the chat or its pop-up changes, so the result Destin sees is the same. vitest (8 files: floating-notices, chat-notice-strip, waiting-notice-review-fixes, send-blocked-by-popup, skill-scanner, slash-command-dispatcher, session-summary-dots, RemoteUnsupportedNotice) — 102 passed"
+ },
+ "W-behind/b2": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/raise-notice.ts raiseNotice -> showChatNotice(sessionId); chat-notice-store.ts chatNoticeUserActed; tests/chat-notice-strip.test.tsx"
+ },
+ "W-behind/b3": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/chat-notice-store.ts:98-108 (notice keyed to its own chat, red dot if not viewed); noticeViewerFor covers panel-over-chat; tests/waiting-notice-review-fixes.test.tsx"
+ },
+ "W-behind/b4": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/utils/notice-words.ts header; state/submit-outgoing.ts:157 console.warn; see W-asked/words for the few floating notices that still show host text"
+ },
+ "W-behind/b5": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/state/chat-notice-store.ts markChatClosed; App.tsx:1382 and :2725 call it"
+ },
+ "W-choices/c-elsewhere": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/hooks/useSessionAttention.ts:60-69 sets the existing 'red' status colour; unseenFailures is a Set (one per chat)"
+ },
+ "W-choices/c-queue": {
+  "verdict": "built differently",
+  "what": "No limit of three and nothing is dropped or logged: every 'needs you' notice waits in line and shows '<n> more' beside the first.",
+  "why": "Commit 707be38b0 and floating-notices.ts header (independent reviews 1 and 2: 'Nothing is ever dropped'). Not shown to Destin as a changed choice.",
+  "proof": "youcoded/desktop/src/renderer/state/floating-notices.ts:1-12,50-57; youcoded/desktop/src/renderer/components/FloatingNotices.tsx footnote '${waiting} more'; tests/floating-notices.test.tsx"
+ },
+ "W-choices/c-card": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/ControlFailureCard.tsx wraps ErrorState (components/ui/states.tsx)"
+ },
+ "W-choices/c-strip-red": {
+  "verdict": "built",
+  "proof": "docs/active/design/2026-10-13-ui-design-guide.md:596 'Recorded exception — the chat's red strip' (commit 838277ff8)"
+ },
+ "W-choices/c-buddy": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/components/buddy/BuddyChat.tsx:149-151,202 (InputBar with strip + useBlockedSend isChatVisible)"
+ },
+ "W-choices/c-model": {
+  "verdict": "built",
+  "proof": "youcoded/desktop/src/renderer/App.tsx:2373-2380 (Try again; second failure Report bug opening BugReportPopup at :4478)"
+ }
+}
