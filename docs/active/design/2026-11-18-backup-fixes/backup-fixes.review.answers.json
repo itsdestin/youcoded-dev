@@ -1,0 +1,28 @@
+{
+ "deck": "backup-fixes-review",
+ "submitted": null,
+ "source": "Pasted into chat by Destin on 2026-11-26 from the deck's own summary line (deck status: not submitted; 5 yes, 0 no, 1 other, 0 skipped). Recorded here verbatim by the session.",
+ "answers": {
+  "U-1": {
+   "v": "other",
+   "note": "i dont like the bare \"uploading\" text. this should be a standard status indicator like the statuses we use elsewhwere, at the top right of the google drive box"
+  },
+  "U-2": {
+   "v": "yes"
+  },
+  "U-3": {
+   "v": "yes",
+   "note": "put dismiss at bottom right"
+  },
+  "U-4": {
+   "v": "yes"
+  },
+  "U-5": {
+   "v": "yes",
+   "note": "put button at bottom right"
+  },
+  "U-6": {
+   "v": "yes"
+  }
+ }
+}
