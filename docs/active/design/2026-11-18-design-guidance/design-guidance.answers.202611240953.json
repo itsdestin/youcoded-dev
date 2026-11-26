@@ -1,0 +1,68 @@
+{
+ "deck": "design-guidance",
+ "started": "2026-11-24T09:42:32.486Z",
+ "submitted": "2026-11-24T09:53:04Z",
+ "cur": 0,
+ "answers": {
+  "K-1": {
+   "note": "i dont htink i love any of these. i particular dislike the piece/example nomenclature. what is an example? is that a class of elements? a single specific element? how do pieces and examples interact? i should be able to figure out pretty much all of this with one quick glance/click-through of the page (DO NOT add a bunch of random explainers. i mean the visual structure/heirarchy of this page should lend itself to a clear intuition of what each card/option/button is and how it relates to others). ",
+   "t": 1795513983374,
+   "v": "other",
+   "seconds": 211,
+   "theme": "ivory-schematic"
+  },
+  "K-2": {
+   "v": "pick",
+   "pick": "screens-popup",
+   "t": 1795513983374,
+   "seconds": 211,
+   "theme": "ivory-schematic"
+  },
+  "K-3": {
+   "marks": [
+    {
+     "pic": "option list",
+     "x": 65.3,
+     "y": 13.2,
+     "w": 22.6,
+     "h": 64.1,
+     "text": "this has become far too busy, and i feel like a lot of this information is either duplicative, poorly structured/displayed, or just unhelpful. i think we need to change \"screens\" to \"surfaces\". then change \"examples\" to \"surface templates\", where each real deployed \"surface\" serves as an example of the \"surface template\" in action. then the smaller \"pieces\" can be relabeled \"components\"."
+    }
+   ],
+   "v": "other",
+   "t": 1795513983374,
+   "seconds": 211,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-24T02:45:32Z",
+  "branch": "session/150-design-guidance-rebuild",
+  "commit": "51a19ca41f9946587bb5e8102fbe150bfcb386bb",
+  "spec_sha256": "f6dd17d50e3e563787e651dd815d8bd40f47fa5b89fdb0badda0e7753efab5c8",
+  "spec_dirty": true,
+  "ids": [
+   "U-1",
+   "U-2",
+   "U-3",
+   "U-4",
+   "U-5",
+   "U-6",
+   "U-7",
+   "U-8",
+   "Q-1",
+   "Q-2",
+   "L-1",
+   "Q-3",
+   "Q-4",
+   "Q-5",
+   "Q-6",
+   "Q-7",
+   "Q-8",
+   "Q-9",
+   "K-1",
+   "K-2",
+   "K-3"
+  ]
+ }
+}
