@@ -1,0 +1,79 @@
+{
+ "deck": "design-guidance",
+ "started": "2026-11-26T02:23:06.726Z",
+ "submitted": "2026-11-26T02:28:15Z",
+ "cur": 0,
+ "answers": {
+  "U-9": {
+   "v": "yes",
+   "t": 1795660094168,
+   "seconds": 77,
+   "theme": "halftone-dimension"
+  },
+  "K-1": {
+   "v": "pick",
+   "pick": "stacks",
+   "t": 1795660094168,
+   "marks": [
+    {
+     "pic": "option rows",
+     "x": 12.6,
+     "y": 81.3,
+     "w": 33.2,
+     "h": 10.5,
+     "text": "i feel like \"failed action\" would probably be more of a reusable componenet than a surface"
+    }
+   ],
+   "seconds": 77,
+   "theme": "halftone-dimension"
+  },
+  "K-3": {
+   "marks": [
+    {
+     "pic": "option template-only",
+     "x": 65.4,
+     "y": 14.1,
+     "w": 21.4,
+     "h": 49.3,
+     "text": "still dont like the visual styling and deadspace here"
+    }
+   ],
+   "v": "pick",
+   "t": 1795660094168,
+   "pick": "template-only",
+   "seconds": 77,
+   "theme": "halftone-dimension"
+  }
+ },
+ "built": {
+  "at": "2026-11-26T02:16:53Z",
+  "branch": "session/150-design-guidance-rebuild",
+  "commit": "0eb4b0c9b73c53473460a5118824ee23489ee2d5",
+  "spec_sha256": "677c18f4924bd3216f79b2139f3c313783a3e145a92f466a93042ea1980ce940",
+  "spec_dirty": false,
+  "ids": [
+   "U-1",
+   "U-2",
+   "U-3",
+   "U-4",
+   "U-5",
+   "U-6",
+   "U-7",
+   "U-8",
+   "Q-1",
+   "Q-2",
+   "L-1",
+   "Q-3",
+   "Q-4",
+   "Q-5",
+   "Q-6",
+   "Q-7",
+   "Q-8",
+   "Q-9",
+   "U-9",
+   "K-1",
+   "K-2",
+   "K-3"
+  ]
+ }
+}
