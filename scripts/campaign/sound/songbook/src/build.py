@@ -61,7 +61,7 @@ def one(piece, extra_fn=None, path=None):
     st["sound"] = {k: (v if isinstance(v, (int, float, bool, str)) else str(v)) for k, v in O.summary(piece).items()}
     raw_b, _, _, _ = render(piece, backing=True, gains=gains)
     tv = motif_check(raw, raw_b, band.melody)
-    if getattr(piece, "style", "") == "v3":
+    if getattr(piece, "style", "") in ("v3", "v4"):
         # THE NO-MELODY ALT MIX (toolkit-plan a4): the bed alone (tune, cycles, answers out), mastered
         # with the same gains, for every render; the editor can cut to it, and the owner can hear
         # whether the bed stands on its own
@@ -146,7 +146,7 @@ def mix_tests(v, mo=None, loudness=-14.0):
         # made a 12 s card or a bed under a narrator (no sub, by the recipe) read out of range, the
         # same pattern as the old air floor that produced round 8's added violin
         (("low end: 40-80 Hz and 80-250 Hz at least 3 dB below total (no floor in a recipe)",
-          b["40-80"] <= -3 and b["80-250"] <= -3) if mo.get("style") == "v3" else
+          b["40-80"] <= -3 and b["80-250"] <= -3) if mo.get("style") in ("v3", "v4") else
          ("low end: 40-80 Hz 3-%d dB below, 80-250 >= 3 dB below" % (12 if loudness <= -16 else 9),
           -(12 if loudness <= -16 else 9) <= b["40-80"] <= -3 and b["80-250"] <= -3)),
     ]

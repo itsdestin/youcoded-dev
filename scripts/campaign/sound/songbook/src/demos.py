@@ -138,7 +138,9 @@ RECIPE_A = _R.type_short(
              "level-rate": "the dip between the pulse's B-flat 4 (7.62 s) and F4 (8.16 s), a rest step, then the "
                            "quiet logo rising: the pad at the plan's -8 dB does not fill that gap (gap-fill 5.1); "
                            "the owner's pad_level A/B decides it",
-             "logo-gentle": "the quiet logo lands 1.0 dB over the last card's bar, exactly at the limit"})
+             "logo-gentle": "the quiet logo lands 1.0 dB over the last card's bar, exactly at the limit"},
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 
 # ---- Recipe B: a 36 s app demo, cuts every 4 bars, the peak at bar 13, the full logo.
 _B_BPM = 116.0
@@ -173,7 +175,9 @@ RECIPE_B = _R.app_demo(
                         "between them (40 %): recipe B's three phrases fall within 8 bars of each other in a "
                         "36 s demo; over 60 s they spread out. For the owner's ear: two phrases may suit 36 s",
              "level-rate": "the dip between two pulse notes at 11.7 s (a rest step): the pad at the plan's -8 dB "
-                           "does not fill it (gap-fill 4.3; 3.5 at pad_level -4); the owner's A/B"})
+                           "does not fill it (gap-fill 4.3; 3.5 at pad_level -4); the owner's A/B"},
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 
 # ---- Recipe C: a narrated stretch, the storybook voice from 0 to "...wonderful happened." with
 # 1.5 s of music before her first word; the turn at "However," (21.4 s in her file = 22.9 s here).
@@ -206,6 +210,8 @@ RECIPE_C = _R.narrated(
              "logo-gentle": "the 'peak' (26.5 s) is her last words, under her at the hand-set -6 dB; the logo is the "
                             "first thing heard without her, 4.5 dB over that bar",
              "voice-steady": "bar 12 rises 2.9 dB under her words: her turn ('However,'), the bright E-flat chord "
-                             "struck with its low root; a planned chord change on her sentence end, not a swell"})
+                             "struck with its low root; a planned chord change on her sentence end, not a swell"},
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 
 DEMOS += [RECIPE_A, RECIPE_B, RECIPE_C]

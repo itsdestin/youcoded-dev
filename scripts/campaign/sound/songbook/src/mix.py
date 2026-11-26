@@ -176,6 +176,47 @@ def _piano_bus(x, piece):
     return x
 
 
+BOWED_BUSES = ("bowed", "sing", "air")
+
+
+def _bowed_bus(x):
+    """v4 (bowed_eq="soft"): HP 80 Hz, LP 4.5 kHz (12 dB/oct), -3 dB around 3 kHz. WHY: measured,
+    held strings were 11 % of the energy but 69 % of 1-3 kHz and 100 % of 3-6 kHz (a violin section
+    G4 at touch 0.16 had 3-6 kHz at -13.7 dB against -59 for the piano), on a bus with no EQ while
+    the piano buses had one: "those strings are wayyy too harsh/overpowering"."""
+    x = butter(x, "highpass", 80, 2)
+    x = butter(x, "lowpass", 4500, 2)
+    return biquad(x, "peak", 3000, 1.0, -3.0)
+
+
+def _piano_glue(stems, piece, max_gr=2.0, ratio=2.0):
+    """v4 (piano_glue="on"): ONE gentle compressor that listens to every piano bus together and
+    turns them all by the same amount (at most 2 dB), so no single piano line pokes out of the rest.
+    WHY: the tune's level swung 17.6 dB within one second over a pulse that did not move at all;
+    one shared gain is how a single instrument behaves. The stems stay separate (same gain each)."""
+    keys = [b for b in PIANO_BUSES if b in stems and np.abs(stems[b]).max() > 1e-9]
+    if not keys:
+        return
+    tot = sum(stems[b] for b in keys).mean(axis=1)
+    win = int(0.05 * SR)
+    pw = np.convolve(tot ** 2, np.ones(win) / win, mode="same")
+    lvl = 10 * np.log10(pw + 1e-12)
+    thr = float(np.percentile(lvl[pw > pw.max() * 1e-4], 70)) if np.any(pw > pw.max() * 1e-4) else 0.0
+    want = np.clip((lvl - thr) * (1.0 - 1.0 / ratio), 0.0, max_gr)
+    # attack 30 ms, release 300 ms (one-pole on the gain reduction)
+    gr = np.zeros_like(want)
+    a_at, a_re = np.exp(-1.0 / (0.03 * SR)), np.exp(-1.0 / (0.3 * SR))
+    g = 0.0
+    for i in range(0, len(want), 64):            # block-wise: the gain moves slowly anyway
+        w = float(want[i:i + 64].max())
+        a = a_at ** 64 if w > g else a_re ** 64
+        g = a * g + (1 - a) * w
+        gr[i:i + 64] = g
+    gain = 10 ** (-gr / 20)
+    for b in keys:
+        stems[b] = stems[b] * gain[:, None]
+
+
 def _echo(x, bpm, ret_db):
     """Plan b4 echo send: dotted eighth at the piece's tempo, 3 repeats, each 4 dB quieter and
     20 % darker than the last (cutoff from 4.5 kHz), alternating gently between the sides,
@@ -230,6 +271,10 @@ def mix(band, plans, piece, gains=None):
         stems[b] = src[b] * gains.get(b, 0.0)
         if b in PIANO_BUSES and gains.get(b, 0.0):
             stems[b] = _piano_bus(stems[b], piece)
+        if b in BOWED_BUSES and gains.get(b, 0.0) and O.get("bowed_eq", piece) == "soft":
+            stems[b] = _bowed_bus(stems[b])
+    if O.get("piano_glue", piece) == "on":
+        _piano_glue(stems, piece)
     n = len(next(iter(stems.values())))
     for sb in ("pad", "ring"):
         if sb not in stems or not gains.get(sb, 0.0):
@@ -243,8 +288,15 @@ def mix(band, plans, piece, gains=None):
             mid, side = (x[:, 0] + x[:, 1]) / 2 * g, (x[:, 0] - x[:, 1]) / 2
             stems[sb] = np.stack([mid + side, mid - side], axis=1)
     bpm = float(getattr(plans[0], "bpm", 0.0) or 0.0) if plans else 0.0
-    hall_in = sum(stems[b] * HALL.get(b, 0.25) for b in BUSES)
-    room_in = sum(stems[b] * ROOM.get(b, 0.05) for b in BUSES)
+    if O.get("room", piece) == "shared":
+        # WHY one send for every bus (v4): the pad and strings sat in the hall at 0.32 with no room,
+        # the piano at 0.22 with room 0.10, so the held layers sounded further back and wider than
+        # the piano: two places, not one band in one room. The sub stays dry (below the hall's HP).
+        hall_in = sum(stems[b] * (0.0 if b == "sub" else HALL["piano"]) for b in BUSES)
+        room_in = sum(stems[b] * (0.0 if b == "sub" else ROOM["piano"]) for b in BUSES)
+    else:
+        hall_in = sum(stems[b] * HALL.get(b, 0.25) for b in BUSES)
+        room_in = sum(stems[b] * ROOM.get(b, 0.05) for b in BUSES)
     pdl = O.get("hall_predelay", piece)
     pdl = S.hall_predelay(bpm) if pdl == "tempo" else float(pdl)
     hall = convolve(butter(hall_in, "highpass", float(O.get("reverb_hp", piece)), 2), S.ir("hall", pdl))

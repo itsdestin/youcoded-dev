@@ -85,5 +85,7 @@ PIECE = R.narrated(
              "logo-gentle": "the logo is already 'quiet'; the 'peak bar' it is compared with is the 2-beat odd bar "
                             "under her words (two soft pulse notes), so the name is the first full chord",
              "voice-steady": "bar 7 rises 1.7 dB under her: the bright E-flat chord with its low root on her turn "
-                             "('And so, ... we get to decide'), a planned chord change, not a swell"})
+                             "('And so, ... we get to decide'), a planned chord change, not a swell"},
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 FILM = Film("shot-d", PIECE, picture=BRIEF.picture, copy_to=None)

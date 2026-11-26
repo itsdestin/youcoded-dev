@@ -45,7 +45,7 @@ case "${1:-}" in
     # WHY (first-shot a, c): composers hunted for the right Python and import path to call one
     # toolkit function (land_after, fit_tempo); this runs it with both set
     shift; cd "$DIR/src" && PYTHONPATH="$DIR/src:$DIR/src/engine" exec "$PY" "$@";;
-  --notes|--brief|--bed|--sketch|--deliver)
+  --notes|--brief|--bed|--sketch|--deliver|--shelf)
     "$PY" -I "$DIR/src/studio.py" "$@" 2> >(grep -v "RuntimeWarning: Unexpected value in sys" >&2)
     exit;;
 esac

@@ -45,6 +45,8 @@ PIECE = R.type_short(
              "level-rate": "8.1 dB at 5.4 s: the dip between the pulse's B-flat 4 (4.98 s) and G4 (5.60 s), the pad "
                            "at the plan's -8 dB not filling it (gap-fill 6.4); sketch B at pad_level=-4 reads 6.5, "
                            "the owner's pad_level A/B decides it"},
-    notes="First-shot A: own everything 10 s, recipe A, subtle.")
+    notes="First-shot A: own everything 10 s, recipe A, subtle.",
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 
 FILM = Film("shot-a", PIECE, picture=BRIEF.picture, copy_to=None)

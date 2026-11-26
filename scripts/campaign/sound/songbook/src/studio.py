@@ -8,11 +8,12 @@
                                          left out), the hard checks and the dashboard (~1 s)
     render.sh --bed    <film>            step 5: the bed alone (sustain, pulse, cycles; no tune),
                                          rendered, with its dashboard
-    render.sh --sketch <film> [k=v ...]  step 7: the first 20 s twice, as written (A) and with ONE
-                                         switch changed (B; default: pad_level -8 <-> -4;
-                                         or an [OWNER] switch, a sound switch from
-                                         engine/options.py, bed.<k>, sec.<k>, a Piece field)
-                                         into out/sketches/ (readings: the whole piece)
+    render.sh --sketch <film> [<film2>] [from=S] [len=15] [picture=x.mp4] [pic_from=S] [lag=0.10] [k=v ...]
+                                         a feel sketch: any window of each piece, the music `lag` s
+                                         after the picture, to mp3 (+ mp4 with a picture; her voice
+                                         from voice_mux); k=v also renders a one-switch B
+    render.sh --shelf [<film> ...]       a piece's unity readings and tone next to the reference
+                                         shelf's (reference/shelf.json)
     render.sh --deliver <film> <dir> [picture=x.mp4] [from=s]   the music as mp3, and with a picture
                                          the mp4 (music replaces its sound; narrated: her voice + music)
 
@@ -232,6 +233,13 @@ def apply_switch(piece, key, value):
                 s.fig_mode, s.figure, s.fig_floor = "chord", ["b 2 3 2 4 2 3 2", "b 2 3 2 4 3 2 3"], "G3"
             else:
                 s.fig_mode = "pedal"
+    elif key == "swing":
+        # the owner's swing switch (recipes.SWING): every off-beat eighth, tune included
+        import recipes as R
+        if value not in R.SWING:
+            raise SystemExit(f"swing: one of {', '.join(R.SWING)}")
+        for s in q.sections:
+            s.swing = R.SWING[value]
     elif key == "fig_order":
         if value not in ("circle", "cell"):
             raise SystemExit("fig_order: circle or cell")
@@ -283,48 +291,172 @@ def apply_switch(piece, key, value):
                              f"pad_level), air=legacy, a sound "
                              f"switch ({', '.join(_sound_keys())}), bed.<field>, sec.<field> or a Piece field")
         setattr(q, key, num(value))
-    q.owner = dict(q.owner or {}, **({key: value} if key in ("sustain", "pulse", "chords", "fig_order", "pad_level") else {}))
+    q.owner = dict(q.owner or {}, **({key: value} if key in ("sustain", "pulse", "chords", "fig_order", "pad_level", "swing") else {}))
     return q
 
 
-def sketch(piece, switches):
+def _ffmpeg():
+    import shutil
+    if not shutil.which("ffmpeg"):
+        raise SystemExit("ffmpeg is not installed")
+
+
+def _voice_track(piece, n, sr):
+    """Her voice on the piece's clock (Piece.voice_mux: path, t_from, start_at), or None."""
+    import soundfile as sf
+    vm = getattr(piece, "voice_mux", None)
+    if not vm:
+        return None
+    v, vsr = sf.read(vm["path"], dtype="float64", always_2d=True)
+    if vsr != sr:
+        from scipy.signal import resample_poly
+        v = resample_poly(v, sr, vsr, axis=0)
+    if v.shape[1] == 1:
+        v = np.repeat(v, 2, axis=1)
+    out = np.zeros((n, 2))
+    a = int(round(float(vm.get("start_at", 0.0)) * sr))
+    b = int(round(float(vm.get("t_from", 0.0)) * sr))
+    seg = v[b:b + max(0, n - a)]
+    out[a:a + len(seg)] = seg[: n - a]
+    return out
+
+
+def window(piece, y, sr, start, length, lag):
+    """The window of the piece a sketch keeps, on the PICTURE's clock: picture time t (from
+    `start`) hears the music at start + t - lag (music `lag` s after the picture; never before it),
+    and her voice (Piece.voice_mux) unshifted, mixed at voice_mux's music_db and limited."""
+    n = int(round(length * sr))
+    t0 = int(round((start - lag) * sr))
+    seg = np.zeros((n, 2))
+    lo, hi = max(0, t0), min(len(y), t0 + n)
+    if hi > lo:
+        seg[lo - t0:hi - t0] = y[lo:hi]
+    v = _voice_track(piece, int(round((start + length) * sr)) + 1, sr)
+    if v is not None:
+        g = 10 ** (float(piece.voice_mux.get("music_db", -10.0)) / 20)
+        seg = seg * g + v[int(round(start * sr)):int(round(start * sr)) + n]
+        pk = np.abs(seg).max()
+        if pk > 0.89:
+            seg *= 0.89 / pk                     # WHY: a plain gain, not a limiter: the sketch must not pump
+    f_in, f_out = int(0.05 * sr), int(0.5 * sr)
+    seg[:f_in] *= np.linspace(0, 1, f_in)[:, None]
+    if start + length < piece.length - 0.05:
+        seg[-f_out:] *= np.linspace(1, 0, f_out)[:, None]
+    return seg
+
+
+def sketch(pieces_, switches, start=0.0, length=15.0, picture=None, pic_from=None, lag=0.10, out_dir=None):
+    """THE FEEL SKETCH (the owner's process, R1: palette, then two short sketches per film, then the
+    score). Renders each piece whole, keeps `length` s from `start` with the music `lag` s after the
+    picture (0.05-0.15; his pick on "Own everything" was the music about 0.15 s after), and writes
+    <name>-sketch.mp3 and, with a picture, <name>-sketch.mp4 (the picture's own sound replaced; under
+    a narrator, her voice from voice_mux plus the music). Two feels = two pieces, named together:
+    `render.sh --sketch feel-a feel-b from=12 picture=film.mp4`. With switches (k=v) each piece is
+    also rendered with them changed (B), for a one-switch A/B."""
+    import subprocess
     import soundfile as sf
     import build
     from dsp import SR
-    d = os.path.join(OUT, "sketches")
+    if not 0.0 <= lag <= 0.25:
+        raise SystemExit("lag: 0 to 0.25 s (the music lands just after the picture, never before it)")
+    _ffmpeg()
+    d = out_dir or os.path.join(OUT, "sketches")
     os.makedirs(d, exist_ok=True)
-    if not switches:
-        # WHY pad_level=-4 by default (audit 2026-11-25, defect 2): the sustain's balance against
-        # the pulse is the open question behind "choppy" (the level swings 4.6-4.8 dB inside each
-        # half-second at -8); the held-strings A/B is `sustain=held`
-        cur = int((piece.owner or {}).get("pad_level", -8))
-        switches = [("pad_level", "-4" if cur != -4 else "-8")]
-    b = piece
-    for k, v in switches:
-        b = apply_switch(b, k, v)
-    a = copy.deepcopy(piece)
-    a.name = piece.name + "-sketch-A"
-    b.name = piece.name + "-sketch-B"
-    L = [f"STEP 7 sketches of {piece.name}: A as written, B with " + ", ".join(f"{k}={v}" for k, v in switches)]
-    for q in (a, b):
-        path = os.path.join(d, q.name + ".wav")
-        _, st = build.one(q, path=path)
-        y, _ = sf.read(path, dtype="float64", always_2d=True)
-        cut = min(len(y), int(20.0 * SR))
-        seg = y[:cut].copy()
-        w = int(0.5 * SR)
-        if cut < len(y):
-            seg[-w:] *= np.linspace(1, 0, w)[:, None]
-        sf.write(path, seg, SR, subtype="PCM_24")
-        L.append(f"   {q.name}: {path} (the file keeps the first {cut / SR:.0f} s; the readings below are of "
-                 f"the WHOLE {len(y) / SR:.0f} s piece)")
-        L += ["      " + x for x in D.text(q.name, st["hard"], st["dashboard"], q)[:1]]
-        outs = [r["id"] for r in st["dashboard"] if not r["ok"]]
-        L.append(f"      dashboard out of range: {', '.join(outs) or 'none'}")
-        # WHY the readings side by side: an A/B differs in one switch, and these are the numbers
-        # that switch is most likely to move (whole piece, not only the 20 s kept)
-        keep = ("sustain", "gap-fill", "tilt", "presence", "roughness", "level-rate", "pulse-rate", "attack-rate")
-        L.append("      readings: " + "; ".join(f"{r['id']} {r['value']}" for r in st["dashboard"] if r["id"] in keep))
+    L = [f"SKETCHES: {length:g} s from {start:g} s, music {1000 * lag:.0f} ms after the picture"
+         + (f", over {picture}" + (f" from {pic_from:g} s" if pic_from is not None else "") if picture else "")]
+    todo = []
+    for piece in pieces_:
+        a = copy.deepcopy(piece)
+        a.name = piece.name + "-sketch" + ("-A" if switches else "")
+        todo.append(a)
+        if switches:
+            b = piece
+            for k, v in switches:
+                b = apply_switch(b, k, v)
+            b.name = piece.name + "-sketch-B"
+            todo.append(b)
+    for q in todo:
+        wav = os.path.join(d, q.name + "-whole.wav")
+        _, st = build.one(q, path=wav)
+        y, _ = sf.read(wav, dtype="float64", always_2d=True)
+        seg = window(q, y, SR, start, length, lag)
+        cut = os.path.join(d, q.name + ".wav")
+        sf.write(cut, seg, SR, subtype="PCM_24")
+        mp3 = os.path.join(d, q.name + ".mp3")
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", cut, "-b:a", "256k", mp3], check=True)
+        L.append(f"   {q.name}: {mp3}")
+        if picture:
+            mp4 = os.path.join(d, q.name + ".mp4")
+            ps = start if pic_from is None else pic_from
+            # WHY the picture's sound dropped even under a narrator: the sketch's audio already has
+            # her voice from voice_mux, on the picture's clock, with the music at its mux level
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{ps:g}", "-t", f"{length:g}", "-i", picture,
+                            "-i", cut, "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-crf", "18",
+                            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "256k", "-t", f"{length:g}", mp4], check=True)
+            L.append(f"   {q.name}: {mp4}")
+        L += ["      " + x for x in D.text(q.name, st["hard"], st["dashboard"], q)]
+    return L
+
+
+SHELF = os.path.normpath(os.path.join(HERE, "..", "reference", "shelf.json"))
+AUDIO_KEYS = (("tilt_db_per_oct", "tilt"), ("band_2k_5k_db", "2-5k"), ("band_5k_16k_db", "5-16k"),
+              ("momentary_swing_1s_p90_db", "1s-swing"), ("width_side_to_mid_db", "width"))
+
+
+def _audio(path, cache):
+    """The deck's audio measurements of one file (elements_review.analyse_file), cached by mtime."""
+    import elements_review as ER
+    key = f"{path}|{os.path.getmtime(path):.0f}"
+    if key not in cache:
+        r = ER.analyse_file(path)
+        cache[key] = {k: r.get(k) for k, _ in AUDIO_KEYS}
+    return cache[key]
+
+
+def shelf(pieces_):
+    """THE REFERENCE SHELF (the owner's R2): the clips he approved by ear (reference/shelf.json,
+    reference/README.md), measured the same way as a new piece, printed side by side. A new
+    piece's unity readings come from its last render (out/films/<name>.json); the shelf's
+    note-based readings are the mix analysis's numbers (2026-11-25), its audio readings are
+    measured here. Numbers to read, not targets."""
+    shelf_ = json.load(open(SHELF))
+    cpath = os.path.join(OUT, "shelf-cache.json")
+    try:
+        cache = json.load(open(cpath))
+    except (OSError, ValueError):
+        cache = {}
+    cols = []
+    for p in pieces_:
+        jp = os.path.join(OUT, "films", p.name + ".json")
+        wav = os.path.join(OUT, "films", p.name + ".wav")
+        if not os.path.exists(jp):
+            jp, wav = os.path.join(OUT, p.name + ".json"), os.path.join(OUT, p.name + ".wav")
+        if not (os.path.exists(jp) and os.path.exists(wav)):
+            raise SystemExit(f"no render of {p.name}: run render.sh {p.name} first")
+        st = json.load(open(jp))
+        notes = {r["id"]: str(r["value"]) for r in st.get("dashboard", []) if r.get("group") == "unity"}
+        cols.append((p.name, notes, _audio(wav, cache)))
+    for e in shelf_["clips"]:
+        path = os.path.expanduser(e["path"]) if e["path"].startswith("~") else os.path.normpath(os.path.join(os.path.dirname(SHELF), e["path"]))
+        if not os.path.exists(path):
+            cols.append((e["id"], dict(e.get("readings", {})), {"_missing": path}))
+            continue
+        cols.append((e["id"], dict(e.get("readings", {})), _audio(path, cache)))
+    with open(cpath, "w") as f:
+        json.dump(cache, f, indent=1)
+    L = ["READINGS NEXT TO THE SHELF (numbers to read, never targets; audio measured here the deck's way, "
+         "note readings: the piece's last render and, for the shelf, the mix analysis of 2026-11-25; '-' = not measured)"]
+    aud = [lab for _, lab in AUDIO_KEYS]
+    nts = ("tune-duty", "above-tune", "levels-together")
+    L.append(f"   {'':<17}" + "".join(f"{h:>9}" for h in aud) + "".join(f"{h:>17}" for h in nts))
+    for name, nt, au in cols:
+        av = ["missing" if "_missing" in au else ("-" if au.get(k) is None else str(au.get(k))) for k, _ in AUDIO_KEYS]
+        nv = [str(nt.get(k, "-"))[:16] for k in nts]
+        L.append(f"   {name[:17]:<17}" + "".join(f"{v:>9}" for v in av) + "".join(f"{v:>17}" for v in nv))
+    for name, nt, au in cols[:len(pieces_)]:
+        L.append(f"   {name}, all its unity readings: " + "; ".join(f"{k} {v}" for k, v in nt.items()))
+    for e in shelf_["clips"]:
+        L.append(f"   {e['id']}: {e['why']}")
     return L
 
 
@@ -405,9 +537,15 @@ def main(argv):
             print("\n".join(deliver(p, pos[1], kv.get("picture"), float(kv.get("from", 0.0)))))
     elif cmd == "--sketch":
         names = [r for r in rest if "=" not in r]
-        sw = [tuple(r.split("=", 1)) for r in rest if "=" in r]
-        for p in resolve(names):
-            print("\n".join(sketch(p, sw)))
+        kv = [tuple(r.split("=", 1)) for r in rest if "=" in r]
+        opts = {k: v for k, v in kv if k in ("from", "len", "picture", "pic_from", "lag", "out")}
+        sw = [(k, v) for k, v in kv if k not in opts]
+        print("\n".join(sketch(resolve(names), sw, start=float(opts.get("from", 0.0)),
+                               length=float(opts.get("len", 15.0)), picture=opts.get("picture"),
+                               pic_from=float(opts["pic_from"]) if "pic_from" in opts else None,
+                               lag=float(opts.get("lag", 0.10)), out_dir=opts.get("out"))))
+    elif cmd == "--shelf":
+        print("\n".join(shelf(resolve(rest) if rest else [])))
     else:
         print(__doc__)
         sys.exit(2)

@@ -238,6 +238,13 @@ class BedLine:
         lo, hi = PAD_RANGE
         prev = None
         out = []
+        # WHY (v4, the unity rebuild): the pad was voiced as an Eb3/Bb3 drone with the root left
+        # out, and the tune's held F5 sat over a pad with no F in it (3 of 8 in the every-bar clip):
+        # a tune "laid on top" of a bed not written for it. Woven, every held tune note's pitch
+        # class and the chord's root are asked of the voicing (a strong preference, not a hope).
+        woven = getattr(self.piece, "style", "") == "v4"
+        held = [(bar.beat + bb, int(m) % 12) for p in self.plans for bar in p.bars
+                for bb, m, d, canon, _ in bar.tune if canon[0] != "logo" and d >= 1.5 - 1e-6] if woven else []
         for beat, beats, chord in self._spans():
             # the pulse's notes over this whole span (a register change may fall inside it)
             pulse = sorted({m for x in np.arange(beat, beat + beats, 2.0) for m in self.pulse_at(x) if m < C5})
@@ -280,6 +287,10 @@ class BedLine:
                     else:
                         cost += abs(combo[-1] - note("G4")) * 0.5 + abs(combo[0] - note("Eb3")) * 0.3
                     cost += (4 - n) * 1.5
+                    if woven:
+                        want = {pc for b0, pc in held if beat - 1e-6 <= b0 < beat + beats} & set(T.CHORD_TONES[chord] | {root})
+                        cost += 20.0 * len(want - pcs)
+                        cost += 0.0 if root in pcs else 6.0
                     if best is None or cost < best[0]:
                         best = (cost, combo)
             if best is None:

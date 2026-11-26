@@ -154,7 +154,9 @@ def hard(band, plans, piece, form_results=(), y=None, st=None):
     # when the film's mux is known (Piece.voice_mux), her voice under 6 dB above the music
     words = _speech_words(piece)
     if words:
-        bad = [(round(e["t"], 2), form.nm(e["m"])) for e in log if e["bus"] in FG_BUSES and VOICE[0] <= e["m"] <= VOICE[1]
+        # WHY role "lead" too (v4): the woven tune plays on the piano bus, so its bus no longer says "tune"
+        bad = [(round(e["t"], 2), form.nm(e["m"])) for e in log if (e["bus"] in FG_BUSES or e["role"] == "lead")
+               and VOICE[0] <= e["m"] <= VOICE[1]
                and _spoken(e["t"], words) and not (e.get("canon") or ("",))[0] == "logo"]
         margin = None
         vm = getattr(piece, "voice_mux", None)
@@ -224,6 +226,13 @@ def _phrases(notes, gap=1.0):
 
 
 def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_tests=()):
+    if getattr(piece, "style", "") == "v4":
+        # WHY only the unity readings (v4, the owner's R3 "replace the long guide and the gauges"):
+        # the 40-odd gauges measured what the old tools did, and composers bent music to them
+        # (round 8). A v4 report is the hard faults plus the handful of signs that separated the
+        # pieces he accepted from those he rejected (unity.py), read next to the reference shelf.
+        import unity
+        return unity.rows(band, plans, piece, y)
     out = []
     tm = band.tm
     land_b = plans[-1].beat0 + plans[-1].blen
@@ -639,7 +648,7 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
              "choppy/fine", (f"worst {gw[0]} dB at {gw[1]} s" if gw else ""), calibrated=False)
 
     # ---------------- the older checks and the mix checks, shown as gauges
-    v3 = getattr(piece, "style", "") == "v3"
+    v3 = getattr(piece, "style", "") in ("v3", "v4")
     fig_bass = any(getattr(p.sec, "fig_bass", False) for p in plans)
     for r in form_results:
         if r["id"] in SUPERSEDED or r["id"] in REMOVED:
@@ -668,11 +677,13 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
 # ================================================================== the report
 
 
-GROUP_ORDER = ["the bed", "how busy", "harmony", "change", "touch and tone", "timing", "older checks", "mix"]
+GROUP_ORDER = ["unity", "the bed", "how busy", "harmony", "change", "touch and tone", "timing", "older checks", "mix"]
 
 
 def text(name, hard_rows, dash_rows, piece):
     bad = [r for r in hard_rows if not r["ok"]]
+    if dash_rows and all(r["group"] == "unity" for r in dash_rows):
+        return _text_v4(name, hard_rows, dash_rows, bad)
     L = [f"{'PASS' if not bad else 'FAIL'}  {name}: hard checks (faults whatever the music: clipping, silence, an "
          f"unmarked clash, the narrator masked, the wrong length)" + ("" if not bad else " -- " + ", ".join(r['id'] for r in bad))]
     for r in hard_rows:
@@ -700,6 +711,19 @@ def text(name, hard_rows, dash_rows, piece):
             if not r["ok"]:
                 L.append(f"        explained: {expl[r['id']]}" if r["id"] in expl else
                          "        (not explained: explain it in one line, or change the music for a musical reason)")
+    return L
+
+
+def _text_v4(name, hard_rows, dash_rows, bad):
+    """A v4 report: the hard faults, then the unity readings (never a failure, never a target)."""
+    L = [f"{'PASS' if not bad else 'FAIL'}  {name}: hard checks (faults whatever the music)"
+         + ("" if not bad else " -- " + ", ".join(r['id'] for r in bad))]
+    for r in hard_rows:
+        L.append(f"   {'ok  ' if r['ok'] else 'FAIL'} {r['id']:<17} {str(r['value']):>10}  {r['why']}")
+    L.append(f"UNITY READINGS {name} (information, never a failure; '*' = outside where the accepted pieces sit; "
+             "read them next to the shelf: render.sh --shelf <film>. Never change music only to move one)")
+    for r in dash_rows:
+        L.append(f"   {'~' if r.get('near', True) else '*'} {r['id']:<17} {str(r['value']):>34}  {r['meaning']}")
     return L
 
 

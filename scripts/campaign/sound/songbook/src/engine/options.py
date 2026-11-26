@@ -58,6 +58,19 @@ DEFAULTS = dict(
     echo="on",                   # dotted-eighth echo send on pad / cycles (and lead if Piece asks) | "off"
     voice_cut="mid",             # under narration: static -2.5 dB at 3.2 kHz on the MID only | "stereo-dip" (old)
     pad_centre_under_voice=-3.0, # dB on the pad's centre (mid) channel under narration
+    # ---- ONE PIECE, NOT SEPARATE INSTRUMENTS (2026-11-25, the unity rebuild; style "v4"). The
+    # defaults here keep every older piece as it was; PROFILES["v4"] (the recipes) turns them on.
+    # WHY (the mix analysis of his "busy" / "thrown in" / "own song at its own volume" answers):
+    # the tune was a different-sounding instrument (own bus +3 dB, shine only on it, 15 ms early),
+    # the strings owned 70-100 % of 2-6 kHz with no EQ, and each layer sat in its own room.
+    tune_voice="lead",           # "lead": the tune on its own bus | "woven": the tune played by the
+                                 #   bed's own piano (same bus, gain, tone, room), a touch firmer
+    lead_early_ms=15.0,          # how far the tune is struck ahead of the band (woven: 0-5)
+    shine_all=0.0,               # >0: the same shine on EVERY piano note (bus-by-bus SHINE table when 0)
+    room="per-bus",              # "per-bus": each bus its own hall/room send | "shared": one send for all
+    bowed_eq="off",              # "soft": HP 80 Hz, LP 4.5 kHz 12 dB/oct, -3 dB at 3 kHz on bowed buses
+    piano_glue="off",            # "on": one gentle compressor reading ALL the piano buses together
+    pan_max=1.0,                 # the widest any single note is panned (woven: 0.15)
 )
 
 # WHY profiles by Piece.style: pieces the owner has already heard pin style="v1" and promise to
@@ -71,6 +84,14 @@ PROFILES = {
                bus_gain="levelled", reverb_lp=12000.0, reverb_hp=180.0, hall_predelay=0.022, echo="off",
                voice_cut="stereo-dip", string_loop="off"),
     "v2": dict(bus_gain="levelled"),
+    # WHY v4 (2026-11-25): the brief's unity principle as the sound's defaults. The brightness is
+    # matched by measurement to the owner's "B: middle" clip (the deck's bright-today: 5-16 kHz
+    # -55 dB re the whole; the rebuild's shine-off default, his "dark", read -79) by giving EVERY
+    # piano note the same capped shine instead of the tune alone. Measured on the worked example
+    # (film_woven.py, 2026-11-25): shine off 5-16 kHz -61 dB, shine capped -52.5 dB. The pad stays
+    # at 900 Hz: opened to 1500-1800 Hz it owned 72-81 % of 2-6 kHz (the strings' fault again).
+    "v4": dict(tune_voice="woven", lead_early_ms=3.0, shine_all=0.08, piano_shine="capped", room="shared",
+               bowed_eq="soft", piano_glue="on", pan_max=0.15),
 }
 DEFAULTS["hall_predelay"] = "tempo"   # "tempo": 25 ms, opening toward 120 ms at or below 80 BPM | seconds
 

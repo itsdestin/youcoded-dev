@@ -49,5 +49,7 @@ PIECE = R.app_demo(
              "mix-attacks-on-notes": "three plucked-string attacks at 27.8-28.5 s, after the name, where no note is "
                                      "written (the logo blend's last pizz is at 26.0 s); cause not traced"},
     notes="Brief E: one slow loop under an unchanging sentence; the cell on two word changes, the cycles "
-          "joining as the colours speed up, the sigh on the arrival and the logo on the name.")
+          "joining as the colours speed up, the sigh on the arrival and the logo on the name.",
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 FILM = Film("shot-e-r1", PIECE, picture=BRIEF.picture, copy_to=None)

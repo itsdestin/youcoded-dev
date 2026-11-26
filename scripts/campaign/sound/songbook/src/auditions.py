@@ -69,7 +69,9 @@ def demo_piece(owner_over=None, sound=None):
         cycles=[Cycle("Bb5/0.5 G5/1", period=23, offset=13, name="cycle1"),
                 Cycle("F5/1 D5/1", period=29, offset=22, name="cycle2", touch=0.26)],
         changes=[(5, "in", "cycle1"), (9, "in", "sub"), (13, "in", "held"), (13, "in", "cycle2"), (13, "peak")],
-        owner_over=owner_over, sound=sound)
+        owner_over=owner_over, sound=sound,
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 
 
 def narr_piece(owner_over=None, sound=None):
@@ -79,7 +81,9 @@ def narr_piece(owner_over=None, sound=None):
         brief=R.Brief("narrated", 36.0, ("storybook", "patient", "warm"), "subtle",
                       moments=[(22.9, "the turn"), (26.5, "peak")], logo_at=demos._C_LAND),
         voice_mux=dict(path=VOICE, t_from=0.0, start_at=VOICE_START, music_db=MUSIC_DB),
-        owner_over=owner_over, sound=sound)
+        owner_over=owner_over, sound=sound,
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 
 
 # Pulse masks for the narrator note-count decision (16 steps; "x" = a note). At 120 bpm an eighth

@@ -117,6 +117,10 @@ class Section:
     # composer's fix is ONE odd bar (2 or 3 beats) at least two bars before it (toolkit-plan a2).
     # Only a section of one bar with no tune may have one.
     meter: int = 4                   # beats in each bar of this section: 4, or 2 / 3 for one odd bar
+    # WHY swing on the section (2026-11-25): the owner liked the "gently swung" pulse (deck E2 C,
+    # 35 ms on the off-beat eighths); it lived only in the mood table, so a recipe could not ask
+    # for it. None = the mood's own value. It moves EVERY off-beat eighth (tune included): one feel.
+    swing: Optional[float] = None
 
 
 @dataclass
@@ -429,7 +433,7 @@ def _segments(plans, bpms, rit=RIT, q=None):
 
 
 def _rit_q(piece):
-    if getattr(piece, "style", "v2") == "v3":
+    if getattr(piece, "style", "v2") in ("v3", "v4"):    # WHY v4: the unity rebuild keeps every v3 behaviour
         from timing import RIT_Q
         return RIT_Q
     return None
@@ -532,7 +536,21 @@ class Band:
         # THE SHARED TIME LINE (v3, toolkit-plan d1). WHY: round 8 nudged every note by its own
         # random amount, which reads as random; one 1/f deviation per sixteenth, shared by the whole
         # band, wanders the way a player's timing does. Two runs give the same line (seeded).
-        self.v3 = getattr(piece, "style", "v2") == "v3"
+        self.v3 = getattr(piece, "style", "v2") in ("v3", "v4")
+        # WHY woven (v4, the unity rebuild): the tune is played by the bed's own piano (same bus,
+        # tone, shine, room), not a separate brighter instrument laid on top; see blocks.play_tune
+        self.woven = False
+        self.lead_early = 0.015
+        self.shine_all = 0.0
+        self.pan_max = 1.0
+        try:
+            import options as _O
+            self.woven = _O.get("tune_voice", piece) == "woven"
+            self.lead_early = float(_O.get("lead_early_ms", piece)) / 1000.0
+            self.shine_all = float(_O.get("shine_all", piece))
+            self.pan_max = float(_O.get("pan_max", piece))
+        except ImportError:
+            pass
         if self.v3:
             from timing import line_sd_ms, pink_line
             nb = int(plans[-1].beat0 + plans[-1].blen + 64) * 4
@@ -585,6 +603,9 @@ class Band:
         if self.backing == "bed" and bus in FOREGROUND_BUSES:
             return                                  # the no-melody (bed) mix: cycles and answers out too
         if p:
+            # WHY pan_max (v4): cycles at +-0.3 and strings at +-0.35 put layers in different places;
+            # one piece sits in one place (the analysis: pans within +-0.15)
+            p = float(np.clip(p, -self.pan_max, self.pan_max))
             x = x * np.array([1 - max(p, 0), 1 + min(p, 0)])
         place(self.bus[bus], x, t)
         self.onsets.append((t, bus))
@@ -616,7 +637,7 @@ class Band:
             # ("some notes much brighter than their neighbours", toolkit-plan b2)
             kw["phrase_vel"] = float(np.clip(phrase_vel * (getattr(self.piece, "touch", 1.0) or 1.0), 0.04, 0.95))
         x = self.S.felt_piano(m, v, self.secs(beat, beats) * 0.97, pedal=pedal,
-                              tone=tone + (0.02 if self.v3 else 0.06) * _h("c", key), shine=SHINE.get(bus, 0.0), **kw)
+                              tone=tone + (0.02 if self.v3 else 0.06) * _h("c", key), shine=(self.shine_all if self.shine_all > 0 else SHINE.get(bus, 0.0)), **kw)
         self._put(bus, x, t, p, role, int(m), canon)
 
     def pad(self, beat, m, beats, vel, cutoff=None, p=0.0, attack=None, release=None, role="sustain"):
@@ -626,6 +647,7 @@ class Band:
         is engine/sounds.pad (toolkit-plan b3; its timbre, cutoff, attack and release are the
         switches pad_* in engine/options.py)."""
         t = self.sec(beat)
+        p = float(np.clip(p, -self.pan_max, self.pan_max))      # WHY: one place for the band (v4 pan_max)
         self._log(t, beat, m, beats, vel, "pad", role, "pad")
         if self.dry:
             return self._put("pad", None, t)

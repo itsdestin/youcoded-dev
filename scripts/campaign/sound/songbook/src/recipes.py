@@ -48,6 +48,20 @@ OWNER = dict(
     pad_level=-8,
 )
 PAD_LEVELS = (-8, -4, 0)
+# THE UNITY REBUILD (2026-11-25): what a recipe gives by default now (style "v4"). Older film files
+# pass style="v3" and keep OWNER above exactly. WHY each value, from the owner's answers on the
+# element deck (~/Documents/youcoded-campaign/music-review/deck.html):
+#   pulse "chord"    he liked BOTH the gently swung pulse (C) and round 8's chord-following one (D);
+#                    the chord-following one takes its notes from the chord every other layer plays
+#                    (one harmonic plan), so it is the default and `swing="gentle"` is the other
+#   swing            "straight" | "gentle" (35 ms on the off-beat eighths, the deck's clip C)
+#   sustain "pad"    "pad" | "ring" (the ringing piano); held strings are off the palette:
+#                    "those strings are wayyy too harsh/overpowering"
+#   pad_level -4     the measured unity sign "levels sit close" (see SONGBOOK.md); still his switch
+#   ending "quiet"   "prefer b/c to a" (quiet, piano-only over the full blend)
+OWNER_V4 = dict(OWNER, pulse="chord", pad_level=-4, swing="straight")
+SWING = {"straight": None, "gentle": 0.035}
+LOGOS_V4 = ("quiet", "piano", "none")
 
 
 def sustain_mix(kind, pad_level=-8):
@@ -65,20 +79,28 @@ def sustain_mix(kind, pad_level=-8):
     return {bus: off} if abs(off) > 1e-9 else {}
 
 
-def owner(over=None):
-    """The switches in force: OWNER, then the environment (SONGBOOK_OWNER), then `over`."""
-    o = dict(OWNER)
+def owner(over=None, style="v3"):
+    """The switches in force: OWNER (OWNER_V4 for a v4 piece), then the environment
+    (SONGBOOK_OWNER), then `over`."""
+    o = dict(OWNER_V4 if style == "v4" else OWNER)
     for part in (os.environ.get("SONGBOOK_OWNER", "") or "").split(","):
         if "=" in part:
             k, v = (x.strip() for x in part.split("=", 1))
             if k not in o:
                 raise KeyError(f"SONGBOOK_OWNER: unknown switch {k!r}; known: {', '.join(o)}")
-            o[k] = int(v) if isinstance(OWNER[k], int) else v
+            o[k] = int(v) if isinstance(OWNER_V4[k], int) else v
     o.update(over or {})
     if int(o["pad_level"]) not in PAD_LEVELS:
         raise ValueError(f"pad_level {o['pad_level']!r}: one of {PAD_LEVELS} (dB against the pulse)")
     if o["fig_order"] not in ("circle", "cell"):
         raise ValueError(f"fig_order {o['fig_order']!r}: 'circle' or 'cell'")
+    if style == "v4" and o["sustain"] not in ("pad", "ring"):
+        # WHY refused, not just discouraged: the strings as they sound today are what he called
+        # "wayyy too harsh/overpowering"; they come back only after a rebuilt soft string is heard
+        raise ValueError(f"sustain={o['sustain']!r}: the held layer is 'pad' or 'ring' (held strings are off the "
+                         "palette until a soft, dark string has been rebuilt and approved by ear; style='v3' keeps them)")
+    if o.get("swing", "straight") not in SWING:
+        raise ValueError(f"swing {o['swing']!r}: one of {', '.join(SWING)}")
     if o["under_voice"] != "static":
         raise NotImplementedError("under_voice='follow' is not built: the owner rules out an automatic dip on "
                                   "every word until he has heard an A/B (toolkit-plan b4)")
@@ -266,11 +288,69 @@ def _from_brief(brief, subtle, peak, hits):
     return bool(subtle), peak, list(hits or [])
 
 
+# ---------------------------------------------------------------- the woven tune (v4)
+
+# WHY this order: when a chord must change under a held tune note, the first chord here that holds
+# the note is taken, so the substitutes stay inside the brand's few chords (tune.VOCAB)
+TUNE_LED = ["Ebmaj9", "Ebadd9", "Cm9", "Cm11", "Abmaj9", "Bb9sus", "Fm9", "Abmaj7#11", "Gm7", "Ebsus2"]
+
+
+def _held(whole, lo=1.5):
+    """The tune's held notes (at least `lo` beats) as (body beat, midi, beats). WHY 1.5: a quarter
+    note may pass between chord tones (that is melody); a note held longer is heard AS harmony."""
+    return [(n.beat, int(n.m), n.dur) for n in whole.notes if n.dur >= lo - 1e-6]
+
+
+def tune_misfits(whole, chordbars):
+    """Every held tune note (1.5 beats or longer) that is NOT a tone of the chord under it, as
+    (body bar from 1, note name, chord, the chords from TUNE_LED that would hold it). Empty = the
+    tune is woven into the harmony. WHY (the mix analysis): the cell's F5 landed on non-chord
+    tones over Cm9 and Abmaj9 (4 of 8 in the every-bar clip): "the way this is integrated feels to
+    clash with the underlying base music/notes quite a bit"."""
+    from motif import name as nm
+    out = []
+    for b, m, d in _held(whole):
+        for x in sorted({b, *[k for k in (2.0 * (int(b // 2) + 1),) if k < b + d - 0.5]}):
+            c = TB._chord_at(chordbars, x)
+            row = (int(x // 4) + 1, nm(m), c, [k for k in TUNE_LED if m % 12 in T.CHORD_TONES[k]])
+            if c is not None and m % 12 not in T.CHORD_TONES.get(c, set()) and row not in out:
+                out.append(row)
+    return out
+
+
+def tune_led(whole, chordbars):
+    """HARMONY FIRST FROM THE TUNE (v4, chords=None): the recipe's default chords, with each half-bar
+    under a held tune note that the chord does not hold changed to the nearest chord from TUNE_LED
+    that does (sharing the most notes with the chord it replaces). Composer-written chords are never
+    changed: they are checked (tune_misfits) and a misfit stops the build."""
+    out = [list(b) for b in chordbars]
+    for b, m, d in _held(whole):
+        k = int(b // 4)
+        if k >= len(out):
+            continue
+        half = 0 if (b - 4 * k) < 2 else 1
+        cur = out[k][min(half, len(out[k]) - 1)]
+        if m % 12 in T.CHORD_TONES.get(cur, set()):
+            continue
+        cands = [c for c in TUNE_LED if m % 12 in T.CHORD_TONES[c]]
+        if not cands:
+            continue
+        new = max(cands, key=lambda c: (len(T.CHORD_TONES[c] & T.CHORD_TONES.get(cur, set())), -TUNE_LED.index(c)))
+        if len(out[k]) == 1:
+            out[k] = [new] if half == 0 and d >= 4 - (b - 4 * k) - 1e-6 else ([cur, new] if half else [new, cur])
+        else:
+            out[k][half] = new
+        out[k] = [out[k][0]] if len(out[k]) == 2 and out[k][0] == out[k][1] else out[k]
+    return out
+
+
 def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, changes, cycles, peak, lift,
            seed, odd, logo, ending, loudness, touch, pulse, sustain_cfg, narration_bars=(), level=0.0,
            narr_level=-6.0, speech=None, hits=(), brief=None, notes="", o=None, rit=RIT, lead=0.8,
-           extra=None, explain=None, sound=None, odd_at=1, voice_mux=None):
-    o = o or owner()
+           extra=None, explain=None, sound=None, odd_at=1, voice_mux=None, style="v3", tune_fit="refuse", led=None):
+    # WHY v3 by default here (not in the recipes): older callers of _build and owner() (the element
+    # deck's clips, first-shot F) must keep rendering what was heard; the recipes pass style="v4"
+    o = o or owner(style=style)
     n, stretch = _bars_to_land(land, bpm, ending, rit, odd)
     G = Grid(bpm, odd, odd_at)
     total = n + (1 if odd else 0)                 # global bars before the ending
@@ -285,6 +365,29 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
             raise ValueError(f"tune phrase at bar {b}: that is the odd bar (no tune may sit on it)")
         tb.append((i + 1, ph))
     whole, tune_report = TB.lay(tb, chordbars, seed, shown_offset=lambda i: G.glob(i - 1))
+    fit_report = []
+    if style == "v4" and whole.notes:
+        # WHY led: recipe C computes its chords itself (from her sentence ends) and passes them in;
+        # they are still the recipe's default, so they bend to the tune like chords=None does
+        if (chords is None) if led is None else led:
+            # harmony first: the default chords bend to the tune (never the tune to the chords)
+            led = tune_led(whole, chordbars)
+            changed = [(i + 1, chordbars[i], led[i]) for i in range(len(led)) if led[i] != chordbars[i]]
+            chordbars = led
+            if changed:
+                fit_report.append("   tune-led chords (the default chords changed under held tune notes): "
+                                  + "; ".join(f"body bar {i}: {' '.join(a)} -> {' '.join(b)}" for i, a, b in changed))
+            whole, tune_report = TB.lay(tb, chordbars, seed, shown_offset=lambda i: G.glob(i - 1))
+        bad = tune_misfits(whole, chordbars)
+        if bad:
+            lines = [f"body bar {b}: held {n} over {c} (chords that hold it: {', '.join(ok[:4])})" for b, n, c, ok in bad]
+            if tune_fit == "refuse":
+                # WHY refuse (the unity principle): a held tune note that is not in the chord under
+                # it is the tune "randomly thrown in on top"; change the chord, move the phrase
+                # within the key, or leave the tune out (tune_fit="allow" only for a rub you MEAN)
+                raise ValueError("the tune does not sit in the harmony (v4 weaves it in):\n   " + "\n   ".join(lines)
+                                 + "\n   change those chords, move the phrase, or pass tune_fit='allow' for a rub you mean")
+            fit_report.append("   tune misfits allowed by the composer: " + "; ".join(lines))
     bar_of = G.bar_of
     peak_bar = G.moment_bar(peak) if peak is not None else None
     cuts = {1, total + 1}
@@ -338,8 +441,11 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
     # WHY the sustain bus trim (audit defect 2, [OWNER] pad_level): -8 dB under the pulse is the
     # calibrated level (mix.TARGET); -4 and 0 raise the sustain's bus by 4 and 8 dB
     mixd = {"lead": -2.0, **sustain_mix(bed.get("sustain", "pad"), o["pad_level"])}
+    if style == "v4":
+        # WHY no -2 dB on a lead bus: the woven tune plays on the piano bus (its level is the bed's)
+        mixd.pop("lead", None)
     p = Piece(name, length, secs, logo=logo, seed=seed, land=land, peak=peak, ending=ending, rit=rit, mix=mixd,
-              loudness=loudness, touch=touch, style="v3", bed=bed, changes=list(changes or []),
+              loudness=loudness, touch=touch, style=style, bed=bed, changes=list(changes or []),
               cycles=list(cycles or []), hits=list(hits or []), recipe=recipe, brief=brief, owner=dict(o),
               speech=speech if speech is not None else [], notes=notes, explain=dict(explain or {}),
               sound=dict(sound or {}))
@@ -351,7 +457,7 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
                        + (f"; ending slows to {rit:g}" if ending != "short" else ""),
                        "   tune: " + ("; ".join(tune_report) if tune_report else ("none (the pulse carries the cell)" if recipe != "narrated" else
                                                                            "none (the two-note pulse does not play the cell)")),
-                       "   owner switches: " + ", ".join(f"{k}={v}" for k, v in o.items())]
+                       "   owner switches: " + ", ".join(f"{k}={v}" for k, v in o.items())] + fit_report
     if extra:
         for k, v in extra.items():
             setattr(p, k, v)
@@ -359,13 +465,31 @@ def _build(recipe, name, length, land, bpm, *, chords, default_chords, tune, cha
 
 
 def _pulse(o, pool, mask, touch, step=0.5, bass=True, walk=(4, 1), pedal=False):
-    """The pulse's section fields for the owner's pulse switch."""
+    """The pulse's section fields for the owner's pulse switch (and, v4, his swing switch)."""
+    sw = {"swing": SWING[o["swing"]]} if o.get("swing") in SWING and SWING[o["swing"]] else {}
     if o["pulse"] == "pedal":
         return dict(accomp="figure", fig_mode="pedal", fig_pedal=list(pool), fig_mask=mask, fig_touch=touch,
-                    step=step, fig_bass=bass, fig_mask_walk=walk, pedal=pedal, fig_order=o["fig_order"])
-    # round 8's chord-following figure, for the owner's A/B
+                    step=step, fig_bass=bass, fig_mask_walk=walk, pedal=pedal, fig_order=o["fig_order"], **sw)
+    # round 8's chord-following figure (deck E2 "D", which he liked): every note from the chord
     return dict(accomp="figure", fig_mode="chord", figure=["b 2 3 2 4 2 3 2", "b 2 3 2 4 3 2 3"], fig_floor="G3",
-                fig_touch=touch, step=step, pedal=pedal)
+                fig_touch=touch, step=step, pedal=pedal, **sw)
+
+
+def _v4_args(style, cycles, logo, subtle, touch, v3_touch, v4_touch=0.28):
+    """What v4 changes in every recipe's arguments. WHY: the cycles (the "menu music" form) are
+    retired ("Keep the sound improvements, drop the menu-music form"); the ending is quiet or
+    piano-only ("prefer b/c to a"); the pulse touch is the soft one he chose ("A: ours, soft",
+    touch 0.28 in the deck). style="v3" keeps the old recipe exactly."""
+    if style != "v4":
+        return cycles, (logo or ("quiet" if subtle else "blend")), (v3_touch if touch is None else touch)
+    if cycles:
+        raise ValueError("cycles are retired from the recipes (his ruling: 'drop the menu-music form'); "
+                         "fill the upper register with the tune's own phrases, or use style='v3'")
+    logo = logo or "quiet"
+    if logo not in LOGOS_V4:
+        raise ValueError(f"logo={logo!r}: v4 endings are {', '.join(LOGOS_V4)} (he preferred quiet and "
+                         "piano-only to the full blend: 'a sounds a bit too harsh'); style='v3' keeps 'blend'")
+    return [], logo, (v4_touch if touch is None else touch)
 
 
 # ---------------------------------------------------------------- Recipe A
@@ -373,19 +497,21 @@ def _pulse(o, pool, mask, touch, step=0.5, bass=True, walk=(4, 1), pedal=False):
 
 def type_short(name, length, *, land, bpm=110.0, chords=None, tune=None, changes=None, cycles=None, peak=None,
                lift=None, seed=1, odd=0, odd_at=1, subtle=None, ending="short", pool=("Bb4", "G4", "F4", "Eb4"),
-               mask="x.xxx.x.x.xxx.x.", touch=0.42, brief=None, hits=(), notes="", owner_over=None, explain=None,
-               sound=None, rit=None):
+               mask="x.xxx.x.x.xxx.x.", touch=None, brief=None, hits=(), notes="", owner_over=None, explain=None,
+               sound=None, rit=None, logo=None, style="v4", tune_fit="refuse"):
     """RECIPE A, type-only short (10-20 s): one unbroken, even phrase.
     tempo 100-120 (fit_tempo over the cards); 2 chords alternating, one per 2 bars (default
     Ebmaj9 - Abmaj9); the sustain from frame 0; the pedal pulse in eighths, 10 of 16 steps;
     0-1 cycle; the tune once at most before the logo, or none (the pulse already carries the
     cell); 0-1 change; no lift or at most 1.5 dB; the short ending; the quiet logo if subtle.
     Level -16.5 LUFS (subtle) or -15."""
-    o = owner(owner_over)
+    o = owner(owner_over, style)
     subtle, peak, hits = _from_brief(brief, True if subtle is None and brief is None else subtle, peak, hits)
+    cycles, logo, touch = _v4_args(style, cycles, logo, subtle, touch, 0.42)
     return _build("type-short", name, length, land, bpm, chords=chords, default_chords=["Ebmaj9", "Abmaj9"],
                   tune=tune, changes=changes, cycles=cycles, peak=peak, lift=lift or (1, 0.0), seed=seed, odd=odd,
-                  odd_at=odd_at, logo="quiet" if subtle else "blend", ending=ending, loudness=-16.5 if subtle else -15.0,
+                  odd_at=odd_at, logo=logo, ending=ending, loudness=-16.5 if subtle else -15.0, style=style,
+                  tune_fit=tune_fit,
                   touch=0.85 if subtle else 0.92, pulse=_pulse(o, pool, mask, touch),
                   sustain_cfg=dict(sustain=o["sustain"], start=("sustain", "pulse")),
                   hits=hits, brief=brief, notes=notes, o=o,
@@ -403,8 +529,8 @@ DEMO_CYCLES = [Cycle("Bb5/0.5 G5/1", period=23, offset=5, name="cycle1"),
 
 def app_demo(name, length, *, land, bpm=116.0, chords=None, tune=None, changes=None, cycles=None, peak=None,
              lift=(2, 2.5), seed=1, odd=0, odd_at=1, subtle=None, ending="sigh", pool=("Bb4", "G4", "F4", "Eb4"),
-             mask="x.xxx.x.x.xxx.x.", touch=0.40, brief=None, hits=(), notes="", owner_over=None, explain=None,
-             sound=None, rit=None):
+             mask="x.xxx.x.x.xxx.x.", touch=None, brief=None, hits=(), notes="", owner_over=None, explain=None,
+             sound=None, rit=None, logo=None, style="v4", tune_fit="refuse"):
     """RECIPE B, app demo, no narrator (30-75 s): the bed and a few rare tune phrases.
     tempo 104-120; one chord per 2 bars from the rich vocabulary (default Ebmaj9 Cm9 Abmaj9
     Bb9sus); the pad throughout, held strings may join at the peak; the pedal pulse (2.5-4
@@ -413,16 +539,38 @@ def app_demo(name, length, *, land, bpm=116.0, chords=None, tune=None, changes=N
     phrase picked by seed, said twice, then a peak phrase reaching C6 at the peak); one change every 8-16 s (default plan
     below); one lift of 2.5 dB over 2 bars into the peak, then settle; the full sigh + logo.
     The first 30 s must stand alone (it becomes the :30 cut-down). Level -15 LUFS."""
-    o = owner(owner_over)
+    o = owner(owner_over, style)
     subtle, peak, hits = _from_brief(brief, subtle, peak, hits)
     # WHY (first-shot c): a short ending does not slow (land_after, type_short), but these
     # recipes defaulted it to 0.85, so --brief searched slowing endings for a "short" piece
     rit = (1.0 if ending == "short" else RIT) if rit is None else rit
     G = Grid(bpm, odd, odd_at)
+    v4_cycles = cycles
+    cycles, logo, touch = _v4_args(style, cycles, logo, subtle, touch, 0.40)
+    if style != "v4":
+        cycles = v4_cycles
     if peak is None:
         peak = round(land * 0.75, 2)
     n, _ = _bars_to_land(land, bpm, ending, rit, odd)
     pb = G.moment_bar(peak)
+    if tune is None and style == "v4":
+        # WHY whole 2-bar phrases about half the time (v4): the accepted pieces carry a real line
+        # (round 8 Own: the tune sounds 66 % of the time; felt and pulse 55-60 %), where the
+        # clips he heard as "thrown in" dropped a 3-note fragment every ~5 s (12-43 %). Each
+        # phrase is followed by two bars of bed; the chords under them are tune-led (_build).
+        seq = ["cell-long", "question", "rise", "cell-long"]
+        tune, b, k = [], 3, 0
+        while b + 1 <= n:
+            if k and b <= pb <= b + 3 and pb + 1 <= n and G.body(pb) is not None and G.body(pb + 1) is not None:
+                tune.append((pb, "peak-arc"))     # the peak phrase starts ON the peak's bar
+                k += 1
+                b = pb + 4
+            elif G.body(b) is not None and G.body(b + 1) is not None:
+                tune.append((b, seq[k % len(seq)]))
+                k += 1
+                b += 4
+            else:
+                b += 1
     if tune is None:
         # WHY this shape (statement, answer, restatement, the peak): a phrase heard once and never
         # echoed or answered sounds "thrown in"; one answered, then said again, is a theme
@@ -439,13 +587,17 @@ def app_demo(name, length, *, land, bpm=116.0, chords=None, tune=None, changes=N
     if cycles is None:
         cycles = [Cycle(c.cell, c.period, c.offset, c.name, c.voice, c.touch, c.chance) for c in DEMO_CYCLES]
     if changes is None:
-        changes = default_changes(land, bpm, peak, odd, odd_at, cycles=[c.name for c in cycles])
+        # WHY only the peak (v4): no cycles to bring in, no held strings; the music grows by the
+        # tune's phrases and the lift, not by adding instruments
+        changes = ([(G.moment_bar(peak), "peak")] if style == "v4" else
+                   default_changes(land, bpm, peak, odd, odd_at, cycles=[c.name for c in cycles]))
     return _build("app-demo", name, length, land, bpm, chords=chords,
                   default_chords=["Ebmaj9", "Cm9", "Abmaj9", "Bb9sus"], tune=tune, changes=changes, cycles=cycles,
-                  peak=peak, lift=lift, seed=seed, odd=odd, odd_at=odd_at, logo="quiet" if subtle else "blend",
+                  peak=peak, lift=lift, seed=seed, odd=odd, odd_at=odd_at, logo=logo,
                   ending=ending, loudness=-16.0 if subtle else -15.0, touch=0.88, pulse=_pulse(o, pool, mask, touch),
                   sustain_cfg=dict(sustain=o["sustain"], start=("sustain", "pulse")),
-                  hits=hits, brief=brief, notes=notes, o=o, explain=explain, sound=sound, rit=rit)
+                  hits=hits, brief=brief, notes=notes, o=o, explain=explain, sound=sound, rit=rit, style=style,
+                  tune_fit=tune_fit)
 
 
 def default_changes(land, bpm, peak, odd=0, odd_at=1, cycles=("cycle1", "cycle2")):
@@ -477,8 +629,9 @@ def default_changes(land, bpm, peak, odd=0, odd_at=1, cycles=("cycle1", "cycle2"
 
 def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tune=None, changes=None,
              cycles=None, peak=None, seed=1, odd=0, odd_at=1, logo=None, ending="sigh", pool=("Bb5", "F5"),
-             mask="x.x.x.x.x.x.xx.x", touch=0.26, whimsy=False, brief=None, hits=(), notes="", owner_over=None,
-             explain=None, sound=None, narr_level=-6.0, subtle=None, voice_mux=None, rit=None):
+             mask="x.x.x.x.x.x.xx.x", touch=None, whimsy=False, brief=None, hits=(), notes="", owner_over=None,
+             explain=None, sound=None, narr_level=-6.0, subtle=None, voice_mux=None, rit=None, style="v4",
+             tune_fit="refuse"):
     """RECIPE C, narrated story (30-75 s): a soft, low-information bed under her words.
     speech = films.speech_from_words(..., start_at=1-2 s of pre-roll). Tempo: her band
     (syllables x 60 / 3 to / 2), the value nearest 120 (timing.narrator_band). Chords change on
@@ -495,13 +648,19 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
     start_at, music_db) measures her margin over the music."""
     import films
     from timing import narrator_band, phrase_ends
-    o = owner(owner_over)
+    o = owner(owner_over, style)
     subtle, peak, hits = _from_brief(brief, subtle, peak, hits)
     # WHY (first-shot c): a short ending does not slow (land_after, type_short), but these
     # recipes defaulted it to 0.85, so --brief searched slowing endings for a "short" piece
     rit = (1.0 if ending == "short" else RIT) if rit is None else rit
-    if logo is None:
-        logo = "quiet" if subtle else "blend"
+    v3_cycles = cycles
+    cycles, logo, touch = _v4_args(style, cycles, logo, subtle, touch, 0.26, 0.26)
+    if style == "v4" and "pulse" not in (owner_over or {}) and "pulse=" not in os.environ.get("SONGBOOK_OWNER", ""):
+        # WHY the pedal pulse under her (v4): the chord-following figure starts at G3, inside her
+        # range (F3-E5); the high two-note pulse is what his narrator clip (E1 "D") was heard with
+        o = dict(o, pulse="pedal")
+    if style != "v4":
+        cycles = v3_cycles
     pace = films.speech_pace(speech, 0.0, land)
     if bpm is None:
         bpm = narrator_band(pace["syl_per_s"], o["narrator_tempo"])["bpm"] if pace else 116.0
@@ -554,7 +713,7 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
             b_after = bar(words[-1][2] + 0.3) + 1
             if b_after <= total - 1 and G.body(b_after) is not None:
                 tune.append((b_after, "cell-long" if b_after + 1 <= total else "cell"))
-    if cycles is None:
+    if cycles is None and style != "v4":
         # WHY these pitches (audit 2026-11-25, defect 5): the old cycle (G5 B-flat 5 F5) used the
         # pulse's own notes in its own octave, so the two met in unison (both B-flat 5 at 1.49 s);
         # G5 D5 E-flat 5 is a different shape on notes the pulse under her words does not play
@@ -584,7 +743,8 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
                ending=ending, loudness=-16.5 if subtle else -16.0, touch=0.85, pulse=_pulse(o, pool, mask, touch, bass=True),
                sustain_cfg=dict(sustain=o["sustain"], start=("sustain", "pulse"), cycle_pause=1.0, whimsy=bool(whimsy)),
                narration_bars=narr, narr_level=narr_level, level=after_db, speech=speech, hits=hits, brief=brief,
-               notes=notes, o=o, explain=explain, sound=sound, rit=rit, voice_mux=voice_mux,
+               notes=notes, o=o, explain=explain, sound=sound, rit=rit, voice_mux=voice_mux, style=style,
+               tune_fit=tune_fit, led=(chords is None),
                # WHY a softer tune when subtle: the owner's ruling "subtle: fewer notes, softer touch"
                lead=0.7 if subtle else 0.8)
     p.recipe_report.insert(1, "   her pace: " + (f"{pace['syl_per_s']} syllables a second; band "

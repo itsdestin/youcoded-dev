@@ -64,5 +64,7 @@ PIECE = R.app_demo(
                            "between pulse notes that the pad at the plan's -8 dB does not fill (gap-fill 4.6); "
                            "sketch B at pad_level -4 reads 7.0: the owner's A/B"},
     notes="first-shot B: make it mine, recipe B; a conversation per chord pass, the tune twice then once "
-          "at the payoff, one gentle lift into 46 s, the quiet logo")
+          "at the payoff, one gentle lift into 46 s, the quiet logo",
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 FILM = Film("shot-b", PIECE, picture=BRIEF.picture, copy_to=None)

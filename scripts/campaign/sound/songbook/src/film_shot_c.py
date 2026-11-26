@@ -63,5 +63,7 @@ PIECE = R.narrated(
              "payoff-louder": "the peak ('wonderful') is under her words at the one hand-set level: it turns bright, "
                               "it does not get louder (the owner: under a narrator the level does not bounce)",
              "voice-steady": "bar 8 (14.2 s) is the Abmaj9 on her sentence end 'accepted it.', struck with its low "
-                             "root: a planned chord change, not a swell"})
+                             "root: a planned chord change, not a swell"},
+    # WHY v3: made before the unity rebuild (2026-11-25); it renders as it was heard
+    style="v3")
 FILM = Film("shot-c", PIECE, picture=BRIEF.picture, copy_to=None)

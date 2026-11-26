@@ -340,9 +340,25 @@ def play_tune(band, p, dyn, plans):
                 base = v
                 v = float(np.clip(v + k3[0], 0.05, 0.62))
                 d = max(0.1, d + k3[1])
-                e_note = early + LEAD_EARLY
+                e_note = early + band.lead_early
                 pv = ph_touch.setdefault(k3[2], base)
             piano_on = p.voice in ("piano", "both") or p.ending
+            if band.woven and piano_on and not p.ending:
+                # THE WOVEN TUNE (v4, the unity rebuild). WHY: measured, our tune was a different
+                # instrument from the same piano (its own bus 3-4 dB up, shine only on it, struck
+                # 15 ms ahead, its touch swinging 17 dB in a second); the owner heard "different
+                # instruments playing entirely their own song at different volume levels". Here the
+                # bed's own hands play it: the pulse's bus, tone and room, a touch at most 0.08
+                # firmer than the figure's (it stands out by register), the phrase's shape kept
+                # inside +-0.03, struck with the band (lead_early_ms, 0-5 ms).
+                ft = float(getattr(sec, "fig_touch", 0.30) or 0.30)
+                arch = 0.0 if k3 is None else float(np.clip(k3[0], -0.03, 0.03))
+                wv = (ft + 0.08 * (sec.lead if sec.lead is not None else 1.0) + arch) * dyn.v(beat)
+                wv *= 0.85 if p.sec.narration else 1.0
+                band.piano("piano", beat, m, d, float(np.clip(wv, 0.05, ft + 0.12)),
+                           tone=-0.3 + 0.2 * tone, pedal=pedal, p=0.0, role="lead", canon=canon,
+                           early=band.lead_early, phrase_vel=ft + 0.08)
+                continue
             if piano_on:
                 band.piano("lead", beat, m, d, min(v, 0.69), tone=tone, pedal=pedal, p=-0.1,
                            role="lead", canon=canon, early=e_note, phrase_vel=pv)
@@ -784,6 +800,11 @@ def acc_figure(band, p, bar, dyn, cut=4.0):
         else:
             lad = _ladder(c, floor)
             m = lad[min(int(tok) - 1, len(lad) - 1)]
+            if getattr(band, "woven", False) and not p.ending:
+                # the tune is the figure's top voice (see _woven_fit)
+                m = _woven_fit(band, beat, m, st)
+                if m is None:
+                    continue
         d = n * st
         if tok == "b":
             # WHY the bass held to the next bass token or chord change: a pianist's left hand keeps
@@ -815,6 +836,25 @@ def _tune_near(band, beat, m, st):
         tn = band._tune_keys = [(bar.beat + bb, int(mm)) for pl in band.plans for bar in pl.bars
                                 for bb, mm, d, canon, _ in bar.tune if canon[0] != "logo"]
     return any(mm == m and abs(b - beat) < st - 1e-6 for b, mm in tn)
+
+
+def _woven_fit(band, beat, m, st):
+    """THE TOP VOICE (v4). Returns the pitch a bed note should take, or None when the tune takes
+    this step. WHY: measured, another layer sounded above the tune at 46 of 70 tune notes in round
+    7's "Make it mine", and the pulse struck beside the tune's notes as a second, separate line.
+    Woven, a tune note IS the figure's note on its step (the same hands play it), and a bed note
+    under a sounding tune note stays below it (moved down an octave, its rhythm unchanged)."""
+    tn = getattr(band, "_tune_spans", None)
+    if tn is None:
+        tn = band._tune_spans = [(bar.beat + bb, bar.beat + bb + d, int(mm)) for pl in band.plans for bar in pl.bars
+                                 for bb, mm, d, canon, _ in bar.tune if canon[0] != "logo"]
+    if any(abs(a - beat) < st / 2 - 1e-6 for a, z, mm in tn):
+        return None
+    top = [mm for a, z, mm in tn if a - 1e-6 <= beat < z - 1e-6]
+    if top:
+        while m >= min(top):
+            m -= 12
+    return m
 
 
 def acc_pedal(band, p, bar, dyn, cut=4.0):
@@ -856,6 +896,10 @@ def acc_pedal(band, p, bar, dyn, cut=4.0):
             m = pool[0] if k % 2 == 0 else pool[1 + (k // 2) % (len(pool) - 1)]
         else:
             m = pool[k % len(pool)]
+        if band.woven and not p.ending:
+            m = _woven_fit(band, beat, m, st)
+            if m is None:
+                continue
         if _tune_near(band, beat, m, st):
             # WHY (audit defect 6): the pulse's B-flat 4 and the tune's B-flat 4 struck 17 ms apart
             # on the same key is a flam; the pulse yields that one step to the tune
@@ -1226,7 +1270,9 @@ def render(band, plans, piece):
     import bed as BED
     band.bedline = BED.BedLine(piece, plans) if piece.bed is not None else None
     for k, p in enumerate(plans):
-        band.swing = p.mood["swing"]
+        # WHY Section.swing first (v4): the owner's "gently swung" pulse is a recipe switch now
+        sw = getattr(p.sec, "swing", None)
+        band.swing = p.mood["swing"] if (sw is None or p.ending) else float(sw)
         play_tune(band, p, dyn, plans)
         play_answer(band, p, dyn, plans, k)
         play_counter(band, p, dyn, plans)

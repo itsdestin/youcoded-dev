@@ -1,662 +1,328 @@
 # The youcoded songbook
 
-Every film's music is composed in code, here. This page is the composer's whole guide: read it
-top to bottom once, then follow **The procedure**. Nobody here can listen; you judge by note dumps
-and measurements, and you never claim something sounds good. **A composer under test never opens
-`first-shot/`** (it holds the other briefs and the owner's ratings).
+Every film's music is composed in code, here. **Part 1 is the brief: read it whole before writing a
+note (five minutes).** Part 2 is how the toolkit does what the brief asks. Part 3 is reference.
+Nobody here can listen: you judge by note lists and measurements, say so, and never claim
+something sounds good. Nothing musical is ever added or bent to move a measurement.
 
-## What is fixed (the identity) and what is wanted
+---
 
-**Fixed: "Felt and pulse."** A soft, close felt piano (the person) over quiet, clean electronics
-and strings (the machine doing what the person asks); E-flat major and its relative C minor; one
-tune built on three notes in the rhythm of "you-co-ded" (B-flat, G, F); the sound logo as every
-piece's last phrase; no drums, claps or clacks; soft pens only; one song per film.
+# Part 1. The brief
 
-**Wanted: the owner's gold standard is game pause/map menu music**, "the perfect blend of subtle
-and engaging. quiet, not distracting, easy to listen to indefinitely without it becoming annoying,
-but still varied and interesting to listen to. also quite soothing." Research into how that music
-is made (`~/Documents/youcoded-campaign/music-research/`) gives the method this page teaches:
+## The goal
 
-- **Write the bed first, the tune last.** A soft, steady bed works on its own; the tune comes in
-  only one to three places.
-- **Something held always sounds underneath** (a pad, held strings, a pedalled chord).
-- **The pulse stays on the same few notes while the chords change.**
-- **Variety comes from loops of unequal length and from layers drifting in and out**, not from
-  new notes. Repetition in the background is welcome; surprises are rationed.
-- **Few chords, changed slowly, each keeping a note of the last.**
-- **Dark and soft.** Phrases shaped like a pianist's, not notes nudged at random.
-- **Under a narrator: fewer notes, not just quieter ones.** **Hit very few picture moments.**
+In the owner's words: **"unique music for each ad that still feels well within the bounds of the
+'same' brand music"**, and music that lines up better with the pictures. He prefers code-made
+music (every piece can be forked and changed). Round 8's "Own everything" is "among the better
+ones" so far.
 
-What went wrong before, in the owner's words: round 6 "extremely repetitive and poorly put
-together" (the tune's opening bar seven times over one chord loop); round 7 "odd/choppy/
-inconsistent", "too busy/harsh", "piano notes ... oddly thrown in", slow music under a fast
-narrator (novelty forced everywhere); round 8 composers bent their music to pass automatic checks.
-That is why measurements are now **gauges on a dashboard, never goals** (see Measurement).
+## What never changes, and what each film changes
 
-## The procedure (brief to score)
+**The fingerprint (every film):** our soft felt piano; E-flat major and its relative C minor;
+rich chords (9ths, sus, add9); the three-note tune "you-co-ded" (B-flat, G, F); the quiet or
+piano-only logo as the piece's last phrase; one room. **Never:** drums, claps or clacks; a
+"thwip", fake-out, whoosh or riser; scratchy pens (a soft pen only); a sound effect taken from a
+shared kit (effects are made per film); more than one piece of music in a film.
 
-Every film follows these steps in order. Commands are run from anywhere:
-`scripts/campaign/sound/songbook/render.sh ...` (shown below as `render.sh`).
+**Per film:** the tempo, the feel (straight or gently swung), the chord order, the register,
+how much of the tune is heard, the energy, the length.
 
-1. **The brief, measured before any note.** In the film file write a `recipes.Brief`: film type
-   (type-only / app demo / narrated), length, 3-5 adjectives, "subtle" or "present", and the 1-3
-   moments that matter as `(seconds, label)`, one labelled `"peak"`; the cut list (`picture`), the
-   text cards (`cards`: each must stay up 0.2 s a word + 2 s, +3 s at 10 words), the name's time
-   (`logo_at`). Narrated: map her words with `films.speech_from_words(words.json, t_from,
-   start_at=1.5)` (1-2 s of music before her first word). Pass the brief to the recipe
-   (`brief=BRIEF`): it supplies `subtle`, the `peak` and the hits unless you give them.
-   `--brief` reads the film's `FILM`, so write the recipe call too, with only `name, length,
-   land, bpm=<any>, brief=BRIEF`, then run it.
-   - **Subtle or present**, when the brief does not say: **subtle** if any of its words is calm,
-     soothing, gentle, quiet, soft, or it plays under a narrator or a poster; **present** only
-     when it asks for energy (bright, bold, lively, celebratory). In doubt, subtle (the brand
-     leans quiet). Present changes more than loudness: the full-blend logo, and in recipe C a
-     -2 dB level after her words.
-   - **When the picture is already cut, the picture wins**: no pre-roll if her voice starts at
-     the picture's first second (`start_at` = where she is in the picture); "the brief says 54 s"
-     and "the picture shows 50 s" means the picture. A `--brief` card warning (TOO SHORT) is the
-     editor's matter: report it, do not change the music for it. A card that stays on screen to
-     the end (a poster) is not too short; say so in the report.
-   - **A "peak" in a type-only film** is the moment the music is fitted to land on (a downbeat);
-     recipe A puts nothing special there unless you add one change (`brightness`) on its bar.
-   - **Sound effects** (a pen, a click) are not music: the music never plays them. If the brief
-     asks for one, it is a film effect (`Film.effects`, `films.place_effect`, soft only), made
-     after the music and reported separately; a moment marked only as a picture moment gets no
-     sound.
-2. **The tempo. First decide which is fixed.**
-   - **The picture is cut** (its frames are given): `logo_at` is the editor's frame for the name,
-     and `LAND = BRIEF.logo_at`. `render.sh --brief <film>` runs `fit_tempo` over the recipe's
-     range (+-3 bpm to land the name): the 3 best fits, each a line to copy (`bpm=`, and when they
-     help `odd=`, `odd_at=` and `rit=`), with every moment's error in ms and frames. It searches
-     every tempo, no odd bar or ONE odd bar of 1 (a pick-up), 2 or 3 beats at any bar (never on
-     the peak's bar), and the ending slowing to 75, 80, 85 % or not at all (`rit=1`). Write all of
-     it into the recipe call, `rit=` included. When no fit lands every weight-3 hit, `--brief`
-     also looks over 84-132 bpm and prints any fit that does: **a picture cut to its own beat
-     (96 bpm, or 120 with every turn on a bar line) takes that tempo**, not a recipe-range fit
-     that misses it. `range=LO-HI` searches a range you name (and writes the motion grid at its
-     first fit).
-   - **The music comes first** (the editor cuts to it): choose the tempo in the recipe's range
-     and get the name's time from `R.land_after(bars, bpm, ending, odd=, rit=)`; give the editor
-     that time and the motion grid.
-   - Either way `--brief` writes the **motion grid** (`out/notes/<name>.grid.json`: frames per
-     beat, eighth, sixteenth, every bar line) at the first fit's tempo, for the editor.
-   - Under a narrator it prints her pace, her tempo band (a beat every 2-3 syllables) and the
-     value nearest 120, then fits around it with her sentence ends as soft hits; **copy the first
-     fit** (it is the value nearest 120 nudged to her sentence ends; recipe C's "nearest 120" is
-     only its default when no fit is given). One tempo per film.
-   - **Running one toolkit function** (`land_after`, `fit_tempo`): `render.sh --py -c "import
-     recipes as R; print(R.land_after(12, 116, 'short'))"` (the right Python and import path).
-3. **Pick a recipe** (below) and call it with the brief's numbers. Do not invent a new form for
-   one film; if none fits, add a fourth recipe to `src/recipes.py` and say so.
-4. **Write the change plan** (`changes=`): one entry per turn of the picture, 8-16 s apart, plus
-   the peak (see The change plan). Passing `changes=` REPLACES the recipe's default plan (recipe
-   C's brightness, bright turn and pool change too): copy the defaults you keep from the
-   `--notes` "change plan" line.
-5. **The bed alone.** `render.sh --bed <film>` renders sustain + pulse + cycles with no tune and
-   prints its dashboard. Read the bed's gauges (sustain, pulse-rate, pulse-sim, groups,
-   common-tone) before writing a tune note.
-6. **The tune and the lift.** Place 1-3 phrases from the bank (`tune=[(bar, "name")]`), name the
-   peak. `render.sh --notes <film>` (1 s, no audio) prints the bar table, the bed, the hard checks
-   and the dashboard.
-7. **Two sketches.** `render.sh --sketch <film> [switch=value]` renders the first 20 s twice: A as
-   written, B with ONE switch changed (default: `pad_level=-4`, the sustain 4 dB louder against
-   the pulse; or any [OWNER] switch: `sustain=held`, `sustain=ring`, `fig_order=cell`,
-   `pulse=chord`, `chords=plain`, `pad_level=0`; a sound switch: `pad_timbre=triangle`,
-   `piano=salamander`, `air=legacy` (the old 11 dB air shelf, cap lifted); or `bed.cutoff=1200`,
-   `sec.fig_touch=0.35`). It prints both dashboards' readings side by side (sustain, gap-fill,
-   tilt, presence, level-rate...): **the readings are of the whole piece**, the files keep the
-   first 20 s. A misspelt switch stops with the list of known ones. The owner picks. A piece
-   built by hand (not through a recipe) may not take `pad_level`; check that B's readings moved.
-8. **Render and report.** `render.sh <film>` (`SONGBOOK_NO_COPY=1` while checking). Every render
-   also writes `<name>-bed.wav`, the no-melody mix, and rewrites the note log. Report the numbers: the hard checks, every out-of-range gauge with its one-line
-   explanation, and the answers to "Before reporting" below. Never claim it sounds good.
-9. **Deliver.** `render.sh --deliver <film> <dir> [picture=film.mp4] [from=SECONDS]` writes
-   `<name>-music.mp3`, and with a picture `<name>.mp4`: the picture from `from` for the piece's
-   length, its sound replaced by the music (narrated, `voice_mux` given: the picture's own sound,
-   her voice, plus the music at `music_db`, the mux the margin was measured on, limited).
+## The settled palette (his answers, 2026-11-25 element deck)
 
-## The three recipes
+| Element | Settled | Toolkit default (style "v4") |
+|---|---|---|
+| Piano | "A: ours, soft" | upright felt piano, pulse touch 0.28 |
+| Brightness | "B: middle" | the same capped shine on every piano note (not the tune alone) |
+| Room | "B: today" | one shared room for every layer |
+| Chords | "B: rich" | 9th, sus and add9 chords |
+| Pulse | "i realllllly like BOTH c and d" | the chord-following figure; `swing="gentle"` (35 ms) is the other |
+| How full | "c is totally acceptable" | a full texture is fine when it is one piece (see below) |
+| Endings | "prefer b/c to a" | the quiet logo; `logo="piano"` the other; no full blend |
+| Strings | "wayyy too harsh/overpowering" | not available by default (the soft pad or the ringing piano hold) |
+| The old "menu music" form | "drop the menu-music form" | cycles retired from the recipes |
 
-Each recipe is a function in `src/recipes.py` that returns a complete, steady `Piece` from only
-`name, length, land, bpm`; every other argument has a working default you then replace with what
-your film needs. `recipes.land_after(bars, bpm, ending)` tells you where the name lands.
+## Rule 1: one piece of music, not layers
 
-### Recipe A: type-only short (10-20 s) - `recipes.type_short(...)`
+His real complaint, across every round, was never "busy" or "repetitive" as such: it was
+**"different instruments playing entirely their own song at different volume levels"**, a tune
+"randomly thrown in on top", high notes "not blended as part of a well-unified track", strings
+that "overpower". A full texture is welcome when it is one piece. So:
 
-| Item | Setting (default) |
-|---|---|
-| Tempo | 100-120 bpm from `fit_tempo` (or the picture's own beat when `--brief` finds it outside); a card about every 2-bar phrase |
-| Harmony | 2 chords alternating, one per 2 bars (`"Ebmaj9 Ebmaj9 Abmaj9 Abmaj9"`), the same top note |
-| Sustain | the pad from frame 0 |
-| Pulse | the pedal pulse in eighths, pool B-flat 4, G4, F4, E-flat 4 circled (B-flat between the others), 10 of 16 steps, touch 0.42 |
-| Cycles | none, or one |
-| Tune | none (in 10-20 s the logo is the one statement) or the cell once |
-| Changes | 0-1 (e.g. `(3, "brightness", 1.25)`) |
-| Lift | none, or at most 1.5 dB |
-| Ending | `ending="short"` (2 beats), the quiet logo if subtle; at least 1.5 s of ring after the name |
-| Level | -16.5 LUFS subtle, -15 present (`subtle` from the brief) |
+1. **One harmonic plan, and every layer is written from it.** One chord at a time; the pad, the
+   figure, the bass and the tune all take their notes from it. No layer follows its own private
+   rule (a fixed pool over every chord, a drone that leaves out the root).
+2. **The tune is the top voice of that same music.** It is stated by the same hands that play
+   the bed: the same piano, a neighbouring register, the same eighth-note grid and accents, a
+   touch at most a little firmer. It stands out by being on top, never by being a different
+   sound. Nothing sounds above it except its own echo.
+3. **Harmony first, from the tune.** Every held tune note (1.5 beats or longer) is a tone of the
+   chord under it, and where it can be, the same pitch is sounding lower in the bed. If a chord
+   is fixed, move the phrase within the key; if neither fits, leave the tune out.
+4. **Layers interlock in register.** Bass, pad, figure and tune each own a stretch of the
+   keyboard and touch the next one; no wide empty gap, no two layers fighting in one spot.
+5. **Levels sit close and move together.** The layers are within a few dB of each other and
+   share one dynamic shape (beat 1 strongest everywhere); one gentle glue over the piano.
+6. **One room.** The same reverb on every layer; nothing panned far from the rest.
+7. **Nothing enters or leaves abruptly.** A layer fades in over two bars or is there from the
+   start.
+8. **At most three or four layers have notes in any bar.**
 
-### Recipe B: app demo, no narrator (30-75 s) - `recipes.app_demo(...)`
+## The tune
 
-| Item | Setting (default) |
-|---|---|
-| Tempo | 104-120 bpm from `fit_tempo` (116) |
-| Harmony | one chord per 2 bars from the vocabulary (`Ebmaj9 Cm9 Abmaj9 Bb9sus`), each change sharing a note |
-| Sustain | the pad throughout; held strings may join at the peak (they double the pad's voicing) |
-| Pulse | the pedal pulse, 2.5-4 notes a second, the chord's root held under each chord (`fig_bass`) |
-| Cycles | 2-3 on co-prime periods, above C5 (default 23 and 29 half-beats), at most a third sounding; set their `offset` so their rounds fall in the bars with no tune (a round that meets a tune phrase is left out whole) |
-| Tune | 2-3 one-bar phrases, each followed by at least 2 bars of bed; default: a phrase, the same phrase again, a peak phrase reaching C6. **Under 40 s, two phrases** (the third crowds the bars); when the peak is within 4 s of the name it IS the ending's sigh: no separate peak phrase |
-| Changes | one every 8-16 s at the picture's turns (default: cycle1, the sub, then any cycle not yet in plus the strings at the peak); bring EVERY cycle in by name |
-| Lift | 2.5 dB over 2 bars into the peak, then settle 1 dB |
-| Form | the first 30 s must stand alone (it becomes the :30 cut-down) |
-| Ending | the full sigh and logo (`logo="quiet"` if subtle) |
-| Level | -15 LUFS (-16 subtle, from the brief) |
+The three notes are the brand, not a sticker. Weave them in: as the top notes of the figure,
+as whole phrases of two bars or more, landing on a key word or the payoff. **The tune may be
+absent** when it would be forced: the logo at the end is always the tune. When it is there, it
+is there as a line (the pieces he accepted carry it about half to two-thirds of the time), not a
+three-note fragment that appears for two seconds and vanishes.
 
-### Recipe C: narrated story (30-75 s) - `recipes.narrated(...)`
+## Energy matches the film
 
-| Item | Setting (default) |
-|---|---|
-| Tempo | her band (syllables x 60 / 3 to / 2), the value nearest 120 |
-| Harmony | changes on her sentence ends (one chord name per sentence, or the default: C-minor family, turning bright at `turn=` seconds, her problem-to-solution turn), at most one per 1.5 s |
-| Sustain | the pad, 95 % or more |
-| Pulse | soft, high and nearly still: TWO notes, B-flat 5 and F5 (above her range F3-E5), 9 of 16 steps, never two rests running; once she stops it comes down to B-flat 4, G4, F4, E-flat 4 (a `"pool"` change; the old notes stop at that bar line, and a pulse note on the tune's own key steps aside) |
-| Cycles | one at most (default G5 D5 E-flat 5, notes the pulse is not playing), only in her pauses of a second or more: with a fast reader there may be none, which is right |
-| Whimsy | `whimsy=True` (storybook): a bell-like double, an octave up and very soft, of the tune's first phrase (and every third after) |
-| Tune | only in pauses that fit a whole phrase, and after her last word; softer when subtle (`lead` 0.7) |
-| Level | one hand-set level under her words (-6 dB), never moving with her words; after them -2 (present) or the same -6 (subtle); subtle also gives the quiet logo and -16.5 LUFS |
-| Mux | `R.narrated(..., voice_mux=dict(path=voice.wav, t_from=, start_at=, music_db=-10))`: her margin is measured. A static `music_db` of -12 for a soft-spoken reader is a level choice, not gaming; never a dip that follows her words |
+Read the film's cut rate, the pace on screen and the narrator's pace. **A lively film gets
+lively music** (on "Make it mine": "the music needs to better match the busier/higher-energy
+nature of this specific video"): a faster tempo, a fuller figure, the swung pulse, a higher
+register. A calm film gets fewer notes, not just quieter ones.
 
-**Narrated, two cases the recipe does not solve by itself:**
-- **She speaks into the name** (her last word ends under a second before it): there is no
-  post-roll, so no tune, no whimsy and no cycle can play, and the sigh and logo pick-ups land on
-  her last words (`narrator-masked` fails). First ask the editor to land the name 1-2 s after her
-  last word (say how much ring the picture allows). If the picture is fixed: `ending="short"`,
-  `logo="quiet"`, and report the masking honestly; never lower `music_db` only to pass.
-- **An excerpt that ends mid-story** (no name in the window): `logo="none"`, `ending="short"`,
-  `LAND = R.land_after(bars, bpm, "short")` at a bar line just before the window ends; the
-  chords move on her sentence ends; nothing needs to "arrive". Expect `cell-present`,
-  `payoff-louder` and `level-rate` (the hand-on stop) OUT: one line each.
-- **The turn on one word** (`turn=`): the default chords turn bright on the sentence end NEAREST
-  the turn, which can be seconds early. For a turn on a word, write `chords=` yourself (one name
-  per sentence end) so the bright chord falls on the first sentence end after it.
+## The picture
 
-### Shorter than one bar of body: a sting or end card (under ~4 s to the name)
+- **One shared beat grid** for picture and music (he said yes to designing both on one beat).
+- **Scene cuts on bar lines**, small events on beats (his pick on "Make it mine": the cut
+  re-timed so every cut lands on a bar line).
+- **The music lands just after the picture, never before it**: about 0.05 to 0.15 s (his pick
+  on "Own everything": the music about 0.15 s after).
+- **Only four moments get a musical moment**: the opening, the turn, the payoff and the name.
+  Everything else is carried by the grid.
 
-No recipe lands a name in under about 3 s (each writes at least one 4-beat bar). Build the Piece
-from recipe A's parts (`R._pulse`, `R.sustain_mix`, `R._from_brief`; see `src/film_shot_f.py`,
-first-shot F) and say so. Two traps: at fast tempi (pick-ups under 0.25 s apart) the logo is heard
-late (+12 ms, a hard `length` fail): keep its pick-ups 0.25 s or more apart; and the pad's 1.2 s
-attack is still swelling in the first second (start it before frame 0 or accept the `sustain`
-"heard" reading). Nothing yet measures a loop seam for a piece played on repeat.
+## Under a narrator
 
-### Starting from a recipe (a film file)
+About **120 bpm with room for her breaths** (his pick, "D: 120 with breaths"). The music
+supports her and never chases her syllables; no melody in her range (F3-E5) while she speaks;
+her voice stays at least 6 dB over the music; the level is set by hand per section, never
+ducking on each word. He still hears the current voice as "too fast/harsh for our music": that
+is an open question about the read, not something the music can fix by itself.
 
-```python
-"""<Film>, first score: <one line on the idea>."""
-import recipes as R
-from cycles import Cycle
-from films import Film
+## The process (approved)
 
-# THE PICTURE IS CUT: its frames are the input (if the music comes first instead, choose BPM and
-# set LAND = R.land_after(bars, BPM) and give the editor that time and the motion grid)
-BRIEF = R.Brief("app-demo", 36.0, ("bright", "easy"), "present",
-                moments=[(8.28, "the editor"), (24.83, "peak")], logo_at=33.27,
-                picture=[(0.0, "open"), (8.28, "the editor"), (16.55, "the theme"), (24.83, "it works")])
-LAND = BRIEF.logo_at
-BPM = 116                                   # copied from render.sh --brief (with odd=, odd_at=, rit= if given)
-PIECE = R.app_demo(
-    "my-film-r1", 36.0, land=LAND, bpm=BPM, seed=7, brief=BRIEF,      # the brief gives subtle, peak, hits
-    chords="Ebmaj9 Ebmaj9 Cm9 Cm9 Abmaj9 Abmaj9 Bb9sus Bb9sus ...",   # one name per bar; [Ab Bbsus] = two
-    tune=[(4, "cell"), (9, "cell"), (13, "from-top")],                  # bar, phrase from the bank
-    cycles=[Cycle("Bb5/0.5 G5/1", period=23, offset=13, name="cycle1")],  # rounds in the bars with no tune
-    changes=[(5, "in", "cycle1"), (9, "in", "sub"), (13, "in", "held"), (13, "peak")],
-    explain={},                                                         # see Measurement
-    notes="one line for the report")
-FILM = Film("my-film-r1", PIECE, picture=BRIEF.picture, copy_to=None)
+1. **Palette**: done (the table above).
+2. **Two 15-second feel sketches per film** (two tempi or feels over the same stretch of
+   picture) for his ear: `render.sh --sketch feel-a feel-b from=S picture=film.mp4`.
+3. **The full score** of the sketch he picks, then `render.sh --shelf <film>` and the report.
+
+Test on many films and cuts, not one: a rule that only works on "Own everything" is not a rule.
+Review decks use the standard deck format (`scripts/ui-review/`), never a one-off style.
+
+## His rulings, verbatim
+
+- E1 (narrator): "D: 120 with breaths" ... "she just seems to fast/harsh for our music selection maybe."
+- E2 (pulse): "i realllllly like BOTH c and d"
+- E3 (busy): "c is totally acceptable. i think my issue with the "busy" music is it felt like
+  different instruments playing entirely their own song at different volume levels. c still feels
+  like a single unified song. also in a for example, the high piano notes around 14s and elsewhere
+  still feel a little thrown-in and not blended as part of a well-unified track"
+- E4 "A: ours, soft". E5 "B: middle". E6 "B: today". E7 "B: rich".
+- E8 (tune): "the way this is integrated feels to clash with the underlying base music/notes quite a bit."
+- E9 (held layer): "those strings are wayyy too harsh/overpowering."
+- E11 (endings): "a sounds a bit too harsh and doesnt quite fit the rest of the ustic. prefer b/c to a"
+- F1 (family): "upbeat doesnt sound at all like the others. the strings fully overpower everything.
+  also these all still feel like the different instruments are kinda just doing their own thing
+  instead of forming single unified pieces"
+- A1: "i think c is best?" (music ~0.15 s after the picture). A2: "i think b is probably best,
+  but i think the music needs to better match the busies/higher-energy nature of this specific
+  video/ad." A3 (one shared beat): yes.
+- R4 (the tune): "the current integration is genuinely just bad. feels like we're just randomly
+  thowing it in on top of music for the sake of it instead of integratiing"
+- R5: "Keep the sound improvements, drop the menu-music form". R7: "we should test on a bunch of
+  different films/cuts. also we should use the proper review deck format from now on. dont create
+  unique deck styling"
+- Standing: no drums, claps or clacks; no thwip or fake-out; soft pen only; effects per film;
+  "the voice always wins".
+
+---
+
+# Part 2. The toolkit
+
+## Commands
+
+Run from anywhere as `scripts/campaign/sound/songbook/render.sh ...`:
+
+```
+render.sh --brief  <film>              # the brief, card hold times, tempo fit to the picture, her pace, motion grid
+render.sh --notes  [--log] <film>      # the notes bar by bar, the chords (tune-led changes shown), the
+                                       #   pad voicings, the hard checks and the unity readings (~1 s, no audio)
+render.sh --sketch <film> [<film2>] [from=S] [len=15] [picture=x.mp4] [pic_from=S] [lag=0.10] [k=v ...]
+                                       # a feel sketch: that window of each piece, music `lag` s after the
+                                       #   picture, to out/sketches/<name>-sketch.mp3 (+ .mp4); her voice
+                                       #   from voice_mux; k=v (e.g. swing=gentle) adds a one-switch B
+render.sh <film>                       # the full render: out/films/<name>.wav, -bed.wav, the report
+render.sh --shelf  <film>              # its readings and tone next to the reference shelf (reference/)
+render.sh --deliver <film> <dir> [picture=x.mp4] [from=s]   # mp3, and the mp4 with a picture
+render.sh --py -c "import recipes as R; print(R.land_after(8, 112, 'short'))"   # one toolkit function
 ```
 
-Worked examples, rendered with note dumps and dashboards: `recipe-a-example`,
-`recipe-b-example`, `recipe-c-example` in `src/demos.py` (outputs in `out/`, notes in
-`out/notes/`). Copy the closest one. What their dumps show (2026-11-25, after the audit fixes;
-measured, not heard): all three pass every hard check; the sustain sounds 100 % in the notes and
-99-100 % in the audio; the pulse circles B-flat (2.2-2.4 notes a second, `pedal-fit` 0); B's two
-cycles play 8 notes in whole rounds in the bars with no tune (cycle1 from 8.3 s, cycle2 after the
-peak); C's two-note pulse stays above her, her voice stands 12.9 dB over the music (6.5 at
-worst), its cycle finds no pause long enough (she reads fast) and the bell doubles the tune after
-her last word (6 notes); tilt -12.2 (A), -6.8 (B), -13.0 (C) dB an octave; gap-fill (the dips
-between pulse notes) 5.1, 4.3 and 5.7 dB at `pad_level=-8`. Two renders of C are byte-identical.
-Every OUT gauge is explained in the example's `explain`.
+`SONGBOOK_NO_COPY=1` keeps a render in `out/` (the two old films otherwise copy into the editor's
+folder). Never run `render.sh` with no arguments while others compose (it re-renders everything).
 
-**Sketch readings so far** (recipe B, first 20 s; numbers, not judgements): `pad_level=-4`
-gap-fill 4.3 to 3.5 dB, level-rate 7.9 to 6.5; `pad_level=0` 3.0 dB; `fig_order=cell` 4.8;
-`sustain=ring` 5.0 with 5.8 attacks a second. Recipe C with `sustain=held`: the strings, though
-level-matched to the pad, are much brighter in her band (tilt -5.0, presence -21 dB) and her
-voice fell under 6 dB above the music, so the hard `narrator-masked` check FAILS: held strings
-under a narrator need a quieter level or a different voicing before the owner hears that A/B.
+## A film file (the worked example: `src/film_woven.py`)
 
-## The stack
+```python
+import recipes as R
+from films import Film
+from motif import write
 
-In order of importance; at most three groups sound at once: the sustain (held strings playing
-the pad's voicing count as the sustain made richer, not a group of their own), the pulse, and
-the tune and cycles counted together as one.
+BPM = 112.0
+LAND = R.land_after(8, BPM, "short")          # or the editor's frame for the name: BRIEF.logo_at
+TUNE = [(2, write("Bb4/1 G5/1 F5/2 | Eb5/1 F5/1 G5/2", label="statement")),
+        (5, write("Ab5/1.5 G5/0.5 Eb5/2 | F5/1 G5/1 Bb5/2", label="answer"))]
+PIECE = R.type_short("woven-example", round(LAND + 1.8, 3), land=LAND, bpm=BPM, seed=3, subtle=True,
+                     tune=TUNE)                # chords=None: tune-led (the recipe bends its chords to the tune)
+FILM = Film("woven-example", PIECE, copy_to=None)
+```
 
-**1. Sustain** (`bed.py`). Sounds 95 % of the time or more. `Piece.bed = dict(sustain="pad" |
-"held" | "ring", touch=0.40, cutoff=None, fade=2)`. All three sit at the same calibrated level
-(-33 LUFS bus, about 8 dB under the pulse; the [OWNER] `pad_level` raises it 4 or 8 dB): held
-strings longer than their recording (7.5-15 s) are re-bowed with crossfades and held level
-(`string_loop`); the pedalled ring plays on its own `ring` bus. A layer that fades in later
-(held strings at the peak, the sub) starts its notes at the bar it fades in on. The pad is voiced 3-4 notes between B-flat 2
-and B-flat 4, moving as little as possible, keeping a common note and its top note where it can,
-never a semitone, major seventh or minor ninth against itself, the pulse's notes or the bass
-below C5; a voice moving by step hands over without overlap; it resolves with the logo onto
-E-flat and rings under it. The note dump prints every voicing.
+A film lives in `src/film_<key>.py` exposing `FILM` (or `FILMS`); it is found automatically.
+For two feel sketches, write two pieces (e.g. `FILMS = [Film("x-feel-a", ...), Film("x-feel-b", ...)]`).
 
-**2. Pulse** (`blocks.acc_pedal`, `Section(fig_mode="pedal")`). A pool of notes (`fig_pedal`,
-default the cell + tonic) on the steps of a 16-step mask (`fig_mask`, `x` = play), the same
-whatever the chord; each note held into the next (legato), but never across a pool change. The
-order is the [OWNER] `fig_order`: `"circle"` (default) returns to the pool's first note between
-the others (B-flat G B-flat F B-flat E-flat), `"cell"` plays the written order, which is bar 1 of
-the tune on a 2-bar loop. A pulse note on the same key as a tune note within a step is left out
-(the tune has it). The mask drifts
-one step every 4 bars (`fig_mask_walk=(4, 1)`, seeded), keeping 6-10 of 16 steps and never two
-rests running. `fig_bass=True` strikes the chord's root, soft, once at each chord change and holds it to the next
-(a low felt edge that names the chord; it is 65-104 Hz, so a phone hardly plays it).
-`fig_touch` 0.26-0.42. The round-8 chord-following figure remains as `fig_mode="chord"`.
+## What the recipes do now (style "v4")
 
-**3. Cycles** (`cycles.py`). `Cycle(cell, period, offset, name, voice="piano"|"bell", touch,
-chance, transpose_walk, unit="half"|"bar")`. The cell's notes come from E-flat pentatonic + D
-(no semitones; anything else is refused). Periods pairwise co-prime; each cell at most a third
-of its period; under 20 s one cycle, 30-75 s two or three; at most one cycle note a second in
-all. `chance` is decided once per round, and so is every guard: a ROUND is left out whole (never
-moved, never cut to a fragment) when any of its notes sounds into a tune phrase, under her words,
-within a beat of the peak, a semitone from the pad below C5, or on the pulse's own key; the note
-dump counts what was left out and why. "Into a tune phrase" is wider than it reads: the whole
-2-beat half-bars around a phrase are blocked, up to about 3 beats past its last note. So choose
-each cycle's `offset` to put its rounds in the bars with no tune AND a bar clear of each phrase;
-check `cycles: N notes placed` in `--notes` after each try. A cycle brought in at the peak of a
-short film may get one round: bring it in earlier or leave it out. Bring every cycle in by name in the change plan: one never brought `"in"`
-plays from the start, and the change-plan gauge counts its first note as an unplanned change.
+`recipes.type_short` (10-20 s), `recipes.app_demo` (30-75 s), `recipes.narrated` (30-75 s, under a
+voice) all return a v4 piece unless told `style="v3"` (the older pieces are pinned to it).
 
-**4. Tune** (`tunebank.py`, `tune.PHRASES`). Twelve phrases of 1-2 bars cut from the tune: `cell`,
-`cell-on` (bar 1 as written), `cell-long`, `falls`, `question`, `climb`, `settle`, `rise`,
-`answer`, and three that reach C6 and are kept for the peak (`higher`, `from-top`, `peak-arc`).
-Place them with `tune=[(bar, "name")]` (or a `motif.write(...)` Phrase). A phrase heard once and
-never echoed or answered sounds "thrown in": say a phrase twice, or answer it within a bar. A
-phrase ending on the last bar of a 4-bar group may come back with a small seeded change to its
-last note or rhythm (at most one in four such bars). The tune sits 2 dB under its bus's usual
-level and at touch 0.8: one voice among the bed, not a soloist popping in and out.
+- **The woven tune** (`options.tune_voice="woven"`): tune notes play on the bed's piano bus with
+  its tone, shine and room, at the figure's touch + 0.08, struck with the band (3 ms ahead, not
+  15). A figure or pulse note on the same step as a tune note gives the step to the tune; a bed
+  note under a sounding tune note is moved down an octave (rhythm unchanged).
+- **Tune-led chords**: with `chords=None`, each half-bar under a held tune note that the default
+  chord does not hold changes to the closest chord that does (printed in `--notes`). With
+  composer-written chords, a held tune note outside its chord STOPS the build with the bar, the
+  note and the chords that would hold it; `tune_fit="allow"` only for a rub you mean.
+- **The pad** is voiced to include the chord's root and every held tune note's pitch (unless
+  that would grind a semitone or major seventh against the bass; the note dump shows it).
+- **Defaults**: pulse "chord" (round 8's figure, touch 0.28), `swing` "straight" | "gentle",
+  sustain "pad" | "ring", `pad_level` -4, the quiet logo (`logo="piano"` or `"none"`),
+  recipe B's tune as two-bar phrases about half the time with the peak phrase at the peak,
+  recipe C keeps its high two-note pulse under her (the chord figure would sit in her range).
+- **Refused in v4**: `cycles=` (retired), `sustain="held"` (strings), `logo="blend"`.
+- **The sound** (engine/options.py, profile "v4"): one shared room (hall 0.22, room 0.10 on every
+  layer, the sub dry), the same capped shine on every piano note, one gentle glue across all piano
+  buses (at most 2 dB), pans within +-0.15, and on any bowed bus HP 80 Hz / LP 4.5 kHz / -3 dB at
+  3 kHz. Everything is still a switch (`Piece.sound`, `SONGBOOK_SOUND`).
 
-**5. Ending** (unchanged): the sigh and the logo, `logo="blend" | "quiet" | "piano" | "none"`,
-`ending="sigh" | "short"` (see Identity reference).
+## The readings (instead of the dashboard)
 
-## The change plan
+A v4 report is the hard faults (clipping, silence, an unmarked clash, the narrator masked, the
+wrong length: these fail a render) plus the **unity readings** (`src/unity.py`), never a
+failure: `tune-in-harmony`, `tune-in-bed`, `above-tune`, `tune-duty`, `layers-per-bar`,
+`struck-together`, `levels-together`, `level-gap`, `held-2-6k-share`, `one-room`, `tone`. A `*`
+marks a reading outside where the accepted pieces sit. Read them next to the shelf
+(`render.sh --shelf <film>`, `reference/README.md`); report them as numbers; change the music
+only for a musical reason.
 
-`Piece.changes = [(bar, what, arg), ...]`; bars count from 1 over the whole piece, the odd bar
-included (at `odd_at`); the ending bar is not counted. **`chords=` counts differently**: one name
-per 4-beat bar only; the odd bar keeps the chord before it (a warning prints if you give too
-many names). `tune=` uses the whole-piece bars, and the odd bar cannot take a phrase. A layer never switches: it fades in a straight line over
-2 bars from its bar line.
+---
 
-| Entry | What it does |
-|---|---|
-| `(bar, "in", layer)` / `(bar, "out", layer)` | layers: `sustain`, `pulse`, `held`, `sub`, or a cycle's name (every cycle needs one) |
-| `(bar, "register", k)` | the pulse pool moves k scale steps (at most 3, a fourth) |
-| `(bar, "pool", ["Bb4", ...])` | the pulse moves to a new set of notes (a bigger change) |
-| `(bar, "density", k)` | the pulse mask gains or loses k steps (off-beats first; never two rests running) |
-| `(bar, "brightness", x)` | the pad's filter opens or closes (x 0.7-1.3) |
-| `(bar, "echo", amount)` | the echo send on the pad and cycles (the mix reads `band.echo_curve`) |
-| `(bar, "family", "bright")` | marks a chord-family turn (the chords themselves are in `chords=`) |
-| `(bar, "peak")` | the peak: the only bar line where two changes may meet |
-
-Spacing: one change every 8-16 s; under 20 s, none or one. **Surprises** (an outside chord, a leap
-over an octave, a new instrument, an off-beat tune entry) total one under 20 s and two or three in
-30-75 s, at least 8 s apart, one of them the peak. Never swap sections: a mood change is chords
-and layers on one continuous piece.
+# Part 3. Reference
 
 ## Harmony
 
-- **One chord per 2 bars** by default (4 s at 120); one per bar only at a cadence.
-- **The vocabulary** (`tune.VOCAB`): Ebmaj9, Ebadd9, Ebsus2, Cm9, Cm11, Abmaj9, Abmaj7#11, Fm9,
-  Gm7, Bb9sus, Ab/Bb, Bbsus4, and the plain chords (Eb, Cm7, Abmaj7, Bbsus, Cm, Fm7, Ab, Eb/G,
-  Ab/C). Plain Bb7 to Eb only in the logo. A borrowed colour (Abm, Db, F7) at most once per film.
-- **Every change keeps at least one note of the last chord** (two is better).
-- **A few chords that come back, not many**: at least 2 under 20 s, 3 at 30 s, 4 at 60 s, and no
-  more than one literal repeat of a 4-bar progression.
-- Write chords as a string, one name per bar, `[Ab Bbsus]` for two in a bar; `recipes.OWNER
-  ["chords"]="plain"` maps every rich chord to its plain one.
+- One chord per two bars by default, one per bar only at a cadence or under a moving tune.
+- The vocabulary (`tune.VOCAB`): Ebmaj9, Ebadd9, Ebsus2, Cm9, Cm11, Abmaj9, Abmaj7#11, Fm9, Gm7,
+  Bb9sus, Ab/Bb, Bbsus4 and the plain chords. A borrowed colour (Abm, Db, F7) at most once a film.
+- Every change keeps at least one note of the last chord. Chords as a string, one name per
+  4-beat bar, `[Ab Bbsus]` for two in a bar; the odd bar keeps the chord before it.
+- Which chords hold which tune notes: F is in Ebmaj9, Ebadd9, Cm11, Bb9sus, Fm9 (not Cm9, Abmaj9);
+  G in Ebmaj9, Cm9, Abmaj9; A-flat in Abmaj9, Bb9sus, Fm9; B-flat in Ebmaj9, Cm9, Bb9sus.
+
+## The phrase bank (`tune.PHRASES`) and writing your own
+
+`cell`, `cell-on`, `cell-long` (2 bars), `falls`, `question` (2 bars), `climb`, `settle`, `rise`
+(2 bars), `answer`, and for the peak only `higher`, `from-top`, `peak-arc` (reach C6). Or write a
+line: `motif.write("Bb4/1 G5/1 F5/2 | Eb5/1 F5/1 G5/2")` (`~/2` ties over a bar line, `pickup=1`).
+`tune=[(bar, phrase)]`, bars counted over the whole piece; the odd bar takes no tune.
 
 ## Timing
 
-- **The tempo comes first**, from `fit_tempo` (the picture) or `timing.narrator_band` (her pace).
-  A moment counts as hit when the music is heard 15 ms early to 45 ms late; music heard early
-  feels wrong. If a weight-3 moment will not fit, `fit_tempo` offers ONE odd bar: `odd=1` (a
-  pick-up), `2` or `3` beats, at any bar `odd_at=` (bar 1 by default; after an earlier hit it
-  moves only what follows), and the ending's slowing `rit=0.75-0.85` (it moves the name alone).
-  The recipes take `odd=`, `odd_at=`, `rit=`. The odd bar carries no tune and keeps the chord
-  of the bar before it, so it never sits on the peak (the fit avoids that). Or ask the editor to
-  move the picture to the grid.
-- **Two timing windows**: a picture moment is "on" when heard 15 ms early to 45 ms late; the
-  name is stricter (the hard `length` check: within 10 ms).
-- **Hit very few moments**: music-in, the peak and the logo, and at most one more per 15 s; never
-  two cuts in a row. "Just having the tempo lining up can be enough."
-- **The shared time line** (style `"v3"`, every recipe): one 1/f deviation of 4-6 ms per sixteenth
-  for the whole band, plus at most 2 ms per note; a soft note is struck as early as it is heard
-  late (17 ms on our felt piano); the pulse gets no phrase arch.
-- **Phrase-shaped melody** (v3): a +-1 dB arch peaking 60 % through each phrase, higher notes a
-  little louder, short notes a little lighter, a small gap before a leap or a repeated note, the
-  last note 40 ms longer then a breath, the melody 15 ms ahead of the band, one touch per phrase
-  (spread at most 0.12).
-- **Endings**: the ending bar slows on a curve that slows late (end tempo 85 % by default, 75-80 %
-  if the fit asks; `rit=1.0` for the short ending); a real ending, never a fade, at least 1.5 s of ring after the name.
+- **The tempo comes first**: `fit_tempo` (`--brief`) against the picture's moments, or her band.
+  A moment is "on" when heard 15 ms early to 45 ms late; the name within 10 ms (hard). One odd bar
+  (`odd=1|2|3`, `odd_at=`) and the ending's slowing (`rit=0.75-0.85`, `1` for the short ending)
+  are the only fitting tools. A picture cut to its own beat takes that tempo.
+- **Music after picture**: in a sketch, `lag=` (0.05-0.15 s); for the delivered mux, ask the
+  editor to offset the music by the same amount.
+- The shared 1/f time line, phrase-shaped melody and the curved ritardando are v3 behaviours v4
+  keeps; endings are real endings with at least 1.5 s of ring after the name.
 
-## The sound (mix and master)
+## Recipes in brief
 
-Every piece goes through the same chain (`src/mix.py`, `src/engine/`); each choice is a switch in
-`src/engine/options.py` with a default. Order of precedence: the piece's `Piece.sound = {...}`,
-then the environment for a whole run (`SONGBOOK_SOUND="air_db=11,pad_timbre=triangle"`), then the
-piece's style profile, then the default.
-
-- **Felt piano** (Upright KW, CC0): the soft and loud recordings lined up and crossfaded between
-  touch 0.55 and 0.80; every recording matched to its neighbours in level and brightness; the
-  filter follows the phrase's touch (each note's own deviation counts 25 %); a faint ring of the
-  undamped strings while the pedal is down; added "shine" off.
-- **Pad** (`sounds.pad`, played by `bed.py` through `Band.pad`): two detuned saws (or triangles),
-  24 dB/oct low-pass at 900 Hz key-tracked 50 %, attack 1.2 s, release 2.2 s, a 25-second drift of
-  its colour, about 25 % wider than the piano. Its bus sits around -32 LUFS, about 8 dB under the
-  pulse ([OWNER] `pad_level` -4 / 0 raises it). Held strings as the sustain are brought to the
-  same level; the pedalled ring has its own piano bus at the same level.
-- **Held strings** (VSCO): a note longer than its recording is re-bowed from the steady middle
-  with 0.6 s crossfades and a slow level follower (`string_loop="on"`; v1 keeps the old cut).
-- **Buses**: one fixed gain per bus per film (`bus_gain="fixed"`), so a softer touch or a quieter
-  section is heard as written. Piano buses: high-pass 40 Hz, -2.5 dB at 250 Hz, low-pass 8 kHz.
-- **Spaces**: one darker hall (send high-pass 220 Hz, return low-pass 7 kHz; pre-delay 25 ms,
-  longer at slow tempi) and a small room; a dotted-eighth **echo** on the pad and cycles (the change
-  plan's `echo` entries scale it).
-- **Under a narrator**: a static mid-only cut of 2.5 dB at 3.2 kHz and the pad's centre 3 dB down,
-  moving only with the hand-set section levels. No ducking.
-- **Master**: high-pass 25 Hz, mono below 140 Hz, the air shelf at **0 dB** (a piece may ask for up
-  to +1.5; anything higher is capped), gentle glue (at most 2 dB), true-peak limiter at -1 dBTP.
-  `mix.deliver()` makes web (-14), subtle web (-16.5), US TV (-24 LKFS, -2 dBTP) and EU TV (-23)
-  files from one premaster.
-- **Profiles**: `style="v1"` pieces (what the owner has heard) keep the whole old sound byte for
-  byte (checked 2026-11-25: `make-it-mine` renders identical to the delivered
-  `sb-take2-mix.wav`); `"v2"` (rounds 7-8) get the new sound with the old bus levelling; `"v3"`
-  (every recipe) gets every default.
-
-| Sound switch | Default | Other values | Whose call |
+| | A `type_short` | B `app_demo` | C `narrated` |
 |---|---|---|---|
-| `piano` | `upright-kw` | `vcsl-upright`, `salamander` (fetch with `fetch-samples.sh`) | [OWNER] A/B |
-| `pad_timbre` | `saw` | `triangle` (rounder) | [OWNER] |
-| `pad_sub` | off | on (a sine an octave down) | [OWNER] |
-| `damper_thump` | off | on (a felt thump as a damper lands; reads as a knock in a sparse tune) | [OWNER] A/B |
-| `air_db` | 0 | up to 1.5 per piece; `air_db=11,air_policy=as-written` = the old 11 dB shelf | A/B pair in the plan |
-| `air` (sketch only) | - | `air=legacy`: `air_db=11` and `air_policy=as-written` in one switch; in a sketch any `air_db` over 1.5 also lifts the cap | A/B pair in the plan |
-| `piano_layers`, `piano_even`, `piano_resonance`, `piano_shine`, `piano_bus_eq`, `glue`, `bus_gain`, `echo`, `voice_cut`, `string_loop` | the new sound | the old behaviour, for A/B | ours |
-| `pad_cutoff`, `pad_attack`, `pad_release`, `reverb_lp`, `reverb_hp`, `hall_predelay`, `piano_3k_cut`, `piano_saturation`, `pad_centre_under_voice` | as above | numbers | ours |
+| Length | 10-20 s | 30-75 s | 30-75 s |
+| Tempo | 100-120 from the cards | 104-120 | her band, nearest 120 |
+| Chords | Ebmaj9 / Abmaj9 per 2 bars | Ebmaj9 Cm9 Abmaj9 Bb9sus per 2 bars | on her sentence ends; `turn=` to bright |
+| Tune | none by default, or whole phrases | 2-bar phrases about half the time | only after her last word |
+| Ending | short, quiet logo | sigh, quiet logo | sigh, quiet logo |
+| Level | -16.5 (subtle) / -15 LUFS | -16 / -15 | her level by hand (-6 dB), -16.5 |
 
-## Measurement: hard fails and the dashboard
+Narrated: map her words with `films.speech_from_words(words.json, t_from, start_at=1.5)`, give
+`voice_mux=dict(path, t_from, start_at, music_db)` so her margin is measured. If she speaks into
+the name, ask the editor for 1-2 s after her last word; otherwise `ending="short"` and report it.
 
-**Hard fails** are faults whatever the music. Only these can fail a render:
+## The change plan
 
-| Check | Fails when |
-|---|---|
-| `clipping` | a clipped sample, or true peak over -1 dBTP |
-| `silence` | over a second of nothing between the first frame and the name |
-| `clash` | a semitone or minor ninth held more than half a beat between sustained notes below C5, or any such interval with a note outside the chord, or a tune note on a borrowed chord's clashing note, in a bar the composer did not mark (`Piece.clash_ok = {bar: "why"}`) |
-| `narrator-masked` | a tune or cycle note in her range (F3-E5) starting while she speaks; with `voice_mux`, her voice under 6 dB above the music in the phone band |
-| `length` | the wrong file length, the name more than 10 ms off its frame, a non-silent first or last sample, less than 1.5 s after the name, or a bar squeezed more than 50 % off the tempo to land the name |
+`changes=[(bar, what, arg)]`: `"in"`/`"out"` (`sustain`, `pulse`, `sub`), `"register"` (k scale
+steps), `"pool"`, `"density"`, `"brightness"` (0.7-1.3 on the pad filter), `"echo"`, `"family"`,
+`"peak"`. A layer fades over two bars. One change every 8-16 s; under 20 s, none or one.
 
-**The dashboard** is everything else, printed in groups with a target range and what it means.
-Each line starts with ` in `, `OUT` or `~`:
-- ` in ` the number is inside its range;
-- `OUT` it is outside: explain it in one line or change the music for a musical reason (THE RULE);
-- `~` a **reading**: a gauge nobody has calibrated by ear yet (`gap-fill`, `roughness`,
-  `novelty-peaks`). It is information to report, never OUT, and needs no explanation.
+## Sound switches (engine/options.py)
 
-| Group | Gauges (target) |
-|---|---|
-| the bed | `sustain` (>= 95 %, written in the notes AND heard in the audio: "100 % (heard 99 %)"), `pulse-rate` (2-4 a second; 1.5-3 narrated), `pulse-sim` (>= 0.85 bar to bar), `pedal-fit` (pool notes fit every chord), `gap-fill` (~ how far the level dips between pulse notes: median swing inside each half-second; round 8 mim-r5 1.9 dB, round 7's "choppy" 4.3) |
-| how busy | `attack-rate` (<= 4.5 a second), `groups` (<= 3), `fg-duty` (tune and cycles <= a third of any 8 bars), `fg-onsets` (<= 1 a second), `voice-busy` (<= 3 struck notes a second in her range [OWNER: 3 or 5]), `orphan` (0 phrases never echoed or answered) |
-| harmony | `common-tone`, `chord-variety` (enough chords; from 6 changes up, 3-chord runs <= 55 % unique), `borrowed` (<= 1), `held-sevenths` (major sevenths held low inside a chord) |
-| change | `change-plan` (8-16 s apart; a cycle never brought in counts at its first note), `surprise-budget`, `cycles` (count, co-prime, duty, rate, what was left out), `novelty-peaks` (~ turns heard vs planned + 1) |
-| touch and tone | `touch` (max 0.62, each phrase's spread <= 0.12), `tilt` (-5 to -12 dB an octave: the owner's piano logo is -11), `presence` (2-5 kHz <= -17 dB, 5-16 kHz <= -30), `roughness` (~ about the logo's 1.9-2.0x a plain triad) |
-| timing | `tempo-stretch` (<= 3 %), `narrator-tempo` (her band), `narrator-chords` (on her phrase ends), `voice-margin` (10-14 dB), `picture-sync` (weight-3 hits on, nothing early), `hit-budget` |
-| older checks | the round-8 composition checks (foundation, pulse, even, grid, phrases, the tune and cell identity limits, peak, settle, level-rate, tone, ...), with per-recipe targets: `loudness-range` is a ceiling only in a recipe; `bass-moves` is not shown when the pulse plays roots by design (`fig_bass`); `cell-present` allows recipe A to leave the tune out. `plateau` and `audio-nothing-new` are REMOVED (round 7's novelty quotas) |
-| mix | loudness, mono, the tune on top, attacks on notes, no drum-like attack, air (on the new master a ceiling only) and low bands (a ceiling only in a recipe; the floor stays for older pieces) |
+Order: `Piece.sound`, then `SONGBOOK_SOUND="k=v,..."`, then the style profile (v1 old sound, v2,
+v4 the unity defaults), then DEFAULTS. The unity switches: `tune_voice`, `lead_early_ms`,
+`shine_all`, `room`, `bowed_eq`, `piano_glue`, `pan_max`. Others: `piano` (upright-kw |
+vcsl-upright | salamander), `pad_timbre` (saw | triangle), `pad_cutoff`, `pad_sub`, `air_db`
+(capped at +1.5), `glue`, `echo`, `voice_cut`, `damper_thump`.
 
-**Reading the dashboard, line by line.** For each `OUT`, ask in order: (1) is this the music doing
-something wrong that a listener would hear (a hole in the bed, a phrase popping out, a clash)?
-change the music and say why; (2) is it the piece doing what its brief asked, which the gauge's
-general range does not know (a 12 s card with no lift, a narrated stretch cut mid-story)? one
-line in `Piece.explain`; (3) is the gauge measuring the wrong thing? say so in the report, never
-work around it in the music or by wrapping a tool. A `~` reading goes into the report as a
-number, with nothing done to it.
+## Owner switches (`recipes.OWNER_V4`; `owner_over={...}` or `SONGBOOK_OWNER="k=v"`)
 
-**Gauges a recipe user can only explain**, never fix in the music: `level-rate` at the default
-`pad_level` (the same dip `gap-fill` reads; write "the dip between pulse notes, the owner's
-pad_level A/B"), anything after the name that comes from the logo itself (`mix-attacks-on-
-notes` on the logo's plucks), `tempo-stretch` on a hand-pinned ending, and on a `--bed` render
-`cell-present`/`hit-budget` (no tune by design).
+`pulse` chord | pedal · `swing` straight | gentle · `sustain` pad | ring · `chords` rich | plain ·
+`pad_level` -8 | -4 | 0 · `fig_order` circle | cell (pedal pulse) · `narrator_tempo` near120 |
+stress · `voice_busy` 3 | 5. These are his to decide by ear; never decide them yourself.
 
-**THE RULE.** The dashboard never fails a render. For every out-of-range number the composer does
-one of two things: **explain it in one line** (`Piece.explain = {"gauge-id": "why"}`, printed next
-to it), or **change the music for a musical reason** and say what the reason was. Nothing musical
-is ever added, removed or bent to move a number: no layer added to brighten a gauge, no note moved
-to pass a count, no tool wrapped to dodge a check. A gauge reading out of range is information
-about the music; a composer who changes the music only to move the needle has made it worse.
+## Hard checks (only these fail a render)
 
-## The owner's switches [OWNER]
+`clipping` (a clipped sample or true peak over -1 dBTP) · `silence` (over a second of nothing
+before the name) · `clash` (a semitone or minor ninth held between sustained notes below C5, in a
+bar not marked in `Piece.clash_ok`) · `narrator-masked` (a tune note in her range while she
+speaks; her voice under 6 dB over the music) · `length` (wrong length, the name over 10 ms off,
+a non-silent first or last sample, under 1.5 s after the name).
 
-These are his decisions by ear. Each is a switch with a default; never decide them yourself.
-Change one for a run with `SONGBOOK_OWNER="sustain=held"`, per piece with `owner_over={...}`, or
-for the B sketch with `render.sh --sketch <film> sustain=held` (`narrator_tempo`, `voice_busy`
-and `under_voice` shape the piece as the recipe builds it, so they go through `SONGBOOK_OWNER`).
+## Pitfalls
 
-| Switch | Options (default first) | Question for him |
-|---|---|---|
-| `sustain` | `pad` / `held` / `ring` | the held layer: soft synth pad, held strings, or ringing piano |
-| `pulse` | `pedal` / `chord` | a pulse on a few fixed notes, or round 8's chord-following figure |
-| `narrator_tempo` | `near120` / `stress` | under her: a beat near 115-120, or at her stress rate (~138) |
-| `voice_busy` | `3` / `5` | struck notes a second in her range under her words (the gauge's target) |
-| `under_voice` | `static` / `follow` | a fixed tone change under her (built, in the mix) or a dip that follows her words (NOT built: his rule) |
-| `chords` | `rich` / `plain` | 9th and sus chords, or plain triads and sevenths |
-| `fig_order` | `circle` / `cell` | the pulse circling B-flat (B-flat G B-flat F B-flat E-flat), or the cell's own order (B-flat G F E-flat: the tune's first bar as a loop) |
-| `pad_level` | `-8` / `-4` / `0` | the held layer's level against the pulse, in dB: -8 is the plan's level; louder fills the gaps between pulse notes (the default sketch B is -4) |
+- **The tune laid on top** (rounds 6-8, the element deck): a fixed three-note cell dropped in by
+  bar number over chords not written for it. Write the phrase, then the chords under it.
+- **A brighter, separate tune**: shine, its own bus or an early strike on the tune alone make it a
+  second instrument. v4 does none of these; do not add them back.
+- **Strings as they sound today** own the 2-6 kHz band at a tenth of the energy. They stay out
+  until a soft, dark, slow string is rebuilt and approved by ear.
+- **Opening the pad's filter for brightness**: at 1500-1800 Hz the saw pad owned 72-81 % of
+  2-6 kHz in the worked example (measured). Brightness comes from the piano's shine.
+- **Setting a Piece field after the recipe built it**: pass everything as an argument.
+- **Anything that differs between two runs**: use the seeded helpers, never `hash()`. Note: held
+  strings seed their loop points from the sample's absolute path, so the same piece renders
+  differently from another checkout (measured: a v3 piece with held strings differs, one without
+  is byte-identical).
+- **Novelty quotas, gauges as goals, a tool wrapped to dodge a check**: never.
+- **Notes in her breaths, a beat at her syllable rate, a dip on every word**: never.
+- **"What GTA VI did"**: nothing about its menu music is published; do not claim it.
 
-The sound's own [OWNER] switches (the piano A/B, pad timbre, pad sub, damper thump) are in
-**The sound** above. The optional bed library (long approved beds that films
-are cut from) is not built: it would reverse "each film gets its own piece" and is his call.
+## Older pieces
 
-## Pitfalls (what went wrong, and must not come back)
+Pieces made before 2026-11-25 render as they were: `style="v1"` (what he heard before round 7),
+`"v2"` (rounds 7-8: `film_mim.py`, `film_own.py`, `film_tale.py`), `"v3"` (the recipe rebuild:
+`demos.py` recipe examples, the first-shot films `film_shot_*.py`, `auditions.py`). The element
+deck's clips came from `elements_review.py` (v3, a pinned copy). Old reports in `out/films/` may
+show the old dashboard. The old guide's full text is in git history (this file before 2026-11-25).
 
-- **The tune as wallpaper** (round 6): the opening bar seven times in 54 s. The tune is rare;
-  repetition belongs to the bed. That includes the pulse: a pool played in the cell's order is the
-  tune's first bar on a loop (`fig_order="cell"`); the default circles one note.
-- **Setting a Piece field after the recipe built it** (`PIECE.peak = ...`, `PIECE.voice_mux = ...`):
-  the recipe already used the value it had. Pass everything as an argument (`brief=`, `peak=`,
-  `voice_mux=`); an unknown sketch switch stops rather than being silently ignored.
-- **Anything that differs between two runs**: Python's `hash()` of a string changes in every
-  process; use the seeded helpers (`bed._u`, `cycles._rng`) or an index. Two renders of the same
-  piece must be byte-identical.
-- **Novelty quotas** (round 7): minimum rhythm variety, off-beat entries, "something new every N
-  s", accompaniment changes, a drop before the peak, more than 4 distinct chords, a minimum
-  loudness range above 2 dB. They made "choppy". Never re-add them under new names.
-- **Notes in her breaths** ("oddly thrown in"), and **a beat at her syllable rate** (busy).
-- **Uneven bed**: no phrase arch or 1/f tempo drift on the pulse; no voice-keyed ducking.
-- **Many layers at once** ("busy"): three groups at most.
-- **Bright** ("harsh"): the tilt gauge; soft touches; no high line alone in a thin bar.
-- **Gaps in the pulse**: two rests running opened a 10 dB hole (first recipe test); the drift
-  never makes one, but a hand-written mask can.
-- **Gaming the gauges** (round 8): a violin added to pass a brightness check, a tool wrapped to
-  dodge one. Explain the number instead.
-- **"What GTA VI did"**: nothing about its pause or map cue is published; do not claim it.
-- Treat numeric benchmarks from research (pulse similarity 0.86, chord-run 40 %) as direction,
-  not targets.
+## Files (`src/`)
 
-## Before reporting
-
-Read the bar table and the note log (`out/notes/<name>.txt`, `.log.txt`):
-- Is there one sustain and one pulse from the first beat to the name? Where does it thin, and is
-  that a planned change?
-- How many groups sound in each bar (`parts`: U pad, N pedalled ring, P piano pulse, H held
-  strings, K cycle, L tune, D its whimsy double, S sub)? A layer appears from the bar it fades in
-  on, not before.
-- Which `~` readings stand out (gap-fill above about 4 dB is the bed dipping between pulse notes)?
-- Does every tune phrase come back or get answered? Where is the tune silent?
-- What changes at each planned turn, and only that?
-- Under a narrator: her pace, the tempo, her margin, where the chords change against her
-  sentence ends.
-- Every out-of-range gauge: explained, or changed for a musical reason?
-
-## The owner's rulings (in his words where possible)
-
-- **No drums, claps or clacks, ever**, no kick and no kit.
-- **Never a fake-out or a "thwip"**: "it sounds like a 2005 browser demo switching pages". No
-  zips, sweeps, whooshes or risers.
-- **One piece of music per film**: "we cant *just* have notes, we need consistent
-  tunes/strings/chords/etc."
-- **No scattered high jingles.** A high part is a continuous line.
-- **Under a narrator, the music's level does not bounce**: set by hand per section, never an
-  automatic dip on every word.
-- **Coherent first, then subtle** ("odd/choppy/inconsistent", "busy/harsh", "oddly thrown in").
-- **Under a narrator, the music moves at her pace** ("the music is very slow/steady, while the
-  narrator is fast fast") - now through her tempo band, not her syllable rate.
-- **Music answers feelings; sound effects answer actions.**
-- **Sound effects are made for each film**; **pens are soft and smooth, never scratchy** ("Soft
-  pen" was his pick).
-- **The voice always wins.**
-- **Two logos**: "piano only if we're ever using the logo sound by itself without other music,
-  but the full blend if at the end of an ad with our other music."
-- **Subtle when asked**: fewer notes, softer touch, more space, one clear idea, and the quiet logo.
-- **Short films are short**: one unbroken, even phrase.
-- **Code-made music**, so every piece can be forked and iterated.
-
-## Identity reference
-
-**The tune** (E-flat major, 4 beats a bar): bar 1 **B-flat, G, F**, E-flat (the signature
-"you-co-ded"); bar 2 E-flat, high C, B-flat, G; bar 3 A-flat, G, E-flat, C; bar 4 E-flat, long D
-(a question); bars 5-6 as 1-2; bar 7 high C, B-flat, A-flat, G; bar 8 F, G, A-flat, B-flat; the
-ending's sigh high C, B-flat, then the logo. Rhythm mostly "long, long, longer, short". The cell
-"you-co-ded" (up a sixth, down a step) is heard at least once before the logo in a piece over 8 s
-(the pulse's pool plays it continuously in every recipe).
-
-**The chords**: bright E-flat | C minor | A-flat | B-flat; dark C minor | A-flat | F minor | G (the
-same seven notes, so the dark form changes no tune note); the turn A-flat, B-flat.
-
-**The blocks** (from "One becomes many", "Pizzicato bounce" and "Rocking piano, singing strings",
-the three pieces he said yes to; all still playable through `score.Section`): the answer (a second
-piano, it listens for space), the accompaniments (rolling, bounce, rocking, sparse, still, the
-round-8 figure, and now the pedal pulse), the layers (answers, plucked strings, held strings, solo
-violin, both, soft synth, sub, low cellos, air), the lift, the transitions (blend, build, flow,
-hold, breath), the moods (stark, hush, hopeful, playful, triumphant, and `bed` for the recipes).
-
-**The endings**: the band plays the logo as the song's last phrase in its own tempo: the
-cadence (A-flat then B-flat sus, slowing), the sigh (C6, B-flat 5), the logo's B-flat and G as
-pick-ups and F landing on the name. Full-blend (piano with plucked violins, low E-flat with cello
-and sub, a string swell, the second piano answering low), piano-only, quiet (`logo="quiet"`, for
-subtle films), short (`ending="short"`, two beats), none (`logo="none"`, a hand-on ending for a
-passage from the middle of a film). The logo files are used only when the logo plays alone
-(`out/logo-alone.wav`).
-
-## Pieces made before the rebuild (kept as the owner heard them)
-
-They render as they were (`style="v1"` or `"v2"`); their reports now show the hard checks and the
-dashboard. "Own everything" (`own-everything*`, 2026-11-20); "Make it mine" first score
-(`make-it-mine`, rejected: "extremely repetitive"); round 7 (`make-it-mine-r3`,
-`own-everything-10s`, `fairytale-score-r2`: choppy, busy/harsh, thrown in; no longer in the film
-list, their old reports remain in `out/films/`); round 8 (film files `film_mim.py`, `film_own.py`,
-`film_tale.py`; unheard); the demonstrations (`demo-*`, `example-bed`, `example-piano-ending`).
-Some old pieces fail the hard `clash` check (the stark mood's G pulse against A-flat, a
-semitone; `own-everything`, `-barest`, `-fast-barest`): that is their record, not something to
-fix in them.
-
-The round-8 film files (style `"v2"`) now play through the new sound. They still carry what their
-composers added to pass the old brightness floor: `air=12.5` (own), `air=17` and a held violin
-"air" layer (tale), `air=18`, `tone=3` and a shine wrapper around `Band.piano` (mim). The air
-values are capped to +1.5 dB by the new master; the rest still sounds. Before the owner hears a
-round-8 film again, its composer should take those out for musical reasons or say why they stay.
-
-## What is still weak (honest)
-
-- **Nobody has heard anything made with the rebuild.** The pad, the pedal pulse, the cycles and
-  the recipes are untested by ear; the three examples are proofs that the engine works. The
-  first-shot test ran on 2026-11-25 (six briefs, in `~/Documents/youcoded-campaign/round9/first-shot/`,
-  awaiting the owner's ratings); its friction reports drove the fixes in this file's procedure.
-- **No sting recipe and no loop measurement** (first-shot F): a sub-4-second end card is built by
-  hand, and nothing checks the seam of a piece played on repeat.
-- **Recipe C under a reader who never pauses** gives 13 near-identical bars of pad and pulse; it
-  has no sanctioned way to "widen" under her words beyond a chord turn and the pad's filter.
-- **The gauges are uncalibrated** until the first-shot test (`first-shot/`, prepared, not run):
-  `gap-fill`, `roughness` and `novelty-peaks` are readings (`~`); `tilt` and `presence` ranges
-  come from four pieces and the logo.
-- **The bed still dips between pulse notes** at the default `pad_level=-8` (gap-fill 4.3-5.7 dB on
-  the examples, against round 8's 1.9-3.0 and round 7's "choppy" 4.3; `pad_level=0` read 3.0 on
-  recipe B's first 20 s). `level-rate` reads the same thing (7.9 dB within a second: the gap
-  between two pulse notes). The balance is the owner's `pad_level` A/B, not a number to chase.
-- **Recipes A and C read darker than -12 dB an octave** (about the owner's piano logo, -11).
-- **Recipe B is a lot of foreground for 36 s**: three tune phrases and three cycle rounds fill
-  40 % of bars 7-14. Over 60 s the same recipe spreads out; under 40 s, two phrases may be better.
-- **Under a fast narrator the cycle never speaks** (no pause of a second until her last word), and
-  the music still rises about 6.5 dB from her last word to the quiet logo (the tune entering, the
-  pulse coming down into the piano's louder middle, the logo itself).
-- **Chords change only on a half-bar**, so a chord on her sentence end can be up to a second off;
-  `narrator-chords` reads it. **Syllables are counted from spelling** (about 10 % over).
-- **The held-strings loop** re-bows a recording's steady middle with crossfades and a level
-  follower; nobody has heard whether its joins show on a long held note.
-- **The A/B pianos are raw.** The VCSL upright needed two repairs at load (opposite-polarity
-  channels; recordings that stop while still sounding) and a flat level match; its soft G5 also
-  dies within 0.4 s and carries a small knock 0.55 s in, which F5-A5 soft notes inherit (the
-  attack gauge flags it after the logo). Salamander passes, and needs a CC-BY credit if published.
-- **The KTH loudness arch is held to +-1 dB** (the research's 1.5-2.5 dB would exceed the 0.12
-  touch spread); harmonic charge (a crescendo toward the chord furthest from home) is not built.
-- `sounds.pad_voicing` is unused (bed.py voices the pad itself, also against the pulse and bass).
-- `out/films/` still holds reports of films no longer listed (r1-r3, own-everything-10s); the
-  combined `checks.txt` folds them in.
-
-## Technical appendix
-
-**Commands** (about 1 s for notes, 15-40 s a render):
-
-```
-render.sh --brief  <film>            # steps 1-2: brief, card holds, tempo fit, her pace, motion grid
-render.sh --bed    <film>            # step 5: the bed alone, rendered
-render.sh --notes [--log] <film>     # step 6 on: notes bar by bar, the bed, hard checks, dashboard (no audio)
-render.sh --sketch <film> [k=v ...]  # step 7: two 20 s sketches into out/sketches/ (readings: whole piece)
-render.sh <film>                     # step 8: render, mix, measure (and <name>-bed.wav, the no-melody mix)
-render.sh --deliver <film> <dir> [picture=x.mp4] [from=s]   # step 9: mp3, and the mp4 with a picture
-render.sh --brief <film> range=88-100  # the tempo fit over a range you name
-render.sh --py -c "..."              # one toolkit function, with the right Python and paths
-```
-
-`<film>` = a film's name, a film file's key (`mim` for `src/film_mim.py`) or a demonstration's
-name. Never run `render.sh` with no arguments while others are composing (it re-renders
-everything). Films with `copy_to` (`own-everything`, `make-it-mine`) copy their file into
-`scripts/campaign/film/public/audio/` on every render; `SONGBOOK_NO_COPY=1 render.sh <film>`
-renders into `out/` only, for checking the toolkit without touching what an editor has cut to. Outputs (git-ignored): `out/films/<name>.wav`,
-`.checks.txt`, `.json`; `out/notes/<name>.txt` (bar table, recipe, bed, hard checks, dashboard),
-`.log.txt` (every note), `.grid.json` (motion grid); `out/sketches/`.
-
-**A film in its own file**: `src/film_<key>.py` exposing `FILM` (or `FILMS = [...]`); found
-automatically; `copy_to=None` until the owner picks it.
-
-**New Piece fields**: `style="v3"` (set by the recipes), `bed`, `changes`, `cycles`, `hits`
-(`[(s, weight, label)]`), `clash_ok`, `explain`, `recipe`, `brief`, `owner`, `voice_mux`, `sound`
-(the sound builder's switches). **New Section fields**: `fig_mode`, `fig_pedal`, `fig_mask`,
-`fig_mask_walk`, `fig_bass`, `fig_order`, `meter`. Recipe arguments beyond the brief's: `odd`,
-`odd_at`, `rit`, `subtle`, `voice_mux` (narrated), `owner_over`, `sound`, `explain`. Every older field (`Section` tune/accomp/add/drop/chords/
-level_db/ramp/shape..., `Piece` logo/ending/land/rit/loudness/touch/tone/mix...) still works.
-
-**The first-shot test**: `first-shot/` (the protocol, six unseen briefs, the dated ratings table).
-A composer under test must not read that folder.
-
-**Files** (`src/`): `recipes.py` (the recipes, `Brief`, `OWNER`, `Grid`, `land_after`, `sustain_mix`) · `bed.py` (sustain,
-layers, change plan, pad voicing) · `cycles.py` · `tunebank.py` (phrases, placing, mutation) ·
-`timing.py` (fit_tempo, narrator band, phrase ends, shared time line, ritardando, perceived
-attack) · `dashboard.py` (hard checks and gauges) · `studio.py` (the procedure's commands) ·
-`tune.py` (tune, chords, vocabulary,
-phrase bank) · `motif.py` (phrases and development) · `moods.py` · `blocks.py` (blocks into notes,
-the pedal pulse, phrase shaping) · `score.py` (sections, timing, the players) · `form.py` (the older
-composition checks and the bar table) · `measure.py` (mix and audio measurements) · `notes.py` ·
-`build.py` · `demos.py` · `films.py` · `mix.py` (buses, spaces, echo, voice cut, delivery) ·
-`engine/` (`sounds.py` instruments and the pad, `master.py`, `options.py` the sound switches,
-`dsp.py`).
+`recipes.py` (the recipes, `Brief`, `OWNER_V4`, tune-led chords, `land_after`) · `unity.py` (the
+readings) · `studio.py` (brief, notes, sketch, shelf, deliver) · `bed.py` (the held layer and its
+voicing) · `blocks.py` (tune, figure, pulse, endings) · `score.py` (sections, the band) · `mix.py`
+(buses, room, glue, bowed EQ) · `engine/options.py` (sound switches and profiles) ·
+`engine/sounds.py` (instruments) · `timing.py` · `tune.py` · `motif.py` · `tunebank.py` ·
+`dashboard.py` (hard checks; older gauges for v1-v3) · `films.py` · `film_*.py` · `cycles.py`
+(retired from the recipes; kept for the older pieces).
