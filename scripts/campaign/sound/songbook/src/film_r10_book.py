@@ -3,12 +3,15 @@ British), the stretch from "However, recently..." through "...artificial intelli
 on "wonderful"). Two 15 s sketches that answer the owner's doubt about her voice against our music
 ("she just seems to fast/harsh for our music selection maybe") in two honest ways:
 
-  book-a  MEET HER: a warmer, fuller, slightly livelier bed (124 bpm, gently swung, an even
-          eighth-note piano figure that follows the chords above her range, the chords ringing
-          on the same piano underneath); her voice untouched.
-  book-b  GIVE HER ROOM: a calm bed (120 bpm, straight, only three soft piano notes a bar that
-          follow the chords, the soft pad holding underneath), her pauses a little longer, and her
-          voice sat back 1.5 dB and gently de-harshened (EQ below).
+  book-a  MEET HER: one piano, livelier (124 bpm, gently swung, a chord every bar or two): the
+          ringing chords re-struck on every bar line with the bass, an upper line of the same
+          chords' notes stepping in quarter notes above her while she speaks and running in
+          swung eighths in her pauses; her voice untouched.
+  book-b  GIVE HER ROOM: calm (120 bpm, straight, slower chord changes): the soft pad and the
+          bass only while she speaks, two low piano notes in each of her longer pauses, her
+          pauses a little longer, and her voice sat back 1.5 dB and gently de-harshened (EQ below).
+  (Fix pass: every upper note is a pitch the bed holds lower; every chord change on a bar line
+  with its bass; see CHORDS and FIG.)
 
 Nobody here can hear: everything below was decided from word timings, the picture's measured
 cuts and the note list, and nothing claims it sounds good.
@@ -63,10 +66,14 @@ LAG = 0.12                     # music after the picture (his A1 pick was about 
 SPEC = {
     # WHY -11.5 for A (first try -10): her last word, "intelligence.", trails off; at -10 the fuller
     # bed sat only 5.0 dB under it (0.5 s windows, 300 Hz-8 kHz). One level for the whole sketch,
-    # set by hand, never a dip on the word: -11.5 keeps that word 6.5 dB over the music
-    "a": dict(bpm=240.0 / (5.8 / 3), holds=(15, 20), music_db=-11.5, voice_eq=False),
-    # WHY -10 for B: "her voice sat back" = 1.5 dB less voice over the music than A
-    "b": dict(bpm=120.0, holds=(21, 13), music_db=-10.0, voice_eq=True),
+    # set by hand, never a dip on the word: -11.5 keeps that word 6.5 dB over the music.
+    # WHY -12.5 (fix pass): with the ringing chords brought up to the upper line's level and
+    # re-struck every bar, the bar-7 chord under "artificial" (11.69 s) left her 5.7 dB clear, under
+    # the toolkit's 6 dB floor; the whole sketch comes down 1 dB rather than ducking that word
+    "a": dict(bpm=240.0 / (5.8 / 3), holds=(15, 20), music_db=-12.5, voice_eq=False),
+    # WHY -11 for B: "her voice sat back" = 1.5 dB less voice over the music than A (was -10
+    # against A's -11.5; both moved together)
+    "b": dict(bpm=120.0, holds=(21, 13), music_db=-11.0, voice_eq=True),
 }
 
 
@@ -165,6 +172,127 @@ def make_picture(key):
     return path
 
 
+# THE FIX PASS (a mix engineer's findings on the first sketches). WHY the harmony is written
+# bar by bar here instead of left on her sentence ends: the recipe put the turn and the B-flat sus
+# on half-bars, so the chord arrived top-first with the bass a half bar later, the turn sounded
+# after the page's glow had finished and the B-flat sus turned before the quill cut. Every change
+# is now on a bar line, struck with its bass (the figure's "b" opens every bar).
+#   A (124.14 bpm, bars of 1.933 s; cuts on bars 1, 4 and 8):
+#     1 Cm9 "However, recently..." | 2 Abmaj9 "something truly wonderful" | 3-4 Ebmaj9 the turn,
+#     on the bar line at 3.87 s, heard 3.99 s, one frame before the glow is steepest (4.03 s), and
+#     on through the cut to the corporations | 5 Cm9 "these corporations created" (their hubris
+#     darkens the home chord) | 6-7 Abmaj9 "a new kind of technology: artificial intelligence."
+#     | 8-9 Bb9sus on the quill cut (13.53 s, heard 3.6 frames after it): unresolved, her story
+#     goes on. Every chord shares Eb and Bb with the next.
+#   B (120 bpm): the same plan on its own bar lines, slower (a calm film gets fewer changes too):
+#     1 Cm9 | 2 Abmaj9 | 3-5 Ebmaj9 (the turn on the bar line at 4.0 s, heard 4.12 s) | 6-7
+#     Abmaj9 | 8 Bb9sus. B's quill cut (13.5 s) is on beat 4 of bar 7, not a bar line (that needs
+#     0.93 s more pause than the brief allows): its small event on that beat is one soft E-flat
+#     (a note of both chords), and the chord itself turns on the next bar line, 0.5 s after the cut.
+CHORDS = {
+    "a": ["Cm9", "Abmaj9", "Ebmaj9", "Ebmaj9", "Cm9", "Abmaj9", "Abmaj9", "Bb9sus", "Bb9sus"],
+    "b": ["Cm9", "Abmaj9", "Ebmaj9", "Ebmaj9", "Ebmaj9", "Abmaj9", "Abmaj9", "Bb9sus", "Bb9sus"],
+}
+
+# The held layer's voicing per chord (read off render.sh --notes: the ring in A and the pad in B
+# are voiced the same way). WHY written down here: every upper note in the figures below is checked
+# against it when the piece is built, so no high note is a pitch the bed under it does not hold
+# (the "high piano notes thrown in" finding: 24 of A's 54 figure notes were an F or G the ring did
+# not play). A voicing that changes makes the build stop, not drift.
+BED_PCS = {"Cm9": {"C", "Eb", "G", "Bb"}, "Abmaj9": {"Ab", "Bb", "C", "Eb"},
+           "Ebmaj9": {"Eb", "G", "Bb"}, "Bb9sus": {"Bb", "Eb", "Ab", "C"}}
+
+# THE FIGURES, one bar of eight eighth-note steps per bar: "b" the bass (the chord's root, held),
+# a note name, "-" hold, "r" rest. WHY these notes:
+#  - while she speaks only G5 and above (over her range, F3-E5), in quarter notes, never an
+#    eighth-note run: the first figure ran at 4.1 notes a second against her 4.2 syllables, a
+#    second voice chattering beside her. Nothing before "However," has ended (bar 1 waits for beat 3).
+#  - in her pauses (A: 4.47-5.38 s and from 12.61 s; B: 4.47-5.58 s, 7.59-7.63 is too short, and
+#    from 12.81 s) the line may run in eighths and come down to E-flat 5 / B-flat 4, just above the
+#    bed's top (G4/A-flat 4), so the upper line and the bed meet instead of leaving an octave gap.
+#  - every upper note is a pitch the bed holds lower (BED_PCS), so each one is the bed's own chord
+#    tone sounding again higher, not a separate tune.
+FIG = {
+    "a": [
+        # 1 Cm9: "However," 0.45-0.96 s; first upper note on beat 3 (0.97 s), after the word
+        "b - - - G5 - Bb5 -",
+        # 2 Abmaj9: she speaks throughout; quarters on 2, 3, 4
+        "b - Ab5 - Bb5 - C6 -",
+        # 3 Ebmaj9, THE TURN: "happened." ends 4.47 s; the line runs in her pause and comes down
+        "b - G5 - Bb5 Eb5 G5 -",
+        # 4 Ebmaj9: the corporations' cut; "Blinded by their own hubris," quarters
+        "b - G5 - Bb5 - G5 -",
+        # 5 Cm9: "these corporations created"
+        "b - G5 - C6 - G5 -",
+        # 6 Abmaj9: "a new kind of technology:"
+        "b - Ab5 - C6 - Ab5 -",
+        # 7 Abmaj9: "artificial intelligence." ends 12.61 s (beat 3 is 12.57 s, heard 12.69 s); then
+        # the line runs down in her silence towards the B-flat sus
+        "b - Ab5 - C6 Bb5 Ab5 Eb5",
+        # 8-9 Bb9sus, the still quill: thinner (quarters), low, next to the ring
+        "b - Eb5 - Ab5 - Bb5 -",
+        "b - Bb4 - Eb5 - Ab5 -",
+    ],
+    "b": [
+        # 1 Cm9: the bass waits until "However," has ended (beat 3, 1.0 s): the window opens on the
+        # pad alone (the first sketch's C2 struck at 0.1 s sat on her first word)
+        "r - - - b - - -",
+        # 2 Abmaj9: she speaks; the pad and the bass only
+        "b - - - - - - -",
+        # 3 Ebmaj9, the turn on the bar line; "happened." ends 4.47 s: two notes in her pause,
+        # low, next to the pad's G4 (B-flat 4 on beat 3, E-flat 5 on its "and": heard 5.12 and
+        # 5.37 s, both clear of "Blinded" at 5.58 s; on beat 4 the E-flat was heard on that word)
+        "b - - - Bb4 Eb5 - -",
+        # 4-5: she speaks ("hubris," 6.74-7.59 s gets nothing struck on it)
+        "b - - - - - - -",
+        "b - - - - - - -",
+        # 6 Abmaj9 under "technology:"
+        "b - - - - - - -",
+        # 7 Abmaj9: "intelligence." ends 12.81 s; beat 3 (13.0 s) and beat 4 (13.5 s, the quill
+        # cut's small event: E-flat, a note of this chord and the next)
+        "b - - - C5 - Eb5 -",
+        # 8 Bb9sus: she is silent; the pair answers once more, falling back to the bed's B-flat
+        "b - - - Eb5 - Bb4 -",
+        "b - - - - - - -",
+    ],
+}
+
+
+def _figure(key, sections):
+    """FIG[key] -> figure tokens for each section (chord-tone ladder numbers from the floor), and
+    the check that every upper note is a pitch class of the bed under it (BED_PCS)."""
+    import blocks as B
+    from dsp import note
+    pcs = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
+    out, k = [], 0
+    for s in sections:
+        bars = []
+        for j in range(s.bars):
+            chord = CHORDS[key][k + j]
+            toks = []
+            for t in FIG[key][k + j].split():
+                if t in ("b", "-", "r"):
+                    toks.append(t)
+                    continue
+                m = note(t)
+                if pcs[m % 12] not in BED_PCS[chord]:
+                    raise SystemExit(f"book-{key} bar {k + j + 1}: {t} is not held by the bed's {chord} "
+                                     f"({' '.join(sorted(BED_PCS[chord]))})")
+                lad = B._ladder(chord, note(FLOOR))
+                if m not in lad or lad.index(m) >= 9:
+                    raise SystemExit(f"book-{key} bar {k + j + 1}: {t} is not on {chord}'s ladder from {FLOOR}")
+                toks.append(str(lad.index(m) + 1))
+            bars.append(" ".join(toks))
+        out.append(bars)
+        k += s.bars
+    return out
+
+
+# WHY the ladder from B-flat 4: low enough for the pause notes (B-flat 4, E-flat 5) and, with
+# ladder numbers up to 9, high enough for C6 over every chord
+FLOOR = "Bb4"
+
+
 def _piece(key):
     sp = SPEC[key]
     bpm, holds = sp["bpm"], sp["holds"]
@@ -209,18 +337,24 @@ def _piece(key):
             owner_over=dict(pulse="chord", swing="straight", sustain="pad"), touch=0.24,
             notes="round 10 book B: give her room; 120 bpm, three soft chord notes a bar, the pad, voice softened",
             **common)
-    for s in p.sections:
-        # WHY the figure's floor at E-flat 5 (both): the chord figure's tones 2-4 then sit F5-C6,
-        # above her range (F3-E5) the whole time she speaks, the same place recipe C's high pulse
-        # sits, while every note comes from the chord the bass and the held layer play (rule 1: one
-        # harmonic plan; recipe C's fixed B-flat/F pool ignores the chords). The "b" token stays the
-        # chord's low root (C2-B-flat 2), under her.
-        s.fig_floor = "Eb5"
-        if key == "b":
-            # WHY three notes a bar for B (a calm film gets fewer notes, not just quieter ones): the
-            # low root on beat 1, held, and two high chord tones on beats 3 and 4, about 1.5 notes a
-            # second against A's 4
-            s.figure = ["b - - - 3 - 2 -", "b - - - 2 - 3 -"]
+    body = [s for s in p.sections if not getattr(s, "ending", False)]
+    k = 0
+    for s, fig in zip(body, _figure(key, body)):
+        # the bars' chords and figures as written above (the ending bar keeps the recipe's)
+        s.chords = [[c] for c in CHORDS[key][k:k + s.bars]]
+        s.figure = fig
+        s.fig_floor = FLOOR
+        k += s.bars
+        if key == "a":
+            # WHY 0.25 (was 0.28): the figure sat 10.3 dB over the ringing chords and its level
+            # stayed flat while they decayed; a softer touch plus the ring brought up (mix below)
+            # puts the upper line and the chords it comes from at one level
+            s.fig_touch = 0.25
+    if key == "a":
+        # WHY the ring 3 dB up (on top of the recipe's +4): the same piano's chords and its upper
+        # line now sit close in level (rule 5), one pair of hands rather than a loud line over a
+        # faint wash
+        p.mix = dict(p.mix, ring=p.mix.get("ring", 0.0) + 3.0)
     return p
 
 
