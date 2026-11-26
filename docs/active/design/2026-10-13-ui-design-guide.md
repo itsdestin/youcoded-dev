@@ -593,6 +593,11 @@ app's own.
   line at the bottom right. The box lines up with the content it sits in, and a failed list spans that
   list's width.
 - Errors follow `docs/error-message-standards.md`: never invent a cause.
+- **Recorded exception — the chat's red strip.** A one-line failure tied to something you just did in
+  that chat (a command that didn't go through) shows in the strip above the message box
+  (`ChatNoticeStrip`, red tone), not in `ErrorState`: it sits where you are already looking, belongs to
+  that one chat, and goes away when you act or dismiss it. A failure that needs Details and Try again
+  inside the conversation (the compact/clear card) still uses `ErrorState`.
 
 ### Empty states
 Two different jobs, two looks:
