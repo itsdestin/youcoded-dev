@@ -1,0 +1,283 @@
+--- /home/destin/youcoded-dev/worktrees/sessions/89-iphone-app/youcoded/desktop/src/main/harness/in-app-shell-worker.ts	1969-12-31 17:00:00.000000000 -0700
++++ repo/desktop/src/main/harness/in-app-shell-worker.ts	1969-12-31 17:00:00.000000000 -0700
+@@ -0,0 +1,118 @@
++// in-app-shell-worker.ts — one shell command, run on a phone that cannot start programs. A worker thread per command,
++// so Stop / the time limit / KillShell is simply `worker.terminate()`. [PROTOTYPE, design v2 §2-§8]
++//
++// WHY (iPhone app, card #89): iOS forbids starting any program, so the Bash tool runs just-bash (a shell written in
++// JavaScript, ~80 commands) with just-git as its `git`. Everything it can reach is the app's own Documents + tmp
++// folders; nothing else on the phone and none of the backend's secrets (userData, process.env) are visible.
++import { parentPort, workerData } from 'worker_threads';
++import fs from 'fs';
++import { lookup } from 'dns/promises';
++import { Bash, InMemoryFs, MountableFs, ReadWriteFs, defineCommand, type SecureFetch } from 'just-bash';
++import { createGit } from 'just-git';
++import { iosFetch } from '../headless/ios-fetch';
++import { assertPublicHttpUrl } from './tools/net-guard';
++
++interface Job { script: string; cwd: string; home: string; tmp: string; tokens: Record<string, string>; allowPrivate: boolean }
++const job = workerData as Job;
++
++// --- filesystem. WHY both spellings: iOS reaches Documents through /var -> /private/var; the other tools use whichever
++// spelling the OS handed out, and just-bash refuses a path that crosses a symlink, so each folder is mounted at its
++// logical path AND its realpath (same files, either spelling works).
++const base = new InMemoryFs();
++const mfs = new MountableFs({ base });
++const mounted: string[] = [];
++for (const dir of [job.home, job.tmp]) {
++  for (const at of new Set([dir, fs.realpathSync(dir)])) {
++    if (mounted.some((m) => at === m || at.startsWith(m + '/'))) continue; // tmp inside HOME is already covered
++    // allowSymlinks: a link inside a mount works (git repos need it); one pointing OUT of the mount is refused.
++    mfs.mount(at, new ReadWriteFs({ root: fs.realpathSync(dir), allowSymlinks: true, maxFileReadSize: 64 * 1024 * 1024 }));
++    mounted.push(at);
++  }
++}
++
++// --- honest absences: programs that cannot exist here answer with what to do instead (exit 127 = "not found").
++const NA = 'not available on this iPhone';
++const STUBS: Array<[string, string]> = [
++  ['python python3 pip pip3', `${NA} (no Python). For data use jq/awk/sort/cut; anything bigger: write the file and say so.`],
++  ['node npm npx yarn pnpm deno bun', `${NA} (no Node). Use jq/awk for data work; for a web page just write the .html file.`],
++  ['sudo apt apt-get brew yum dnf pacman snap', 'cannot install programs on this iPhone. Only the built-in commands exist (run `help`).'],
++  ['make gcc cc clang cargo go ruby perl php java ffmpeg convert magick pandoc ssh scp rsync docker gh open vim nano vi less', `${NA}.`],
++];
++const stubNames = new Set(STUBS.flatMap(([n]) => n.split(' ')));
++const stubs = STUBS.flatMap(([names, msg]) => names.split(' ').map((n) =>
++  defineCommand(n, async () => ({ stdout: '', stderr: `${n}: ${msg}\n`, exitCode: 127 }))));
++// A real `which` that agrees with the stubs (a stub is "not found").
++const which = defineCommand('which', async (args, c) => {
++  let out = ''; let rc = 0;
++  for (const n of args.filter((a) => !a.startsWith('-'))) {
++    const r = stubNames.has(n) ? { exitCode: 1, stdout: '' } : await c.exec!(`command -v ${JSON.stringify(n)}`, { cwd: c.cwd });
++    if (r.exitCode === 0) out += r.stdout; else rc = 1;
++  }
++  return { stdout: out, stderr: '', exitCode: rc };
++});
++
++// --- network. ONE fetch for curl and git: iosFetch (the app's own, no WebAssembly) with redirects followed by hand so every
++// hop is checked to be a PUBLIC address (no 127.0.0.1 = the backend itself, no home network). WHY not just-bash's own
++// denyPrivateRanges: it needs the `undici` library, which the iPhone bundle replaces with a stub (ios-undici.ts).
++async function safeFetch(input: string | URL | Request, init: RequestInit = {}): Promise<Response> {
++  let method = (init.method ?? 'GET').toUpperCase(); let body = init.body; const headers = new Headers(init.headers);
++  for (let hop = 0, cur = String(input); ; hop++) {
++    if (!job.allowPrivate) await assertPublicHttpUrl(cur, undefined, init.signal ?? undefined);
++    const res = await iosFetch(cur, { ...init, method, body, headers, redirect: 'manual' });
++    const loc = res.headers.get('location');
++    if (res.status < 300 || res.status >= 400 || !loc || init.redirect === 'manual') return res;
++    if (hop >= 20) throw new TypeError('too many redirects');
++    const next = new URL(loc, cur);
++    if (next.origin !== new URL(cur).origin) headers.delete('authorization');
++    if (res.status === 303 || ((res.status === 301 || res.status === 302) && method === 'POST')) { method = 'GET'; body = undefined; }
++    cur = next.href;
++  }
++}
++// just-bash's curl wants its own result shape.
++const curlFetch: SecureFetch = async (url, o = {}) => {
++  const res = await safeFetch(url, { method: o.method, headers: o.headers as HeadersInit, body: o.body, redirect: o.followRedirects === false ? 'manual' : 'follow',
++    signal: AbortSignal.timeout(o.timeoutMs ?? 120_000) });
++  return { status: res.status, statusText: res.statusText, headers: Object.fromEntries(res.headers), body: new Uint8Array(await res.arrayBuffer()), url: res.url || String(url) };
++};
++
++// --- git. WHY the guard: just-git mis-reads an index that is not version 2 or is a split index (a silent bad commit was
++// reproduced), so such a repository is refused with a sentence instead.
++const git = createGit({
++  identity: { name: 'YouCoded', email: 'you@youcoded.local' },
++  // The token comes from workerData (never the shell's environment): host -> token.
++  credentials: (url) => { const t = job.tokens[new URL(url).hostname]; return t ? { type: 'basic', username: 'x-access-token', password: t } : null; },
++  network: { fetch: safeFetch },
++});
++const guardedGit = defineCommand('git', async (args, c) => {
++  let start = c.cwd; // `git -C <dir>` works somewhere else: the guard must look there (found in testing: it was bypassed)
++  for (let i = 0; args[i] === '-C'; i += 2) start = c.fs.resolvePath(start, args[i + 1] ?? '.');
++  for (let dir = start; ; dir = dir.slice(0, dir.lastIndexOf('/')) || '/') {
++    const gitDir = `${dir === '/' ? '' : dir}/.git`;
++    if (await c.fs.exists(`${gitDir}/index`)) {
++      const head = Buffer.from(await c.fs.readFileBuffer(`${gitDir}/index`)).subarray(0, 8);
++      const split = (await c.fs.readdir(gitDir)).some((n) => n.startsWith('sharedindex.'));
++      if (head.readUInt32BE(4) !== 2 || split) {
++        return { stdout: '', stderr: 'git: this repository was made by a newer git than the one built in here (index version or split index); it cannot be used safely on this iPhone.\n', exitCode: 1 };
++      }
++      break;
++    }
++    if (dir === '/') break;
++  }
++  return git.execute(args, c);
++});
++
++const bash = new Bash({
++  fs: mfs,
++  cwd: mounted.some((m) => job.cwd === m || job.cwd.startsWith(m + '/')) ? job.cwd : job.home,
++  // Fresh environment: the backend's own process.env (keys, tokens) never reaches a command.
++  env: { HOME: job.home, USER: 'mobile', SHELL: '/bin/bash', TMPDIR: job.tmp, PATH: '/usr/bin:/bin', NO_COLOR: '1', LANG: 'C.UTF-8' },
++  // defenseInDepth crashes on Node 18; it guards just-bash's optional JS/Python runtimes, which are never enabled here.
++  defenseInDepth: false,
++  fetch: curlFetch,
++  customCommands: [guardedGit, which, ...stubs],
++});
++
++bash.exec(job.script).then(
++  (r) => parentPort!.postMessage({ stdout: r.stdout, stderr: r.stderr, exitCode: r.exitCode }),
++  (e) => parentPort!.postMessage({ stdout: '', stderr: `shell failed: ${e?.message ?? e}\n`, exitCode: 1 }),
++);
+--- /home/destin/youcoded-dev/worktrees/sessions/89-iphone-app/youcoded/desktop/src/main/harness/in-app-shell.ts	1969-12-31 17:00:00.000000000 -0700
++++ repo/desktop/src/main/harness/in-app-shell.ts	1969-12-31 17:00:00.000000000 -0700
+@@ -0,0 +1,35 @@
++// in-app-shell.ts — a child-process-shaped handle for one command run by in-app-shell-worker.ts (same pattern as
++// tools/in-process-search.ts), so bash.ts and the shell registry treat it like any spawned shell. [PROTOTYPE]
++import { EventEmitter } from 'events';
++import * as os from 'os';
++import * as path from 'path';
++import { PassThrough } from 'stream';
++import { Worker } from 'worker_threads';
++import type { ChildProcess } from 'child_process';
++
++/** `script` is the whole command text (bash.ts's cwd probe included). The shell's environment is built fresh in the worker, so
++ *  `opts.env` (which carries the backend's own process.env) is deliberately ignored. */
++export function spawnInApp(script: string, opts: { cwd?: string | URL }): ChildProcess {
++  const child = new EventEmitter() as EventEmitter & { stdout: PassThrough; stderr: PassThrough; exitCode: number | null; signalCode: string | null; pid?: number; kill(s?: string): boolean };
++  child.stdout = new PassThrough(); child.stderr = new PassThrough(); child.exitCode = null; child.signalCode = null;
++  const home = process.env.HOME || os.homedir();
++  const worker = new Worker(path.join(__dirname, 'in-app-shell-worker.js'), {
++    workerData: { script, cwd: String(opts.cwd ?? home), home, tmp: os.tmpdir(),
++      // Test-only hooks (removable): a token map and permission to reach 127.0.0.1.
++      tokens: JSON.parse(process.env.YOUCODED_SHELL_TEST_TOKENS || '{}'), allowPrivate: process.env.YOUCODED_SHELL_TEST_ALLOW_PRIVATE === '1' },
++  });
++  const finish = (code: number | null, signal: string | null, out = '', err = '') => {
++    if (child.exitCode !== null || child.signalCode !== null) return; // first answer wins
++    child.exitCode = code; child.signalCode = signal;
++    child.stdout.end(out); child.stderr.end(err);
++    child.emit('exit', code, signal);
++    setImmediate(() => child.emit('close', code, signal));
++    void worker.terminate();
++  };
++  worker.once('message', (m: { stdout: string; stderr: string; exitCode: number }) => finish(m.exitCode, null, m.stdout, m.stderr));
++  worker.once('error', (e) => { child.emit('error', e); finish(1, null); });
++  worker.once('exit', () => finish(1, null, '', 'the command stopped unexpectedly (the shell ran out of memory?)\n'));
++  // Stop / time limit / KillShell. No signal story here: the thread is simply ended.
++  child.kill = (signal) => { finish(null, signal ?? 'SIGTERM'); return true; };
++  return child as unknown as ChildProcess;
++}
+--- /home/destin/youcoded-dev/worktrees/sessions/89-iphone-app/youcoded/desktop/src/main/harness/shell-registry.ts	2026-11-25 21:48:04.044646884 -0700
++++ repo/desktop/src/main/harness/shell-registry.ts	2026-11-26 16:07:49.488343549 -0700
+@@ -6,6 +6,8 @@
+ // ctx.shells. Everything a run produces goes to an on-disk log from the
+ // first byte; a 200-line ring stays in memory for the finished notice and
+ // BashOutput; the card gets the last 40 lines over the wire.
++import { canRunPrograms } from '../headless/host-bridge';
++import { spawnInApp } from './in-app-shell';
+ import { spawn, type ChildProcess, type ChildProcessWithoutNullStreams, type SpawnOptions, type SpawnOptionsWithoutStdio } from 'child_process';
+ import { EventEmitter } from 'events';
+ import * as fs from 'fs';
+@@ -206,6 +208,9 @@
+ export function spawnDetached(cmd: string, args: string[], opts: SpawnOptionsWithoutStdio): ChildProcessWithoutNullStreams;
+ export function spawnDetached(cmd: string, args: string[], opts: SpawnOptions): ChildProcess;
+ export function spawnDetached(cmd: string, args: string[], opts: SpawnOptions): ChildProcess {
++  // WHY (iPhone, card #89): a phone cannot start programs, so the command runs in the app's own shell (a worker thread);
++  // the last argument is the command text, as with `bash -c`. Both Bash and the registry spawn through here.
++  if (!canRunPrograms()) return spawnInApp(args[args.length - 1], opts);
+   return spawn(cmd, args, { ...opts, windowsHide: true, detached: process.platform !== 'win32' });
+ }
+ 
+@@ -215,7 +220,8 @@
+  *  immediately — callers that need the exit await `run.exited`. */
+ export function killTree(child: ChildProcess, opts: { graceMs?: number } = {}): void {
+   const pid = child.pid;
+-  if (!pid) return;
++  // WHY: an in-app shell has no pid; ending its worker thread is the whole kill.
++  if (!pid) { if (!canRunPrograms()) child.kill(); return; }
+   if (process.platform === 'win32') {
+     try {
+       const tk = spawn('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
+--- /home/destin/youcoded-dev/worktrees/sessions/89-iphone-app/youcoded/desktop/src/main/harness/tools/bash.ts	2026-11-25 21:48:04.045967248 -0700
++++ repo/desktop/src/main/harness/tools/bash.ts	2026-11-26 16:07:49.488666904 -0700
+@@ -1,5 +1,6 @@
+ // PTY-less exec (spec §2.3): none of the ConPTY 56-byte machinery applies —
+ // that is a CC-TUI constraint, not an exec constraint.
++import { canRunPrograms } from '../../headless/host-bridge';
+ import * as fs from 'fs';
+ import * as os from 'os';
+ import * as path from 'path';
+@@ -108,6 +109,8 @@
+ /** Windows shell preference (spec §2.3): Git Bash when present (models write
+  *  bash), else PowerShell — and the tool DESCRIPTION states which is live. */
+ export function detectShell(): ShellInfo {
++  // WHY (iPhone, card #89): no program can start there; commands run in the app's own built-in shell (in-app-shell.ts).
++  if (!canRunPrograms()) return { cmd: 'bash', args: [], label: 'bash (built-in)' };
+   if (process.platform !== 'win32') return { cmd: '/bin/bash', args: ['-c'], label: 'bash' };
+   const gitBash = gitBashCandidates().find((p) => {
+     try {
+@@ -534,6 +537,8 @@
+     // the warning below too, so a request that silently can't be honored still
+     // gets an honest "won't persist" note instead of a false all-clear.
+     const captureEnv = probe && args.persistent_env === true;
++    // The built-in shell has no compgen/mktemp, which this feature's probe needs.
++    if (!canRunPrograms() && args.persistent_env) return { text: 'Bash rejected: persistent_env is not available on this iPhone (the built-in shell cannot carry variables between calls). Put the export and the command that needs it in one call.', isError: true };
+     // The exact env this child is spawned with — process.env plus whatever a
+     // PRIOR persistent_env call already captured, minus nothing. Doubles as the
+     // diff baseline in finish(): only a var that changed FROM this becomes
+--- /home/destin/youcoded-dev/worktrees/sessions/89-iphone-app/youcoded/desktop/src/main/harness/tools/index.ts	2026-11-25 22:16:00.130041488 -0700
++++ repo/desktop/src/main/harness/tools/index.ts	2026-11-26 16:07:57.506721815 -0700
+@@ -1,5 +1,4 @@
+ import type { NativeTool } from './types';
+-import { canRunPrograms } from '../../headless/host-bridge';
+ import { ReadTool } from './read';
+ import { WriteTool } from './write';
+ import { EditTool } from './edit';
+@@ -30,14 +29,9 @@
+  *  (interactive, driver-routed) comes last. */
+ export const CORE_TOOLS: NativeTool[] = [ReadTool, WriteTool, EditTool, BashTool, BashOutputTool, KillShellTool, GlobTool, GrepTool, TodoWriteTool, WebFetchTool, WebSearchTool, SendUserFileTool, SendUserLinkTool, ReadFileCommentsTool, ReplyToCommentTool, ResolveCommentTool, ReopenCommentTool, AddCommentTool, MoveCommentTool, AskUserQuestionTool];
+ 
+-/** Tools that ARE "start another program": the shell and its two companions. */
+-const PROGRAM_TOOLS = new Set(['Bash', 'BashOutput', 'KillShell']);
+-
+-/** The tools a session on THIS device can actually be given.
+- *  WHY (2026-11-25, iPhone app, card #89): an iPhone cannot start a program, so a model offered `Bash` there
+- *  would call it, fail, and try again — and tell the person to "run this command", which they cannot either.
+- *  A tool that cannot work is not offered. (Grep stays: it searches in-process where ripgrep cannot run.)
+- *  Everywhere else this is exactly CORE_TOOLS. */
++/** The tools a session on THIS device can be given. Today every device gets all of them: an iPhone cannot start
++ *  programs, but runs Bash in the app's own built-in shell (in-app-shell.ts). Kept as a function so a device can
++ *  withhold a tool again in one place. */
+ export function deviceTools(): NativeTool[] {
+-  return canRunPrograms() ? CORE_TOOLS : CORE_TOOLS.filter((t) => !PROGRAM_TOOLS.has(t.name));
++  return CORE_TOOLS;
+ }
+--- /home/destin/youcoded-dev/worktrees/sessions/89-iphone-app/youcoded/ios/runtime/build-backend.mjs	2026-11-25 23:03:19.534483751 -0700
++++ repo/ios/runtime/build-backend.mjs	2026-11-26 16:09:43.461391448 -0700
+@@ -37,12 +37,15 @@
+   'main/chatsearch-index/index-worker.ts',
+   'main/session-discovery-worker.ts',
+   'main/image-resize-worker.ts',
++  'main/harness/in-app-shell-worker.ts', // the iPhone's built-in shell, one worker per command
+ ];
+ const MAIN_ENTRY = 'main/headless/ios-main.ts';
+ 
+ /** Modules that cannot exist on an iPhone (native add-ons built per platform, or a browser driver). Left as
+  *  `require()` calls that throw only if a code path that cannot run on a phone is actually reached. */
+-const EXTERNAL = ['node-pty', 'koffi', 'fsevents', 'playwright-core', '*.node'];
++const EXTERNAL = ['node-pty', 'koffi', 'fsevents', 'playwright-core', '*.node',
++  // just-bash loads this at start-up inside a `.catch(() => {})`; its network layer is never used here (the shell is handed the app's fetch).
++  'guarded-fetch'];
+ 
+ /** Rewrites `__dirname` / `__filename` in the backend's own sources to the compiled-tree path of that file. */
+ const virtualPaths = {
+@@ -128,6 +131,9 @@
+       electron: path.join(SRC, 'main/headless/electron-headless.ts'),
+       // undici needs WebAssembly, which the iPhone's Node lacks: see ios-undici.ts.
+       undici: path.join(SRC, 'main/headless/ios-undici.ts'),
++      // just-bash's CJS build carries its own copy of undici/guarded-fetch inside; its ES build imports `undici` by name,
++      // which the alias above would break. (Unused at run time: the shell is given the app's fetch instead.)
++      'just-bash': path.join(DESKTOP, 'node_modules/just-bash/dist/bundle/index.cjs'),
+     },
+     external: EXTERNAL,
+     plugins: [virtualPaths],
+--- /home/destin/youcoded-dev/worktrees/sessions/89-iphone-app/youcoded/desktop/tests/main-blocking-calls.allowlist.json	2026-11-25 23:09:28.819626665 -0700
++++ repo/desktop/tests/main-blocking-calls.allowlist.json	2026-11-26 16:17:35.663969807 -0700
+@@ -10,6 +10,7 @@
+     {"file": "owned-lock.ts", "fn": "acquireOwnedLock.releaseSync", "call": "fs.readFileSync", "count": 1, "reason": "shutdown only: the app is exiting and cannot await the async release; reads one tiny owner file to confirm the lock is still ours"},
+     {"file": "owned-lock.ts", "fn": "acquireOwnedLock.releaseSync", "call": "fs.rmSync", "count": 1, "reason": "shutdown only: removes the lock folder at exit"},
+     {"file": "headless/headless-main.ts", "fn": "readSecrets", "call": "fs.readSync", "count": 1, "reason": "Android backend only: reads the owner token and secrets key from stdin once, before anything is loaded or listening (no event loop to block yet)."},
++    {"file": "harness/in-app-shell-worker.ts", "fn": "<top-level>", "call": "fs.realpathSync", "count": 2, "reason": "iPhone only, and on the shell's own worker thread (not the main thread): resolves the app's two folders once as the thread starts, before the command runs."},
+     {"file": "headless/ios-compat.ts", "fn": "installInProcessGuards.hold", "call": "require('fs').writeSync", "count": 1, "reason": "iPhone backend only, shutdown only: the one line the app watches for when the backend asks to exit; the thread is deliberately held still straight after, so there is nothing left to block."},
+     {"file": "crash-diagnostics.ts", "fn": "reportPreviousCrashes", "call": "fs.readdirSync", "count": 1, "reason": "startup only: main.ts reports the previous run's crash dumps once during launch"},
+     {"file": "crash-diagnostics.ts", "fn": "reportPreviousCrashes", "call": "fs.statSync", "count": 1, "reason": "startup only: main.ts reports the previous run's crash dumps once during launch"},
