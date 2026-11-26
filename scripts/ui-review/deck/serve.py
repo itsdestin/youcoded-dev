@@ -41,6 +41,28 @@ APP_TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javas
              '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf',
              '.wasm': 'application/wasm', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.jsonl': 'application/json'}
 
+# The recordings a deck plays (a clip step's .webm, a words step's `media`). WHY a table of its
+# own: Python's mimetypes has no entry for .opus/.oga/.m4a on some systems, and a recording
+# served as application/octet-stream may refuse to play.
+MEDIA_TYPES = {'.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.wav': 'audio/wav',
+               '.ogg': 'audio/ogg', '.oga': 'audio/ogg', '.opus': 'audio/ogg', '.flac': 'audio/flac',
+               '.mp4': 'video/mp4', '.m4v': 'video/mp4', '.webm': 'video/webm'}
+RANGE_RE = re.compile(r'^bytes=(\d*)-(\d*)$')
+
+
+def byte_range(header, size):
+    """(start, end) inclusive for a single `Range: bytes=a-b` header, None for no/unusable header
+    (serve the whole file), or 'bad' for one that lies past the end (416)."""
+    m = RANGE_RE.match((header or '').strip())
+    if not m or (not m.group(1) and not m.group(2)):
+        return None
+    if not m.group(1):                       # bytes=-N: the last N bytes
+        n = int(m.group(2))
+        return (max(0, size - n), size - 1) if n and size else 'bad'
+    start = int(m.group(1))
+    end = min(int(m.group(2)), size - 1) if m.group(2) else size - 1
+    return 'bad' if start >= size or end < start else (start, end)
+
 
 def answers_path(spec):
     return os.path.join(spec['_base'], spec['_stem'] + '.answers.json')
@@ -229,7 +251,57 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
                 self.send_header('content-length', '0')
                 self.end_headers()
                 return
+            if os.path.splitext(path)[1].lower() in MEDIA_TYPES and self._serve_media(path):
+                return
             return super().do_GET()
+
+        def _serve_media(self, path):
+            """A recording, with byte ranges. WHY: SimpleHTTPRequestHandler ignores `Range`, and
+            Chrome will not let a player seek in a file served without it — the scrub bar does
+            nothing, so "listen from 0:40" cannot be done. Returns False when the file is not
+            there, so the ordinary handler answers (a 404) as it always did."""
+            file = self.translate_path(path)   # the stdlib's own path cleaning, rooted at the spec folder
+            if not os.path.isfile(file):
+                return False
+            size = os.path.getsize(file)
+            rng = byte_range(self.headers.get('range'), size)
+            if rng == 'bad':
+                self.send_response(416)
+                self.send_header('content-range', f'bytes */{size}')
+                self.send_header('content-length', '0')
+                self.end_headers()
+                return True
+            start, end = rng or (0, size - 1)
+            self.send_response(206 if rng else 200)
+            self.send_header('content-type', MEDIA_TYPES[os.path.splitext(file)[1].lower()])
+            self.send_header('accept-ranges', 'bytes')
+            self.send_header('content-length', str(max(0, end - start + 1)))
+            if rng:
+                self.send_header('content-range', f'bytes {start}-{end}/{size}')
+            self.end_headers()
+            if self.command == 'HEAD':
+                return True
+            try:
+                with open(file, 'rb') as f:
+                    f.seek(start)
+                    left = end - start + 1
+                    while left > 0:
+                        chunk = f.read(min(1 << 16, left))
+                        if not chunk:
+                            break
+                        self.wfile.write(chunk)
+                        left -= len(chunk)
+            except (BrokenPipeError, ConnectionResetError):
+                pass   # the player moved on (a seek, a pause, a page change) — normal, not an error
+            return True
+
+        def do_HEAD(self):
+            if self._wrong_origin():
+                return self._json(403, {'error': 'wrong host or origin'})
+            path = self.path.split('?')[0]
+            if os.path.splitext(path)[1].lower() in MEDIA_TYPES and self._serve_media(path):
+                return
+            return super().do_HEAD()
 
         def list_directory(self, path):
             # Never list a folder: the deck folder holds other decks and their answers.

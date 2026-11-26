@@ -637,6 +637,9 @@ def validate(spec):
         if is_page(st):
             _validate_page(spec, st, sid, i, errors)
             continue
+        # Players with sound, checked for every kind so a picture step that carries them is
+        # refused by name rather than silently dropping them (see _validate_media).
+        _validate_media(spec, st, sid, errors, warnings)
         # Live FIRST: both the choice path and the default path *require* a crop, and a live
         # step turns that requirement off rather than inheriting it.
         if is_live(st):
@@ -1168,3 +1171,117 @@ def _validate_clip(spec, st, sid, errors):
                 errors.append(f'{sid}: clip has no file for run "{r}"')
     elif not isinstance(c, str) or not re.fullmatch(r'[\w.-]+', c):
         errors.append(f'{sid}: clip must be a scene name or {{run: path}}')
+
+
+# ── media: recordings he plays WITH SOUND, on a words step ─────────────────────────────────
+# WHY (Destin, 2026-11-25: "we should use the proper review deck format from now on. dont
+# create unique deck styling"): music and film rounds were reviewed on hand-made pages because
+# the deck could only show a muted, looping clip. `media` adds 1-4 labelled players (audio, or
+# video with sound and its own controls) to a words step, so a "which mix?" or "which cut?"
+# is an ordinary question or statement with the recordings above its options. A clip step is
+# untouched — its muted before/after loop means what it always meant.
+AUDIO_EXT = ('.mp3', '.m4a', '.aac', '.wav', '.ogg', '.oga', '.opus', '.flac')
+# .mov is left out on purpose: Chrome plays only some of them, and a player that silently shows
+# nothing is worse than a refusal that says "convert it to .mp4".
+VIDEO_EXT = ('.mp4', '.m4v', '.webm')
+POSTER_EXT = ('.png', '.jpg', '.jpeg', '.webp')
+MEDIA_MAX = 4
+MEDIA_LABEL_MAX = 6          # words: "Recipe C — narrated", the way he would say it
+MEDIA_LAYOUTS = ('row', 'stack')
+MEDIA_FIELDS = ('label', 'src', 'poster', 'summary')
+MEDIA_WARN_MB = 200          # one file this big is slow to open from a phone over the network
+
+
+def media_type(src):
+    """'audio' or 'video' from the file's extension, or None for one the deck cannot play."""
+    ext = os.path.splitext(str(src or ''))[1].lower()
+    return 'audio' if ext in AUDIO_EXT else 'video' if ext in VIDEO_EXT else None
+
+
+def _inside_spec_folder(path):
+    """A media path is RELATIVE to the spec and stays inside its folder. WHY: `serve` serves the
+    spec's folder and nothing else, so a file outside it (an absolute path, `../`) would play
+    when the page is opened as a plain file and 404 when it is served — two different decks."""
+    p = str(path or '')
+    if not p or os.path.isabs(p) or re.match(r'^[a-z][a-z0-9+.-]*:', p, re.I) or '\\' in p:
+        return False
+    norm = os.path.normpath(p)
+    return norm != '..' and not norm.startswith('..' + os.sep)
+
+
+def media_entries(st):
+    """The page data for a step's players: [{label, src, type, poster, summary}]."""
+    return [{'label': m['label'], 'src': m['src'], 'type': media_type(m['src']),
+             'poster': m.get('poster') or '', 'summary': (m.get('summary') or '').strip()}
+            for m in st.get('media') or []]
+
+
+def media_files(st):
+    """Every file a step's players load (recordings and posters), relative to the spec."""
+    out = []
+    for m in st.get('media') or []:
+        if isinstance(m, dict):
+            out += [m[k] for k in ('src', 'poster') if isinstance(m.get(k), str) and m[k]]
+    return out
+
+
+def _validate_media(spec, st, sid, errors, warnings):
+    """`media` (and `mediaLayout`) on one step. Shape and wording here; that the files exist is
+    checked by build_page, beside the clip and crop checks, so validation stays disk-free."""
+    if 'media' not in st:
+        if 'mediaLayout' in st:
+            errors.append(f'{sid}: mediaLayout arranges the players in "media" — this step has none')
+        return
+    # Words steps only. WHY: a picture step already owns the stage, and a contract or try-it
+    # slide is about something else; a question or a statement is where "which one?" is asked.
+    if not is_words(st) or is_contract(st) or is_dev(st):
+        errors.append(f'{sid}: media rides on a words step (a question or a statement, "words": true) '
+                      '— for a muted before/after recording use a clip step')
+        return
+    ms = st['media']
+    if not isinstance(ms, list) or not 1 <= len(ms) <= MEDIA_MAX:
+        errors.append(f'{sid}: media is a list of 1 to {MEDIA_MAX} recordings, each {{"label", "src"}}')
+        return
+    labels = set()
+    for i, m in enumerate(ms):
+        where = f'{sid}: media {i + 1}'
+        if not isinstance(m, dict):
+            errors.append(f'{where} must be {{"label": "…", "src": "…"}}')
+            continue
+        extra = [k for k in m if k not in MEDIA_FIELDS]
+        if extra:
+            errors.append(f'{where} carries only {", ".join(MEDIA_FIELDS)} (not {", ".join(extra)})')
+        label = m.get('label')
+        if not isinstance(label, str) or not label.strip():
+            errors.append(f'{where} needs a label — what he calls it when he answers')
+        else:
+            if word_count(label) > MEDIA_LABEL_MAX:
+                errors.append(f'{where} label is {word_count(label)} words — {MEDIA_LABEL_MAX} at most')
+            if label.strip().lower() in labels:
+                errors.append(f'{where} label "{label}" is used twice — he cannot say which one he means')
+            labels.add(label.strip().lower())
+        for k in ('label', 'summary'):
+            for w in banned_in(m.get(k)):
+                errors.append(f'{where} {k} uses banned word "{w}"')
+        if m.get('summary') is not None and not isinstance(m['summary'], str):
+            errors.append(f'{where} summary is one line of words')
+        elif word_count(m.get('summary')) > HEADLINE_MAX:
+            errors.append(f'{where} summary is {word_count(m["summary"])} words — {HEADLINE_MAX} at most')
+        src = m.get('src')
+        if not isinstance(src, str) or not src:
+            errors.append(f'{where} needs src — the recording, relative to this spec')
+        elif not _inside_spec_folder(src):
+            errors.append(f'{where} src "{src}" must be a path relative to this spec, inside its folder '
+                          '(the deck\'s server serves that folder and nothing else)')
+        elif not media_type(src):
+            errors.append(f'{where} src "{src}" is not a recording the deck plays — audio: '
+                          f'{" ".join(AUDIO_EXT)}; video: {" ".join(VIDEO_EXT)} (convert a .mov to .mp4)')
+        poster = m.get('poster')
+        if poster is not None:
+            if media_type(src) == 'audio':
+                errors.append(f'{where} poster is for a video — an audio player has no picture')
+            elif not isinstance(poster, str) or not _inside_spec_folder(poster) \
+                    or os.path.splitext(poster)[1].lower() not in POSTER_EXT:
+                errors.append(f'{where} poster must be a {"/".join(POSTER_EXT)} path relative to this spec, inside its folder')
+    if 'mediaLayout' in st and st['mediaLayout'] not in MEDIA_LAYOUTS:
+        errors.append(f'{sid}: mediaLayout must be "row" (side by side) or "stack" (one under another)')

@@ -1,0 +1,74 @@
+{
+  "_comment": [
+    "LISTEN / WATCH — recordings he plays WITH SOUND, on an ordinary words question. Use it for music, voice, sound effects and film cuts: anything judged by ear, or by eye and ear together.",
+    "\"media\" puts 1 to 4 labelled players on a words step (a question or a statement). Audio (.mp3 .m4a .aac .wav .ogg .oga .opus .flac) gets a player bar; video (.mp4 .m4v .webm) gets a player with sound and its own controls. Nothing autoplays, and starting one pauses the others.",
+    "Files are REFERENCED, never copied into the page: \"src\" is a path relative to this spec, inside this spec's folder (serve serves that folder and nothing else). Put them in a media/ folder beside the spec. build refuses a path that is missing, outside the folder, or a type the deck cannot play.",
+    "Muted before/after recordings of the app moving are still a CLIP step (clip.json). This template is for recordings whose SOUND is the point.",
+    "A deck of only words steps (with or without media) reads as scrolling pages, like questions.json; a media step also works one-per-screen inside a deck that has pictures."
+  ],
+  "title": "Campaign sound — which mix and which cut",
+  "_comment_title": "title: what this deck is about, in his words.",
+  "key": "campaign-sound-listen",
+  "_comment_key": "key: a short name for this deck. His answers are saved under it.",
+  "out": "campaign-sound.listen.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "themes": ["midnight", "light"],
+  "_comment_themes": "themes: the palettes the page offers; it opens on the one his app is on.",
+  "steps": [
+    {
+      "_comment": "AUDIO COMPARISON: two to four mixes, one under another, and the options he picks between below them. Label each player with the name the matching option uses, so 'Mix B' on the player is 'Mix B' in his answer.",
+      "id": "S-1",
+      "words": true,
+      "surface": "Fairytale film",
+      "path": "The music under the opening 38 seconds",
+      "headline": "Which of these three mixes should sit under the fairytale's opening?",
+      "today": "The opening has no music yet; the narration plays over silence.",
+      "_comment_today": "today / problem / proposal: the same three parts every question carries.",
+      "problem": "Without music the opening feels empty, and the three mixes below each change its mood differently.",
+      "proposal": "Pick the mix that should be finished and placed under the narration. Other lets you ask for something else.",
+      "media": [
+        {"label": "Mix A", "src": "media/a.mp3", "summary": "Felt piano and soft pulse, quietest of the three."},
+        {"label": "Mix B", "src": "media/b.mp3", "summary": "Adds plucked strings from the second bar."},
+        {"label": "Mix C", "src": "media/c.mp3"}
+      ],
+      "_comment_media": "media: 1 to 4 players. label (6 words at most, each different) is what he calls it; src is the file relative to this spec; summary is one optional line under the player. poster is allowed on a video only.",
+      "mediaLayout": "stack",
+      "_comment_mediaLayout": "mediaLayout: \"stack\" (one under another — the default for audio) or \"row\" (side by side — the default when any player is a video). Optional.",
+      "options": [
+        {"id": "mix-a", "label": "Mix A", "pros": ["Leaves the most room for the voice"], "cons": ["May read as unfinished"]},
+        {"id": "mix-b", "label": "Mix B", "pros": ["Lifts the mood when the story starts"], "cons": ["Busier under the voice"], "recommended": true},
+        {"id": "mix-c", "label": "Mix C", "summary": "The fullest of the three."}
+      ]
+    },
+    {
+      "_comment": "VIDEO WITH SOUND: two cuts side by side, each with its own player and controls. A yes/no question works too — leave out options and say in proposal what Yes and No lead to.",
+      "id": "S-2",
+      "words": true,
+      "surface": "Home ad",
+      "path": "The first ten seconds",
+      "headline": "Which cut of the home ad should open the campaign?",
+      "today": "Two cuts of the same ad exist; they differ in what you see first.",
+      "problem": "Only one can lead the campaign, and they feel different with the sound on.",
+      "proposal": "Pick the cut to finish. The other is kept as a spare.",
+      "media": [
+        {"label": "Cut A", "src": "media/cut-a.mp4", "summary": "Opens on the question being typed."},
+        {"label": "Cut B", "src": "media/cut-b.mp4", "summary": "Opens on the finished page."}
+      ],
+      "options": [
+        {"id": "cut-a", "label": "Cut A", "pros": ["Shows that you ask for it in plain words"], "cons": ["Slower first second"]},
+        {"id": "cut-b", "label": "Cut B", "pros": ["Starts on the result"], "cons": ["Less clear how you got there"]}
+      ]
+    },
+    {
+      "_comment": "A plain question beside them, no players: media is optional on every words step.",
+      "id": "S-3",
+      "words": true,
+      "surface": "Campaign",
+      "path": "Every film in the round",
+      "headline": "Should every film in this round end on the same three-note sting?",
+      "today": "Each film ends differently; some on silence, some on the last note of the music.",
+      "problem": "Without a shared ending the films do not read as one campaign.",
+      "proposal": "Yes adds the same short ending to every film; No leaves each as it is."
+    }
+  ]
+}

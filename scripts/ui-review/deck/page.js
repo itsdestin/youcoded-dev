@@ -19,7 +19,8 @@
   const ICON = {
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
-    warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
+    warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>',
+    play: '<svg viewBox="0 0 24 24"><path d="M4 10v4h3l5 4V6L7 10z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>' };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
   // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
@@ -263,13 +264,34 @@
     + `<button type="button" class="btn copycmd">Copy the command</button></div>`
     + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
     + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
-  // The body of one step, in the order the cards are read.
-  const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+  // PLAYERS WITH SOUND (`media` on a words step). WHY (Destin, 2026-11-25): music and film
+  // rounds were reviewed on hand-made pages because a deck could only show a muted loop. These
+  // are plain native players — sound on, controls visible, nothing autoplays — labelled the way
+  // he will name them in his answer. Video sits side by side and audio one under another unless
+  // the step's `mediaLayout` says otherwise; starting one pauses the rest (the `play` listener
+  // below), so two mixes never play over each other.
+  const mediaCard = st => {
+    const ms = st.media || [];
+    if (!ms.length) return '';
+    const video = ms.some(m => m.type === 'video'), audio = ms.some(m => m.type === 'audio');
+    const lay = st.mediaLayout || (video ? 'row' : 'stack');
+    const head = (audio && video ? 'Listen and watch' : video ? 'Watch' : 'Listen') + (ms.length > 1 ? ' and compare' : '');
+    const player = m => m.type === 'video'
+      ? `<video src="${esc(m.src)}"${m.poster ? ` poster="${esc(m.poster)}"` : ''} controls playsinline preload="metadata"></video>`
+      : `<audio src="${esc(m.src)}" controls preload="metadata"></audio>`;
+    return `<section class="card media ${lay}"><h3>${ICON.play}${esc(head)}</h3>`
+      + `<p class="mhint">${ms.length > 1 ? 'Sound on. Starting one pauses the others.' : 'Sound on.'}</p>`
+      + `<div class="mlist n${ms.length}">${ms.map(m => `<figure class="mclip ${m.type}"><figcaption>${esc(m.label)}</figcaption>`
+        + `<div class="mplay">${player(m)}</div>${m.summary ? `<p class="msum">${esc(m.summary)}</p>` : ''}</figure>`).join('')}</div></section>`;
+  };
+  // The body of one step, in the order the cards are read. The players come after the three
+  // parts of a question (what it is about) and before the options (what he picks between).
+  const cardsFor = st => st.kind === 'question' ? partCards(st) + mediaCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
     : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + alsoCard(st) + riskCard(st)
-    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
-    : changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st);
+    : st.kind === 'decide' ? partCards(st) + mediaCard(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
+    : mediaCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st);
 
   // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
   // does not exist. Decided per slide, because a deck may hold both kinds.
@@ -891,8 +913,27 @@
     zoom = Math.max(1, Math.min(4, Math.round(z * 10) / 10)); layout();
   }
   $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1); $('#replay').onclick = replay;
+  // One player at a time. `play` does not bubble, hence the capture phase. Only the `media`
+  // players: a clip step's ↻ replay plays its muted pair together on purpose.
+  document.addEventListener('play', e => {
+    if (!e.target.closest || !e.target.closest('.mclip')) return;
+    $$('.mclip audio, .mclip video').forEach(m => { if (m !== e.target && !m.paused) m.pause(); });
+  }, true);
+  // A recording that does not load says so in its own place, the way a missing picture does —
+  // an empty player bar reads as "press play", not as broken. `error` does not bubble either.
+  document.addEventListener('error', e => {
+    const t = e.target;
+    if (!(t.tagName === 'AUDIO' || t.tagName === 'VIDEO') || !t.closest('.mclip')) return;
+    const fig = t.closest('.mclip');
+    fig.classList.add('gone');
+    fig.querySelector('.mplay').textContent = state.submitted
+      ? 'This recording is no longer available — the review server stopped when you submitted.'
+      : 'This recording did not load (' + t.getAttribute('src') + ').';
+  }, true);
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    // A focused player uses ← → to seek; the deck must not also turn the page under it.
+    if (e.target.tagName === 'AUDIO' || e.target.tagName === 'VIDEO') return;
     if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1);   // go() decides what a submitted deck is allowed to do
     if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
     if (e.key === 'r' && curStep().kind === 'clip') replay();

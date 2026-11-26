@@ -8,9 +8,9 @@ import os
 
 from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
-from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
-                    is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
-                    workspace_root)
+from .spec import (MEDIA_WARN_MB, QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip,
+                    is_contract, is_decide, is_dev, is_page, is_question, is_words, media_entries, media_files, pages,
+                    run_names, step_runs, step_themes, validate, workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'youcoded': 'YouCoded', 'youcoded-night': 'YouCoded Night', 'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -157,6 +157,12 @@ def _words_step(spec, st):
     for k in QUESTION_FIELDS:
         if st.get(k):
             d[k] = st[k]
+    # Players with sound (spec._validate_media). Paths stay as written — relative to the spec,
+    # which is the folder `serve` serves — so a tens-of-MB recording is fetched, never inlined.
+    if st.get('media'):
+        d['media'] = media_entries(st)
+        if st.get('mediaLayout'):
+            d['mediaLayout'] = st['mediaLayout']
     return d
 
 
@@ -333,7 +339,16 @@ def build_page(spec, boxes):
         if is_live(st):
             continue   # nothing on disk to check — the pane is a running app; page.js probes the server
         if is_words(st):
-            continue   # nothing on disk to check — a question, a statement or a contract has no picture
+            # A question, a statement or a contract has no picture; its players (if any) are
+            # files on disk, refused here like a missing clip — a silent dead player is a hole.
+            for f in media_files(st):
+                full = os.path.join(spec['_base'], f)
+                if not os.path.isfile(full):
+                    errors.append(f'{st["id"]}: no recording at {f} (paths are relative to the spec)')
+                elif os.path.getsize(full) > MEDIA_WARN_MB * 1024 * 1024:
+                    warnings.append(f'{st["id"]}: {f} is {os.path.getsize(full) // (1024 * 1024)} MB — '
+                                    f'slow to open; a shorter excerpt reviews just as well')
+            continue
         if is_clip(st):
             vids, _ = clip_files(spec, st)
             for r in runs:

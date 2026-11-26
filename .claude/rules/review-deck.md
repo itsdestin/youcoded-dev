@@ -29,7 +29,8 @@ sign-off is a slide.
 | approve something unbuilt (`"new": true`: built, no before) | **Brief** | Yes build it / No leave it (`new`: keep/remove) |
 | pick between pictures of ONE thing | **Choice** | pick one / None of these |
 | pick between written options over a picture | **Decide** | pick one |
-| judge motion or a transition | **Clip** | Yes / No |
+| judge motion or a transition | **Clip** (muted loop) | Yes / No |
+| judge sound — music, voice, a film cut with audio | **Question** + `media` (`listen.json`): 1–4 labelled players, files relative to the spec | pick one, or Yes / No |
 | operate a design, or a real screen | **Live** | Yes / No, or pick one |
 | say whether it WORKS, in a dev window | **Try-it** | Yes it works / No |
 | ask anything answered in words — unbuilt, or already built | **Question** | Yes / No / Don't know, or pick one |

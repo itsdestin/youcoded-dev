@@ -151,7 +151,7 @@ class TemplateTests(unittest.TestCase):
 
     DIR = os.path.join(os.path.dirname(HERE), 'templates')
     NAMES = ['approve.json', 'brief.json', 'choice.json', 'clip.json', 'contract.json',
-             'decide.json', 'live.json', 'questions.json', 'tryit.json']
+             'decide.json', 'listen.json', 'live.json', 'questions.json', 'tryit.json']
 
     def _files(self):
         return sorted(f for f in os.listdir(self.DIR) if f.endswith('.json'))
@@ -202,6 +202,10 @@ class TemplateTests(unittest.TestCase):
         self.assertTrue(any(is_contract(s) for s in steps('contract.json')))
         self.assertTrue(any(is_question(s) for s in steps('questions.json')))
         self.assertTrue(any(is_page(s) for s in steps('questions.json')))
+        # Players with sound: an audio comparison and a video-with-sound comparison.
+        from deck.spec import media_type
+        kinds = {media_type(m['src']) for s in steps('listen.json') for m in s.get('media') or []}
+        self.assertEqual(kinds, {'audio', 'video'})
         # Approve and brief are the same shape; the run count is what tells them apart.
         approve, brief = load_spec(os.path.join(self.DIR, 'approve.json')), load_spec(os.path.join(self.DIR, 'brief.json'))
         self.assertEqual(len(approve['runs']), 2)

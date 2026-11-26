@@ -449,3 +449,26 @@ body[data-served="1"] .opendev{display:inline-flex}
 .frame.gone .pic{display:grid;place-items:center;min-height:120px;padding:16px;border:1px dashed var(--edge);border-radius:var(--radius-md);font-size:12px;line-height:1.5;color:var(--fg-muted);text-align:center}
 
 /* WHY pre-line on card text (2026-10-15): a field listing many items (the roadmap-move deck, one line per item) ran together into one wall; a line break the author wrote now shows. Ordinary prose has none, so it is unchanged. */
+/* PLAYERS WITH SOUND (`media` on a words step — see mediaCard in page.js). Native players on the
+   deck's own card, nothing styled inside them: the browser's controls are the ones he already
+   knows. The card spans the whole row on a one-step screen (the words grid would otherwise give
+   it one 260px cell). `row` lays 2-4 side by side, `stack` one under another; under 760px wide a
+   row stacks too, so a phone never gets four 80px players. Each label is the eyebrow idiom the
+   option cards use, because it is the name he answers with. */
+.card.media{grid-column:1/-1}
+.card.media .mhint{margin:-2px 0 8px;font-size:11px;color:var(--fg-muted)}
+.card.media .mlist{display:grid;gap:12px;grid-template-columns:1fr}
+.card.media.row .mlist.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card.media.row .mlist.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card.media.row .mlist.n4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:760px){.card.media.row .mlist.n2,.card.media.row .mlist.n3,.card.media.row .mlist.n4{grid-template-columns:1fr}} /* same weight as the n2-n4 rules above, or they win and a phone gets 120px players */
+.mclip{margin:0;min-width:0;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-md);padding:8px 10px}
+.mclip figcaption{font:600 13px/1.25 var(--font);color:var(--fg)}
+.mclip .mplay{min-width:0}
+.mclip audio{display:block;width:100%;height:40px}
+.mclip video{display:block;width:100%;max-height:62vh;background:#000;border-radius:var(--radius-sm)}
+.mclip .msum{font-size:12px;color:var(--fg-2)}
+.card.media.stack .mclip.audio{display:grid;grid-template-columns:minmax(120px,22%) 1fr;align-items:center;column-gap:12px}
+.card.media.stack .mclip.audio .msum{grid-column:2}
+@media (max-width:760px){.card.media.stack .mclip.audio{grid-template-columns:1fr}.card.media.stack .mclip.audio .msum{grid-column:auto}}
+.mclip.gone .mplay{display:grid;place-items:center;min-height:40px;padding:10px;border:1px dashed var(--edge);border-radius:var(--radius-sm);font-size:12px;line-height:1.5;color:var(--fg-muted);text-align:center}

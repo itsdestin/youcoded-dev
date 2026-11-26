@@ -255,6 +255,33 @@ with everything else. It is also the slide a `review` stage accepts.
 
 With options he **picks one**, or Other. Without them: **Yes / No / Don't know**.
 
+### Listen / watch — recordings with sound on a words step (`listen.json`)
+
+Music, voice, sound effects, film cuts: anything judged by ear. Add `media` to any words step
+(a question, a decide-in-words, a statement) and it gets 1 to 4 labelled players — audio as a
+player bar, video with sound and its own controls. Nothing autoplays; starting one pauses the
+others; ← → on a focused player seek instead of turning the page. The players sit after
+Today / The problem / Proposal and before the options, so a "which mix?" is an ordinary
+question with its recordings above the answers. Works on a paged question deck and on a
+one-step-per-screen deck alike.
+
+    "media": [{"label": "Mix A", "src": "media/a.mp3", "summary": "Quietest of the three."},
+              {"label": "Mix B", "src": "media/b.mp3"}],
+    "mediaLayout": "stack"
+
+| Field | Required | What it is |
+|---|---|---|
+| `media[].label` | yes | the name he answers with, 6 words at most, each different. Name the matching option the same |
+| `media[].src` | yes | the recording, a path **relative to the spec and inside its folder** (`serve` serves that folder and nothing else; put files in `media/` beside the spec). Audio: `.mp3 .m4a .aac .wav .ogg .oga .opus .flac`; video: `.mp4 .m4v .webm` (convert a `.mov`) |
+| `media[].poster` | no | video only: a `.png/.jpg/.jpeg/.webp` still shown before it plays |
+| `media[].summary` | no | one line under the player, 25 words at most |
+| `mediaLayout` | no | `"stack"` (one under another, the default for audio) or `"row"` (side by side, the default when any player is a video). Under 760px wide a row stacks |
+
+Files are referenced, never inlined, so tens of MB are fine; a file over 200 MB warns. `serve`
+answers byte ranges for recordings, so the scrub bar works. `preview` shows each player with its
+first frame (video) or an empty bar (audio) — it plays nothing. A **clip** step is unchanged:
+muted, looping before/after recordings of the app moving are still `clip`, not `media`.
+
 ### Statement — something you assert (also `"words": true`)
 
 A words step with `changed` + `notice` and no `today`. `yes` / `no` relabel the buttons (under
@@ -362,6 +389,14 @@ carries only "crop" and "label"`, `unknown crop "<x>" in the crop list`, a label
 with a banned word, `"panel" highlight needs ONE shoot screen crop`, and (at crop time) `a picture
 made of several screens has no element to measure`.
 
+Media: `media rides on a words step (a question or a statement, "words": true)` (also refused on a
+contract or try-it slide), `media is a list of 1 to 4 recordings`, `media N needs a label`, `label
+"x" is used twice`, `label is N words — 6 at most`, `media N carries only label, src, poster,
+summary`, `src "x" must be a path relative to this spec, inside its folder`, `src "x" is not a
+recording the deck plays`, `poster is for a video`, `poster must be a .png/.jpg/.jpeg/.webp path…`,
+`mediaLayout must be "row" … or "stack"`, `mediaLayout … this step has none`, and at build time
+`no recording at <path>`.
+
 `"new"`: `"new" is true or absent`, `"new" is for ONE picture with no before — a before/after slide
 already reads keep / revert`, `"new" is for a one-picture keep-or-remove slide, not a choice` (or a
 decide step).
@@ -463,6 +498,6 @@ That they fail loudly is correct; leave them as the record they are.
 ## Tests
 
 `cd scripts/ui-review/tests && python3 -m unittest test_spec test_words test_contract test_live
-test_tokens` (no binaries; also in CI). The renderer and the picture commands need Chrome and
+test_tokens test_media` (no binaries; also in CI). The renderer and the picture commands need Chrome and
 `magick`: `python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests
 -p 'test_*.py'` and `node --test scripts/ui-review/tests/deck-render.test.mjs`.
