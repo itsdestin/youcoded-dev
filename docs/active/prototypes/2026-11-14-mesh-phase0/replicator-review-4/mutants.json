@@ -1,0 +1,248 @@
+[
+ {
+  "id": "G1-gate-some",
+  "file": "replicator.ts",
+  "old": "return reachable.every((p) => p.headsComplete !== null && p.headsComplete >= this.#startedAt);",
+  "new": "return reachable.some((p) => p.headsComplete !== null && p.headsComplete >= this.#startedAt);"
+ },
+ {
+  "id": "G2-gate-alone-set-closed",
+  "file": "replicator.ts",
+  "old": "if (devs.length === 0) return true;",
+  "new": "if (devs.length === 0) return false;"
+ },
+ {
+  "id": "G3-gate-alone-immediately",
+  "file": "replicator.ts",
+  "old": "if (reachable.length === 0) return now - this.#startedAt >= WRITER_ALONE_MS;",
+  "new": "if (reachable.length === 0) return true;"
+ },
+ {
+  "id": "G4-gate-last-page-is-complete",
+  "file": "replicator.ts",
+  "old": "if (peer.pages.seen.size === peer.pages.of) { peer.headsComplete = now; peer.pages = null; }",
+  "new": "if (b.page === b.of - 1) { peer.headsComplete = now; peer.pages = null; }"
+ },
+ {
+  "id": "G5-gate-not-latched",
+  "file": "replicator.ts",
+  "old": "    this.#gate = true;\n    this.#ctx.bump(this.#o.devices()",
+  "new": "    this.#ctx.bump(this.#o.devices()"
+ },
+ {
+  "id": "G6-ignore-claim-of-more",
+  "file": "replicator.ts",
+  "old": "const against = h.lines > head.lines || (h.lines === head.lines && h.lines > 0 && h.hash !== head.hash);",
+  "new": "const against = (h.lines === head.lines && h.lines > 0 && h.hash !== head.hash);"
+ },
+ {
+  "id": "G7-claims-never-discounted",
+  "file": "replicator.ts",
+  "old": "if (now - since > CLAIM_UNBACKED_MS) {",
+  "new": "if (false) {"
+ },
+ {
+  "id": "G8-claim-clock-not-reset-by-batch",
+  "file": "receive.ts",
+  "old": "peer.claimSince.delete(sk);",
+  "new": ""
+ },
+ {
+  "id": "G9-gate-check-removed",
+  "file": "replicator.ts",
+  "old": "if (!run.evidence && !this.#gate && !this.gateOpen()) return { reason: 'waiting-for-peers' };",
+  "new": ""
+ },
+ {
+  "id": "G10-claim-diverged-same-count-ignored",
+  "file": "replicator.ts",
+  "old": "|| (h.lines === head.lines && h.lines > 0 && h.hash !== head.hash);",
+  "new": "|| false;"
+ },
+ {
+  "id": "G11-echo-claim-counts",
+  "file": "replicator.ts",
+  "old": "if (!h || now - h.at > PEER_FRESH_MS || h.state !== 'ok' || h.echo) continue;",
+  "new": "if (!h || now - h.at > PEER_FRESH_MS || h.state !== 'ok') continue;"
+ },
+ {
+  "id": "G12-refusal-does-not-reask",
+  "file": "replicator.ts",
+  "old": "if (g.reason !== 'refilling') this.askHeads();",
+  "new": ""
+ },
+ {
+  "id": "R1-crc-not-checked",
+  "file": "own-record.ts",
+  "old": "|| raw.readUInt32BE(40) !== crc32(raw.subarray(0, 40))",
+  "new": ""
+ },
+ {
+  "id": "R2-size-not-checked",
+  "file": "own-record.ts",
+  "old": "if (raw.length !== RECORD_BYTES ||",
+  "new": "if (raw.length < RECORD_BYTES ||"
+ },
+ {
+  "id": "R3-disagree-not-detected",
+  "file": "own-record.ts",
+  "old": "own.rec.lines === witness.rec.lines && own.rec.hash !== witness.rec.hash) fallback = 'own-records-disagree';",
+  "new": "own.rec.lines === witness.rec.lines && false) fallback = 'own-records-disagree';"
+ },
+ {
+  "id": "R4-behind-own-head-not-refused",
+  "file": "replicator.ts",
+  "old": "if (head.lines < eff.lines) return { reason: 'behind-own-signed-head' };",
+  "new": ""
+ },
+ {
+  "id": "R5-lower-record-not-checked",
+  "file": "replicator.ts",
+  "old": "for (const rec of ev.lower ? [eff, ev.lower] : [eff]) {",
+  "new": "for (const rec of [eff]) {"
+ },
+ {
+  "id": "R6-no-self-heal",
+  "file": "own-record.ts",
+  "old": "if (heal && !fallback && valid.length === 1 &&",
+  "new": "if (false && heal && !fallback && valid.length === 1 &&"
+ },
+ {
+  "id": "R7-pending-record-ignored",
+  "file": "replicator.ts",
+  "old": "    run.ownPending = { lines, hash };\n    return false;",
+  "new": "    run.ownPending = { lines, hash };\n    return true;"
+ },
+ {
+  "id": "R8-bad-record-is-absent",
+  "file": "own-record.ts",
+  "old": "reportFailure({ what: 'read the writer\\'s own record of its highest head (treated as bad, not as missing)', cause, where: 'mesh.replicator' }); return { kind: 'bad' }; }",
+  "new": "return { kind: 'absent' }; }"
+ },
+ {
+  "id": "R9-both-bad-trusted-blank",
+  "file": "own-record.ts",
+  "old": "else if (valid.length === 0 && (own.kind === 'bad' || witness.kind === 'bad')) fallback = 'own-records-unusable';",
+  "new": ""
+ },
+ {
+  "id": "S1-resolve-any-announcer",
+  "file": "replicator.ts",
+  "old": "|| !d2.writer.equals(dV.writer) || !isSelfForkToken(d2.writer, d2.token)) return;",
+  "new": "|| !isSelfForkToken(d2.writer, d2.token)) return;"
+ },
+ {
+  "id": "S2-resolve-any-token",
+  "file": "replicator.ts",
+  "old": "|| !d2.writer.equals(dV.writer) || !isSelfForkToken(d2.writer, d2.token)) return;",
+  "new": "|| !d2.writer.equals(dV.writer)) return;"
+ },
+ {
+  "id": "S3-retire-before-v2-caught-up",
+  "file": "replicator.ts",
+  "old": "if (h2.lines >= hV.lines) { // my lines past p",
+  "new": "if (true) { // my lines past p"
+ },
+ {
+  "id": "S4-old-history-never-kept",
+  "file": "replicator.ts",
+  "old": "if (mine !== theirs) { await this.clearFault(V);",
+  "new": "if (false) { await this.clearFault(V);"
+ },
+ {
+  "id": "S5-retire-regardless-of-incarnation",
+  "file": "replicator.ts",
+  "old": "if (v.incarnation === j.inc) {",
+  "new": "if (true) {"
+ },
+ {
+  "id": "S6-no-copy-into-v2",
+  "file": "replicator.ts",
+  "old": "if (h2.lines >= head.lines) break;",
+  "new": "break;"
+ },
+ {
+  "id": "S7-records-not-cleared",
+  "file": "replicator.ts",
+  "old": "      await this.#own.clear(wire);\n      this.#ctx.runOf(wire).caughtUp = false;",
+  "new": "      this.#ctx.runOf(wire).caughtUp = false;"
+ },
+ {
+  "id": "S8-writer-does-not-selffork",
+  "file": "receive.ts",
+  "old": "  if (iAmWriter) {\n    // I signed both",
+  "new": "  if (false) {\n    // I signed both"
+ },
+ {
+  "id": "S9-token-any",
+  "file": "selffork.ts",
+  "old": "token !== null && token.startsWith(`${writer.toString('hex')}:${SELF_FORK}:`)",
+  "new": "token !== null"
+ },
+ {
+  "id": "S10-resolve-without-fault",
+  "file": "replicator.ts",
+  "old": "if (runV.fault !== 'writer-signed-two-histories' && runV.fault !== 'unsigned-lines-contradicted') return;",
+  "new": ""
+ },
+ {
+  "id": "S11-v2-hash-at-p-unchecked",
+  "file": "replicator.ts",
+  "old": "|| (await this.#o.store.hashAt(vv.local, 0, p)) !== (d2.forkHash as Buffer).toString('hex')) return;",
+  "new": "|| false) return;"
+ },
+ {
+  "id": "S12-journal-not-written",
+  "file": "replicator.ts",
+  "old": "      await mkdirDurable(fs, nodePath.dirname(this.journalPath(wire)));\n      await writeFileAtomic(fs, this.journalPath(wire), Buffer.from(JSON.stringify(j)));\n    }",
+  "new": "    }"
+ },
+ {
+  "id": "S13-resume-skipped",
+  "file": "replicator.ts",
+  "old": "    await this.resumeSelfForks();\n",
+  "new": ""
+ },
+ {
+  "id": "S14-v2-token-not-writer-bound",
+  "file": "selffork.ts",
+  "old": "`${writer.toString('hex')}:${SELF_FORK}:${createHash('sha256').update(chatId).digest('hex').slice(0, 16)}`",
+  "new": "`${writer.toString('hex')}:${SELF_FORK}:`"
+ },
+ {
+  "id": "D1-saved-intro-unverified",
+  "file": "directory.ts",
+  "old": "if (this.check(body) === 'ok') { if (!kept) kept = body; }",
+  "new": "if (true) { if (!kept) kept = body; }"
+ },
+ {
+  "id": "D2-intro-copy-not-read",
+  "file": "directory.ts",
+  "old": "[nodePath.join(this.dir, 'intro', name), nodePath.join(this.dir, 'intro-copy', name)]",
+  "new": "[nodePath.join(this.dir, 'intro', name)]"
+ },
+ {
+  "id": "D3-token-binding-off",
+  "file": "directory.ts",
+  "old": "if (b.parent !== null && !(b.token as string).startsWith(`${b.writer.toString('hex')}:`)) return 'bad-token';",
+  "new": ""
+ },
+ {
+  "id": "D4-fork-id-unchecked",
+  "file": "directory.ts",
+  "old": "if (b.parent !== null && !b.version.equals(deriveForkId(b.parent, b.forkLine as number, (b.forkHash as Buffer).toString('hex'), b.token as string))) return 'bad-fork-id';",
+  "new": ""
+ },
+ {
+  "id": "A1-expected-head-ignored",
+  "file": "replicator.ts",
+  "old": "if (head.lines !== expected.lines || head.hash !== expected.hash) {",
+  "new": "if (false) {"
+ },
+ {
+  "id": "A2-ack-before-record",
+  "file": "replicator.ts",
+  "old": "const recorded = await this.saveOwnHead(wire, h.lines, h.hash); // AFTER",
+  "new": "const recorded = true; void this.saveOwnHead(wire, h.lines, h.hash); // AFTER"
+ }
+]

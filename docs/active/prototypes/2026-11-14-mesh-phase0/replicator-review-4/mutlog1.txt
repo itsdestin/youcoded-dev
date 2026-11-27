@@ -1,0 +1,21 @@
+G1-gate-some KILLED 53 s × one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes no
+G3-gate-alone-immediately KILLED 48 s × one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes no
+G5-gate-not-latched KILLED 49 s × with nobody reachable the writer waits a short, bounded time and then writes, counted as writing-alone 274ms
+G7-claims-never-discounted KILLED 48 s × a device that alternates between more and fewer lines cannot keep the writer waiting past the clock, and the status names the device 4207ms
+G9-gate-check-removed KILLED 49 s × one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes no
+G11-echo-claim-counts SURVIVED 132 s 
+R1-crc-not-checked KILLED 53 s × one flipped bit (count-low) in the record under replicator/own: the good record is used, the bad one rewritten and counted, and the chat keeps working 19ms
+R3-disagree-not-detected SURVIVED 103 s 
+R5-lower-record-not-checked KILLED 68 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1170ms
+R7-pending-record-ignored KILLED 49 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1178ms
+R9-both-bad-trusted-blank KILLED 48 s × both records bad: a writer that is NOT in sync with its own head never reads in-sync while it refuses, and one that runs on the store head says so 26ms
+S2-resolve-any-token KILLED 95 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1183ms
+S4-old-history-never-kept KILLED 48 s × both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 879m
+S6-no-copy-into-v2 KILLED 48 s × both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 844m
+S8-writer-does-not-selffork KILLED 48 s × both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 817m
+S10-resolve-without-fault KILLED 48 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1172ms
+S12-journal-not-written KILLED 48 s × both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 802m
+S14-v2-token-not-writer-bound KILLED 48 s × the token marks a self-fork only for its own writer and carries a domain word, so it cannot be mistaken for a takeover 4ms
+D2-intro-copy-not-read KILLED 48 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1173ms
+D4-fork-id-unchecked KILLED 50 s × a forged signature, an unknown writer and a child whose id does not match its fork are each refused by name 7ms
+A2-ack-before-record KILLED 48 s × both own records damaged, the store intact: the writer runs on the store head plus the peer gate, counted and named, and its records are rewritten (never a pe

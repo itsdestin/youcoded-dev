@@ -1,0 +1,2 @@
+range 4000+80 ndev=2 bad=0
+

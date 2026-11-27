@@ -1,0 +1,4 @@
+S2-resolve-any-token SURVIVED 120 s 
+S5-retire-regardless-of-incarnation SURVIVED 103 s 
+S7-records-not-cleared KILLED 61 s × both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 814m
+S10-resolve-without-fault SURVIVED 102 s 

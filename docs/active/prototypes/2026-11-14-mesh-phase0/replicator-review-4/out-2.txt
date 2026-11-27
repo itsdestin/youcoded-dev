@@ -1,0 +1,7 @@
+range 12000+150 ndev=2 bad=2
+SEED 12088 O3 B/cdd85b64 diverged peer 925ab90e claims a different history at the same point (not backed by a signed batch from it)
+   O3 writer refuses after heal: writer-diverged-from-peer on cdd85b64
+   LOG: append 2 saved | append 3 saved | append 2 saved | append 4 saved | restart A kill | snapshot A | restore A store+replicator+witness lost-by-restore 0 | A offline | A online | snapshot A | offline B | append 4 saved | restore A store+replicator+witness lost-by-restore 4 | append refused writer-waiting-for-peers | restore A store+replicator+witness lost-by-restore 0 | restore A store lost-by-restore 0 | append refused writer-waiting-for-peers | restart A | append refused writer-waiting-for-peers | append 4 saved
+SEED 12124 O3 B/5f580476 diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   O3 writer refuses after heal: writer-diverged-from-own-signed-head on 5f580476
+   LOG: append 2 saved | snapshot A | snapshot A | restore A store+witness lost-by-restore 0 | snapshot A | append 2 saved | restore A store lost-by-restore 0 | restart A kill | append refused writer-waiting-for-peers | offline B | append 3 saved | append 3 saved | restore A store+replicator+witness lost-by-restore 6 | append refused writer-waiting-for-peers | append 1 saved | restore A store+witness lost-by-restore 1 | online B | snapshot A | snapshot A | append refused writer-diverged-from-own-signed-head

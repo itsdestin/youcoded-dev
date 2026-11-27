@@ -1,0 +1,5 @@
+range 13500+45 ndev=3 bad=1
+SEED 13535 O3 B/b5deafeb diverged peer c0a5ebe5 claims a different history at the same point (not backed by a signed batch from it)
+   O3 C/b5deafeb diverged peer c0a5ebe5 claims a different history at the same point (not backed by a signed batch from it)
+   O3 writer refuses after heal: writer-behind-peer-holds-more on b5deafeb
+   LOG: append 2 saved | offline B | append 4 saved | append 1 saved | offline C | append 2 saved | snapshot A | snapshot A | append 2 saved | online C | append 3 saved | snapshot A | restart C kill | append 3 saved | restore A store+replicator+witness lost-by-restore 0 | append 1 saved | restore A replicator lost-by-restore 0 | append 1 saved | restore A store+replicator+witness lost-by-restore 0 | append 2 saved | restart B

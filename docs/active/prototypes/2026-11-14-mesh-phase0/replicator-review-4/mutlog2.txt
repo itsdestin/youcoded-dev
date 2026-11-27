@@ -1,0 +1,20 @@
+G2-gate-alone-set-closed KILLED 48 s × both own records damaged, the store intact: the writer runs on the store head plus the peer gate, counted and named, and its records are rewritten (never a pe
+G4-gate-last-page-is-complete KILLED 49 s × one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes no
+G6-ignore-claim-of-more KILLED 48 s × a device that alternates between more and fewer lines cannot keep the writer waiting past the clock, and the status names the device 4192ms
+G8-claim-clock-not-reset-by-batch KILLED 48 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1177ms
+G10-claim-diverged-same-count-ignored KILLED 48 s × a claim of the SAME count with another chain value is discounted the same way, and while it holds the status names the device without saying the chat diverged
+G12-refusal-does-not-reask KILLED 48 s × a refusal asks the others for their heads again, so it ends by itself once they answer 332ms
+R2-size-not-checked SURVIVED 136 s 
+R4-behind-own-head-not-refused KILLED 48 s × store AND replicator folder both put back (a restore of the mesh data), the peer unreachable: refused by name, nothing forks 265ms
+R6-no-self-heal KILLED 49 s × one flipped bit (count-high) in the record under replicator/own: the good record is used, the bad one rewritten and counted, and the chat keeps working 24ms
+R8-bad-record-is-absent SURVIVED 138 s 
+S1-resolve-any-announcer KILLED 65 s × a paired device cannot resolve that state with a self-fork look-alike: only the version's own writer's announcement counts 688ms
+S3-retire-before-v2-caught-up SURVIVED 103 s 
+S5-retire-regardless-of-incarnation KILLED 67 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1173ms
+S7-records-not-cleared KILLED 48 s × claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1177ms
+S9-token-any KILLED 48 s × the token marks a self-fork only for its own writer and carries a domain word, so it cannot be mistaken for a takeover 5ms
+S11-v2-hash-at-p-unchecked SURVIVED 132 s 
+S13-resume-skipped SURVIVED 103 s 
+D1-saved-intro-unverified KILLED 48 s × seed 300584 passes 1272ms
+D3-token-binding-off KILLED 63 s × a child announced with a token that does not start with its writer is dropped on its face 183ms
+A1-expected-head-ignored KILLED 48 s × an expected head makes a retry safe: the same lines are never appended twice, a moved head is refused by name 38ms

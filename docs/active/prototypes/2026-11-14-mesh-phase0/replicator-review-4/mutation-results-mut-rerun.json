@@ -1,0 +1,35 @@
+[
+ [
+  "G8-claim-clock-not-reset-by-batch",
+  "KILLED",
+  48,
+  [
+   "\u00d7 everything on the writer put back (store, replicator and witness) while a peer is reachable: the first seconds are a named wait, then a named refusal, then the lines come back and writing resumes 237ms",
+   "FAIL  tests/mesh/replicator-review2.test.ts > the writer never says \"saved\" for an append past a lost tail > everything on the writer put back (store, replicator and witness) while a peer is reachable: the first seconds are a named wait, then a named refusal, then the lines come back and writing resumes"
+  ]
+ ],
+ [
+  "R5-lower-record-not-checked",
+  "SURVIVED",
+  114,
+  []
+ ],
+ [
+  "R7-pending-record-ignored",
+  "KILLED",
+  48,
+  [
+   "\u00d7 lines durable but the own record could not be written to both places: a distinct named result, nothing announced, a named status, and the retry saves it without a second copy 120ms",
+   "FAIL  tests/mesh/replicator-review2.test.ts > appendLocal after a failure that left the lines durable > lines durable but the own record could not be written to both places: a distinct named result, nothing announced, a named status, and the retry saves it without a second copy"
+  ]
+ ],
+ [
+  "D2-intro-copy-not-read",
+  "KILLED",
+  48,
+  [
+   "\u00d7 one flipped bit in the saved announcement (intro): the chat is still known after a restart and the damaged file is rewritten 25ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the announcement of a version that only this device knows > one flipped bit in the saved announcement (intro): the chat is still known after a restart and the damaged file is rewritten"
+  ]
+ ]
+]

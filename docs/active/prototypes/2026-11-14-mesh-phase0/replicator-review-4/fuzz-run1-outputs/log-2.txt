@@ -1,0 +1,5 @@
+ RUN  v4.1.12 /home/destin/youcoded-dev/worktrees/sessions/64-mesh-sync-build/youcoded/desktop
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  00:32:48
+   Duration  270.72s (transform 295ms, setup 26ms, import 358ms, tests 270.24s, environment 0ms)

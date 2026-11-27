@@ -1,0 +1,10 @@
+range 2000+80 ndev=2 bad=3
+SEED 2023 O1 lost acknowledged lines: 6 e.g. {"type":"user","message":{"con
+   O3 B/20b15d56 diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   O3 writer refuses after heal: writer-behind-own-signed-head on 20b15d56
+   LOG: append 3 saved | append 3 saved | restart A kill | append 4 saved | append 2 saved | offline B | snapshot A | append 3 saved | restore A store+replicator+witness lost-by-restore 3 | append 1 saved | append 3 saved | restart A | online B | append 2 saved | restore A store+witness lost-by-restore 6
+SEED 2061 O3 B/478a52ae diverged peer de223c5d claims a different history at the same point (not backed by a signed batch from it)
+   O3 writer refuses after heal: writer-recopy-not-confirmed on 478a52ae
+   LOG: append 2 saved | append 3 saved | restart B kill | append 3 saved | snapshot A | restore A replicator lost-by-restore 0 | append 1 saved | restore A store+replicator+witness lost-by-restore 0 | offline B | online B | restore A replicator lost-by-restore 0 | restore A store+replicator+witness lost-by-restore 0 | restore A store+replicator+witness lost-by-restore 0 | append refused writer-waiting-for-peers | offline B | append refused writer-waiting-for-peers | append 1 saved | append 4 saved | restore A replicator lost-by-restore 0
+SEED 2068 O3 B/594e38ed diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   LOG: append 1 saved | append 1 saved | append 3 saved | snapshot A | snapshot A | append 1 saved | append 3 saved | snapshot A | restore A replicator lost-by-restore 0 | append 1 saved | snapshot A | snapshot A | restart B | offline B | restore A store+replicator+witness lost-by-restore 0 | restart B kill | append refused writer-waiting-for-peers | append 2 saved | restore A store+replicator+witness lost-by-restore 2

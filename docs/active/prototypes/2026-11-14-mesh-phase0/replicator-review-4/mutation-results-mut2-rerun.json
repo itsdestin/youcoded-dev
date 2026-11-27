@@ -1,0 +1,29 @@
+[
+ [
+  "S2-resolve-any-token",
+  "SURVIVED",
+  120,
+  []
+ ],
+ [
+  "S5-retire-regardless-of-incarnation",
+  "SURVIVED",
+  103,
+  []
+ ],
+ [
+  "S7-records-not-cleared",
+  "KILLED",
+  61,
+  [
+   "\u00d7 both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 814ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost"
+  ]
+ ],
+ [
+  "S10-resolve-without-fault",
+  "SURVIVED",
+  102,
+  []
+ ]
+]

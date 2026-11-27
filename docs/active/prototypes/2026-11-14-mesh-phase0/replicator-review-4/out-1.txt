@@ -1,0 +1,11 @@
+range 11000+150 ndev=3 bad=3
+SEED 11064 O3 B/0526419f diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   O3 C/0526419f diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   O3 writer refuses after heal: writer-behind-own-signed-head on 0526419f
+   LOG: offline C | offline B | snapshot A | append 1 saved | restore A store+replicator+witness lost-by-restore 1 | restart A kill | restart B kill | append refused writer-waiting-for-peers | restart A | restore A store+replicator+witness lost-by-restore 0 | snapshot A | restore A store+replicator+witness lost-by-restore 0 | append refused writer-waiting-for-peers | append 4 saved | append 1 saved | append 3 saved | append 1 saved | restore A store+witness lost-by-restore 9 | snapshot A | snapshot A | snapshot A
+SEED 11080 O3 C/36aa061a diverged peer 67466089 claims a different history at the same point (not backed by a signed batch from it)
+   LOG: offline B | snapshot A | append 3 saved | snapshot A | restore A store+replicator+witness lost-by-restore 0 | append 1 saved | restore A store lost-by-restore 0 | restore A store+replicator+witness lost-by-restore 0 | restore A replicator lost-by-restore 0 | snapshot A | append 1 saved | append 1 saved | restore A store+replicator+witness lost-by-restore 0 | restart A | restart A kill | append refused writer-waiting-for-peers | append refused writer-waiting-for-peers
+SEED 11092 O3 B/1f3940ad diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   O3 C/1f3940ad diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   O3 writer refuses after heal: writer-behind-peer-holds-more on 1f3940ad
+   LOG: offline B | append 2 saved | restart A | append 3 saved | offline C | restart A | append 3 saved | append 2 saved | online B | snapshot A | append 4 saved | offline B | append 1 saved | restore A store+replicator+witness lost-by-restore 1 | append 1 saved | A offline | A online

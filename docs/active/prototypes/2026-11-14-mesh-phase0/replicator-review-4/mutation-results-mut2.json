@@ -1,0 +1,167 @@
+[
+ [
+  "G2-gate-alone-set-closed",
+  "KILLED",
+  48,
+  [
+   "\u00d7 both own records damaged, the store intact: the writer runs on the store head plus the peer gate, counted and named, and its records are rewritten (never a permanent refusal) 21ms",
+   "FAIL  tests/mesh/replicator-review2.test.ts > the writer never says \"saved\" for an append past a lost tail > both own records damaged, the store intact: the writer runs on the store head plus the peer gate, counted and named, and its records are rewritten (never a permanent refusal)"
+  ]
+ ],
+ [
+  "G4-gate-last-page-is-complete",
+  "KILLED",
+  49,
+  [
+   "\u00d7 one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing 224ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the writer gate after a start > one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing"
+  ]
+ ],
+ [
+  "G6-ignore-claim-of-more",
+  "KILLED",
+  48,
+  [
+   "\u00d7 a device that alternates between more and fewer lines cannot keep the writer waiting past the clock, and the status names the device 4192ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the unbacked-claim clock > a device that alternates between more and fewer lines cannot keep the writer waiting past the clock, and the status names the device"
+  ]
+ ],
+ [
+  "G8-claim-clock-not-reset-by-batch",
+  "KILLED",
+  48,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1177ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "G10-claim-diverged-same-count-ignored",
+  "KILLED",
+  48,
+  [
+   "\u00d7 a claim of the SAME count with another chain value is discounted the same way, and while it holds the status names the device without saying the chat diverged 192ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the unbacked-claim clock > a claim of the SAME count with another chain value is discounted the same way, and while it holds the status names the device without saying the chat diverged"
+  ]
+ ],
+ [
+  "G12-refusal-does-not-reask",
+  "KILLED",
+  48,
+  [
+   "\u00d7 a refusal asks the others for their heads again, so it ends by itself once they answer 332ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the writer gate after a start > a refusal asks the others for their heads again, so it ends by itself once they answer"
+  ]
+ ],
+ [
+  "R2-size-not-checked",
+  "SURVIVED",
+  136,
+  []
+ ],
+ [
+  "R4-behind-own-head-not-refused",
+  "KILLED",
+  48,
+  [
+   "\u00d7 store AND replicator folder both put back (a restore of the mesh data), the peer unreachable: refused by name, nothing forks 265ms",
+   "FAIL  tests/mesh/replicator-review2.test.ts > the writer never says \"saved\" for an append past a lost tail > store AND replicator folder both put back (a restore of the mesh data), the peer unreachable: refused by name, nothing forks"
+  ]
+ ],
+ [
+  "R6-no-self-heal",
+  "KILLED",
+  49,
+  [
+   "\u00d7 one flipped bit (count-high) in the record under replicator/own: the good record is used, the bad one rewritten and counted, and the chat keeps working 24ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > own records with a checksum > one flipped bit (count-high) in the record under replicator/own: the good record is used, the bad one rewritten and counted, and the chat keeps working"
+  ]
+ ],
+ [
+  "R8-bad-record-is-absent",
+  "SURVIVED",
+  138,
+  []
+ ],
+ [
+  "S1-resolve-any-announcer",
+  "KILLED",
+  65,
+  [
+   "\u00d7 a paired device cannot resolve that state with a self-fork look-alike: only the version's own writer's announcement counts 688ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > a paired device cannot resolve that state with a self-fork look-alike: only the version's own writer's announcement counts"
+  ]
+ ],
+ [
+  "S3-retire-before-v2-caught-up",
+  "SURVIVED",
+  103,
+  []
+ ],
+ [
+  "S5-retire-regardless-of-incarnation",
+  "KILLED",
+  67,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1173ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "S7-records-not-cleared",
+  "KILLED",
+  48,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1177ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "S9-token-any",
+  "KILLED",
+  48,
+  [
+   "\u00d7 the token marks a self-fork only for its own writer and carries a domain word, so it cannot be mistaken for a takeover 5ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > the token marks a self-fork only for its own writer and carries a domain word, so it cannot be mistaken for a takeover"
+  ]
+ ],
+ [
+  "S11-v2-hash-at-p-unchecked",
+  "SURVIVED",
+  132,
+  []
+ ],
+ [
+  "S13-resume-skipped",
+  "SURVIVED",
+  103,
+  []
+ ],
+ [
+  "D1-saved-intro-unverified",
+  "KILLED",
+  48,
+  [
+   "\u00d7 seed 300584 passes 1272ms",
+   "FAIL  tests/mesh/replicator-fuzz.test.ts > replicator fuzz: seeds that once failed > seed 300584 passes"
+  ]
+ ],
+ [
+  "D3-token-binding-off",
+  "KILLED",
+  63,
+  [
+   "\u00d7 a child announced with a token that does not start with its writer is dropped on its face 183ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > a child announced with a token that does not start with its writer is dropped on its face"
+  ]
+ ],
+ [
+  "A1-expected-head-ignored",
+  "KILLED",
+  48,
+  [
+   "\u00d7 an expected head makes a retry safe: the same lines are never appended twice, a moved head is refused by name 38ms",
+   "FAIL  tests/mesh/replicator-review2.test.ts > appendLocal after a failure that left the lines durable > an expected head makes a retry safe: the same lines are never appended twice, a moved head is refused by name"
+  ]
+ ]
+]

@@ -1,0 +1,4 @@
+G8-claim-clock-not-reset-by-batch KILLED 48 s × everything on the writer put back (store, replicator and witness) while a peer is reachable: the first seconds are a named wait, then a named refusal, then th
+R5-lower-record-not-checked SURVIVED 114 s 
+R7-pending-record-ignored KILLED 48 s × lines durable but the own record could not be written to both places: a distinct named result, nothing announced, a named status, and the retry saves it witho
+D2-intro-copy-not-read KILLED 48 s × one flipped bit in the saved announcement (intro): the chat is still known after a restart and the damaged file is rewritten 25ms

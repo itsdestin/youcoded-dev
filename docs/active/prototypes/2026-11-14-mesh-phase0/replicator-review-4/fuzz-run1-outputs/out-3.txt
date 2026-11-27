@@ -1,0 +1,4 @@
+range 3000+80 ndev=3 bad=1
+SEED 3056 O3 B/18012c03 diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   O3 C/18012c03 diverged writer-two-histories (writer-signed-two-histories), waiting for the writer
+   LOG: append 3 saved | offline C | restart A kill | append 3 saved | append 1 saved | snapshot A | restore A store lost-by-restore 0 | append 1 saved | snapshot A | restore A store+replicator+witness lost-by-restore 0 | restore A store+replicator+witness lost-by-restore 0 | offline B | snapshot A | append 2 saved | snapshot A | restart A | restore A store+replicator+witness lost-by-restore 2

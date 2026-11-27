@@ -1,0 +1,185 @@
+[
+ [
+  "G1-gate-some",
+  "KILLED",
+  53,
+  [
+   "\u00d7 one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing 221ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the writer gate after a start > one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing"
+  ]
+ ],
+ [
+  "G3-gate-alone-immediately",
+  "KILLED",
+  48,
+  [
+   "\u00d7 one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing 224ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the writer gate after a start > one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing"
+  ]
+ ],
+ [
+  "G5-gate-not-latched",
+  "KILLED",
+  49,
+  [
+   "\u00d7 with nobody reachable the writer waits a short, bounded time and then writes, counted as writing-alone 274ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the writer gate after a start > with nobody reachable the writer waits a short, bounded time and then writes, counted as writing-alone"
+  ]
+ ],
+ [
+  "G7-claims-never-discounted",
+  "KILLED",
+  48,
+  [
+   "\u00d7 a device that alternates between more and fewer lines cannot keep the writer waiting past the clock, and the status names the device 4207ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the unbacked-claim clock > a device that alternates between more and fewer lines cannot keep the writer waiting past the clock, and the status names the device"
+  ]
+ ],
+ [
+  "G9-gate-check-removed",
+  "KILLED",
+  49,
+  [
+   "\u00d7 one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing 240ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > the writer gate after a start > one device answering completely does not open the gate while another reachable device has not: an empty list from a hostile device, or half a list, changes nothing"
+  ]
+ ],
+ [
+  "G11-echo-claim-counts",
+  "SURVIVED",
+  132,
+  []
+ ],
+ [
+  "R1-crc-not-checked",
+  "KILLED",
+  53,
+  [
+   "\u00d7 one flipped bit (count-low) in the record under replicator/own: the good record is used, the bad one rewritten and counted, and the chat keeps working 19ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > own records with a checksum > one flipped bit (count-low) in the record under replicator/own: the good record is used, the bad one rewritten and counted, and the chat keeps working"
+  ]
+ ],
+ [
+  "R3-disagree-not-detected",
+  "SURVIVED",
+  103,
+  []
+ ],
+ [
+  "R5-lower-record-not-checked",
+  "KILLED",
+  68,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1170ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "R7-pending-record-ignored",
+  "KILLED",
+  49,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1178ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "R9-both-bad-trusted-blank",
+  "KILLED",
+  48,
+  [
+   "\u00d7 both records bad: a writer that is NOT in sync with its own head never reads in-sync while it refuses, and one that runs on the store head says so 26ms",
+   "FAIL  tests/mesh/replicator-review3.test.ts > own records with a checksum > both records bad: a writer that is NOT in sync with its own head never reads in-sync while it refuses, and one that runs on the store head says so"
+  ]
+ ],
+ [
+  "S2-resolve-any-token",
+  "KILLED",
+  95,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1183ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "S4-old-history-never-kept",
+  "KILLED",
+  48,
+  [
+   "\u00d7 both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 879ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost"
+  ]
+ ],
+ [
+  "S6-no-copy-into-v2",
+  "KILLED",
+  48,
+  [
+   "\u00d7 both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 844ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost"
+  ]
+ ],
+ [
+  "S8-writer-does-not-selffork",
+  "KILLED",
+  48,
+  [
+   "\u00d7 both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 817ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost"
+  ]
+ ],
+ [
+  "S10-resolve-without-fault",
+  "KILLED",
+  48,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1172ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "S12-journal-not-written",
+  "KILLED",
+  48,
+  [
+   "\u00d7 both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost 802ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > both histories are kept: the peers' history stays under the chat, the newer lines move to a second version, every device ends in sync and nothing is lost"
+  ]
+ ],
+ [
+  "S14-v2-token-not-writer-bound",
+  "KILLED",
+  48,
+  [
+   "\u00d7 the token marks a self-fork only for its own writer and carries a domain word, so it cannot be mistaken for a takeover 4ms",
+   "FAIL  tests/mesh/replicator-selffork.test.ts > a writer restored from a backup that chats before it hears the others > the token marks a self-fork only for its own writer and carries a domain word, so it cannot be mistaken for a takeover"
+  ]
+ ],
+ [
+  "D2-intro-copy-not-read",
+  "KILLED",
+  48,
+  [
+   "\u00d7 claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof) 1173ms",
+   "FAIL  tests/mesh/replicator-hostile.test.ts > a paired device that lies about what it holds > claiming far more lines schedules a request and proves nothing: my copy is untouched and my status says I am still asking (guard: a claim is not proof)"
+  ]
+ ],
+ [
+  "D4-fork-id-unchecked",
+  "KILLED",
+  50,
+  [
+   "\u00d7 a forged signature, an unknown writer and a child whose id does not match its fork are each refused by name 7ms",
+   "FAIL  src/main/mesh/replicator/core.test.ts > the interim directory > a forged signature, an unknown writer and a child whose id does not match its fork are each refused by name"
+  ]
+ ],
+ [
+  "A2-ack-before-record",
+  "KILLED",
+  48,
+  [
+   "\u00d7 both own records damaged, the store intact: the writer runs on the store head plus the peer gate, counted and named, and its records are rewritten (never a permanent refusal) 22ms",
+   "FAIL  tests/mesh/replicator-review2.test.ts > the writer never says \"saved\" for an append past a lost tail > both own records damaged, the store intact: the writer runs on the store head plus the peer gate, counted and named, and its records are rewritten (never a permanent refusal)"
+  ]
+ ]
+]
