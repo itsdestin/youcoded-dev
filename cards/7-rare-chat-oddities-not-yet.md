@@ -1,7 +1,7 @@
 ---
 id: 7
 title: Chat view glitches: vanishing, stuck or misdrawn messages
-stage: explore
+stage: merged
 priority: P2
 tags: chat-data, desktop, needs-repro, claude-code-integration, chat, user-interface, bug
 branch: 7-rare-chat-oddities-not-yet

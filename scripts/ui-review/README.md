@@ -348,7 +348,7 @@ a journey or `explore start --params` passes them, a scene puts them in its `bas
 `open: ['<button label>']` and `shoot` clicks it before the picture (`scripts/shoot/README.md` →
 "Open this first"). A switch is for practice DATA (signed in, offline, ten friends), not clicks.
 
-Added 2026-10: `?autoInstall=off` (the update popup's auto-install switch starts off), `?gate=connecting|unreachable|tab|login` (the Android connection gate screen), `?refresh=fail` (the model-list refresh reports OpenRouter unreachable), `?slow=1` (the phone's "Waiting for your computer" strip), `?toast=password` (the saved-password-refused notice instead of the lost-send one).
+Added 2026-10: `?autoInstall=off` (the update popup's auto-install switch starts off), `?gate=connecting|unreachable|tab|login` (the Android connection gate screen), `?refresh=fail` (the model-list refresh reports OpenRouter unreachable), `?slow=1` (the phone's "Waiting for your computer" strip), `?toast=password` (the saved-password-refused notice instead of the lost-send one), `?statsFail=1` (the marketplace's votes/installs service answers 503, so the stats-unavailable notices show).
 
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
@@ -436,7 +436,21 @@ quit warning), `?switchFit=summary|working|error` (every model switch asks first
 runs forever; or it fails — default: fits), `?adminPasswordFail=1` (the admin-password card's
 "ask expired" state), `?docCommentsFail=<code>` (every new document comment fails with that
 real error code, e.g. `file-open-elsewhere`), `?docCommentsDetached=1` (one comment whose
-quoted text is no longer in its file).
+quoted text is no longer in its file), `?statsFail=1` (the marketplace's install and like
+counts fail to load, for the "could not load" notice with Try again; card #134 — read in
+`fixtures/marketplace/worker-api-mock.ts`, not the shim).
+
+Added since (documented 2026-11-19; the anchors check found them undocumented):
+`?signIn=waiting` (a started Claude sign-in stays on "finish in your browser"; unset it finishes
+after 2.5 s), `?online=0` (the app's connection check says offline; on the first-run sign-in step,
+a sign-in pressed with no internet; card #236), `?mpRefresh=fail` (the marketplace list loads once,
+then every refresh fails over the older list), `?turnedOff=1` (the turned-off practice plugin, Tab
+Tidy, appears), `?pastedPicture=1` (a picture lands in the message box, for the phone-paste review
+screen; card #134), `?buddySession=<id>` (with `?view=buddy-chat`: which session the buddy chat
+shows — default the first), `?phoneBrowser=site|final|handoff` (the Browser's open card as a phone
+receives it; card #205; read in `seed-chat.ts`). `?variant=` is not a switch of its own: it is the
+example name in `WorkbenchFrame.tsx`'s note that every unknown URL setting is passed through to
+the screen being compared.
 
 Added by the UI consistency round (documented 2026-10-13; same file):
 `?friends=none|many|requests|lots` (with `?signedIn=1`: no friends, four friends showing every

@@ -7,7 +7,7 @@ paths:
   # until 2026-07-26, so editing it injected NO rule — exactly the file where
   # the wrong-transcript bug landed.
   - "**/desktop/src/main/session-id-mapping.ts"
-last_verified: 2026-10-23
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/conversations/transcript-mirror.ts
     contains: "shrunk"
@@ -60,10 +60,10 @@ Records at `~/YouCoded/Personal/Conversations/<provider>/<id>.json` + transcript
 - **MovedGate (App.tsx):** the holder KEEPS the moved pill + destroys the CC session; `destroyedHandler` MUST read `movedSessionsRef.current`, never the STATE (stale closure).
 
 ## Resume Browser & identity (`session-browser.ts`)
-- **Topic-file mtime IS the index's `lastActive`** — rewrites MUST preserve it (`fs.utimesSync`), else a feedback loop bumps every session.
+- **The legacy index is frozen** — the Resume Browser reads the topic file first and falls back to the frozen index (`session-browser.ts:40-55`); no rewrite path remains, so there is no mtime to preserve.
 - **`sessionIdMap` remaps ONLY on a `SessionStart` whose `source` is not `startup`** — a `startup` on an already-mapped session is a FOREIGN nested `claude`. Fail-open on a missing `source`; first sighting never gated. Guard: `session-id-mapping.test.ts`.
 - **Name precedence: topic file > index topic > first-user-message > "Untitled".**
-- **Index keys are CC UUIDs — `SESSION_UUID_RE` gates topic-scan creation** (malformed entries are KEPT). **`cleanupPeriodDays` seeded 365 when absent, never overwritten.**
+- **`SESSION_UUID_RE` (`conversations/reconciler.ts`) gates record creation from malformed ids.** **`cleanupPeriodDays` seeded 365 when absent, never overwritten** (`retention-default.ts`).
 
 ## Slug→path resolution (`session-browser.ts`, `conversations/resolve-local-project.ts`)
 - **`walkSlugParts` MUST try the LONGEST leading segment first** — shortest-first descends into a shorter sibling → resume silently launched in `$HOME`.

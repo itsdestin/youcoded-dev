@@ -437,6 +437,9 @@ print(p)`;
       // Next page: the statement and TWO yes/no/don't-know questions (Q-4, and Q-5 added above
       // just for this test), all on one page.
       await c.evaluate("document.querySelector('#save').click()"); await sleep(300);
+      // Destin, 2026-11-23 ("even after ticking all boxes, the top bars aren't changing color?"): a finished page's bar is green on a deck
+      // that does not grow, too.
+      assert.equal(await c.evaluate("(()=>{const s=document.querySelector('#steps span');const t=document.createElement('i');t.style.background='var(--yes)';document.body.appendChild(t);const y=getComputedStyle(t).backgroundColor;t.remove();return s.classList.contains('done')&&getComputedStyle(s).backgroundColor===y})()"), true, 'the finished first page is green');
       assert.match(await c.evaluate("document.querySelector('#count').textContent"), /^\d+ of \d+ answered/, 'the count no longer says which page');
       assert.equal(await c.evaluate("document.querySelector('#wtitle').textContent"), 'What we promise');
       assert.equal(await c.evaluate("document.querySelector('#wsub').textContent"), 'Statements, not questions.');
@@ -1157,7 +1160,7 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p))
 def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
 row = b'\\x00' + b'\\x40\\x60\\x80' * 400
-png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'tEXt', b'youcoded-shot\\x00{"by": "shoot"}') + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
 open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
 raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Keep this layout?',
     'today': 'The board sits left of the chat.', 'problem': 'It is cramped.', 'proposal': 'Move it above.',
@@ -1293,7 +1296,7 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p))
 def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
 row = b'\\x00' + b'\\x40\\x60\\x80' * 400
-png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'tEXt', b'youcoded-shot\\x00{"by": "shoot"}') + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
 open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
 def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
 raw['steps'] = [{'id': 'P-1', 'page': 'Rows', 'intro': 'Judge the rows.'},
@@ -1480,6 +1483,8 @@ print(p)`;
       assert.match(await q("document.querySelector('li[data-call=chg] .callhead .how .tip').textContent"), /Reused from the app.*The pencil button.*New in this design.*The star/);
       // every list says which of the three kinds of card it is
       assert.equal(await q("document.querySelector('article.q .qnum .kindline').textContent"), 'Yours to change');
+      // Destin, 2026-11-23 ("no guidance for what the checkmarks mean"): the list says what a tick and the pencil do
+      assert.equal(await q("document.querySelector('article.q .listhelp').textContent"), 'Tick each one that is fine as it is. Press the pencil to say what should change.');
       assert.equal(await q("[...document.querySelectorAll('#cards *')].filter(e => parseFloat(getComputedStyle(e).borderLeftWidth) > 1.5 && getComputedStyle(e).borderRightWidth !== getComputedStyle(e).borderLeftWidth).length"), 0, 'no coloured bar at the left edge of anything ("fingernail")');
       // a video is a tile like any picture; its window plays it with controls and cannot be dragged on
       await q("document.querySelector('li[data-call=new] .atthead').click()");
@@ -1594,7 +1599,7 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p))
 def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
 row = b'\\x00' + b'\\x40\\x60\\x80' * 400
-png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'tEXt', b'youcoded-shot\\x00{"by": "shoot"}') + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
 open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
 def lst(i, h, calls, **kw): return {'id': i, 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': h, 'calls': calls, **kw}
 raw['steps'] = [{'id': 'P-1', 'page': 'Rows', 'intro': 'Judge the rows.'},
@@ -1766,12 +1771,11 @@ json.dump(raw, open(p, 'w'))`;
       assert.match(await q("document.querySelector('.handledgrp').innerText"), /this page line is unclear to me[\s\S]*Rewrote the page line\./);
       assert.equal(await q("document.querySelectorAll('.handledtopic').length"), 1);
       // the past is one small plain line with a text link, not a box with a chevron
-      assert.match(await q("document.querySelector('.pasttext:not(.reframe)').firstChild.textContent"), /^You asked for it bigger\./);
-      // Destin, 2026-11-18: a topic he asked about returns reframed: his words and what is clearer now, quietly above the body (no bar, no dot)
-      assert.deepEqual(JSON.parse(await q("JSON.stringify([...document.querySelectorAll('article.q[data-id=Q-3] .pastline .reframe')].map(e => e.innerText))")),
-        ['You asked: \u201cmake it bigger please, why is it so small?\u201d', 'Clearer now: Said what the size changes.']);
-      assert.equal(await q("document.querySelectorAll('article.q[data-id=Q-4] .reframe').length"), 0, 'a topic that was not reframed shows none');
-      assert.equal(await q("(()=>{const e=document.querySelector('article.q[data-id=Q-3] .reframe'),c=getComputedStyle(e);return c.borderLeftWidth+'|'+c.fontSize})()"), '0px|12px', 'quiet: no left bar, small text');
+      assert.match(await q("document.querySelector('.pasttext').firstChild.textContent"), /^You asked for it bigger\./);
+      // Destin, 2026-11-18 ("i hate this new section… confusing as fuck visually"): a reframed topic shows ONE past line above it, never
+      // "You asked: / Clearer now:" lines; the clearer question is the answer, his words sit under More.
+      assert.equal(await q("document.querySelectorAll('article.q[data-id=Q-3] .pastline .pasttext').length"), 1, 'one line above a reframed question');
+      assert.equal(await q("/Clearer now|You asked:/.test(document.querySelector('article.q[data-id=Q-3]').innerText)"), false, 'no note about the reframe');
       assert.equal(await q("document.querySelector('.pastline .revealbody').hidden"), true, 'the story opens on request');
       assert.equal(await q("document.querySelector('.pastline .revealbtn').textContent"), 'More');
       await q("document.querySelector('.pastline .revealbtn').click()"); await sleep(100);
@@ -2014,7 +2018,7 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p))
 def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
 row = b'\\x00' + b'\\x40\\x60\\x80' * 400
-png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'tEXt', b'youcoded-shot\\x00{"by": "shoot"}') + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
 open(os.path.join(os.path.dirname(p), 'pic.png'), 'wb').write(png)
 raw['steps'] = [{'id': 'L-2', 'words': True, 'surface': 'Games', 'path': 'Rows', 'headline': 'Calls I made', 'gallery': True,
   'calls': [{'id': 'a', 'call': 'No sound.', 'why': 'None else.', 'picture': 'pic.png'}, {'id': 'b', 'call': 'Five rows.', 'why': 'Matches.'}]}]
@@ -2076,7 +2080,7 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p)); q1 = raw['steps'][0]
 def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
 row = b'\\x00' + b'\\x40\\x60\\x80' * 400
-png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
+png = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 400, 300, 8, 2, 0, 0, 0)) + chunk(b'tEXt', b'youcoded-shot\\x00{"by": "shoot"}') + chunk(b'IDAT', zlib.compress(row * 300)) + chunk(b'IEND', b'')
 for n in ('a.png', 'b.png'): open(os.path.join(os.path.dirname(p), n), 'wb').write(png)
 opts = [{'id': 'a', 'label': 'Hover', 'pros': ['Clean.'], 'cons': ['No phone.'], 'picture': 'a.png', 'caption': 'On hover.'},
         {'id': 'b', 'label': 'Always', 'pros': ['Visible.'], 'cons': ['Busy.'], 'picture': 'b.png', 'caption': 'Always shown.'}]
@@ -2123,7 +2127,7 @@ p = words_spec(${JSON.stringify(tmp)})
 raw = json.load(open(p)); q1 = raw['steps'][0]
 def chunk(t, d): return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
 def png(name, w, h):
-    data = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress((b'\\x00' + b'\\x40\\x60\\x80' * w) * h)) + chunk(b'IEND', b'')
+    data = b'\\x89PNG\\r\\n\\x1a\\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'tEXt', b'youcoded-shot\\x00{"by": "shoot"}') + chunk(b'IDAT', zlib.compress((b'\\x00' + b'\\x40\\x60\\x80' * w) * h)) + chunk(b'IEND', b'')
     open(os.path.join(os.path.dirname(p), name), 'wb').write(data)
 png('strip.png', 1400, 300); png('normal.png', 400, 300)
 raw['grows'] = True; raw['tag'] = 'feature'; raw['rounds_before'] = 3; raw['stage'] = 'design'
@@ -2297,7 +2301,8 @@ p = os.path.join(tmp, 'rd.json'); json.dump(new, open(p, 'w')); print(p)`;
         for (let i = 0; i < 20 && !((saved().answers || {})['L-1'] || {}).ok; i++) await sleep(250);
         assert.deepEqual(((saved().answers || {})['L-1'] || {}).ok, { keep: true }, w + ': carried tick saved');
         // the question: what he picked and noted, options tagged, nothing preselected
-        assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .pastline.diff .pasttext')].map(p => p.textContent)`), ['You picked before: Alpha', 'You said: “nearly”']);
+        // Destin, 2026-11-18: no "You picked before / You said" block above a question; the option tags carry it
+        assert.equal(await q(`document.querySelectorAll('article.q[data-id="Q-1"] .pastline.diff').length`), 0, 'no repeat block above the question');
         assert.deepEqual(await q(`[...document.querySelectorAll('article.q[data-id="Q-1"] .variant')].map(o => o.dataset.pick + ':' + [...o.querySelectorAll('.ohead .newtag, .ohead .fintag')].map(t => t.textContent).join('/'))`), ['a:Your pick before', 'c:New']);
         assert.equal(await q(`document.querySelectorAll('article.q[data-id="Q-1"] .variant.on, article.q[data-id="Q-1"] .variant.picked').length`), 0, 'his old pick is not preselected');
         // untick works and stays unticked after a reload (a tick he took off is never put back)

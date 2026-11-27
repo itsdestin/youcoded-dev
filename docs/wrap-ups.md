@@ -1533,6 +1533,14 @@ recurred — the repetition is the data.
 - Left for Destin (each visible, listed in the guide's "Known gaps"): website + app themes to purple C, setup-screen tagline, README casing and repo links, logo files, trademark; telling the live marketing-videos session about the new rules.
 - deleted/merged: the guide itself cut from ~4,500 to ~1,900 words; `~/Documents/youcoded-brand-inventory-2026-11-18.md` is superseded (left for Destin to delete).
 
+## 2026-11-18 — card #7: messages stuck at the bottom of the chat, and the "didn't send" note (session/7-pinned-bubbles, youcoded PR #782)
+- Round 3 misread "put it inside the bubble" as a new custom strip with new buttons; Destin wanted the app's existing error card unchanged, only moved ("that looks nothing like any other errors in the app") → dropped as a new rule: the design guide and Callout.tsx already say every notice is the one box; the lesson is to move the existing piece first and restyle only when asked.
+- Four colour rounds (4–7) followed because no notice box had ever sat on an accent-coloured surface, so the page tint read too dark/too pale inside the bubble → applied: `Callout surface="on-accent"`, Button `on-accent-outline`/`on-accent-solid`, `styles/send-note.css`, each with WHY comments citing the deck answers, pinned in `send-note-discard-dismiss.test.tsx` and `hover-press-ladder.test.ts`.
+- Destin asked how similar notices are handled "in settings menus and such"; my answer proposed moving the card outside the bubble, which he had already ruled out → dropped: one-off, but noted here so the next round on this card doesn't re-propose it.
+- RECURRED (brand-guide session today, here ×4): photographing one injected chat state across all six themes was rebuilt from the transcript each round → card #280.
+- globals.css went over its line budget by 16 → applied: the new rules live in their own file, like the other split-out styles.
+- deleted/merged: the round-3 custom button variants (removed in round 4); the active design folder moved to `docs/archive/design/7-pinned-bubbles/`.
+
 ## 2026-11-18 — card #236 sign-in expiry and no internet, investigation to merge (session/236-working-offline-sign-in-expiry, youcoded#767, youcoded-dev#383)
 - Why #236 sat unbuilt for two months: the 2026-09-14 session hit Destin's weekly usage limit mid-mockups and its answers sat on a side branch until the 11-09 inventory; found by grepping transcripts for the deck name (~6 calls) → dropped: the 11-09 "record-only changes land without asking" rule already covers stranded answers.
 - CLI 2.1.327 `claude auth status` exits 1 when logged out (it used to exit 0), so every signed-out install read "Signed-in state couldn't be read" with no way to sign in; only Destin's hands-on test in a dev copy caught it → applied: fixed in ClaudeAccount + detectAuth, pinned by `claude-account.test.ts` ("exits 1"), seen red.
@@ -1559,3 +1567,14 @@ recurred — the repetition is the data.
 - Fresh review caught a real safety window (a kept helper ask is drawn at once; foreground helpers unmeasured) and a stale note → applied in the same PR.
 - Filed from the session: the helper's question was visible only as a small "1 needs you" chip for 85 minutes → card #281.
 - deleted/merged: none found; looked at the throwaway reproduction rig (scratch only, deleted with its temp homes, which held a copied sign-in token).
+
+## 2026-11-20 — release 1.3.4, review to publish (session/release-1-4-review; youcoded#762 #769 #784 #786 #791 #792, youcoded-admin#27 #29; v1.3.4 tagged from release/1.3.x)
+- The tag's Linux leg refused a stale built-in plugin pin (the marketplace publisher moved after the cut); the half-published release had to be deleted and re-tagged (~45 min) → applied: release skill runs `refresh-bundled-plugin-pins.mjs --check` before go/no-go (youcoded-admin `session/release-skill-lessons`, unmerged).
+- Master moved past the tested cut three times; tagging "on master" would have shipped untested merges → applied: release skill names the `release/X.Y.x` lane + paperwork PR back to master (same branch).
+- Destin, twice: the release notes buried the deliberate big changes (buddy rebuild) under small ones → applied: release skill ordering rule + pinning test (youcoded-admin#29, merged).
+- The daily Claude Code drift checks pinged his phone four days running over harmless changes → applied: youcoded#786 (alert only when users are affected; repeats say "day N since …"; broken check named).
+- The beta numbering bumped the middle number → applied earlier: youcoded#769 (betas preview the next patch).
+- The candidate worktree was made by hand with the SHARED checkout's stale node_modules, so site-assets failed on a missing dependency (~4 calls) → dropped: workspace-start already provisions the right ones; my shortcut, not a gap.
+- On the Mac VM, the monitor's `mouse_move` never moved the pointer, so a Gatekeeper prompt sat unanswered and the app looked hung (~6 calls) → dropped: one-off; `xattr -d com.apple.quarantine` after `spctl -a` passes is the quick route.
+- Website demo CodeQL alert (fake server matches the API by prefix) → card #284. Skip permissions switch shows without the Settings unlock → card #283 (Destin picked option A).
+- deleted/merged: release skill's stale PartyKit deploy step (youcoded-admin#27); `session/release-1-4-audit`'s anchor fix is superseded by youcoded#790.

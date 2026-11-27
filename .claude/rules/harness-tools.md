@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/main/mcp-reconciler.ts"
   # G-1 background Bash: the registry lives one level up from tools/.
   - "**/desktop/src/main/harness/shell-registry.ts"
-last_verified: 2026-09-24
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/harness/tools/rm-target.ts
     contains: "destructiveRmVerdict"

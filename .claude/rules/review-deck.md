@@ -7,7 +7,7 @@ paths:
   - "docs/active/design/**/*.json"
   - "scripts/ui-review/deck/**"
   - "scripts/ui-review/templates/**"
-last_verified: 2026-11-12
+last_verified: 2026-11-19
 verify:
   - path: scripts/ui-review/templates/questions.json
   - path: scripts/ui-review/deck/AUTHORING.md
@@ -60,4 +60,4 @@ Contract and Acceptance decks are retired. Several designs of one thing are ONE 
 **Guard:** `test_cli.py`.
 
 ## Themes and pictures
-**Invariant:** never hand-order `themes` (the deck opens on his app's theme; `--theme` overrides, `"theme": "fixed"` pins). A picture step shows ONE full-window shot. **Guard:** `test_spec.py`.
+**Invariant:** never hand-order `themes` (the deck opens on his app's theme; `--theme` overrides, `"theme": "fixed"` pins). A picture step shows ONE full-window shot. A question's or option's picture is a real app screenshot from `shoot`/`explore` (labelled; `crop-shot` keeps the label), never a drawn or frozen mockup; other subjects set `not_the_app`. **Guard:** `test_spec.py`, `test_shotmark.py`.

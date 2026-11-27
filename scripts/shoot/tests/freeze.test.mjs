@@ -29,6 +29,22 @@ test('scrubFrozen takes out everything that can run or fetch', { skip: !have && 
   assert.ok(!/java\s*script/i.test(html.replace(/\s+/g, '')), 'the whitespace-split javascript: address is gone too');
 });
 
+// WHY (2026-11-23): a packed SVG with its own url(#…) and quotes inside cut the style text in half, so every rule after it was
+// dropped and frozen screens lost their rounded corners. The picture must survive whole and the rules after it must still be there.
+test('a packed SVG drawing with quotes and url(#…) inside survives the scrub whole', { skip: !have && 'jsdom is not installed in this checkout' }, () => {
+  const { JSDOM } = createRequire(import.meta.url)(jsdomPath);
+  const svg = `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence/></filter><rect filter='url(#n)' opacity='0.5'/></svg>")`;
+  const css = `.grain::before{background-image:${svg};background-size:120px} .after{border-radius:30px} .remote{background:url( "http://x/a.png" )}`;
+  const dom = new JSDOM(`<html><head><style>${css}</style></head><body><div class="after">t</div></body></html>`);
+  const root = dom.window.document.documentElement;
+  scrubFrozen(root);
+  const text = root.querySelector('style').textContent;
+  assert.ok(text.includes(svg), 'the packed drawing stays whole\n' + text);
+  assert.ok(text.includes('.after{border-radius:30px}'), 'the rule after it is still there');
+  assert.ok(!text.includes('http://x/a.png') && text.includes('.remote{background:url("")}'), 'a remote address is still emptied');
+  assert.equal(dom.window.document.styleSheets[0].cssRules.length, 3, 'the browser reads all three rules');
+});
+
 test('FREEZE carries the scrub and is still one expression', () => {
   assert.ok(FREEZE.includes('scrubFrozen(root)') && FREEZE.includes('const scrubFrozen'));
   assert.doesNotThrow(() => new Function('return ' + FREEZE));

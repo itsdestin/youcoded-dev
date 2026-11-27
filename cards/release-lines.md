@@ -105,3 +105,23 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#779 fixes | Deleting comments in a Word document no longer leaves markers that make Word ask to repair it.
 - youcoded#781 fixes | Messages you queue in a chat no longer get stuck while a background helper waits for your permission.
 - youcoded#781 fixes | Pressing Send now on a waiting message tells you why it can't send yet.
+- youcoded#782 fixes | A picture or file sent with no words no longer gets stuck at the bottom of the chat.
+- youcoded#782 fixes | A message the computer never confirms now shows a note inside its bubble after 30 seconds, with Send again and Dismiss or Discard.
+- youcoded#783 fixes | The voice custom-words setting no longer shows on the phone app, where it didn't work.
+- youcoded#784 fixes | Sign-in no longer says "No internet" on school or work networks that reach the internet through a proxy.
+- youcoded#784 fixes | Pictures in chats you keep using are no longer forgotten by the assistant after 90 days.
+- youcoded#769 behind | Nothing visible.
+- youcoded#770 behind | Nothing visible.
+- youcoded#787 behind | Closing a chat frees everything it held, and a backup lock left behind by a crash clears itself after about two hours.
+- youcoded#787 behind | If backups are skipped for over a day, Settings → Backup now says so.
+- youcoded#789 fixes | Fast mode, effort level, and a chat's tags and note now say so when they can't be saved, instead of silently not saving.
+- youcoded#789 fixes | If closing a chat can't save its tags or note, the chat stays open with Try again or Close anyway.
+- youcoded#790 behind | Nothing visible.
+- youcoded#788 behind | Nothing visible.
+- youcoded#791 behind | Website: demo recordings rebuilt from 1.3.4; privacy policy corrected for the phone app.
+- youcoded#792 behind | Nothing visible.
+- youcoded#794 fixes | “Sign in again” for Claude now works when your login runs out, instead of failing with “Could not get login URL.”
+- youcoded#795 fixes | The release notes behind the version chip no longer open with a stray title, an empty “[Unreleased]” heading or a technical line.
+- youcoded#796 fixes | Commenting on words next to (or inside) an existing highlight now highlights them too.
+- youcoded#797 fixes | Resuming a chat after a crash or restart no longer shows a stray "No response requested." reply; the reply that was cut off now says "Interrupted."
+- youcoded#801 fixes | The app's usage counts now include a first message sent in a Claude Code chat, plus a one-word note when a setup step fails or is cancelled.
