@@ -1,4 +1,9 @@
-import test from 'node:test';
+import realTest from 'node:test';
+// WHY (emergency fix 2026-11-27): this file re-runs ITSELF as a child process ('child' mode below).
+// Without this guard every child also ran the whole suite, spawning 8+ more children each: an endless
+// fork bomb that filled 121 GB RAM and crashed the desktop on 11-18 and twice on 11-27. Children now
+// register no tests, so they only do their one lock attempt and exit.
+const test = process.argv[2] === 'child' ? () => {} : realTest;
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
