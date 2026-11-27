@@ -1,8 +1,7 @@
 import realTest from 'node:test';
-// WHY (emergency fix 2026-11-27): this file re-runs ITSELF as a child process ('child' mode below).
-// Without this guard every child also ran the whole suite, spawning 8+ more children each: an endless
-// fork bomb that filled 121 GB RAM and crashed the desktop on 11-18 and twice on 11-27. Children now
-// register no tests, so they only do their one lock attempt and exit.
+// WHY (fork bomb, 2026-11-27): this file once re-ran ITSELF as the race child, and every child re-ran the
+// whole suite, crashing the desktop three times. Children now run lock-child.mjs, which has no tests. This
+// guard stays as a second fence: if anything ever runs this file with 'child' again, it registers nothing.
 const test = process.argv[2] === 'child' ? () => {} : realTest;
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -12,7 +11,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { tryAcquireLock, isStale, processStartTime } from './lock.mjs';
 
-const here = fileURLToPath(import.meta.url);
+const childScript = fileURLToPath(new URL('./lock-child.mjs', import.meta.url));
 const tmp = t => { const d = fs.mkdtempSync(path.join(os.tmpdir(), 'lock-')); t.after(() => fs.rmSync(d, { recursive: true, force: true })); return d; };
 const plant = (lock, owner) => { fs.mkdirSync(lock); if (owner) fs.writeFileSync(path.join(lock, 'owner.json'), JSON.stringify(owner)); };
 // A pid that is certainly gone: a child that already exited.
@@ -85,7 +84,7 @@ test('a failed owner write leaves no lock behind', t => {
 test('concurrent acquire of a free lock: exactly one process wins', async t => {
   const lock = path.join(tmp(t), 'a.lock');
   const run = () => new Promise(res => {
-    const p = spawn(process.execPath, [here, 'child', lock], { stdio: ['ignore', 'pipe', 'inherit'] });
+    const p = spawn(process.execPath, [childScript, lock], { stdio: ['ignore', 'pipe', 'inherit'] });
     let out = ''; p.stdout.on('data', d => { out += d; }); p.on('close', () => res(out.trim()));
   });
   const results = await Promise.all(Array.from({ length: 8 }, run));
@@ -97,17 +96,10 @@ test('concurrent takeover of a dead owner\'s lock: exactly one process wins', as
     const lock = path.join(tmp(t), 'a.lock');
     plant(lock, { pid: deadPid(), host: os.hostname(), acquiredAt: new Date().toISOString() });
     const run = () => new Promise(res => {
-      const p = spawn(process.execPath, [here, 'child', lock], { stdio: ['ignore', 'pipe', 'inherit'] });
+      const p = spawn(process.execPath, [childScript, lock], { stdio: ['ignore', 'pipe', 'inherit'] });
       let out = ''; p.stdout.on('data', d => { out += d; }); p.on('close', () => res(out.trim()));
     });
     const results = await Promise.all(Array.from({ length: 8 }, run));
     assert.equal(results.filter(r => r === 'won').length, 1, results.join(','));
   }
 });
-
-// Child mode: try once, print the result, and STAY ALIVE briefly so a winner's lock stays live while rivals try.
-if (process.argv[2] === 'child') {
-  const got = tryAcquireLock(process.argv[3]);
-  console.log(got.acquired ? 'won' : 'lost');
-  setTimeout(() => process.exit(0), 400);
-}
