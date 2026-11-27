@@ -22,7 +22,8 @@ const SELF_VAR = new RegExp(String.raw`\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\
 const SELF_DESTRUCTURE = /\b(?:const|let|var)\s*\{([^}]*)\}\s*=\s*new URL\(\s*import\.meta\.url\s*\)/g;
 const DIRECT = new RegExp(SELF_EXPR);
 // process.argv passed on, other than flags from index 2: argv.slice(2) / argv[2+] are fine.
-const ARGV_PASSED = /process\.argv(?!\s*\.slice\(\s*[2-9]|\s*\[\s*[2-9]|\s*\.at\(\s*[2-9]|0)/;
+// argv[0] / argv0 are the node binary itself, not this file, so they are fine too.
+const ARGV_PASSED = /process\.argv(?!\s*\.slice\(\s*[2-9]|\s*\[\s*[02-9]|\s*\.at\(\s*[02-9]|0)/;
 // A test runner started from inside a test: the whole-suite bomb without naming this file.
 const RUNNER = /['"`]--test\b|['"`](?:npm|pnpm|yarn)['"`]\s*,\s*\[\s*['"`](?:run\s+)?test|['"`](?:npm|pnpm|yarn)\s+(?:run\s+)?test\b|\bvitest\b|\bnode\s+--test\b/;
 

@@ -55,6 +55,7 @@ test('allows helpers in their own file and folder-relative paths', () => {
     "execFileSync(process.execPath, [fileURLToPath(new URL('../run.mjs', import.meta.url))]);",
     "spawn('bash', ['x.sh'], { cwd: dirname(fileURLToPath(import.meta.url)) });",
     "spawn(process.execPath, [helper, ...process.argv.slice(2)]);",
+    "spawn(process.argv[0], [helper]);",
   ];
   for (const src of ok) assert.deepEqual(findSelfSpawns(src, F), [], src);
 });
