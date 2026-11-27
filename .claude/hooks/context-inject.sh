@@ -92,7 +92,12 @@ collect_repo_state() {
 
 # Detect multi-repo workspace by checking for known sub-repos
 SUB_REPOS=()
-for candidate in youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
+# WHY read scripts/workspace-repos.json (X-2, 2026-11-27): this loop kept its own hand-typed copy of the
+# repo list, which drifted from the main one. The typed list is only a fallback if node cannot read it.
+REPO_LIST=$(node -e 'try{console.log(Object.keys(require(process.argv[1])).filter(k=>k!=="workspace").join(" "))}catch{}' "$WORKSPACE/scripts/workspace-repos.json" 2>/dev/null || true)
+[[ -n "$REPO_LIST" ]] || REPO_LIST="youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace"
+read -r -a REPO_NAMES <<< "$REPO_LIST"
+for candidate in "${REPO_NAMES[@]}"; do
     if [[ -e "$WORKSPACE/$candidate/.git" ]]; then
         SUB_REPOS+=("$candidate")
     fi
