@@ -1,0 +1,26 @@
+diff --git a/desktop/src/main/headless/electron-headless.ts b/desktop/src/main/headless/electron-headless.ts
+index 814a80c17..a2307fa58 100644
+--- a/desktop/src/main/headless/electron-headless.ts
++++ b/desktop/src/main/headless/electron-headless.ts
+@@ -155,7 +155,7 @@ export function holdSecretKey(hex: string | undefined): void {
+ // `getSelectedStorageBackend` below is unchanged, so no other feature sees a different answer.
+ let hostSecretStore = 'unknown';
+ export function holdSecretStoreBackend(word: string | undefined): void {
+-  hostSecretStore = word === 'android_keystore' ? 'android_keystore' : word === 'basic_text' ? 'basic_text' : 'unknown';
++  hostSecretStore = word === 'android_keystore' || word === 'ios_keychain' ? word : word === 'basic_text' ? 'basic_text' : 'unknown';
+ }
+ export function hostSecretStoreBackend(): string {
+   return hostSecretStore;
+diff --git a/desktop/src/main/headless/headless-boot.ts b/desktop/src/main/headless/headless-boot.ts
+index 1597cc68b..16b4d2c15 100644
+--- a/desktop/src/main/headless/headless-boot.ts
++++ b/desktop/src/main/headless/headless-boot.ts
+@@ -326,7 +326,7 @@ export async function bootHeadless(opts: HeadlessOptions): Promise<{ stop: () =>
+   startOutboxDrain(ipcWiring.outboxBroadcast);
+   // Mesh ("Chats on every device"), SWITCHED OFF: one guarded call. Off by default it reads one optional file and does nothing else;
+   // the wiring lives in mesh/boot-hook.ts because this file has a line budget. The phone's backend reports itself as 'android'.
+-  const mesh = await import('../mesh/boot-hook').then((m) => m.startMeshIfEnabled({ userData, safeStorage, packaged: false, platform: 'android', secretStoreBackend: () => hostSecretStoreBackend() })).catch((cause) => { reportFailure({ what: 'start Mesh', cause, where: 'mesh.start' }); return null; });
++  const mesh = await import('../mesh/boot-hook').then((m) => m.startMeshIfEnabled({ userData, safeStorage, packaged: false, platform: hostOs() ?? 'android', secretStoreBackend: () => hostSecretStoreBackend() })).catch((cause) => { reportFailure({ what: 'start Mesh', cause, where: 'mesh.start' }); return null; });
+ 
+   // Last: open the door. The app waits for this line before it loads its page.
+   await remoteServer.start();
