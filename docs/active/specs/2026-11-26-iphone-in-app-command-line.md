@@ -1,6 +1,6 @@
 ---
 date: 2026-11-26
-status: draft
+status: active
 type: design
 topic: iPhone app — a built-in command line and git for the assistant
 card: 89
@@ -8,7 +8,7 @@ card: 89
 
 # iPhone: a built-in command line and git (design v3, 2026-11-26)
 
-Not built. Awaiting Destin's go-ahead. A working throwaway prototype exists:
+Built 2026-11-27 on `session/89-iphone-app` (youcoded 96de6bedc); two owner decisions changed §6: no private-network block, and git uses the saved GitHub sign-in. The earlier throwaway prototype:
 `docs/active/prototypes/2026-11-26-iphone-command-line-prototype.diff` (against `youcoded` at 5dcf668ca).
 
 ## Why
