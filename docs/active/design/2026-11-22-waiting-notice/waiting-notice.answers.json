@@ -1,0 +1,202 @@
+{
+ "deck": "waiting-notice",
+ "started": "2026-11-27T23:54:37.844Z",
+ "submitted": "2026-11-27T23:57:22Z",
+ "cur": 4,
+ "answers": {
+  "A-asked": {
+   "ok": {
+    "stuck": true,
+    "held": true,
+    "buttons": true,
+    "rule": true,
+    "cant": true,
+    "prevent": true,
+    "limits": true,
+    "unsure": true,
+    "words": true,
+    "theme": true,
+    "fyi": true,
+    "screen": true,
+    "card": true,
+    "dot": true,
+    "turns": true,
+    "phone": true,
+    "times": true,
+    "review": true
+   },
+   "t": 1795823717815,
+   "v": "yes",
+   "seconds": 40,
+   "theme": "halftone-dimension"
+  },
+  "A-screens": {
+   "ok": {
+    "g-which": true,
+    "g-unread": true,
+    "g-grey": true,
+    "g-cmds": true,
+    "g-theme": true,
+    "g-handoff": true,
+    "g-resume": true,
+    "g-card": true,
+    "g-dot": true,
+    "g-k7": true,
+    "g-phone": true,
+    "g-unsure": true,
+    "g-failed": true,
+    "g-cant": true,
+    "g-held-else": true,
+    "g-held": true
+   },
+   "t": 1795823779586,
+   "v": "yes",
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "A-behind": {
+   "ok": {
+    "b1": true,
+    "b2": true,
+    "b3": true,
+    "b4": true,
+    "b5": true
+   },
+   "t": 1795823787711,
+   "v": "yes",
+   "seconds": 8,
+   "theme": "halftone-dimension"
+  },
+  "A-choices": {
+   "ok": {
+    "c-elsewhere": true,
+    "c-queue": true,
+    "c-card": true,
+    "c-strip-red": true,
+    "c-buddy": true,
+    "c-model": true,
+    "c-handoff": true
+   },
+   "t": 1795823801912,
+   "v": "yes",
+   "seconds": 14,
+   "theme": "halftone-dimension"
+  },
+  "A-changed": {
+   "ok": {
+    "x-held": true,
+    "x-amber": true,
+    "x-busy": true,
+    "x-queue": true,
+    "x-office": true,
+    "x-card": true,
+    "x-term": true,
+    "x-which": true,
+    "x-grey": true,
+    "x-unread": true,
+    "x-recheck": true,
+    "x-covered": true,
+    "x-close": true,
+    "x-dl": true,
+    "x-dot-window": true
+   },
+   "t": 1795823839326,
+   "v": "yes",
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "A-found": {
+   "ok": {
+    "f1": true,
+    "f2": true,
+    "f4": true,
+    "f5": true,
+    "f3": true,
+    "f6": true,
+    "f7": true,
+    "f8": true,
+    "f9": true,
+    "f10": true,
+    "f11": true,
+    "f12": true
+   },
+   "t": 1795823839326,
+   "v": "yes",
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "A-left": {
+   "results": {
+    "v-theme": "pass",
+    "v-phone": "pass"
+   },
+   "v": "other",
+   "t": 1795823839326,
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "A-checks": {
+   "v": "yes",
+   "accepted": true,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "t": 1795823839326
+  }
+ },
+ "built": {
+  "at": "2026-11-26T08:06:39Z",
+  "branch": "session/waiting-notice",
+  "commit": "7db2d2c74d066b1a3bb26ac0d0b9ceb198366340",
+  "spec_sha256": "a932801831010ffdec5916dc8c669ebca1cd68f9c1db9ac815dfcdc4e02cda77",
+  "spec_dirty": true,
+  "ids": [
+   "R-unsure",
+   "R-words",
+   "R-newchat",
+   "R-fyi",
+   "R-remote",
+   "R-screen",
+   "R-card",
+   "R-elsewhere",
+   "R-queue",
+   "R-phone",
+   "L-drawn",
+   "L-sort-failed",
+   "L-sort-cant",
+   "K-1",
+   "K-2",
+   "K-3",
+   "K-4",
+   "K-5",
+   "K-6",
+   "K-7",
+   "L-ref-held",
+   "L-ref-unsure",
+   "L-ref-cant",
+   "L-ref-chatfail",
+   "L-ref-appfail",
+   "L-ref-done",
+   "L-ref-heads",
+   "L-0",
+   "S-2",
+   "L-1",
+   "Q-1",
+   "Q-2",
+   "Q-3",
+   "Q-4",
+   "W-asked",
+   "W-screens",
+   "W-behind",
+   "W-choices",
+   "W-checks",
+   "A-asked",
+   "A-screens",
+   "A-behind",
+   "A-choices",
+   "A-checks",
+   "A-changed",
+   "A-found",
+   "A-left"
+  ]
+ }
+}
