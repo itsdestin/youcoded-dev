@@ -11,10 +11,14 @@
 //
 // Race rules:
 //  * Creating the lock is mkdir: exactly one concurrent caller wins.
-//  * Taking over an abandoned lock is a rename of the old folder to a private name: rename is
-//    atomic, so only one taker moves it. The taker then re-reads the moved owner; if it is not
-//    the abandoned owner it judged (someone else took over first and the folder we moved is
-//    LIVE), it puts it back and backs off. Nothing here ever signals or kills a process.
+//  * Only a taker deletes a lock, and only while holding a small side lock (<lockPath>.takeover, also
+//    mkdir). Inside it, the taker re-checks that the folder is STILL the exact one it judged abandoned
+//    (same inode, same owner record) before removing it. WHY (review 2026-11-27): the first version moved
+//    the folder aside first, and a slow taker could move a brand-new LIVE lock, leaving two holders.
+//    A fresh lock always has a new inode, and mkdir cannot recreate the path while the dead one still
+//    exists, so nothing live can be removed. Nothing here ever signals or kills a process.
+//  * A side lock left by a taker that crashed mid-takeover (milliseconds of work) is cleared after
+//    TAKEOVER_STALE_MS.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -63,7 +67,26 @@ export function isStale(lockPath, { maxAgeMs = DEFAULT_MAX_AGE_MS, now = Date.no
   return { stale: false, owner };
 }
 
-const same = (a, b) => a && b && a.pid === b.pid && a.startTime === b.startTime && a.acquiredAt === b.acquiredAt;
+const same = (a, b) => (a === null && b === null) || (!!a && !!b && a.pid === b.pid && a.startTime === b.startTime && a.acquiredAt === b.acquiredAt);
+const inode = (p) => { try { return fs.statSync(p).ino; } catch { return null; } };
+
+export const TAKEOVER_STALE_MS = 30_000;
+
+/** Remove an abandoned lock, but only if it is still the exact folder that was judged. true = removed. */
+export function removeIfStillAbandoned(lockPath, judgedIno, judgedOwner) {
+  const side = `${lockPath}.takeover`;
+  try { fs.mkdirSync(side); } catch (e) {
+    if (e.code !== 'EEXIST') throw e;
+    // Another taker is at work, or one crashed mid-takeover. Clear only a long-abandoned side lock.
+    try { if (Date.now() - fs.statSync(side).mtimeMs > TAKEOVER_STALE_MS) fs.rmSync(side, { recursive: true, force: true }); } catch { /* gone already */ }
+    return false;
+  }
+  try {
+    if (inode(lockPath) !== judgedIno || !same(readOwner(lockPath), judgedOwner)) return false; // replaced: leave it
+    fs.rmSync(lockPath, { recursive: true, force: true });
+    return true;
+  } finally { fs.rmSync(side, { recursive: true, force: true }); }
+}
 
 /**
  * Try once to take the lock. Returns { acquired: true, path, release() } or
@@ -76,21 +99,11 @@ export function tryAcquireLock(lockPath, { maxAgeMs = DEFAULT_MAX_AGE_MS, before
       fs.mkdirSync(lockPath, { mode: 0o700 });
     } catch (error) {
       if (error.code !== 'EEXIST') throw error;
+      const judgedIno = inode(lockPath);
       const verdict = isStale(lockPath, { maxAgeMs, now: now() });
       if (!verdict.stale) return { acquired: false, path: lockPath, owner: verdict.owner };
-      const aside = `${lockPath}.stale-${process.pid}-${Date.now()}`;
-      try { fs.renameSync(lockPath, aside); } catch (e) {
-        if (e.code === 'ENOENT' || e.code === 'ENOTEMPTY' || e.code === 'EEXIST') continue; // someone else moved it: look again
-        throw e;
-      }
-      const moved = readOwner(aside);
-      // A lock with no owner never matched a judged pid; compare owners only when we judged one.
-      if (verdict.owner && !same(moved, verdict.owner)) {
-        // We moved a different (live) lock than the one we judged. Put it back if we can.
-        try { fs.renameSync(aside, lockPath); } catch { fs.rmSync(aside, { recursive: true, force: true }); }
-        return { acquired: false, path: lockPath, owner: moved };
-      }
-      fs.rmSync(aside, { recursive: true, force: true });
+      if (judgedIno === null) continue; // released while we looked: try mkdir again
+      if (!removeIfStillAbandoned(lockPath, judgedIno, verdict.owner ?? null)) return { acquired: false, path: lockPath, owner: readOwner(lockPath) };
       continue; // folder is free now: loop and mkdir
     }
     const owner = { pid: process.pid, host: os.hostname(), startTime: processStartTime(process.pid), acquiredAt: new Date(now()).toISOString() };
@@ -100,7 +113,9 @@ export function tryAcquireLock(lockPath, { maxAgeMs = DEFAULT_MAX_AGE_MS, before
       fs.writeFileSync(file, `${JSON.stringify(owner, null, 2)}\n`, { mode: 0o600 });
     } catch (error) {
       // WHY: mkdir proved this call owns the new folder; do not leave an owner-less lock behind.
-      fs.rmSync(lockPath, { recursive: true, force: true });
+      // Only remove it while it carries no owner or ours (never another process's lock).
+      const there = readOwner(lockPath);
+      if (there === null || same(there, owner)) fs.rmSync(lockPath, { recursive: true, force: true });
       throw error;
     }
     let released = false;

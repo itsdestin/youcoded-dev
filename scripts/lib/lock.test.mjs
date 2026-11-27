@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { tryAcquireLock, isStale, processStartTime } from './lock.mjs';
+import { tryAcquireLock, isStale, processStartTime, removeIfStillAbandoned, TAKEOVER_STALE_MS } from './lock.mjs';
 
 const childScript = fileURLToPath(new URL('./lock-child.mjs', import.meta.url));
 const tmp = t => { const d = fs.mkdtempSync(path.join(os.tmpdir(), 'lock-')); t.after(() => fs.rmSync(d, { recursive: true, force: true })); return d; };
@@ -102,4 +102,34 @@ test('concurrent takeover of a dead owner\'s lock: exactly one process wins', as
     const results = await Promise.all(Array.from({ length: 8 }, run));
     assert.equal(results.filter(r => r === 'won').length, 1, results.join(','));
   }
+});
+
+// WHY (review 2026-11-27): a slow taker must never remove a LIVE lock that replaced the dead one it judged.
+test('takeover leaves alone a live lock that replaced the judged dead one', t => {
+  const lock = path.join(tmp(t), 'a.lock');
+  const dead = { pid: deadPid(), host: os.hostname(), acquiredAt: new Date().toISOString() };
+  plant(lock, dead);
+  const judgedIno = fs.statSync(lock).ino;
+  fs.rmSync(lock, { recursive: true });                 // another taker cleared it...
+  const live = tryAcquireLock(lock);                    // ...and a live process took it
+  assert.equal(live.acquired, true);
+  assert.equal(removeIfStillAbandoned(lock, judgedIno, dead), false);
+  assert.equal(fs.existsSync(path.join(lock, 'owner.json')), true);
+  live.release();
+});
+
+test('takeover backs off while another taker holds the side lock, and clears an abandoned one', t => {
+  const lock = path.join(tmp(t), 'a.lock');
+  const dead = { pid: deadPid(), host: os.hostname(), acquiredAt: new Date().toISOString() };
+  plant(lock, dead);
+  fs.mkdirSync(`${lock}.takeover`);
+  assert.equal(tryAcquireLock(lock).acquired, false);   // fresh side lock: wait, remove nothing
+  assert.equal(fs.existsSync(lock), true);
+  const old = new Date(Date.now() - TAKEOVER_STALE_MS - 5000);
+  fs.utimesSync(`${lock}.takeover`, old, old);          // a taker that crashed mid-takeover
+  tryAcquireLock(lock);                                 // clears the abandoned side lock
+  const got = tryAcquireLock(lock);
+  assert.equal(got.acquired, true);
+  got.release();
+  assert.equal(fs.existsSync(`${lock}.takeover`), false);
 });
