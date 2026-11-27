@@ -672,7 +672,11 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     // picture", with the real reason. A time-out or a crash is a failed picture, to take again.
     if (failB.get(key) && A.has(key)) {
       const why = failB.get(key), label = beforeLabel ?? meta.before?.label ?? 'the before side';
-      if (/no opener registered|its mark is not on the page|is not in this release/.test(why)) { screens.push({ ...entry, status: 'nobefore', reason: `${label} cannot open it for a picture (${why})`, after: rel('after', true) }); continue; }
+      if (/no opener registered|its mark is not on the page|is not in this release/.test(why)) {
+        // WHY (2026-11-27): a screen marked new that the release tried and could not open is NEW; unmarked, it is only "no release picture".
+        const isNew = newA.get(key) === 'after', what = isNew ? wnA.get(key) : null;
+        screens.push({ ...entry, status: isNew ? 'new' : 'nobefore', reason: isNew ? `new since ${label}` : `${label} cannot open it for a picture (${why})`, ...(what ? { whatsNew: what } : {}), after: rel('after', true) }); continue;
+      }
       screens.push({ ...entry, status: 'failed', reason: `before: ${why}` }); continue;
     }
     // WHY two kinds (2026-11-07 review: ~80% of "new" screens existed in the release but were only added to the

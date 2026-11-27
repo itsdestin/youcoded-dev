@@ -66,6 +66,7 @@ for (let i = 0; i < args.length; i++) {
   // WHY: pulsing status dots and spinners are caught at a random moment of their loop, so two pictures of
   // the same screen differ (what-changed full run: dozens of "changed" chat screens that were one dot's glow).
   else if (a === '--freeze') opt.freeze = true;
+  else if (a === '--try-new') opt.tryNew = true;
   else if (a === '--no-montage') opt.noMontage = true;
   else if (a === '--collect') opt.collect = JSON.parse(readFileSync(resolve(next()), 'utf8'));
   else if (a === '--out') opt.out = resolve(next());
@@ -134,7 +135,10 @@ async function side(checkout, outDir, pick, which = null) {
     if (!screens) return { missingList: true, results: [], server };
     const picked = pick(screens);
     // A state marked `newIn: 'after'` is skipped on the before side (driver.mjs splitForSide).
-    const { take: chosen, skip } = splitForSide(picked, which);
+    // WHY --try-new (what-changed against v1.3.4, 2026-11-27): the "new" marks are written by hand and nobody clears them at
+    // a release, so 30 of 70 screens marked new had in fact shipped in v1.3.4. A release comparison now lets the release
+    // TRY every marked screen: the ones it can show are compared like any other, and only the ones it cannot open stay new.
+    const { take: chosen, skip } = splitForSide(picked, opt.tryNew ? null : which);
     for (const s of skip) log(`skipped on the ${which} side: ${s.name} (new in the after side)`);
     if (opt.list) return { screens, results: [], server };
     if (!chosen.length) return { screens, results: [], server, empty: !skip.length };

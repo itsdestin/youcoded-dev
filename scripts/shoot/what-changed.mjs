@@ -145,7 +145,7 @@ if (before.packagesDiffer?.length) console.error(`[what-changed] note: ${before.
 // comparison leaves them out. The Pages *frame* (library, focus view chrome) stays: it ships.
 // Each side photographs every screen its own list has (the release's list is shorter), minus these.
 const NOT_SHIPPED = ['pages/page/page-*', 'pages/focus/page-*', 'dev/icons*', 'dev/pills*', 'dev/open-tasks*'];
-const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : ['--all', ...NOT_SHIPPED.flatMap((p) => ['--except', p])]), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', '--freeze', ...(opt.themes ? ['--themes', opt.themes] : [])];
+const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : ['--all', ...NOT_SHIPPED.flatMap((p) => ['--except', p])]), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', '--freeze', '--try-new', ...(opt.themes ? ['--themes', opt.themes] : [])];
 const shot = spawnSync(process.execPath, shootArgs, { stdio: 'inherit' });
 if (shot.status !== 0) die(`shoot stopped with exit code ${shot.status} — see above`);
 
