@@ -185,8 +185,12 @@ function main(argv) {
   const now = Date.now();
   const sections = [];
   // youcoded-core is archived (read-only, no runs); everything else in the inventory is watched.
+  // WHY youcoded-admin is skipped too (Destin, 2026-11-27): it is private, so reading it needs an extra
+  // stored key, and it holds only release tools with almost no checks of its own. Without this skip it
+  // would show "could not check" every morning and the phone would never say "all fine".
+  const SKIPPED = new Set(['youcoded-core', 'youcoded-admin']);
   for (const [name, info] of Object.entries(inventory)) {
-    if (name === 'youcoded-core') continue;
+    if (SKIPPED.has(name)) continue;
     sections.push(collectRepoSchedules(name === 'workspace' ? 'youcoded-dev' : name, info.repository, now));
   }
   sections.push(collectAnchors(), collectCards());

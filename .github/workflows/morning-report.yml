@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # actions: read lets the default token read THIS repo's runs. Other public repos are readable by
-    # any token; a private repo (youcoded-admin) is not, and shows up yellow "could not check".
+    # any token. The private youcoded-admin is left out of the report on purpose (no extra key).
     permissions:
       contents: read
       actions: read
