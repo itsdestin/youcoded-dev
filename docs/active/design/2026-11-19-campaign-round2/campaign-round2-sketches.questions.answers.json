@@ -1,0 +1,145 @@
+{
+ "deck": "campaign-round2-sketches",
+ "started": "2026-11-27T23:21:04.909Z",
+ "submitted": "2026-11-27T23:41:18Z",
+ "cur": 7,
+ "answers": {
+  "O-1": {
+   "v": "other",
+   "t": 1795822428586,
+   "note": "probably closer to being a bit of both? the parts not playing properly together made it sound jumbled and inconsistent, ie busy.",
+   "seconds": 47,
+   "theme": "halftone-dimension"
+  },
+  "MIM-1": {
+   "v": "other",
+   "t": 1795822469906,
+   "note": "both now feel a bit too chaotic. like the notes almost feel like they mush together a bit tooo much and the different layers still clash/fight for attention. also the audio quality feels kinfs poor/compressed or something? these are defnitely moving in the right direction though i think",
+   "seconds": 167,
+   "theme": "halftone-dimension"
+  },
+  "MIM-2": {
+   "v": "pick",
+   "pick": "nearly",
+   "t": 1795822469906,
+   "note": "i think a handful of notes still feel somewhat misplaced and the layers still fight a bit but its a big improvement",
+   "seconds": 167,
+   "theme": "halftone-dimension"
+  },
+  "MIM-3": {
+   "v": "pick",
+   "pick": "nearly",
+   "t": 1795822469906,
+   "note": "i think i still want to explore some slightly more unique/different alternatives, taking heavy inspiration from gta tracks like \"windsor drop\" and \"welcome to leonida\" from overmono.",
+   "seconds": 167,
+   "theme": "halftone-dimension"
+  },
+  "MIM-4": {
+   "v": "yes",
+   "t": 1795822469906,
+   "seconds": 167,
+   "theme": "halftone-dimension"
+  },
+  "OWN15-1": {
+   "v": "pick",
+   "seconds": 50,
+   "theme": "halftone-dimension",
+   "t": 1795822538397,
+   "pick": "a",
+   "note": "this is much better than the last page's full cut. i quite like it, with some additional minor refinements maybe. different layers are still just a very smidge clashy"
+  },
+  "OWN15-2": {
+   "v": "pick",
+   "seconds": 50,
+   "theme": "halftone-dimension",
+   "t": 1795822538397,
+   "pick": "yes"
+  },
+  "OWN15-3": {
+   "v": "pick",
+   "seconds": 50,
+   "theme": "halftone-dimension",
+   "t": 1795822538397,
+   "pick": "yes"
+  },
+  "PURPLE-1": {
+   "v": "pick",
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "t": 1795822608918,
+   "pick": "a",
+   "note": "bouncy has a LOT more of the clashyness/business that i dislike."
+  },
+  "PURPLE-2": {
+   "v": "pick",
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "t": 1795822608918,
+   "pick": "yes"
+  },
+  "PURPLE-3": {
+   "v": "pick",
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "t": 1795822608918,
+   "pick": "yes"
+  },
+  "SCREENS-1": {
+   "v": "pick",
+   "seconds": 47,
+   "theme": "halftone-dimension",
+   "t": 1795822745862,
+   "note": "volume leveling is still off i think. the narrator sounds FAR too loud, against the music. i think we could lower her voice level a bit and raise the music volume a smidge. piano is also fighting her voice a bit for attention i think? unsure how to make it more \"subtle\" in professional terms/sense, but we should investigate why i might feel this way.",
+   "pick": "a"
+  },
+  "SCREENS-2": {
+   "v": "pick",
+   "seconds": 47,
+   "theme": "halftone-dimension",
+   "t": 1795822745862,
+   "pick": "nearly"
+  },
+  "SCREENS-3": {
+   "v": "pick",
+   "seconds": 47,
+   "theme": "halftone-dimension",
+   "t": 1795822745862,
+   "pick": "nearly"
+  },
+  "BOOK-1": {
+   "v": "other",
+   "seconds": 35,
+   "theme": "halftone-dimension",
+   "t": 1795822840638,
+   "note": "unsure. maybe a bit of both somehow lmao. i think i like both clips here quite a bit, but her voice is still a bit too loud/harsh and the piano still doesn't quite strike the right balance of blending and supporting her"
+  },
+  "BOOK-2": {
+   "v": "pick",
+   "seconds": 35,
+   "theme": "halftone-dimension",
+   "t": 1795822840638,
+   "pick": "nearly"
+  },
+  "BOOK-3": {
+   "v": "pick",
+   "seconds": 35,
+   "theme": "halftone-dimension",
+   "t": 1795822840638,
+   "pick": "nearly"
+  },
+  "VOICE-1": {
+   "v": "pick",
+   "pick": "rerecord",
+   "t": 1795822855450,
+   "seconds": 15,
+   "theme": "halftone-dimension"
+  },
+  "NEXT-1": {
+   "v": "other",
+   "t": 1795822877134,
+   "note": "idk. depends on how you feel after my feedback",
+   "seconds": 22,
+   "theme": "halftone-dimension"
+  }
+ }
+}
