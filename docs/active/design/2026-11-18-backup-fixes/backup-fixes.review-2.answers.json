@@ -1,0 +1,50 @@
+{
+ "deck": "backup-fixes-review-2",
+ "started": "2026-11-27T10:20:58.926Z",
+ "submitted": "2026-11-27T10:21:36Z",
+ "cur": 5,
+ "answers": {
+  "U-1": {
+   "v": "yes",
+   "t": 1795774866533,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "U-2": {
+   "v": "yes",
+   "t": 1795774876455,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "U-3": {
+   "v": "yes",
+   "t": 1795774882142,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "U-4": {
+   "v": "yes",
+   "t": 1795774884671,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "U-5": {
+   "v": "yes",
+   "t": 1795774891954,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "U-6": {
+   "v": "yes",
+   "t": 1795774894929,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
