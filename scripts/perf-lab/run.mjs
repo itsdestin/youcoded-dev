@@ -81,7 +81,7 @@ export function requireAssetsOrAuthorization(cfg, deps = {}) {
 import { requireDiskHeadroom } from './disk-budget.mjs';
 import { connectMainLoop, freeInspectorPort } from './main-loop-probe.mjs';
 import { buildStallFixtures } from './stall-fixtures.mjs';
-import { runDocumentStallCases } from './scenario-document-stalls.mjs';
+import { runDocumentStallCases, MEMORY_BASIS } from './scenario-document-stalls.mjs';
 import { DOCUMENT_CONTROL_TYPES } from './document-input.mjs';
 import { DOCUMENT_CASE_IDS, DOCUMENT_OPTIONAL_COVERAGE, DOCUMENT_INSTRUMENT_FILES, documentProblems, documentBreaches, documentMarkdown, recordDocumentRepeat } from './document-report.mjs';
 import { publishReportJson, uniqueStem } from './atomic-report.mjs';
@@ -2046,6 +2046,10 @@ async function mainRun(argv, ctx, cleanup) {
           checkpoint();
           const result = await recordDocumentRepeat(documents, onCase => runDocumentStallCases(app, fixture, manifest, {
             checkout: cfg.checkout, build, caseIds: cfg.documentCaseIds, timeoutMs: 15000, maxRssMb: 1536, onCase,
+            // WHY PSS (2026-11-12, card #96): the safety cap judged summed RSS, which counts pages the Electron processes share once per
+            // process. On the current build an idle app sums above 1536 MiB, so the cap stopped EVERY smoke-document run before its first
+            // case ("Owned app family RSS exceeds 1536 MiB") while the app really used ~650 MiB. See MEMORY_BASIS in scenario-document-stalls.mjs.
+            memoryBasis: MEMORY_BASIS.pss,
           }), row => {
             checkpoint();
             if (row) log(`document repeat ${i + 1}: ${row.id}: ${row.status}`);

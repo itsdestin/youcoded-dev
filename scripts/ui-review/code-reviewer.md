@@ -7,8 +7,9 @@ was meant to do. Feature-flow design §8e.
 ## Inputs (you get nothing else)
 - The repo and branch name. Diff it against `origin/master`; read any file the diff touches
   in full, and anything it calls into as far as you need to judge it.
-- The contract's rows (`<feature>.contract.json`, statements + `checkedBy` + `guard`) — so
-  you know what the branch promised. **Not** the design spec, the plan, the review decks,
+- The answered before-build walkthrough (`<feature>.walkthrough.json` + its answers file) — so
+  you know what the branch promised — and the "also check" list, if any: comments Destin left
+  on your row of the checks menu; check each and report what you found on it. **Not** the design spec, the plan, the review decks,
   or any transcript.
 - The rules for the files touched: whatever `.claude/rules/*.md` matches them, and
   `docs/PITFALLS.md`. Nothing else from the workspace.
@@ -17,8 +18,8 @@ was meant to do. Feature-flow design §8e.
 1. **Bugs.** Wrong logic, off-by-one, unhandled failure paths, races, state that can go
    stale, an error swallowed and replaced with a guess, a change on one platform (desktop /
    Android / remote browser) with no mirror on the others where the touched channel needs one.
-2. **Broken promises.** A contract row marked `mechanical` whose named guard exists but does
-   not actually test that statement. A row nothing on the branch implements.
+2. **Broken promises.** A walkthrough row whose named test exists but does not actually test
+   that statement. A row nothing on the branch implements.
 3. **Dead or duplicated code.** Code the branch adds that nothing calls; a second copy of
    something the repo already has (search before you claim either — `npm run knip` for dead
    code, `rg` repo-wide for duplicates; a one-file search proves nothing).
@@ -55,5 +56,6 @@ verify summary, **one finding per line, most severe first**, numbered from `F1`:
 
 Then a `## Not covered` list of anything you ran out of budget for. Do not fix anything.
 The implementing session marks each line `accepted`, `rejected` or `already handled`
-(`- F1 accepted — …`); accepted findings become contract rows with
-`source: review:<this file>#F<n>` and are graded like any other row.
+(`- F1 accepted — …`). Each finding is then its own row, "found in review", on the after-build
+walkthrough's checks page (`"from": "<this file>#F<n>"`, plain-words statement, what was done) —
+never folded into one status row.

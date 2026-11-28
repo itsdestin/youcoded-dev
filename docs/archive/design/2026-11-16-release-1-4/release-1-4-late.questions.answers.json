@@ -1,0 +1,36 @@
+{
+ "deck": "release-1-4-late",
+ "started": "2026-11-19T03:07:35.792Z",
+ "submitted": "2026-11-19T03:10:28Z",
+ "cur": 0,
+ "answers": {
+  "L-1": {
+   "v": "yes",
+   "t": 1795057827412,
+   "seconds": 43,
+   "theme": "midnight"
+  },
+  "L-2": {
+   "v": "pick",
+   "pick": "confirm",
+   "t": 1795057827412,
+   "note": "want this whole thing to work in the simplest/most correct way possible. if just 1 better check would suffice, we should do that",
+   "seconds": 43,
+   "theme": "midnight"
+  },
+  "L-3": {
+   "v": "pick",
+   "pick": "last-use",
+   "t": 1795057827412,
+   "seconds": 43,
+   "theme": "midnight"
+  },
+  "L-4": {
+   "v": "yes",
+   "t": 1795057827412,
+   "note": "i've already merge some additional stuff since you made this deck. i don't think we actually need to freeze, but we should cut our release from whatever the now very latest commit is and work only with the diff from that current lateset commit.",
+   "seconds": 43,
+   "theme": "midnight"
+  }
+ }
+}

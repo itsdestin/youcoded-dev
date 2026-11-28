@@ -27,12 +27,12 @@
 // something to prove killing is safe would be its own worst bug.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { homedir } from 'node:os';
-import { readFileSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import {
   assertSafeNeedles, killableFamily, protectedAncestor, removeSingletonLocks, selfChain, sweep,
-  launchApp,
+  launchApp, launchConfiguration, makeShortRuntimeDir, UNIX_SOCKET_PATH_MAX,
 } from '../launch.mjs';
 
 // launch.mjs captures the real home at import time and derives its protected markers
@@ -333,7 +333,8 @@ test('launch teardown finalizes protocol receipt after the owned family sweep, n
   // without launching an app or touching /proc (the live app must stay untouched).
   const source = readFileSync(new URL('../launch.mjs', import.meta.url), 'utf8');
   const kill = source.slice(source.indexOf('    async kill() {'));
-  assert.match(kill, /await sweep\(familyNeedles, fixture\.userData, \{ groupPid: proc\.pid \}\);\s*}\s*finally \{ if \(protocolDrain\) app\.protocolCapture = await protocolDrain\.finish\(protocolLog\);/);
+  // The private runtime folder is removed only after the sweep succeeded (sweep throws on a survivor).
+  assert.match(kill, /await sweep\(familyNeedles, fixture\.userData, \{ groupPid: proc\.pid \}\); removeRuntimeDir\(\); }\s*finally \{ if \(protocolDrain\) app\.protocolCapture = await protocolDrain\.finish\(protocolLog\);/);
   assert.doesNotMatch(kill, /get bytes\(\)|get error\(\)/);
 });
 
@@ -350,4 +351,40 @@ test('launchApp refuses a fixture HOME that is the real home or contains it', as
 test('launchApp refuses an unsafe app directory before it spawns anything', async () => {
   const fixture = { home: FIXTURE_HOME, userData: join(FIXTURE_HOME, '.config'), bin: '/bin', perfLog: '/dev/null' };
   await assert.rejects(launchApp({ binary: 'x', appDir: '/', fixture }), /perf-lab launch/);
+});
+
+// ── the app's private runtime folder: short enough for its hook socket ──────
+// The app makes $XDG_RUNTIME_DIR/youcoded/claude-desktop-hooks-<pid>.sock; under a fixture HOME
+// in a deep worktree that was 160 characters, Linux allows 107, and every Claude Code chat hung.
+
+test('the private runtime folder is new, owner-only, and leaves room for the hook socket name', () => {
+  // Disposable base of the test's own; only the folder made here is removed.
+  const base = mkdtempSync(join(tmpdir(), 'plt-'));
+  try {
+    const dir = makeShortRuntimeDir({ base });
+    assert.ok(dir.startsWith(`${base}/plrt-`));
+    assert.equal(statSync(dir).mode & 0o777, 0o700);
+    assert.ok(Buffer.byteLength(join(dir, 'youcoded', 'claude-desktop-hooks-4194304.sock')) <= UNIX_SOCKET_PATH_MAX);
+    const { env } = launchConfiguration({ fixture: { home: FIXTURE_HOME, bin: '/bin', perfLog: '/dev/null' }, runtimeDir: dir, inherited: { PATH: '/bin' } });
+    assert.equal(env.XDG_RUNTIME_DIR, dir);
+    assert.equal(env.DBUS_SESSION_BUS_ADDRESS, `unix:path=${join(dir, 'no-session-bus')}`);
+  } finally { rmSync(base, { recursive: true, force: true }); }
+});
+
+test('a runtime folder too deep for the hook socket is refused and not left behind', () => {
+  const base = mkdtempSync(join(tmpdir(), 'plt-'));
+  try {
+    const deep = join(base, 'x'.repeat(90));
+    mkdirSync(deep);
+    assert.throws(() => makeShortRuntimeDir({ base: deep }), /too long for the app's hook socket/);
+    assert.deepEqual(readdirSync(deep), []);
+  } finally { rmSync(base, { recursive: true, force: true }); }
+});
+
+test('launchApp gives the app the short runtime folder, not one inside the fixture HOME', () => {
+  // Source pin: launchApp has no injectable spawn, and this file never launches the app.
+  const source = readFileSync(new URL('../launch.mjs', import.meta.url), 'utf8');
+  const body = source.slice(source.indexOf('export async function launchApp('));
+  assert.match(body, /const runtimeDir = makeShortRuntimeDir\(\);/);
+  assert.match(body, /launchConfiguration\(\{ fixture, display, waylandSocket, protocolDebug, runtimeDir \}\)/);
 });

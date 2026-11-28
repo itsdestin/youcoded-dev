@@ -4,6 +4,9 @@
 # trip-board pages through `shoot`.
 # Usage: bash scripts/ui-review/site-idea-stills.sh <app-checkout> <gallery-dir>
 #
+# HAND-RUN ONLY (Destin, 2026-11-11, card #175): no release step calls this. The ideas-wall pages
+# are mostly one-off examples he made, so the pictures change only when he asks for it.
+#
 # WHY (card #175): site-assets.sh step 3 used to shoot 48 stills (8 screens x 6 themes) that the
 # page no longer shows, insist on exactly 48 PNGs, and leave the four pictures the page DOES show
 # to be captured by hand. This replaces it.

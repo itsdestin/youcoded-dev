@@ -1,0 +1,167 @@
+{
+ "deck": "release-1-4-questions",
+ "started": "2026-11-17T00:22:15.404Z",
+ "submitted": "2026-11-18T01:30:45Z",
+ "cur": 5,
+ "answers": {
+  "I-1": {
+   "v": "yes",
+   "t": 1794875019465,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "1.3.4",
+   "t": 1794875019465,
+   "note": "i think most of these are moreso optimizations/fixes/improvements of existing features rather than new",
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "now",
+   "t": 1794875019465,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "own-machines",
+   "t": 1794965443190,
+   "note": "can't we do this with our github runners? if not we can use either our vms (thats what theyre for)",
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "note": "not over 1.3.3 (no real phones have 1.3.3 currently) but we should install and test on my phone",
+   "t": 1794965443190,
+   "v": "other",
+   "seconds": 19,
+   "theme": "midnight",
+   "dk": true
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "everyone",
+   "t": 1794965443190,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "other",
+   "t": 1794965087758,
+   "note": "just the clearer message. i will want to review current vs suggested wording",
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1794965087758,
+   "note": "dont  bother with additional explanations. nobody was using the old way anyway",
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "fix-names",
+   "t": 1794965087758,
+   "seconds": 27,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "fix",
+   "t": 1794965227126,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "keep-64",
+   "t": 1794965227126,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "keep-10",
+   "t": 1794965227126,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "stop-and-tell",
+   "t": 1794965227126,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "pick",
+   "pick": "skip-offline",
+   "t": 1794965227126,
+   "seconds": 28,
+   "theme": "midnight"
+  },
+  "Q-15": {
+   "v": "yes",
+   "t": 1794965348053,
+   "seconds": 24,
+   "theme": "midnight"
+  },
+  "Q-16": {
+   "v": "pick",
+   "pick": "hold",
+   "t": 1794965348053,
+   "seconds": 24,
+   "theme": "midnight"
+  },
+  "Q-14": {
+   "v": "no",
+   "t": 1794965348053,
+   "note": "",
+   "seconds": 24,
+   "theme": "midnight"
+  },
+  "Q-17": {
+   "v": "other",
+   "dk": true,
+   "t": 1794965348053,
+   "note": "confused. what?",
+   "seconds": 24,
+   "theme": "midnight"
+  },
+  "Q-18": {
+   "v": "no",
+   "t": 1794965348053,
+   "seconds": 24,
+   "theme": "midnight"
+  },
+  "I-2": {
+   "v": "yes",
+   "t": 1794965438508,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "I-3": {
+   "v": "yes",
+   "t": 1794965438508,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-19": {
+   "v": "no",
+   "t": 1794965438508,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-20": {
+   "v": "no",
+   "t": 1794965438508,
+   "note": "",
+   "seconds": 23,
+   "theme": "midnight"
+  }
+ }
+}

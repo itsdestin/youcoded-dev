@@ -1,0 +1,511 @@
+{
+  "title": "Next release: what's in it, what must happen first",
+  "key": "release-1-4-questions",
+  "out": "release-1-4.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "I-1",
+      "words": true,
+      "surface": "Release",
+      "path": "Everything merged since v1.3.3 (Oct 23)",
+      "headline": "The review found no bug that loses people's work, but master can't be released today.",
+      "changed": "Eight reviewers read every change since v1.3.3: 48 app changes, 12 server changes, 3 theme-registry changes. Reading only; nothing was run on a real computer or phone.",
+      "notice": "Before release: fix one broken test, refresh a built-in plugin list, update how the app reads Claude Code's newest first-run screens, test on a real Windows PC, Mac and phone, and write the changelog. The full written report is in your Documents folder: youcoded-1.4-release-risk-review.md.",
+      "yes": "Understood",
+      "no": "I have questions"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Release",
+      "path": "The version number",
+      "headline": "Should the next release be numbered 1.4.0 or 1.3.4?",
+      "today": "The last release was 1.3.3. Test builds made since then are already labelled 1.4.0-beta.",
+      "problem": "This release has dozens of new features (Office Home, the new buddy chat, faster local models, Sign out everywhere, a rewritten privacy policy) and the app's engine jumped three major versions. The release checklist says big feature releases bump the middle number.",
+      "proposal": "Pick the number. It decides how the update is described to people and on the website.",
+      "options": [
+        {
+          "id": "1.4.0",
+          "label": "1.4.0",
+          "pros": ["Matches the size of the change, so people expect new things.", "Matches the test builds already numbered 1.4.0-beta."],
+          "cons": ["Once 1.4.0 ships, small fixes for 1.3 stop; any fix goes out as 1.4.1."],
+          "recommended": true
+        },
+        {
+          "id": "1.3.4",
+          "label": "1.3.4",
+          "pros": ["Sounds like a small, safe update."],
+          "cons": ["Misleading: people would not expect a reworked buddy window, new Office screens or new sign-in.", "Breaks the release checklist's own numbering rule."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Release",
+      "path": "Three fixes that stop the release from being built",
+      "headline": "May I fix the three things that currently stop the release from building, now?",
+      "today": "1) One automatic test fails on Windows and Mac (renaming report.docx to Report.docx). The app itself renames correctly; the test is set up in a way those computers don't allow. 2) A built-in list of plugin versions is out of date. 3) Claude Code's newest version (out around Nov 14) changed its sign-in screen wording and, in narrow windows, splits one option of its 'New MCP Server Found' screen over two lines.",
+      "problem": "The release builder runs every test and checks the plugin list, so it would stop. Item 3 already affects people on v1.3.3: in a narrow window the 'New MCP Server Found' card can show one extra, wrong button. A safety check stops a wrong answer from being typed, so nobody gets stuck.",
+      "proposal": "Fix all three on one branch, have a fresh reviewer check it, and show you before anything lands. Items 1 and 2 are invisible to people. Item 3 makes the first-run cards read the new screens correctly again.",
+      "options": [
+        {
+          "id": "now",
+          "label": "Fix them now",
+          "pros": ["Release is unblocked as soon as testing is done.", "Item 3 stops confusing people on the current version sooner."],
+          "cons": ["None for users; it's work that has to happen anyway."],
+          "recommended": true
+        },
+        {
+          "id": "release-day",
+          "label": "Wait for release day",
+          "pros": ["Nothing changes until you decide the release date."],
+          "cons": ["Master stays red, so later changes can't be checked properly.", "Release day gets longer."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Real-world testing before release",
+      "intro": "Some risks can only be ruled out by installing the real thing on a real device. None of this has been done yet."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Updates",
+      "path": "The release installed on a real Windows PC and a real Mac",
+      "headline": "How should the release be tested on a real Windows PC and a real Mac before everyone gets it?",
+      "today": "v1.3.3 added automatic updates (download quietly, install when you quit). They have never delivered a release yet: this will be the first. This release also moves the app's engine (Electron) from version 41 to 44, which turns on a new 'were these files tampered with' check at startup on Windows and Mac.",
+      "problem": "If the update or the new startup check fails, people could end up with an app that won't open. A broken updater can't be repaired by sending another update. The emergency brake only stops new downloads, it can't undo installs that already happened. Our automated tests only used virtual machines.",
+      "proposal": "Install the real release build on one real Windows PC and one real Mac, let each update itself from v1.3.3 (both on quit and with Restart to update), and check the app opens. I'd provide a short checklist.",
+      "options": [
+        {
+          "id": "own-machines",
+          "label": "You or a friend test",
+          "summary": "Someone with a real Windows PC and a Mac runs my checklist, about 30 minutes each.",
+          "pros": ["Real hardware, real updater, real results.", "Free."],
+          "cons": ["Needs access to both kinds of computer.", "Takes someone's time."],
+          "recommended": true
+        },
+        {
+          "id": "rent",
+          "label": "Rent cloud machines",
+          "summary": "I set up rented Windows and Mac computers online and test there.",
+          "pros": ["Doesn't need anyone's computer."],
+          "cons": ["Costs money (roughly a few dollars to tens of dollars).", "Rented Macs are not quite a normal person's Mac (security prompts behave differently)."]
+        },
+        {
+          "id": "skip",
+          "label": "Ship without it",
+          "pros": ["Release sooner."],
+          "cons": ["If the update path is broken, every Windows and Mac user could be stuck with an app that won't open, and we couldn't fix it by update."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Android app",
+      "path": "The release installed on a real phone, over v1.3.3",
+      "headline": "Should the new phone build be tested on a real phone that already has v1.3.3 with real data on it?",
+      "today": "The phone app carries its own copy of some system programs. This release rebuilt them with security patches, and they have never run on a real phone. The release also moves where the phone keeps its settings.",
+      "problem": "If the rebuilt programs are wrong, every phone crashes at startup. Separately, a phone's theme or last chat might reset once after the update, because the step that copies settings across gives up after 3 seconds on a slow phone.",
+      "proposal": "Install the release over v1.3.3 on a real phone with a theme and a paired computer, run a Claude Code chat, sign in, attach files, and check nothing reset. Yes means we do it before release; No means ship without.",
+      "yes": "Yes, test first",
+      "no": "Ship without"
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Updates",
+      "path": "How the release reaches people",
+      "headline": "Should this release go to a few testers first, before everyone gets it automatically?",
+      "today": "Releases go to everyone at once. Test builds exist, but only a few people (like the Mac beta tester) ever install them.",
+      "problem": "This is a big release with an engine jump and the first use of automatic updates. One beta-tester Mac is already stuck on 1.3.1 for a reason nobody knows yet.",
+      "proposal": "Options for how wide the first step is.",
+      "options": [
+        {
+          "id": "beta-first",
+          "label": "Testers first",
+          "summary": "Publish as a beta to the few testers for 3 to 5 days, then to everyone.",
+          "pros": ["A broken update hits a handful of people, not everyone.", "Real-world feedback on the new buddy, Office Home and phone changes."],
+          "cons": ["Release reaches everyone about a week later.", "Only useful if testers actually use it during those days."],
+          "recommended": true
+        },
+        {
+          "id": "everyone",
+          "label": "Everyone at once",
+          "pros": ["Everyone gets the fixes immediately, including working two-player games (see the last page)."],
+          "cons": ["Any problem the tests missed reaches every user on day one."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Phone and computer together",
+      "intro": "Two confirmed changes mean some phones will lose their connection to their computer after updating."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Phone remote access",
+      "path": "Connect to Desktop on the phone",
+      "headline": "A new phone can't connect to a computer still on v1.3.3. How should we handle that?",
+      "today": "The phone app can drive your computer's YouCoded over Tailscale. For security, this release changed how the phone's app identifies itself, and only the new computer version accepts it. An old phone still works with a new computer.",
+      "problem": "Someone whose phone updates first (phones often update automatically) can't reach their computer until the computer updates too. The phone shows a vague 'make sure YouCoded on it is up to date' message that looks the same as 'computer is off'.",
+      "proposal": "Choose how much to do about it before release.",
+      "options": [
+        {
+          "id": "notes-and-message",
+          "label": "Notes + clearer message",
+          "summary": "Release notes say to update both, and the phone's message says plainly that the computer needs updating.",
+          "pros": ["People know exactly what to do.", "Small change, low risk."],
+          "cons": ["Still a short period where the two don't talk."],
+          "recommended": true
+        },
+        {
+          "id": "notes-only",
+          "label": "Release notes only",
+          "pros": ["No more changes before release."],
+          "cons": ["Most people don't read release notes; they'll just see 'couldn't connect'."]
+        },
+        {
+          "id": "compat",
+          "label": "Make them compatible",
+          "summary": "Change the phone so it still works with a v1.3.3 computer.",
+          "pros": ["Nobody loses their connection at all."],
+          "cons": ["Undoes part of a security improvement.", "More work and more testing, delaying release."]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Phone remote access",
+      "path": "Phones paired to a computer by a home-network address",
+      "headline": "Phones paired by a home-network address (like 192.168.1.20) will stop connecting. Is that acceptable?",
+      "today": "Before, a phone could pair with a computer using any address, including the computer's address on home Wi-Fi. This release allows only Tailscale addresses, because a home-network connection isn't encrypted and anyone on the same Wi-Fi could listen in.",
+      "problem": "Anyone who paired that way finds the connection refused after updating. The phone shows 'YouCoded only connects to your computer over Tailscale' and falls back to its own built-in mode. The old pairing never works again until re-paired over Tailscale.",
+      "proposal": "Choose whether to keep the stricter rule as is.",
+      "options": [
+        {
+          "id": "keep-explain",
+          "label": "Keep it, explain it",
+          "summary": "Keep the security rule; release notes and the message tell people to re-pair over Tailscale.",
+          "pros": ["Keeps conversations private on shared Wi-Fi.", "The message already explains what to do."],
+          "cons": ["A few people have to re-pair once."],
+          "recommended": true
+        },
+        {
+          "id": "grace",
+          "label": "Allow with a warning",
+          "summary": "Let existing home-network pairings keep working for now, with a warning to switch.",
+          "pros": ["Nobody is cut off on update day."],
+          "cons": ["Leaves the privacy hole open for those people.", "More work before release."]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Android app",
+      "path": "Files attached to a chat on the phone",
+      "headline": "Phone attachments are deleted after 7 days, and accented file names get mangled. Change either before release?",
+      "today": "When you attach a file on the phone, the app keeps a copy for the assistant. This release deletes those copies after 7 days to save space. It also replaces accented letters in file names, so résumé.pdf becomes r_sum_.pdf.",
+      "problem": "Coming back to a chat after a week and asking about a file you attached won't work, because the copy is gone. Mangled names look broken and can confuse the assistant.",
+      "proposal": "Pick what to change.",
+      "options": [
+        {
+          "id": "fix-names",
+          "label": "Fix names only",
+          "summary": "Keep the 7-day cleanup; keep accented letters in file names.",
+          "pros": ["Names look right; small change.", "Phones don't fill up with old copies."],
+          "cons": ["Old attachments still disappear after a week."],
+          "recommended": true
+        },
+        {
+          "id": "fix-names-30",
+          "label": "Fix names, keep 30 days",
+          "pros": ["Old chats keep working for a month."],
+          "cons": ["Uses more phone storage."]
+        },
+        {
+          "id": "as-is",
+          "label": "Leave both",
+          "pros": ["No changes before release."],
+          "cons": ["Mangled names stay visible to people."]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Behaviours worth fixing before release",
+      "intro": "Things the review found in the code. Each needs your call: fix before release, or ship as is."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Chat (YouCoded's own assistant)",
+      "path": "Reopening an old chat that used a helper",
+      "headline": "Reopening an old chat can make the assistant start replying on its own. Fix before release?",
+      "today": "When the assistant hands a job to a helper, the helper's report is delivered back when it finishes. If the app closed before delivery, the report is delivered when you reopen the chat.",
+      "problem": "Reopening a days-old chat can make the assistant immediately reply to that old report without you typing anything. On a paid cloud model that costs money, and it's surprising. Rarely, if the app quits at exactly the wrong moment, the same report can be delivered twice.",
+      "proposal": "Pick whether to change it now.",
+      "options": [
+        {
+          "id": "fix",
+          "label": "Fix before release",
+          "summary": "On reopen, the old report waits and is included with your next message instead.",
+          "pros": ["No surprise replies or costs.", "The assistant still sees the report."],
+          "cons": ["Small delay to release for the change and its review."],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Fix in the next release",
+          "pros": ["Release sooner."],
+          "cons": ["Surprise replies and costs continue until then."]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Local models",
+      "path": "Settings → Local models",
+      "headline": "Local models now use twice the memory by default. Keep it, or adjust it to each computer?",
+      "today": "This release made local models faster and raised how much of the conversation they hold at once (from 32k to 64k). That applies to everyone who never picked a size themselves.",
+      "problem": "Holding more uses more memory. A smaller laptop that ran a model fine before might now be slow or fail to load it after updating. If the load fails, the app may also wrongly and permanently switch off a speed feature for that model.",
+      "proposal": "Pick the default.",
+      "options": [
+        {
+          "id": "by-memory",
+          "label": "Match each computer",
+          "summary": "64k on computers with plenty of memory, 32k on smaller ones.",
+          "pros": ["Big machines get the improvement; small ones keep working.", "Small change."],
+          "cons": ["Slight delay before release."],
+          "recommended": true
+        },
+        {
+          "id": "keep-64",
+          "label": "Keep 64k for all",
+          "pros": ["No change before release."],
+          "cons": ["Some laptops may stop loading models they used to."]
+        },
+        {
+          "id": "back-32",
+          "label": "Back to 32k",
+          "pros": ["Safest for every computer."],
+          "cons": ["Everyone loses the longer memory, even powerful machines."]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Sign-in",
+      "path": "Signing in to a YouCoded account (already live on the server)",
+      "headline": "The server allows only 10 sign-in starts per 10 minutes from one network. Raise it?",
+      "today": "Since early November, our server limits how many sign-ins can start from the same internet connection in 10 minutes, to slow down attackers guessing their way in. This is already live for everyone, including v1.3.3.",
+      "problem": "A classroom, campus or office shares one internet connection. If more than 10 people sign in within 10 minutes there, everyone after the 10th sees 'too many attempts'. Phone carriers also share connections between many customers.",
+      "proposal": "Pick the limit.",
+      "options": [
+        {
+          "id": "raise-30",
+          "label": "Raise to 30",
+          "pros": ["A class or small office can sign in together.", "Still slows down attackers a lot."],
+          "cons": ["Slightly easier for an attacker on one connection."],
+          "recommended": true
+        },
+        {
+          "id": "keep-10",
+          "label": "Keep 10",
+          "pros": ["Strictest protection."],
+          "cons": ["Group sign-ins at schools are blocked, and students are a main audience."]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Office editor",
+      "path": "Saving a Word or Excel file that fails to save",
+      "headline": "A failed Office save now retries quietly forever. Should it stop and tell you after a few tries?",
+      "today": "If saving fails (a full disk, a read-only file, a drive removed), the editor now retries by itself after 10 seconds, 30 seconds, 1 minute, then every 2 minutes, without showing anything new.",
+      "problem": "For problems that won't fix themselves (a read-only file, a full disk), it retries forever while you may not notice your work isn't saved. If another program changes the file meanwhile, a retry overwrites it (the other copy is kept in Versions, so it can be recovered).",
+      "proposal": "Pick the behaviour.",
+      "options": [
+        {
+          "id": "stop-and-tell",
+          "label": "Stop after 3 and tell",
+          "summary": "Retry a few times, then show a clear 'not saved' message with Try again.",
+          "pros": ["You always know when work isn't saved.", "No silent overwrites hours later."],
+          "cons": ["One more message you may see on a flaky network drive."],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep retrying quietly",
+          "pros": ["Fixes itself when a drive comes back, with no clicking."],
+          "cons": ["Easy to miss that work isn't saved."]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "File history and comments",
+      "path": "The edit history and comments kept beside your files",
+      "headline": "A new automatic cleanup can hide a file's history if its drive is offline for days. Add a safeguard?",
+      "today": "This release added a daily cleanup that hides the saved edit history and comments of files it decides were deleted, so very large history records stay fast. It only runs on big records and has several safety checks, and it keeps a backup.",
+      "problem": "A project on a network drive, cloud folder or USB drive that's unplugged for several days could have its history hidden. Bringing it back needs a developer script; there's no button in the app.",
+      "proposal": "Pick a safeguard.",
+      "options": [
+        {
+          "id": "skip-offline",
+          "label": "Skip unplugged drives",
+          "summary": "The cleanup never touches projects on drives that are missing or removable.",
+          "pros": ["The risky case can't happen.", "Small change."],
+          "cons": ["Big history records on those drives stay big."],
+          "recommended": true
+        },
+        {
+          "id": "test-only",
+          "label": "Ship as is, test it",
+          "pros": ["No change; the safety checks may already be enough."],
+          "cons": ["If they aren't, a person's history disappears with no in-app way back."]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "What goes into this release",
+      "intro": "Work that's finished or close but not on master yet, and outside updates waiting to be accepted."
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "Error messages across the app",
+      "path": "The 'round 4 silent places' batch",
+      "headline": "Include the batch that makes about 40 silent failures explain themselves?",
+      "today": "In about 40 places (saving, pasting, saving tags, marketplace stars and more), a failure shows nothing: the action just doesn't happen. A batch that fixes them is built, reviewed three times, has 56 tests, and merges cleanly. Master already has the first half of this work.",
+      "problem": "Without it, the app is inconsistent: some failures explain themselves, others stay silent. The batch has two review pages waiting on your answers: its pictures and a 5-question 'land or hold' page.",
+      "proposal": "Yes means I re-serve its two review pages for you next, and it lands once you approve them. No means it waits for the release after.",
+      "yes": "Yes, include it",
+      "no": "Hold it"
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "surface": "Themes",
+      "path": "The community themes list",
+      "headline": "Publish the small themes update that goes with this release's colour-readability change?",
+      "today": "This release adjusts the app's accent colour per theme so text stays readable on light themes. A matching small update to the themes list is ready but unpublished.",
+      "problem": "Without it, some light themes won't show the colour adjustment consistently.",
+      "proposal": "Yes publishes it with the release. It is also the first theme update since the new 'checked against the published copy' protection was added, so we'd watch theme installs closely that day.",
+      "yes": "Publish it",
+      "no": "Hold it"
+    },
+    {
+      "id": "Q-16",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages automations (step 4 of Pages)",
+      "headline": "Pages automations are built but waiting on your decisions. Rush them into this release, or hold?",
+      "today": "Pages automations (a page button that runs a job, proposing an automation from a chat, a real Delete page) are built and code-reviewed on their own branch. They wait on your answers about phones, Delete wording and testing. Its marketplace plugin update must ship together with the app change.",
+      "problem": "Rushing adds a large untested change to an already large release. Holding means people wait for it.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "hold",
+          "label": "Hold for next release",
+          "pros": ["Keeps this release smaller and safer.", "Gives time to answer its decisions properly."],
+          "cons": ["Automations arrive a few weeks later."],
+          "recommended": true
+        },
+        {
+          "id": "rush",
+          "label": "Include it",
+          "pros": ["A headline feature for 1.4."],
+          "cons": ["Delays the release while you decide and it's tested.", "More risk in one release."]
+        }
+      ]
+    },
+    {
+      "id": "Q-17",
+      "words": true,
+      "surface": "Android app",
+      "path": "Waiting update: refresh the phone's bundled programs",
+      "headline": "Keep the automatic 'refresh the phone's bundled programs' update out of this release?",
+      "today": "A robot proposes updating the copies of Claude Code and Node the phone app carries. It moves Claude Code to the newest version, the same one that changed its first-run screens.",
+      "problem": "It hasn't been tested on a phone, and its own description says to test it on a real phone first. Taking it now adds the screen-reading problem to phones too.",
+      "proposal": "Yes keeps it out; it goes in after a phone test, in a later update. No takes it now.",
+      "yes": "Keep it out",
+      "no": "Take it now"
+    },
+    {
+      "id": "Q-18",
+      "words": true,
+      "surface": "Behind the scenes",
+      "path": "Waiting automatic library updates",
+      "headline": "Leave out the waiting automatic library updates, especially the three large ones whose checks fail?",
+      "today": "Seven automatic updates to the building blocks the app uses are waiting. Three are large (37 desktop libraries at once, and two big Android toolkit jumps) and their automatic checks are failing. Four are small and pass.",
+      "problem": "Adding them now mixes unrelated risk into the release right before testing.",
+      "proposal": "Yes leaves all seven out until after the release. No means I take the four small passing ones now.",
+      "yes": "Leave all out",
+      "no": "Take the small ones"
+    },
+    {
+      "id": "P-6",
+      "page": "Good to know, and tidying up",
+      "intro": "Information, plus permission for housekeeping that can't be undone."
+    },
+    {
+      "id": "I-2",
+      "words": true,
+      "surface": "Games",
+      "path": "Two-player games (Connect Four, chess)",
+      "headline": "Two-player games don't work on v1.3.3 today; this release fixes them.",
+      "changed": "The outside service that ran online games (PartyKit) shut down on Oct 23 and deleted its projects. Games moved to our own server on Nov 1, but only the new app version knows where to find it.",
+      "notice": "Anyone on v1.3.3 can't play two-player games until they update. That's a reason to release soon, and worth a line in the release notes.",
+      "yes": "Got it",
+      "no": "News to me"
+    },
+    {
+      "id": "I-3",
+      "words": true,
+      "surface": "Sign-in",
+      "path": "Signing in from the app",
+      "headline": "The new sign-in may hang for people using Brave or strict privacy browsers. It needs testing.",
+      "changed": "For security, the new sign-in finishes by having your browser talk back to the app on the same computer. Brave with its Shields up, or finishing sign-in on a different device, may block that.",
+      "notice": "In those cases the app could show a spinner for up to 15 minutes before saying it didn't hear back. I'll include Chrome, Firefox and Brave in the real-computer test. Old app versions are unaffected.",
+      "yes": "Got it",
+      "no": "Questions"
+    },
+    {
+      "id": "Q-19",
+      "words": true,
+      "surface": "Behind the scenes",
+      "path": "Old work branches nobody is using",
+      "headline": "May I delete about 12 old, abandoned work branches after checking each is backed up or already merged?",
+      "today": "About 12 old branches are no longer going anywhere: an old helper-plans screen, a paused OneDrive fix, an old per-project plugins draft, a dropped test speed-up and some one-change leftovers. Two still show as open drafts on GitHub.",
+      "problem": "They clutter the list of work and make it harder to see what's actually in progress. Deleting can't be undone.",
+      "proposal": "Yes: I list each one with what it was, confirm nothing on it is the only copy of useful work, then delete them and close the two drafts. No leaves them.",
+      "yes": "Yes, tidy up",
+      "no": "Leave them"
+    },
+    {
+      "id": "Q-20",
+      "words": true,
+      "surface": "Behind the scenes",
+      "path": "Work folders on this computer",
+      "headline": "Eleven work folders hold changes that exist only on this computer. May I back them up to GitHub?",
+      "today": "Eleven work folders from other sessions (for example Pages, chats across devices, the test rewrite, speed reports) contain changes that were never saved to GitHub.",
+      "problem": "If this computer's drive fails, that work is lost. Your rules say every branch should be backed up.",
+      "proposal": "Yes: I save each one as-is to its own branch on GitHub after the usual secrets check, without merging anything. No leaves them on this computer only.",
+      "yes": "Back them up",
+      "no": "Leave them"
+    }
+  ]
+}

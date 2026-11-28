@@ -1,0 +1,104 @@
+[
+  {
+    "name": "office/home",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs/before/office/home/light.png",
+    "ms": 1321,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs/before/office/home/dark.png",
+    "ms": 1385,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs/before/office/home/midnight.png",
+    "ms": 1397,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs/before/office/home/creme.png",
+    "ms": 1458,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs/before/office/home/halftone-dimension.png",
+    "ms": 2882,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 257,
+      "y": 99,
+      "w": 1175,
+      "h": 793
+    },
+    "parts": []
+  },
+  {
+    "name": "office/home",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/143-office-home-conveniences/docs/active/design/2026-11-14-office-home-conveniences/runs/before/office/home/meadow-mist.png",
+    "ms": 2911,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    },
+    "parts": []
+  }
+]

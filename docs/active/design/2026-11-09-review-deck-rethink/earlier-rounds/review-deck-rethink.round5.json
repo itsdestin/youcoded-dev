@@ -1,0 +1,108 @@
+{
+ "title": "Review deck rethink, round 5",
+ "key": "review-deck-rethink-round5",
+ "out": "review-deck-rethink.round5.html",
+ "earlier": ["review-deck-rethink.round4.json", "review-deck-rethink.round3.json", "review-deck-rethink.round2.json", "review-deck-rethink.questions.json"],
+ "steps": [
+  {"id": "P-1", "page": "What you asked for, and what you got", "intro": "Judge here: is each thing what you meant? Rows stand unless you press a pencil. Click any picture to open the new viewer. Your earlier rounds are behind History, top right."},
+  {
+   "id": "W-1", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "What you asked for, and what you got",
+   "calls": [
+    {"id": "screen", "call": "Wording is edited on a copy of the real app screen, zoomed in on the popup. The text boxes per label are gone and refused from now on.", "why": "Two real YouCoded screens are on the next page to try.", "picture": "pictures/r4-screen-edit.png", "decided": "\"directly edit text on the real ui surface so i can see it in context\""},
+    {"id": "flow", "call": "The written rule is now your three steps: before building you steer in your own words; each round fills gaps; wording edits come only after the build.", "why": "Page 4 proposes going further, from the research you asked for.", "decided": "\"pre-build deck and questions decks just ask me to verbally steer/shape the ui as i see fit\""},
+    {"id": "status", "call": "Every check row has the same status pill at its right, and you can change any of them, mine included.", "why": "\"Left for you to try\" rows now start as Not tried. A status you set shows a solid ring.", "picture": "pictures/r4-status.png", "decided": "\"i should be able to update the statuses myself for all including the ones you put unclear for\""},
+    {"id": "foot", "call": "A comment box sits at the foot of every page. The Notes button in the header is gone.", "why": "Your words there reach me first, named by page.", "picture": "pictures/r4-status.png", "decided": "\"an extra more visible input region at the bottom of each page\""},
+    {"id": "viewer", "call": "A click on any picture opens a full-window viewer: the picture large, its comments beside it, every picture of the page in a strip below.", "why": "It stays open while you drag areas, type and delete comments. Arrow keys move between pictures.", "picture": "pictures/r4-viewer.png", "before": "pictures/r3-large.png", "decided": "\"more space and a better surface to actually leave/manage comments and such and quickly scan through all of the changes at once\""},
+    {"id": "tiles", "call": "Pictures on a changed-screens page are about twice as large.", "why": "Two tiles across instead of three or four.", "picture": "pictures/r4-gallery.png", "decided": "\"rendered far too small to be useful\""},
+    {"id": "pill", "call": "Each card shows its state as a pill at the top right: Not answered, Answered with the time, Accepted, or how many changes you made.", "why": "It replaces the green tick and the word \"answered\".", "picture": "pictures/r4-status.png", "decided": "\"answered status could be a top-right status pill instead of plaintext and checkmark\""},
+    {"id": "history", "call": "A History button in the header shows every earlier round of this topic with your own answers and comments, newest first.", "why": "You picked \"Build it next\". It also lists related decks when a deck names some; this one names none.", "decided": "Round 4: you picked \"Build it next\""}
+   ]
+  },
+  {"id": "P-2", "page": "Try it: edit the words on real screens", "intro": "Judge here: does editing in place work for you? These are copies of real YouCoded screens. Click any words and retype them. Nothing you type changes the app; I only receive the list of changes."},
+  {"id": "T-1", "surface": "Settings", "path": "Settings, then About", "words": true, "headline": "The About popup", "screen": "screens/about.html"},
+  {"id": "T-2", "surface": "Chat", "path": "Right-click inside the message box", "words": true, "headline": "The message box menu", "screen": "screens/message-menu.html"},
+  {"id": "P-3", "page": "How you actually steer", "intro": "Judge here: do these findings match how you work? Four helpers read 32 build conversations (1,471 of your messages) and 784 answered decks (4,007 answers, 1,490 comments). Counts are approximate, within about 15 percent."},
+  {
+   "id": "F-1", "surface": "How chats work with you", "path": "Your past conversations and deck answers", "words": true,
+   "headline": "What the research found",
+   "calls": [
+    {"id": "layout", "call": "You comment most on where things sit and whether they match the rest of the app.", "why": "305 of 1,490 deck comments are about placement. \"Match the rest of the app\" appears in 196. You often name an existing screen as the model."},
+    {"id": "late", "call": "Most of your detailed steering comes after you can see or use the thing.", "why": "About 70 percent of design steering in eight October and November builds came after the build; 55 to 60 percent in August and September."},
+    {"id": "words", "call": "Written questions about layout or flow often cannot be answered without a picture.", "why": "45 comments say \"need to see\" or \"can't judge\". Example: \"idk, just let me see a few mockups\". Early questions about scope and rules do work."},
+    {"id": "combine", "call": "You engage most when shown several designs, and often combine them.", "why": "61 percent of design-choice answers carry a comment, the highest of any kind. 32 requests like \"halfway between b and c\"."},
+    {"id": "scope", "call": "A large share of your steering is scope: for now, later, skip, also do this.", "why": "19 percent of shaping messages in chat, and about 127 deck comments."},
+    {"id": "recs", "call": "You take my recommendation 59 percent of the time, and less each month.", "why": "66 percent in September, 47 percent in November. When you write something else, a third of the time it asks for an explanation."},
+    {"id": "signoff", "call": "Contract and acceptance decks never changed anything.", "why": "All 24 contracts were approved with no comment, in about 9 seconds. Across 41 contract and acceptance decks you changed nothing."},
+    {"id": "rare", "call": "You rarely steer failure messages, empty screens, defaults, speed, phone layout or accessibility.", "why": "Each is under 3 percent of comments. You never asked to see code, a contract, or a reviewer's raw report."},
+    {"id": "surprise", "call": "Your surprises are mostly two kinds: something on screen you never approved, and a rule you set early being broken later.", "why": "About 24 such complaints. Examples: \"not an approved ui element\"; \"NO impact on existing themes\", said again at merge time."},
+    {"id": "context", "call": "Your complaints about decks are about missing context, never about too many questions.", "why": "\"what am i supposed to be looking at? where is the context?\" No complaint about the number of questions was found."}
+   ]
+  },
+  {"id": "P-4", "page": "Rules I propose from that", "intro": "Judge here: should future chats work this way? These replace the vaguer \"who decides what\" rule you objected to. Nothing here is written into the rules yet."},
+  {
+   "id": "R-2", "surface": "How chats work with you", "path": "The rule files every YouCoded chat reads", "words": true,
+   "headline": "Proposed rules, each from a finding",
+   "calls": [
+    {"id": "early", "call": "Asked in words, before anything is drawn: only scope and hard rules. What is in for now, what waits, what must not change, money, privacy.", "why": "These are the early questions you answer well."},
+    {"id": "shown", "call": "Layout, placement and the path between screens are never asked in words. The first deck shows two to four drawn designs per screen, and you may combine them.", "why": "You cannot judge these unseen, and you engage most with choices."},
+    {"id": "model", "call": "Every drawn design names the existing YouCoded screen it is modelled on.", "why": "\"Match the rest of the app\" is your most repeated request."},
+    {"id": "after", "call": "The round after the build is planned as the main steering round, not as a sign-off.", "why": "Most of your detail arrives there. A chat should expect several quick rounds."},
+    {"id": "hard", "call": "Every hard rule you state is written down when you say it and comes back in the after-build deck as a check with its result.", "why": "Broken early rules are half your surprises."},
+    {"id": "unseen", "call": "Anything on screen that was in no picture you approved is listed as \"new, not shown before\".", "why": "The other half of your surprises."},
+    {"id": "quiet", "call": "Failure messages, empty screens, defaults, speed, phone layout and accessibility are listed as rows, never asked as questions.", "why": "You rarely steer them, but should still see them."},
+    {"id": "never", "call": "Never shown: how the code is organised, which code libraries are used, how tests are written, and a reviewer's raw report. A reviewer's result is one row with its status.", "why": "This replaces \"what cannot be detected by using the app\", which you called too vague."},
+    {"id": "judge", "call": "Every page says in its first line what you are judging there.", "why": "Your deck complaints are about missing context."},
+    {"id": "why", "call": "Every recommendation gives its reason in one plain sentence.", "why": "A third of your \"something else\" answers ask for an explanation."}
+   ]
+  },
+  {"id": "P-5", "page": "The outside reviewers", "intro": "Judge here: which reviewers stay fixed? You asked me to weigh what exists before dropping it. The counts come from the review files; about half of those files carry no accept or reject marks, so treat them as rough."},
+  {
+   "id": "E-1", "surface": "How chats work with you", "path": "Review files from past builds", "words": true,
+   "headline": "What each reviewer has caught",
+   "calls": [
+    {"id": "code", "call": "Code reviewer: 34 reviews, 241 findings, about two thirds accepted. You designed it yourself and asked for one in about 30 chats.", "why": "It caught security holes, a sync bug, and a rename feature that did nothing after six rounds of pictures had passed. It finds little on looks-only changes."},
+    {"id": "ux", "call": "Fresh-eyes tester: about 38 runs, about 420 findings, under half accepted.", "why": "Good catches on new multi-screen work and failure paths. Much noise: one run had all 8 findings rejected, another 34 of 42. Sorting its findings is the biggest hidden cost."},
+    {"id": "grader", "call": "Grader: 16 graded contracts, 169 rows passed, 4 failed. It found nothing on 12 of them.", "why": "Three real catches. It can only grade against a contract, and its deck was unreadable to you."},
+    {"id": "contract", "call": "Contract writer: one real catch in its history. 17 of 22 contracts were signed in 33 seconds or less.", "why": "Your words on 2026-11-08: \"i really hate these contracts\"."},
+    {"id": "habit", "call": "You skipped the tester, contract or reviewers on five builds, and once kept only \"a final code review\". You never asked to drop the code review.", "why": "Nobody measured the reviewers, though the September design promised a tally after three features."}
+   ]
+  },
+  {
+   "id": "Q-1", "surface": "How chats work with you", "path": "The rule files every YouCoded chat reads", "words": true,
+   "headline": "Which reviewers should stay fixed?",
+   "today": "The live rules run a fresh-eyes tester twice, a code reviewer, a contract writer and a grader on every full feature. My rewrite on this branch made all of them optional checks you choose.",
+   "checked": "Read the four reviewer briefs, 72 review files, and your past remarks about them, today.",
+   "problem": "Making everything optional risks losing the code reviewer, the one with a strong record. Keeping everything fixed keeps the noise and the contracts you dislike.",
+   "proposal": "Pick how fixed the reviewers are.",
+   "options": [
+    {"id": "all", "label": "Keep every reviewer on every full feature", "pros": ["Nothing already decided is lost."], "cons": ["Keeps the contract and grader, which never changed an outcome you noticed.", "About 13 helper runs per feature."]},
+    {"id": "code", "label": "Code reviewer always runs on risky work; the tester and grader are checks I suggest and you choose; no contract", "pros": ["Keeps the reviewer with the strongest record, where it paid off: security, your data, background work, anything cross-device.", "Matches what you already do when moving fast."], "cons": ["A build that looks harmless but is risky could miss its code review if I judge the risk wrongly."], "recommended": true},
+    {"id": "none", "label": "Every reviewer is a check I suggest and you choose", "pros": ["Fewest fixed steps.", "You see and edit the whole list each time."], "cons": ["A suggested code review can be declined on work that needed it."]}
+   ]
+  },
+  {"id": "P-6", "page": "Checks", "intro": "Judge here: is anything broken for you? Set any status yourself."},
+  {
+   "id": "W-5", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Checks I ran, and what they showed",
+   "calls": [
+    {"id": "c1", "call": "All 414 automatic checks: 330 of the deck tool, 24 in a test browser, 60 of the screenshot tool.", "why": "Run after the last change.", "result": "pass"},
+    {"id": "c2", "call": "A copy of the real About popup looks the same as its photograph.", "why": "Compared side by side. A chat's scroll position is kept.", "result": "pass"},
+    {"id": "c3", "call": "A test browser retyped a button on the real About popup. The button grew to two lines, the change was listed and saved, and Put back restored it.", "why": "The picture shows it.", "result": "pass", "picture": "pictures/r4-screen-edit.png"},
+    {"id": "c4", "call": "A test browser opened the viewer, dragged an area, typed a comment and deleted one, without the viewer closing.", "why": "Now a permanent automatic check.", "result": "pass", "picture": "pictures/r4-viewer.png"},
+    {"id": "c5", "call": "A status pill was changed and the page comment box filled; both reached the saved file.", "why": "Now a permanent automatic check.", "result": "pass"},
+    {"id": "c6", "call": "The answer buttons restyled to the design guide's button rules.", "why": "Not done. Back and Next already follow the guide; I have not yet gone through Yes, No and Something else.", "result": "fail"}
+   ]
+  },
+  {
+   "id": "W-6", "surface": "Review decks", "path": "Any deck link I send you", "words": true,
+   "headline": "Left for you to try",
+   "calls": [
+    {"id": "y1", "call": "On page 2, click words inside a button with your real mouse and type, including a space.", "why": "My test browser typed by program, not with a real mouse and keyboard.", "result": "todo"},
+    {"id": "y2", "call": "Press \"Whole screen\" on page 2, edit something there, then Close.", "why": "The change should still be listed under the screen.", "result": "todo"},
+    {"id": "y3", "call": "Open History at the top right and check that your round-4 comments read correctly.", "why": "I checked the panel opens and lists four rounds, not every line.", "result": "todo"},
+    {"id": "y4", "call": "Speak into the comment box at the foot of a page.", "why": "Voice is still untested with your real microphone.", "result": "todo"}
+   ]
+  }
+ ]
+}

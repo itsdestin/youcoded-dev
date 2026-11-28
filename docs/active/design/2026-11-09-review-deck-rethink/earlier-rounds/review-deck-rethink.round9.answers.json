@@ -1,0 +1,157 @@
+{
+ "deck": "review-deck-rethink-round9",
+ "started": "2026-11-12T03:12:41.786Z",
+ "submitted": "2026-11-12T03:33:59Z",
+ "cur": 0,
+ "answers": {
+  "U-1": {
+   "v": "yes",
+   "t": 1794454438994,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "U-2": {
+   "v": "yes",
+   "t": 1794454438994,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "U-3": {
+   "v": "other",
+   "t": 1794454438994,
+   "note": "I still haven't completely decided what I want this UI to look like. Um I'm open to it maybe being somewhat hidden or just being kind of sorted to the bottom or uh again, I don't really know. I I I think I want to think through a couple of real use cases first before we decide exactly what this like history or like evolution kind of concept is. Um'cause I could see a world where like I respond to a question and then you update that question and we get like evolved versions of the question that like refine on specific elements. Or I could see, you know, y I answer a question that applies to a specific feature, and that question then just gets sort of to the bottom of of the page as like a previously answered question with like a round denotation. Like I I don't know what way we want to do this, if that makes sense. I just know I really didn't like the old history button.",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "U-4": {
+   "v": "yes",
+   "t": 1794454438994,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "U-5": {
+   "v": "yes",
+   "t": 1794454438994,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "U-6": {
+   "v": "yes",
+   "t": 1794454438994,
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "U-7": {
+   "note": "I think the the the the the way you phrase this might be a little broad. There is no longer a contract or sign off deck in the old form with the old process. We're obsoleting that and superseding it with something better. Um I do think our pre-build deck is effectively going to serve a similar purpose to the contract deck. the post build deck will serve a similar purpose to the sign off deck. Um but just that old process was broken and convoluted and didn't work the way I wanted it to. So we're we're replacing it. I wouldn't say that it's no no contract deck or no sign off deck. We we've just superseded it with something better, I think. And again we've as we've already discussed, some of those checks will still remain, like the code checks will still be in place. Um the there should still be like a basic check before I get involved of like did we build Everything like for the post build deck it should say, like did we build everything that we said we were gonna build in the pre build deck? Or what changed? What did you have to adjust as you went through the process of building, so I can like review that kind of thing with that? ",
+   "t": 1794454438994,
+   "v": "other",
+   "seconds": 41,
+   "theme": "midnight"
+  },
+  "B-1": {
+   "changes": {
+    "pencil": "love how comment box at the bottom turned out, but i'm not sure i love the pencil button alone. i think i want to explore a few other ways to indicate that i have read each individual row and approved/rejected it or suggested changes. i want to eliminate the scenario where a row gets accidentally taken as approved just because i didnt read or see it."
+   },
+   "v": "other",
+   "t": 1794453865693,
+   "seconds": 142,
+   "theme": "midnight"
+  },
+  "B-2": {
+   "v": "yes",
+   "accepted": true,
+   "seconds": 142,
+   "theme": "midnight",
+   "t": 1794453865693
+  },
+  "B-3": {
+   "v": "yes",
+   "accepted": true,
+   "seconds": 142,
+   "theme": "midnight",
+   "t": 1794453865693
+  },
+  "E-1": {
+   "v": "pick",
+   "pick": "stages",
+   "t": 1794454022570,
+   "note": "to be clear, i hateeee the fingernail styling you used and generally still think this demo is ugly/poorly deesigned. but it's much better from a utility standpoint!",
+   "seconds": 157,
+   "theme": "midnight"
+  },
+  "K-1": {
+   "v": "yes",
+   "t": 1794454121287,
+   "seconds": 50,
+   "theme": "midnight"
+  },
+  "V-1": {
+   "v": "pick",
+   "pick": "side",
+   "t": 1794454121287,
+   "seconds": 50,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "pick",
+   "pick": "all",
+   "t": 1794454290225,
+   "seconds": 56,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "pick",
+   "pick": "offer",
+   "t": 1794454290225,
+   "note": "i should also be able to kinda steeer/comment specific things that i want checked",
+   "seconds": 56,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "pick",
+   "pick": "on",
+   "t": 1794454290225,
+   "seconds": 56,
+   "theme": "midnight"
+  },
+  "Q-1": {
+   "v": "yes",
+   "t": 1794454431829,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "resume",
+   "t": 1794454431829,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "button",
+   "t": 1794454431829,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "bothcards",
+   "t": 1794454431829,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "O-1": {
+   "v": "yes",
+   "accepted": true,
+   "seconds": 29,
+   "theme": "midnight",
+   "t": 1794454431829
+  }
+ },
+ "built": {
+  "at": "2026-11-11T22:25:05Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "611c531c6"
+ }
+}

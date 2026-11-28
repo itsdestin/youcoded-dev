@@ -13,9 +13,9 @@ platform: Phone and web
 vision: sync.follow.remote
 ---
 Progress
-Done: On the phone app, a 'cannot reach' message now says to update the computer if it is an older version (commit a71a0a92d, Nov 1).
-Next: (1) phone browser: when a later connection fails, show YouCoded's own message that says whether the phone is offline or the computer cannot be reached (needs a first visit; no service worker exists yet). (2) Setup screen: password confirm box and show/hide, a 'removed' message with undo when a phone is removed, a Keep awake explanation and time-left display, and a step count for setup.
-Blocked: needs Destin's decision on the Keep awake design (his 2026-09-24 request).
+Done: Phone-app 'cannot reach' message (commit a71a0a92d). Checked 2026-11-19: password confirm + show/hide and the 'removed' notice are ready to build; Keep awake redesign and setup step count are still undecided
+Next: Build-ready part: (1) Settings remote password (SettingsPanel.tsx password inputs ~1937 and ~2635): confirm box + show/hide, reuse the look of ApiKeySetup.tsx / AdminPasswordPrompt.tsx. (2) Disconnect a device (unpair ~3051): 'Device removed' notice with Undo only if the pairing can be restored safely without the password; otherwise notice only and explain why in the deck. Before/After deck. Separately undecided: phone-browser offline page (needs a service worker), Keep awake redesign with time left (Destin 2026-09-24), setup step count.
+Blocked: Keep awake and step count need Destin's design decision; parked 2026-11-19
 
 Chats
 

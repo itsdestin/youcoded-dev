@@ -5,7 +5,7 @@ paths:
   - "**/desktop/src/renderer/components/header/pack-sessions.ts"
   - "**/desktop/src/renderer/components/header/pill-metrics.ts"
   - "**/desktop/src/renderer/components/header/pill-label-style.ts"
-last_verified: 2026-09-16
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/renderer/components/SessionStrip.tsx
     contains: "setDragActive. = useState[(]false[)]"

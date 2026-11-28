@@ -1,0 +1,123 @@
+{
+  "title": "Local models — what other apps do, and the four choices left",
+  "key": "local-models-review-questions-2",
+  "out": "local-models-review.questions-2.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Local chat",
+      "path": "Having two or three local chats open at once",
+      "headline": "Tested: remembering each chat's place fails at the old default size and works at the new 64k one.",
+      "changed": "I ran the test you approved, on a separate copy of the engine with a small model. At the old size, two chats kept their places, but opening a third made every chat re-read everything on every switch. At 64k, three chats all kept their places, including after one grew much longer. It stops working once the open chats together need more than the 64k.",
+      "notice": "With the 64k default you chose, going back to a chat is quick for up to three ordinary chats. No other app I checked remembers each chat's place or reads ahead at all, so this part of YouCoded is ahead of them.",
+      "yes": "Good, keep it",
+      "no": "I have questions"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "A reply where the assistant ran a command or read a long file",
+      "headline": "When a result is too long to fit, what should the assistant get?",
+      "today": "The result is cut to fit and only the beginning is kept, with a note telling the assistant how to ask for the rest. The part that was cut is gone unless the command is run again.",
+      "problem": "For a command, the error is usually on the last lines, so the assistant can lose the part it needed. Running a command again to see the rest is not always safe or possible. You asked what other apps do: Pi keeps the END of command output and the START of files. Claude Code and Codex keep the start AND end of a failed command. Claude Code, OpenCode and Hermes all save the whole result to a file the assistant can open later.",
+      "proposal": "Pick how far to go.",
+      "options": [
+        {
+          "id": "ends-and-file",
+          "label": "Keep both ends, save the rest",
+          "summary": "Commands keep their start and end, files keep their start, and the whole result is saved to a file the assistant can open in pieces.",
+          "pros": ["Errors at the end of a command are never lost.", "Nothing is thrown away, so no command has to be run twice.", "Matches what the three most careful apps do."],
+          "cons": ["The largest of the three to build.", "Saved results take a little disk space until they are cleaned up."],
+          "recommended": true
+        },
+        {
+          "id": "ends-only",
+          "label": "Keep both ends only",
+          "pros": ["Fixes the lost-error problem.", "Small to build."],
+          "cons": ["The middle is still gone for good."]
+        },
+        {
+          "id": "as-built",
+          "label": "Beginning only, as built",
+          "pros": ["Nothing more to build."],
+          "cons": ["Errors at the end of command output are lost."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any chat that is nearly full, including Claude and GPT chats",
+      "headline": "Should the cut for oversized results apply to cloud models as well as local ones?",
+      "today": "Every model, cloud or local, has the same fixed limits per result. On top of that, this branch cuts a result to the room the chat has left. That second cut applies to every model, but on a cloud model it only happens when the chat is already nearly full.",
+      "problem": "You asked how others handle this. None of the apps I checked treats cloud and local differently. Most use one fixed limit for everyone. Hermes is the only one that sizes the limit to the model's memory, which is what this branch does.",
+      "proposal": "Pick where it applies.",
+      "options": [
+        {
+          "id": "everywhere",
+          "label": "Everywhere",
+          "pros": ["Same as every other app: one rule for all models.", "A nearly full cloud chat is protected from one huge file too."],
+          "cons": ["Now and then a cloud model reads a big file in two steps instead of one."],
+          "recommended": true
+        },
+        {
+          "id": "local-only",
+          "label": "Local models only",
+          "pros": ["Cloud chats behave exactly as they do today."],
+          "cons": ["A cloud chat near its limit can still be tipped over by one big file."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Local chat",
+      "path": "A full chat where the model cannot write a usable summary",
+      "headline": "When a chat is full and the model cannot summarise it, how should the chat keep going?",
+      "today": "When a chat fills up, the app asks the model to summarise the older part. If a small model answers with nonsense twice, the chat stays full, the too-long message appears, and pressing Summarise fails again. You said the first priority is that a chat can always continue.",
+      "problem": "A chat can reach a dead end. Other apps: OpenCode and Pi also dead-end with an error. Hermes first drops old command and file results without asking the model at all, and writes a plain stand-in summary if the model fails. Codex drops the oldest messages until the chat fits.",
+      "proposal": "Pick the safety net.",
+      "options": [
+        {
+          "id": "drop-then-continue",
+          "label": "Drop the oldest parts and continue",
+          "summary": "If the summary fails, the app itself removes old command and file results first, then the oldest messages, until the chat fits. A line in the chat says older parts were dropped.",
+          "pros": ["A chat can always continue.", "Needs nothing from the model, so a weak model cannot break it."],
+          "cons": ["The assistant forgets the dropped parts without a summary of them.", "You still see the whole chat on screen, so it may surprise you that the assistant has forgotten something."],
+          "recommended": true
+        },
+        {
+          "id": "message-only",
+          "label": "Clear message and New chat button",
+          "pros": ["Nothing is ever forgotten silently.", "Smallest to build."],
+          "cons": ["The chat itself is still a dead end."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Local models",
+      "path": "Replies from models that include their own built-in guesser",
+      "headline": "Should I build the faster-writing safety net now and test on your desktop when it is next on?",
+      "today": "The faster-writing trick is on for every model that supports it. If it stops a model from loading, the model just fails. Your desktop is switched off right now, so I cannot test there yet.",
+      "problem": "Until it is tested on an NVIDIA card, nobody knows whether it helps, hurts or breaks loading there.",
+      "proposal": "Yes: I build the safety net now (a failed load is tried once more without the trick, and remembered), then measure on the desktop under Linux and Windows when it is on. No: leave the trick as built and only test."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Your desktop PC",
+      "path": "Testing on the NVIDIA desktop from this laptop",
+      "headline": "May I run a separate test copy of YouCoded on your desktop, never touching the real app there?",
+      "today": "My standing rule is that the desktop may only be looked at, never changed. Testing there means putting a separate test copy of the app and a model in their own folder and running them.",
+      "problem": "Without your word I cannot run anything on it. It also has to be switched on, and I can only reach it while it is running Linux unless Windows there accepts remote logins too.",
+      "proposal": "Yes: I may install and run a separate test copy in its own folder on the desktop, and remove it afterwards. Your real app, its settings and its models are not touched. No: testing stays on this laptop only."
+    }
+  ]
+}

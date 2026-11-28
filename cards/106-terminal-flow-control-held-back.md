@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.converse.multi
 ---
 Progress
-Done: 2026-10-08: the screen-update cap and most of the flow control shipped (youcoded#616; the cap is at transcript-batch.ts:155). 2026-10-14: a program's last lines are kept more reliably (youcoded#619). 2026-10-21: a rare test failure was made easier to diagnose (youcoded#670). Still open: stale screen parts under very heavy output; typing and lag with 17 or more chats open (partly fixed 2026-09-17: a chat's terminal now loads only when first viewed); program end lines possibly lost.
-Next: re-test the three open items with a real build before deciding a fix.
+Done: 2026-11-12: terminals keep their graphics past 16 Claude Code chats, LANDED (app PR #736). Destin to look on a real build with 20+ chats.
+Next: Destin to look on a real screen with 20+ Claude Code chats: switching into terminals untouched for a while (no blank or wrong-size frame, colours match the theme), scrollback, selection, typing, resize, wallpaper themes, a second window. Unverified: Android may allow fewer than 16 layers (then 9 to 16 chats there behave as before); switching to a chat whose layer was given away costs an estimated 30 to 50 ms, not measured on a real graphics card. Not built, Destin to decide: fault (1) fix (clear and repaint after cutting a hidden window's backlog; could flash briefly when the window is reopened). Still true: no terminal-width resize log exists.
 Blocked: nothing recorded.
 
 Chats

@@ -1,0 +1,16 @@
+{
+ "deck": "queue edit choice",
+ "started": "2026-11-18T21:42:18.920Z",
+ "submitted": "2026-11-18T21:43:29Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "no",
+   "t": 1795038207719,
+   "note": "the refusal was fine. this is overcomplicated and a user would rarely want to use either option",
+   "seconds": 69,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

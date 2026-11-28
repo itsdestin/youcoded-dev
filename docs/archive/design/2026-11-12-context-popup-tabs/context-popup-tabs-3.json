@@ -1,0 +1,21 @@
+{
+  "title": "\"What the assistant was given\" — the shortened-file line",
+  "key": "context-popup-tabs-3",
+  "out": "context-popup-tabs-3.review.html",
+  "images": "images/context-popup-tabs-3",
+  "runs": { "after": "runs-3/after" },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "What the assistant was given",
+      "path": "Project context tab, on a small model that could not fit the whole rules file",
+      "crop": "chat/session-context#project",
+      "new": true,
+      "headline": "A shortened rules file now says \"Shortened to fit this model\" instead of \"3 of 12 sections above are shown as…\".",
+      "changed": "Your round 2 note on R2-6. The old line was a note written for the assistant, shown to you unchanged. The card now says one plain thing under the file name. The \"What it got / What was cut\" switch right below still shows exactly what was left out.",
+      "measured": "13 words down to 5",
+      "notice": "The amber dot and the switch are unchanged. A file that was not shortened still reads \"Read before every chat in this project\".",
+      "risk": "The line no longer says how much was shortened; you open \"What was cut\" to see."
+    }
+  ]
+}

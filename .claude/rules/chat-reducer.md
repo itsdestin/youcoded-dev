@@ -8,7 +8,7 @@ paths:
   - "**/desktop/src/shared/attention-classifier.ts"
   - "**/desktop/src/renderer/hooks/usePtyRawBytes.ts"
   - "**/shared-fixtures/**"
-last_verified: 2026-10-23
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts

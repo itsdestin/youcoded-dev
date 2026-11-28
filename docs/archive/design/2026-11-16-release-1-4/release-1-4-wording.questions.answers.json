@@ -1,0 +1,24 @@
+{
+ "deck": "release-1-4-wording",
+ "started": "2026-11-18T07:47:55.349Z",
+ "submitted": "2026-11-18T07:51:46Z",
+ "cur": 0,
+ "answers": {
+  "W-1": {
+   "v": "pick",
+   "t": 1794988304744,
+   "pick": "two-messages",
+   "note": "\"Please update youcoded on your computer to use remote access.\" and \"Unable to reach your computer: please ensure youcoded is open and Tailscale is enabled on both devices.",
+   "seconds": 115,
+   "theme": "midnight"
+  },
+  "W-2": {
+   "v": "pick",
+   "pick": "built",
+   "t": 1794988304744,
+   "note": "Not yet saved: the file may be open elsewhere. Please try again in a moment.",
+   "seconds": 115,
+   "theme": "midnight"
+  }
+ }
+}
