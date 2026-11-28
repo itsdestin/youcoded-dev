@@ -409,18 +409,21 @@ export type LinkedInProps = { look: 'night' | 'day'; head: string; shots?: strin
 export const LinkedIn: React.FC<LinkedInProps> = ({ look, head, shots, struck, ai }) => {
   const { width: W, height: H } = useVideoConfig();
   const dark = look === 'night';
-  const left = W * 0.15;                                   // clear of the profile picture LinkedIn lays over the bottom-left corner
+  // WHY 26%: measured from Destin's screenshot of the live page (2026-11-27), the profile picture covers the strip
+  // from 3% to 23.5% across, from 36% down. The first layout started the words at 15% and they were hidden.
+  // With app pictures, those now sit just right of the profile picture and the words move to the right side.
+  const left = W * (shots ? 0.635 : 0.26);
   const lines = head.split('/').map((l) => l.trim().replace(/\*/g, ''));
-  const room = (shots ? W * 0.55 : W * 0.93) - left;       // words stop before the app pictures, or before the right margin
+  const room = W * 0.955 - left;                           // words run to the right margin
   const longest = Math.max(...lines.map((l) => l.length));
   const size = Math.min(room / (longest * 0.5), (H * (struck ? 0.5 : 0.52)) / (lines.length * 0.98 + (struck ? GAP : 0)));
   const row: React.CSSProperties = { fontFamily: DMSANS, fontWeight: 900, fontSize: size, letterSpacing: '-0.05em', lineHeight: 0.98, whiteSpace: 'nowrap', color: C.nightText };
-  const sw = W * 0.2, sh = sw * 0.625;                     // app windows keep the real window's 16:10 shape
+  const sw = W * 0.165, sh = sw * 0.625;                     // app windows keep the real window's 16:10 shape
   return (
     <AbsoluteFill>{dark ? <BgNight /> : <BgDay />}<Fill kind="wash" dark={dark} word="" />
       {shots?.map((src, i) => (
-        // a cascade stepping down to the right and off the bottom edge, so each look shows its top-left corner
-        <Shot key={src} src={`stills/${src}.png`} u={H / 60} style={{ left: W * (0.6 + 0.125 * i), top: H * (0.13 + 0.13 * i), width: sw, height: sh }} />
+        // a cascade stepping down to the right, between the profile picture and the words
+        <Shot key={src} src={`stills/${src}.png`} u={H / 60} style={{ left: W * (0.26 + 0.088 * i), top: H * (0.1 + 0.13 * i), width: sw, height: sh }} />
       ))}
       <div style={{ position: 'absolute', left, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* WHY a block exactly as wide as the words: the foot's two ends then line up under the headline's two ends */}
