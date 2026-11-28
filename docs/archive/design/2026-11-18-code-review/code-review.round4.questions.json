@@ -1,0 +1,336 @@
+{
+  "title": "Code review: the decisions still open",
+  "key": "code-review-round4",
+  "out": "code-review.round4.questions.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Where this work goes next",
+      "intro": "Everything you approved is merged except the workspace lock and repo-list work. These three decide how we finish."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "How we work",
+      "path": "This code-review session",
+      "headline": "Finish this session now and move the remaining work to fresh sessions, or keep going here?",
+      "today": "This session started on Nov 18. It has survived several computer crashes, and it now remembers its early work only as a summary.",
+      "checked": "Checked Nov 27: the session restarted from a summary four times; the summary is all that remains of the first week.",
+      "problem": "A long session loses detail each time it is summarised, so later work leans on a fading memory of what you decided.",
+      "proposal": "Pick how to carry on. Either way nothing is lost: every leftover item becomes a work card first.",
+      "options": [
+        {
+          "id": "wrap",
+          "label": "Wrap up, new sessions",
+          "recommended": true,
+          "summary": "I land what is ready, save your deck answers, file one card per leftover item, and give you a one-message starting point for the next session.",
+          "pros": [
+            "Each piece starts with a clean memory and only its own facts.",
+            "Smaller sessions are easier for you to follow and check."
+          ],
+          "cons": [
+            "You start each new session yourself (one pasted message)."
+          ]
+        },
+        {
+          "id": "continue",
+          "label": "Keep going here",
+          "summary": "I start the device check next, then the items on the pages after this one.",
+          "pros": [
+            "No hand-off step."
+          ],
+          "cons": [
+            "More detail lost to summaries over time.",
+            "One very long thread that is hard to look back through."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "How we build",
+      "path": "The workspace lock and repo-list work (youcoded-dev pull request 402)",
+      "headline": "Merge the self-clearing lock, the single repo list and the test guard now?",
+      "today": "The work is finished and open for merging. A final independent reviewer swept it for anything a person or a session would notice, and found no blockers.",
+      "checked": "Checked Nov 27: the final sweep reported SAFE TO MERGE; all tests passed inside the process and memory cage.",
+      "problem": "Until it merges, a crashed script can still leave a lock that blocks the next session, and the start-up report keeps its own copy of the repo list.",
+      "proposal": "Yes: I merge once GitHub's checks pass, then clean up. Nobody using the app sees a change. One effect for sessions: a lock left by a crash from before this change still blocks for up to an hour, once. No: it waits."
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "How we build",
+      "path": "The private release repo: a leftover copy named fix-release-test",
+      "headline": "Delete the leftover release-repo copy whose fix already reached master another way?",
+      "today": "A leftover copy and branch hold an earlier version of the release-check fix. The same fix was later merged through a different route.",
+      "checked": "Checked Nov 27: master no longer reads the deleted games-server workflow, and its release test pins that; the leftover adds nothing master lacks.",
+      "problem": "Leftover copies make it look as if unfinished release work exists.",
+      "proposal": "Yes: I delete the copy and its branch, on this computer and on GitHub. No: it stays."
+    },
+    {
+      "id": "P-2",
+      "page": "Saving files safely",
+      "intro": "You asked for more explanation on these. Each now says what you would actually notice."
+    },
+    {
+      "id": "E-2",
+      "words": true,
+      "surface": "Saved files and settings",
+      "path": "Anywhere the app saves a file: settings, themes, chat tags, the project list",
+      "headline": "Make every save in the app use its one crash-safe saving method?",
+      "today": "The app has a safe way to save: it writes a complete new copy beside the old one, then swaps them. About 40 places skip it and overwrite the file directly.",
+      "checked": "From the Nov 18 review, which listed each place; the analytics, theme and fast/effort settings saves were among them.",
+      "problem": "If the computer crashes or loses power mid-save, the file can be left half-written. The app then reads it as empty and resets that setting to default. Two saves at once can also overwrite each other, losing one change.",
+      "proposal": "Yes: all 40 use the safe method, and a check refuses new homemade saves. You would notice nothing, except settings no longer resetting after a crash. Lands under your invisible-fix rule, after review. No: fixed only as each one causes trouble."
+    },
+    {
+      "id": "E-3",
+      "words": true,
+      "surface": "How we build",
+      "path": "Work cards: the progress notes sessions add",
+      "headline": "Save card notes to disk at once, but record them on GitHub together when a session pauses?",
+      "today": "Every card note is recorded on GitHub on its own, the moment it is written. They are almost half of all workspace history entries.",
+      "checked": "From the Nov 18 review's count (43% of workspace commits); not re-counted since.",
+      "problem": "Real changes get buried among notes, and sessions trip over each other writing the same file. You worried a crash would lose notes.",
+      "proposal": "Pick how. Your worry is answered in the first option: nothing waits only in memory.",
+      "options": [
+        {
+          "id": "disk-then-batch",
+          "label": "Disk now, GitHub later",
+          "recommended": true,
+          "summary": "Each note is written to the file at once. They go to GitHub together when the session pauses or ends; any left over after a crash go up at the next session start.",
+          "pros": [
+            "A crash loses no notes: they are already on disk.",
+            "About nine in ten fewer history entries."
+          ],
+          "cons": [
+            "Notes from a crashed session reach GitHub only when the next session starts on this computer."
+          ]
+        },
+        {
+          "id": "as-today",
+          "label": "Keep it as today",
+          "pros": [
+            "Every note is on GitHub within seconds."
+          ],
+          "cons": [
+            "History stays crowded, and sessions keep colliding on the file."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "I-1",
+      "words": true,
+      "surface": "Settings files",
+      "path": "When a settings file is damaged",
+      "headline": "When a settings file is damaged, should optional things switch off rather than on?",
+      "today": "When a settings file can't be read, each part of the app picks its own fallback. One known case turned usage reporting back on after you had turned it off; that case is already fixed.",
+      "checked": "The usage-reporting case was found by the Nov 18 review and fixed in the first hidden-failures batch; no user has reported a damaged file.",
+      "problem": "Rare: it needs a crash mid-save, a full disk, or a hand edit. Saving safely (above) removes most crashes. But when it happens, a fallback can quietly do the opposite of what you chose.",
+      "proposal": "Yes: one rule everywhere. A damaged file means optional features and reporting off, lists empty, and the bad copy kept for diagnosis. No: each part keeps its own fallback."
+    },
+    {
+      "id": "P-3",
+      "page": "Data that comes from outside",
+      "intro": "Files on disk, a paired phone, the internet and the marketplace all send the app data it uses as-is."
+    },
+    {
+      "id": "I-4",
+      "words": true,
+      "surface": "Phone",
+      "path": "A phone asking the computer to do something",
+      "headline": "When the computer refuses something a paired phone asked for, should the phone say so?",
+      "today": "Some phone requests the computer can't accept are dropped without a reply. On the phone the button simply does nothing. Others already show an error; this covers the silent ones.",
+      "checked": "From the Nov 18 review of the phone link; not re-tested since, so the exact list would be re-checked before any change.",
+      "problem": "A broken phone action looks like a slow one: you press again, wait, and nobody learns it's a real bug.",
+      "proposal": "Yes: the phone shows its usual 'that didn't work, try again'. The first release only records refusals, so older phones aren't affected; the next one shows the message. No: keep dropping them."
+    },
+    {
+      "id": "I-5",
+      "words": true,
+      "surface": "How we build",
+      "path": "Places in the app that read a file and trust its contents",
+      "headline": "Add one shared checker for files the app reads, and block new code that skips it?",
+      "today": "About 320 places read a saved file and use whatever is inside without checking it looks right.",
+      "checked": "From the Nov 18 review's count of 323; not re-counted since.",
+      "problem": "A damaged or unexpected file can make a feature misbehave instead of falling back safely, which the damaged-settings question above depends on.",
+      "proposal": "Yes: one shared checker that falls back safely. New code must use it; the existing places go on a list that can only shrink, fixed in batches. Nobody sees a change. No: a warning only, which tends to get ignored."
+    },
+    {
+      "id": "P-4",
+      "page": "Rules that a machine could check",
+      "intro": "Many of my working rules are written down and rely on me remembering them."
+    },
+    {
+      "id": "R-6",
+      "words": true,
+      "surface": "How we build",
+      "path": "The written rules sessions follow",
+      "headline": "Turn written rules into automatic checks, in batches you approve one at a time?",
+      "today": "Many rules exist only as written instructions, for example: error messages follow the standard, a WHY comment at every edit, and theme files are re-checked when their scripts change.",
+      "checked": "Examples from the Nov 18 review's root-cause list; the release check that broke on a deleted file was one result.",
+      "problem": "A written rule gets missed, and nothing notices until something breaks. The release check stopped working this way.",
+      "proposal": "Yes: I list a batch of rules, what check each becomes, and what would change for you. You approve the batch before I build it. No: rules stay written down."
+    },
+    {
+      "id": "P-5",
+      "page": "What every session reads at the start",
+      "intro": "Every session reads about 72 KB of instructions before doing anything. These decide what to trim. Rules you set keep their meaning."
+    },
+    {
+      "id": "T-1",
+      "words": true,
+      "surface": "How we build",
+      "path": "The start-up report's three lookup tables (parts of the app, exact files, saved data)",
+      "headline": "How far should the start-up report's three lookup tables be cut?",
+      "today": "The report lists every part of the app with its files, about 100 quick-find phrases with their exact file, and every folder the app saves to: 36 KB in every session. Example row: 'the chat transcript / message list → ChatView.tsx'.",
+      "checked": "Measured Nov 27 from this session's own start-up report: 12.9 KB, 15.3 KB and 7.5 KB. It was 23 KB on Nov 18.",
+      "problem": "Most sessions use one or two rows, and the tables keep growing: up 13 KB in nine days.",
+      "proposal": "Pick one. The full tables stay in the map file sessions open when needed.",
+      "options": [
+        {
+          "id": "one-file",
+          "label": "One file per row",
+          "recommended": true,
+          "summary": "Each row keeps its name and its first file; extra files and notes move to the map.",
+          "pros": [
+            "Saves about 18 KB in every session.",
+            "Every row still points straight at the right file."
+          ],
+          "cons": [
+            "A session sometimes opens the map for the second file."
+          ]
+        },
+        {
+          "id": "shorter",
+          "label": "Shorten each row",
+          "pros": [
+            "Keeps more detail in front of each session."
+          ],
+          "cons": [
+            "Saves about 10 KB; long rows get cut mid-thought."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave them",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Saves nothing, and they keep growing."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T-2",
+      "words": true,
+      "surface": "How we build",
+      "path": "The how-to sections of the main instructions",
+      "headline": "Shrink six how-to sections of the main instructions to one pointer line each?",
+      "today": "Six sections explain how to use tools: question decks, the workbench, screenshots, demo clips, page measuring and model tests. About 3.2 KB in every session. 'New features and UI changes' is not one of the six.",
+      "checked": "Measured Nov 27 from the main instructions on master.",
+      "problem": "Most sessions use none of them, but all of them are read every time.",
+      "proposal": "Pick one. Example pointer: 'Screenshots of named screens: scripts/shoot/README.md.'",
+      "options": [
+        {
+          "id": "keep-features",
+          "label": "Pointers, keep features",
+          "recommended": true,
+          "summary": "The six become one line each. Your approval rules stay in full: the features section, and 'four or more questions go on a deck'.",
+          "pros": [
+            "Saves about 2.5 KB.",
+            "Every approval rule you set stays word for word."
+          ],
+          "cons": [
+            "How-to detail is one step away."
+          ]
+        },
+        {
+          "id": "keep-all",
+          "label": "Keep all",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Saves nothing."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T-4",
+      "words": true,
+      "surface": "How we build",
+      "path": "The rule against touching your running app",
+      "headline": "Name both the Windows and Linux places in the rule against touching your running app?",
+      "today": "The rule forbids touching the app's own files 'under AppData/Roaming/youcoded/' and allows watching it 'with Get-Process or Task Manager'. Both are Windows-only.",
+      "checked": "Read Nov 27 from the rule on master; the Linux app keeps its files in ~/.config/youcoded/.",
+      "problem": "You use both Windows and Linux. On Linux a session can't tell which folder the rule protects.",
+      "proposal": "Yes, exact change: the folder line becomes 'AppData/Roaming/youcoded/ on Windows, ~/.config/youcoded/ on Linux'. The watch line becomes 'Task Manager or Get-Process on Windows; ps or top on Linux'. Nothing else changes. No: leave it."
+    },
+    {
+      "id": "T-5",
+      "words": true,
+      "surface": "How we build",
+      "path": "The rule about when to merge",
+      "headline": "Bring the main instructions' merge rule in line with yours, so the two stop contradicting?",
+      "today": "Your global rules say: never suggest merging, but ask 'ready to merge?' once you say the work is nearly done. The main instructions say only: merge on explicit instruction, never end a turn suggesting it.",
+      "checked": "Read Nov 27 from both files.",
+      "problem": "A session following the main instructions never asks 'ready to merge?', even when you've said you're done.",
+      "proposal": "Yes, new line in the main instructions: 'Merge only on his word. Never suggest it while he iterates; once he says the work is (nearly) done, ask \"ready to merge?\" (never \"ready to push?\").' Your global rules stay as they are. No: leave both."
+    },
+    {
+      "id": "T-7",
+      "words": true,
+      "surface": "How we build",
+      "path": "The size check on what every session reads",
+      "headline": "Add a size limit on everything sessions read at the start, so the trimming can't creep back?",
+      "today": "A check limits the always-read instructions, but it counts only part of them: the main instructions and rules, not the start-up report. It passes while the true total grows.",
+      "checked": "Measured Nov 27: main instructions 26 KB, your global rules 4 KB, start-up report 42 KB.",
+      "problem": "Without an honest limit, whatever we trim slowly grows back, as the lookup tables did.",
+      "proposal": "Pick a limit. A future addition over it would have to trim something else first.",
+      "options": [
+        {
+          "id": "after-trims",
+          "label": "Limit after the trims",
+          "recommended": true,
+          "summary": "Set the limit at the size left after the trims you approve above, plus a small margin.",
+          "pros": [
+            "Locks in the savings."
+          ],
+          "cons": [
+            "A big new section would need a trim elsewhere first."
+          ]
+        },
+        {
+          "id": "today-size",
+          "label": "Limit at today's size",
+          "pros": [
+            "Stops further growth without any trimming."
+          ],
+          "cons": [
+            "Keeps today's 72 KB."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No limit",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "The size keeps creeping up."
+          ]
+        }
+      ]
+    }
+  ]
+}

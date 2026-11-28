@@ -1,0 +1,189 @@
+{
+ "deck": "code-review-2026-11-18",
+ "started": "2026-11-18T22:25:06.653Z",
+ "submitted": "2026-11-18T22:34:07Z",
+ "cur": 4,
+ "answers": {
+  "B-1": {
+   "v": "pick",
+   "pick": "hide",
+   "t": 1795040827095,
+   "note": "we should hide, but pull fixing this into our broader currently ongoing mesh/sync work. you should give me a prompt for that sesssion that just explains what you discovered and that it's responsible for traiging/resolving",
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "B-2": {
+   "v": "yes",
+   "t": 1795040827095,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "B-3": {
+   "v": "yes",
+   "t": 1795040827095,
+   "note": "",
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "B-4": {
+   "v": "yes",
+   "t": 1795040827095,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "B-5": {
+   "v": "yes",
+   "t": 1795040827095,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "B-6": {
+   "v": "yes",
+   "t": 1795040827095,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "B-7": {
+   "v": "yes",
+   "t": 1795040827095,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "B-8": {
+   "v": "yes",
+   "t": 1795040827095,
+   "seconds": 15,
+   "theme": "midnight"
+  },
+  "M-1": {
+   "v": "yes",
+   "t": 1795040923110,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "M-2": {
+   "v": "yes",
+   "t": 1795040923110,
+   "note": "",
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "M-3": {
+   "v": "yes",
+   "t": 1795040923110,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "M-4": {
+   "v": "yes",
+   "t": 1795040923110,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "M-5": {
+   "v": "other",
+   "dk": true,
+   "t": 1795040923110,
+   "note": "what? these fields definitely arent always empty, which makes me feel you're looking at an outdated doc or something",
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-1": {
+   "v": "yes",
+   "t": 1795041075688,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-2": {
+   "v": "yes",
+   "t": 1795041075688,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-3": {
+   "v": "other",
+   "dk": true,
+   "t": 1795041075688,
+   "note": "can you explain this further, along with potential pros/cons?",
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-4": {
+   "v": "yes",
+   "t": 1795041075688,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-5": {
+   "v": "yes",
+   "t": 1795041075688,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-6": {
+   "v": "other",
+   "dk": true,
+   "t": 1795041075688,
+   "note": "possibly. i'd want to review this a bit more thoroughly i think.",
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-7": {
+   "v": "yes",
+   "t": 1795041075688,
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "R-8": {
+   "v": "other",
+   "t": 1795041075688,
+   "note": "parallelize",
+   "seconds": 19,
+   "theme": "midnight"
+  },
+  "W-1": {
+   "v": "other",
+   "t": 1795041243296,
+   "dk": true,
+   "note": "would they still be backed up to github?",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "W-2": {
+   "v": "other",
+   "dk": true,
+   "t": 1795041243296,
+   "note": "this seems broadly stupid. i'd imagine there are much more thoughtful/practical ways to shape and build a codebase, and we should be relying more heavily on industry best practices....",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "W-3": {
+   "v": "other",
+   "dk": true,
+   "t": 1795041243296,
+   "note": "i'd want to see details of what you propose",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "W-4": {
+   "v": "yes",
+   "t": 1795041243296,
+   "note": "we already do this to some extent i think. should integrate any new changes with existing systems",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "W-5": {
+   "v": "pick",
+   "t": 1795041243296,
+   "pick": "only-asked",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-1": {
+   "v": "yes",
+   "t": 1795041246841,
+   "seconds": 4,
+   "theme": "midnight"
+  }
+ }
+}
