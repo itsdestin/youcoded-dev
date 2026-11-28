@@ -15,6 +15,20 @@ Every slowdown found belongs to one of six classes. Each class gets **one mechan
 
 The plan prefers deleting work over adding machinery. The review showed that several first-draft fixes would have rebuilt things the code already does well, so **every fix is now gated on a measurement or a proven cause**, and nothing is built speculatively.
 
+## Progress (2026-11-28)
+
+| Item | State |
+|---|---|
+| Step 1: folder scan per event | **Merged** (youcoded#803) |
+| hitch-report rhythm, per-launch and headline | Built (workspace branch) |
+| Stall profiler restarts every 10 min, not 25 s (Profiler.start measured at 50-170 ms of main-thread block) | Built, reviewed |
+| Git footer: one run at a time per file | Built, reviewed |
+| Chrome cut-out keeps its array when unchanged (refreshes on window resize) | Built, reviewed |
+| Session menu rows read one shared, kept copy of tags and pin | Built, reviewed |
+| Menu entrance uses transform instead of margin-top; guard: no keyframe animates layout | Built |
+| Keychain launch freeze | **On hold.** Electron's async encryptor may open a different Linux keyring entry or prompt twice (undocumented). Proving the fix needs an experiment on Destin's real wallet, so ask him first. The alternative is to probe availability in the existing helper process first. |
+| New finding: launch `8a74e48a` stalls on a **5 s** rhythm (65% at one phase, 371/hour), cause unknown | Next: the stall profiler also saves one profile of a short (≥300 ms) stall per 10 minutes, under its own small file cap, to name it |
+
 ## The six classes
 
 | Class | Root fix | Enforcement |
