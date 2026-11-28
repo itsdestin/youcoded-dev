@@ -52,9 +52,13 @@ HOLDS = (21, 13)               # round-10 B's inserted pauses (frames): the cuts
 GAP_LU = 10.0
 # WHY this EQ on top of voicemix.prep (which already does a de-esser and -1.5 dB at 3.4 kHz): he
 # still heard "harsh" on round-10 B, which had -3 dB at 3.2 kHz and -2 dB above 7 kHz but no
-# treatment. Measured, prep alone moves her 2-5 kHz only 0.1-0.2 dB. Two dB gentler than B's own
-# dip at 3.2 kHz, because prep adds its own 1.5 dB next to it (about -3.5 dB combined, not -4.5)
-VOICE_EQ = (("peak", 3200.0, -2.0, 1.0), ("shelf", 7000.0, -1.5, 0.7))
+# treatment. Review fix (round 11): the first version used a GENTLER dip (-2 / -1.5) on the idea
+# that prep's own 1.5 dB would stack on it. Measured on her stretch (2-5 kHz against 200 Hz-2 kHz,
+# speech only, at 48 kHz), prep does not stack: it moves that reading +0.1 to +0.2 dB (its
+# levelling turns her loud, body-heavy vowels down, which offsets its cut). Raw read -14.6 dB,
+# round-10 B as heard -17.2, the first round-11 voice -16.2: 1 dB HARDER than the B he called
+# "still a bit harsh". At -3.5 / -2 it reads -17.35 after prep: a hair softer than B, never brighter
+VOICE_EQ = (("peak", 3200.0, -3.5, 1.0), ("shelf", 7000.0, -2.0, 0.7))
 
 
 def _words():
