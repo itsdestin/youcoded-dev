@@ -123,7 +123,7 @@ export function analyse(rows) {
   const hitches = [];
   for (const r of rows) {
     if (r.kind === 'frame' || r.kind === 'task') hitches.push({ r, kind: 'freeze', ms: r.d, cause: r.kind === 'frame' ? causeOfFrame(r) : 'a long task (browser could not say which code)' });
-    else if (r.kind === 'main-stall') hitches.push({ r, kind: 'stall', ms: r.ms, cause: `main process stall${r.lastIpc && r.lastIpcAgoMs <= r.ms ? ` (the last request it started was ${r.lastIpc} — may be unrelated)` : ' (no app request had started inside the stall: other work, or the whole computer was busy)'}` });
+    else if (r.kind === 'main-stall') hitches.push({ r, kind: 'stall', ms: r.ms, cause: causeOfStall(r) });
     else if (r.kind === 'event') hitches.push({ r, kind: 'slow-input', ms: r.d, cause: `slow ${r.type} on ${r.tgt}` });
   }
   const group = (keyFn) => {
@@ -159,8 +159,12 @@ export function analyse(rows) {
   }));
   const loop = rows.filter((r) => r.kind === 'minute');
   const switching = analyseSwitches(rows, hitches);
+  const rhythm = analyseRhythm(rows);
   return {
     switching,
+    launches: launchSummaries(rows),
+    rhythm,
+    headline: rhythmHeadline(rhythm),
     window: rows.length ? { from: rows[0].ts, to: rows.at(-1).ts } : null,
     totals: {
       hitches: hitches.length, freezes: hitches.filter((h) => h.kind === 'freeze').length, stalls: hitches.filter((h) => h.kind === 'stall').length,
@@ -179,6 +183,109 @@ export function analyse(rows) {
     startups,
     build: buildKind(startups),
   };
+}
+
+
+/** Why an engine stall happened, in words. WHY terminal-ack is special: it is simply the most frequent request the app
+ *  handles (every chunk of terminal output is acknowledged), so "the last request was terminal-ack" says nothing about
+ *  cause (2026-11 hitch audit). It is labelled as "during terminal output", and still counted as its own group. */
+export const UNINFORMATIVE_IPC = new Set(['session:terminal-ack']);
+export function causeOfStall(r) {
+  if (!r.lastIpc || !(r.lastIpcAgoMs <= r.ms)) return 'main process stall (no app request had started inside the stall: other work, or the whole computer was busy)';
+  if (UNINFORMATIVE_IPC.has(r.lastIpc)) return 'main process stall (during terminal output, no specific request)';
+  return `main process stall (the last request it started was ${r.lastIpc} — may be unrelated)`;
+}
+
+/** PER LAUNCH: one summary per launch id, oldest first, each compared with the one before it.
+ *  Rates need a long enough span to mean anything, so launches shorter than MIN_COMPARE_MS are not compared. */
+export const MIN_COMPARE_MS = 10 * 60_000;
+export function launchSummaries(rows) {
+  const m = new Map();
+  for (const r of rows) {
+    if (!Number.isFinite(r.t)) continue; // readLines always sets t; hand-made rows may not
+    const k = r.launch ?? 'unknown';
+    const g = m.get(k) ?? { launch: k, from: r.t, to: r.t, stallMs: [], freezes: 0 };
+    g.from = Math.min(g.from, r.t); g.to = Math.max(g.to, r.t);
+    if (r.kind === 'main-stall' && Number.isFinite(r.ms)) g.stallMs.push(r.ms);
+    else if (r.kind === 'frame') g.freezes++;
+    m.set(k, g);
+  }
+  const out = [...m.values()].sort((a, b) => a.from - b.from).map((g) => {
+    const durationMs = g.to - g.from;
+    const hours = durationMs / 3_600_000;
+    const stalledMs = g.stallMs.reduce((a, v) => a + v, 0);
+    return {
+      launch: g.launch, from: new Date(g.from).toISOString(), to: new Date(g.to).toISOString(), durationMs,
+      stalls: g.stallMs.length, stallsPerHour: hours > 0 ? g.stallMs.length / hours : null,
+      stalledMs, stalledMsPerHour: hours > 0 ? stalledMs / hours : null,
+      medianStallMs: pct(g.stallMs, 50), p90StallMs: pct(g.stallMs, 90), freezes: g.freezes, vsPrevious: null,
+    };
+  });
+  for (let i = 1; i < out.length; i++) {
+    const a = out[i - 1], b = out[i];
+    if (a.durationMs < MIN_COMPARE_MS || b.durationMs < MIN_COMPARE_MS) { b.vsPrevious = { comparable: false }; continue; }
+    // change in stalls per hour: negative = better
+    const change = a.stallsPerHour > 0 ? (b.stallsPerHour - a.stallsPerHour) / a.stallsPerHour : (b.stallsPerHour > 0 ? Infinity : 0);
+    const stalledChange = a.stalledMsPerHour > 0 ? (b.stalledMsPerHour - a.stalledMsPerHour) / a.stalledMsPerHour : (b.stalledMsPerHour > 0 ? Infinity : 0);
+    b.vsPrevious = { comparable: true, previous: a.launch, stallsPerHourChange: change, stalledPerHourChange: stalledChange, verdict: Math.abs(change) < 0.1 ? 'about the same' : change < 0 ? 'better' : 'worse' };
+  }
+  return out;
+}
+
+/** RHYTHM: do engine stalls line up with a repeating timer? For each candidate period we fold every stall's START time
+ *  (end time minus length) onto one cycle, cut the cycle into bins (1 s, or a tenth of the period when it is under 10 s),
+ *  and find the busiest two adjacent bins. If stalls were random, those two bins would hold 2/bins of them ("uniform").
+ *  A period is FLAGGED when they hold at least RHYTHM_MIN_RATIO times that AND at least RHYTHM_MIN_SHARE of all stalls.
+ *  A flagged longer period that is a whole multiple of a flagged shorter one at the same phase is that timer's harmonic
+ *  (a 10 s timer also looks periodic at 20 s and 30 s), so it is listed under the shorter one, not reported again. */
+export const RHYTHM_PERIODS_S = [1, 2, 5, 10, 15, 20, 25, 30, 60];
+export const RHYTHM_MIN_STALLS = 50, RHYTHM_MIN_RATIO = 2.5, RHYTHM_MIN_SHARE = 0.3;
+export function rhythmFor(stalls, periodsS = RHYTHM_PERIODS_S) {
+  const all = [];
+  for (const P of periodsS) {
+    const periodMs = P * 1000, binMs = Math.min(1000, periodMs / 10), nb = Math.round(periodMs / binMs);
+    const binOf = (s) => Math.floor((((s.start % periodMs) + periodMs) % periodMs) / binMs);
+    const counts = new Array(nb).fill(0);
+    for (const s of stalls) counts[binOf(s)]++;
+    let best = 0, bestI = 0;
+    for (let i = 0; i < nb; i++) { const c = counts[i] + counts[(i + 1) % nb]; if (c > best) { best = c; bestI = i; } }
+    const share = best / stalls.length, ratio = share / (2 / nb);
+    const inWin = stalls.filter((s) => { const b = binOf(s); return b === bestI || b === (bestI + 1) % nb; });
+    all.push({ periodS: P, periodMs, binMs, phaseStartMs: bestI * binMs, phaseEndMs: (bestI + 2) * binMs, share, ratio, count: best, medianMs: pct(inWin.map((s) => s.ms), 50), flagged: share >= RHYTHM_MIN_SHARE && ratio >= RHYTHM_MIN_RATIO, harmonics: [] });
+  }
+  // Group flagged periods into timers. A flagged period joins the family of a shorter flagged period it is a whole multiple of,
+  // at the same phase. WHY the true period is the LONGEST unbroken strong multiple: a 10 s timer looks equally concentrated at
+  // 5 s (stalls line up there too), but a 5 s timer looks only HALF as concentrated at 10 s (two peaks). So we move up to a
+  // longer period only while its share stays within HARMONIC_KEEP of the family's base share, and every tested period in
+  // between (that divides it) is also that strong; otherwise the longer period is just a harmonic and is listed under the timer.
+  const HARMONIC_KEEP = 0.85;
+  const families = [];
+  for (const h of all.filter((x) => x.flagged)) {
+    const fam = families.find((f) => h.periodMs % f.base.periodMs === 0 && circDist((h.phaseStartMs + h.phaseEndMs) / 2, (f.base.phaseStartMs + f.base.phaseEndMs) / 2, f.base.periodMs) <= 2 * Math.max(f.base.binMs, h.binMs));
+    if (!fam) { families.push({ base: h, current: h, members: [h] }); continue; }
+    fam.members.push(h);
+    const strong = (x) => x.share >= HARMONIC_KEEP * fam.base.share;
+    const between = all.filter((q) => q.periodMs > fam.current.periodMs && q.periodMs < h.periodMs && q.periodMs % fam.current.periodMs === 0 && h.periodMs % q.periodMs === 0);
+    if (h.periodMs % fam.current.periodMs === 0 && strong(h) && between.every(strong)) fam.current = h;
+  }
+  return families.map((f) => ({ ...f.current, harmonics: f.members.filter((m) => m !== f.current).map((m) => m.periodS) }));
+}
+const circDist = (a, b, period) => { const d = Math.abs(((a % period) + period) % period - ((b % period) + period) % period); return Math.min(d, period - d); };
+
+export function analyseRhythm(rows) {
+  const by = new Map();
+  for (const r of rows) if (r.kind === 'main-stall' && Number.isFinite(r.ms) && Number.isFinite(r.t)) { const k = r.launch ?? 'unknown'; (by.get(k) ?? by.set(k, []).get(k)).push({ start: r.t - r.ms, ms: r.ms }); }
+  return [...by.entries()].map(([launch, stalls]) => ({ launch, stalls: stalls.length, tested: stalls.length >= RHYTHM_MIN_STALLS, repeating: stalls.length >= RHYTHM_MIN_STALLS ? rhythmFor(stalls) : [] }))
+    .sort((a, b) => b.stalls - a.stalls);
+}
+
+/** One sentence naming the worst repeating stall across launches (most stalls explained by a timer), or null. */
+export function rhythmHeadline(rhythm) {
+  let best = null;
+  for (const l of rhythm) for (const h of l.repeating) { const n = h.share * l.stalls; if (!best || n > best.n) best = { n, l, h }; }
+  if (!best) return null;
+  const { l, h } = best;
+  return `${h.share >= 0.5 ? 'Most' : 'Many'} engine stalls repeat every ${h.periodS} s (${Math.round(h.share * 100)}% of them, launch ${l.launch}) — a timer, not real work.`;
 }
 
 const msOrDash = (v) => (v == null ? '-' : sec(v));
@@ -235,6 +342,33 @@ export function buildWarning(b) {
     ? 'WARNING: this file has no startup line, so it cannot say whether it came from a developer build or the installed app. Developer builds run switch times several times slower than the installed app; don\'t compare to installed numbers unless you know which this is.'
     : `WARNING: ${b.unknown} of ${b.launches} launch(es) have no packaged flag (recorded before it existed), so this file may be from a developer build - those run switch times several times slower than the installed app; don't compare to installed numbers unless you know which this is.`;
 }
+
+export function renderLaunches(ls) {
+  const o = ['PER LAUNCH (each time the app was started; the before/after view when a fix ships)'];
+  const dur = (ms) => (ms >= 3_600_000 ? `${(ms / 3_600_000).toFixed(1)} h` : `${Math.round(ms / 60_000)} min`);
+  for (const l of ls) {
+    o.push(`  launch ${l.launch}  from ${localTs(l.from)}, ${dur(l.durationMs)} covered`);
+    o.push(`    engine stalls: ${l.stalls}${l.stallsPerHour != null ? ` (${l.stallsPerHour.toFixed(1)} an hour)` : ''}; ${sec(l.stalledMs)} stalled in all${l.stalls ? `; typical ${sec(l.medianStallMs)}, slowest 1 in 10 ${sec(l.p90StallMs)}` : ''}; screen freezes: ${l.freezes}`);
+    const v = l.vsPrevious;
+    if (v?.comparable) {
+      const word = (c) => (!Number.isFinite(c) ? 'newly appeared' : `${Math.round(Math.abs(c) * 100)}% ${c < 0 ? 'fewer' : 'more'}`);
+      o.push(`    compared with launch ${v.previous}: ${v.verdict.toUpperCase()} — ${word(v.stallsPerHourChange)} stalls an hour, ${word(v.stalledPerHourChange).replace('fewer', 'less').replace('more', 'more')} stalled time an hour`);
+    } else if (v) o.push('    compared with the previous launch: not comparable (one of the two covers under 10 minutes)');
+  }
+  return o;
+}
+export function renderRhythm(rs) {
+  const o = [`REPEATING STALLS (do engine stalls line up with a timer? tested only for launches with ${RHYTHM_MIN_STALLS}+ stalls; flagged when 2.5x more than chance and 30%+ of the launch's stalls)`];
+  for (const l of rs) {
+    if (!l.tested) { o.push(`  launch ${l.launch}: ${l.stalls} stall(s), too few to test`); continue; }
+    if (!l.repeating.length) { o.push(`  launch ${l.launch}: ${l.stalls} stalls, no repeating pattern found`); continue; }
+    for (const h of l.repeating) {
+      const ph = (ms) => (ms / 1000).toFixed(ms % 1000 ? 1 : 0);
+      o.push(`  launch ${l.launch}: every ${h.periodS} s — ${Math.round(h.share * 100)}% of its ${l.stalls} stalls start ${ph(h.phaseStartMs)}-${ph(h.phaseEndMs)} s into each ${h.periodS} s cycle (chance would be ${Math.round(100 / h.ratio * h.share)}%); typical length ${sec(h.medianMs)}${h.harmonics.length ? `; also shows at ${h.harmonics.join(' s, ')} s, which is the same timer` : ''}`);
+    }
+  }
+  return o;
+}
 export function render(a, bad) {
   const o = [];
   if (!a.window) return 'No recorded data in that range.\n';
@@ -245,6 +379,7 @@ export function render(a, bad) {
   const bw = buildWarning(a.build);
   if (bw) { o.push(bw); o.push(''); }
   o.push('THE SHORT VERSION');
+  if (a.headline) o.push(`  ${a.headline}`);
   o.push('  (engine-stall lengths are approximate; timer-only measurements are lower bounds)');
   o.push(`  ${t.freezes} screen freezes of 0.1 s or longer, and ${t.stalls} time(s) the app's engine stopped answering. Together: ${sec(t.frozenMs)} frozen.`);
   o.push(`  ${t.slowInputs} key presses/clicks took over 0.1 s to show a result.`);
@@ -268,6 +403,8 @@ export function render(a, bad) {
     for (const h of a.perHour) o.push(`  ${h.hour}  ${String(h.count).padStart(4)} hitch(es)  ${sec(h.ms).padStart(7)} frozen  ${'#'.repeat(Math.min(40, Math.ceil(h.ms / 500)))}`);
     o.push('');
   } else { o.push('No hitches recorded in this range.'); o.push(''); }
+  if (a.launches.length) o.push(...renderLaunches(a.launches), '');
+  if (a.rhythm.length) o.push(...renderRhythm(a.rhythm), '');
   if (a.switching) o.push(...renderSwitching(a.switching), '');
   if (a.memory.length) {
     o.push('MEMORY, HOUR BY HOUR (start of hour -> end of hour; a steady climb across hours is a leak)');

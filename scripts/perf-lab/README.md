@@ -1721,3 +1721,13 @@ step plus bytes through the proxy, as `perf-reports/<stamp>-<sha>-phone[-label].
   phone. The proxy models delay, bandwidth and the handshake round trip; not loss, jitter or slow start.
 - Sanity check: `--rtt 0 --down-mbit 0 --up-mbit 0 --label unshaped` removes the link. Uses lab
   ports 9565 (app debugging), 9566 (Chrome), 10070 (remote), and the Tailscale address of this computer.
+
+## hitch-report (read the app's own hitch recorder)
+
+`node scripts/perf-lab/hitch-report.mjs <file|dir> [--since 24h] [--json]` turns the recorder's `hitches.jsonl` / `hitches.1.jsonl` into a plain-language report. Read-only; safe against a running app. Besides the freeze/stall/switch sections it has three views for judging a fix:
+
+- **PER LAUNCH**: one block per launch id (time covered, engine-stall count and rate per hour, total stalled time, typical / slowest-1-in-10 stall, screen freezes) plus a better/worse line against the previous launch. Launches covering under 10 minutes are shown but not compared. Run it on the data from before a fix and after it.
+- **REPEATING STALLS**: for each launch with 50+ stalls, folds every stall's start time onto cycles of 1, 2, 5, 10, 15, 20, 25, 30 and 60 s and flags a period when the busiest two adjacent phase bins hold at least 2.5x the chance share and at least 30% of the stalls. Longer harmonics of the same timer are listed under it, not repeated. A repeating stall is a timer, not real work; the first line of THE SHORT VERSION names the worst one.
+- **terminal output**: a stall whose last request was `session:terminal-ack` is labelled "during terminal output, no specific request" (that message is simply the most frequent one, so naming it as a cause misleads).
+
+Tests: `node --test scripts/perf-lab/tests/hitch-report.test.mjs` (synthetic data only; run the file, not the directory).

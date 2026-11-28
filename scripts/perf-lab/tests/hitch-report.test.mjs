@@ -5,7 +5,7 @@ import { mkdtempSync, mkdirSync, copyFileSync, rmSync, readFileSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyse, buildWarning, causeOfFrame, parseSince, readLines, render } from '../hitch-report.mjs';
+import { analyse, analyseRhythm, buildWarning, causeOfFrame, causeOfStall, launchSummaries, parseSince, readLines, render, rhythmFor, rhythmHeadline } from '../hitch-report.mjs';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const sample = join(here, 'fixtures', 'hitches-sample.jsonl');
@@ -197,4 +197,99 @@ test('stays quiet for an installed build', () => {
   const a = analyse([startupRow(true)]);
   assert.equal(buildWarning(a.build), null);
   assert.doesNotMatch(render(a, 0), /WARNING/);
+});
+
+// ---- per-launch view, rhythm view, headline, terminal-ack wording (synthetic data generated here) ----
+const S0 = Date.UTC(2026, 10, 1, 12, 0, 0);
+// A stall line is written when the stall ENDS, so ts = start + ms.
+const stallRow = (launch, startMs, ms, extra = {}) => ({ ts: new Date(startMs + ms).toISOString(), t: startMs + ms, launch, kind: 'main-stall', ms, ...extra });
+const frameRow = (launch, atMs, d = 150) => ({ ts: new Date(atMs).toISOString(), t: atMs, launch, kind: 'frame', d, sl: 0, sc: [] });
+// Small deterministic pseudo-random numbers so "random" fixtures never flake.
+const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
+// n stalls from a timer of periodS seconds, starting at phaseS into each cycle, +-100 ms jitter.
+const timerStalls = (launch, periodS, phaseS, n, seed = 7) => { const r = rng(seed); return Array.from({ length: n }, (_, i) => stallRow(launch, S0 + i * periodS * 1000 + phaseS * 1000 + (r() - 0.5) * 200, 100 + Math.round(r() * 100))); };
+const randomStalls = (launch, n, spanMs, seed = 3) => { const r = rng(seed); return Array.from({ length: n }, () => stallRow(launch, S0 + Math.floor(r() * spanMs), 100 + Math.round(r() * 100))); };
+
+test('terminal-ack as the last request is labelled as terminal output, not named as a cause, and is still counted', () => {
+  assert.match(causeOfStall({ ms: 300, lastIpc: 'session:terminal-ack', lastIpcAgoMs: 100 }), /during terminal output, no specific request/);
+  assert.doesNotMatch(causeOfStall({ ms: 300, lastIpc: 'session:terminal-ack', lastIpcAgoMs: 100 }), /terminal-ack/);
+  assert.match(causeOfStall({ ms: 300, lastIpc: 'session:list', lastIpcAgoMs: 100 }), /last request it started was session:list/);
+  assert.match(causeOfStall({ ms: 300, lastIpc: 'session:list', lastIpcAgoMs: 900 }), /no app request had started/);
+  const rows = [1, 2, 3].map((i) => stallRow('a', S0 + i * 7000, 300, { lastIpc: 'session:terminal-ack', lastIpcAgoMs: 50 }));
+  const g = analyse(rows).byCause.find((x) => /during terminal output/.test(x.key));
+  assert.equal(g.count, 3);
+});
+
+test('per-launch summary: counts, rate, stalled time, median/p90 and freezes', () => {
+  const H = 3_600_000;
+  const rows = [
+    ...[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map((ms, i) => stallRow('L1', S0 + i * 60_000, ms)),
+    frameRow('L1', S0 + 30_000), frameRow('L1', S0 + 90_000),
+    { ts: new Date(S0 + H).toISOString(), t: S0 + H, launch: 'L1', kind: 'minute' }, // stretches the launch to 1 hour
+  ];
+  const [l] = launchSummaries(rows);
+  assert.equal(l.launch, 'L1');
+  assert.equal(l.durationMs, H - 100); // first line is stamped when its 100 ms stall ended
+  assert.equal(l.stalls, 10);
+  assert.equal(Math.round(l.stallsPerHour), 10);
+  assert.equal(l.stalledMs, 5500);
+  assert.equal(l.medianStallMs, 500);
+  assert.equal(l.p90StallMs, 900);
+  assert.equal(l.freezes, 2);
+  assert.equal(l.vsPrevious, null);
+});
+
+test('per-launch comparison says better/worse by how much, and refuses short launches', () => {
+  const H = 3_600_000;
+  const mk = (launch, start, nStalls, spanMs) => [
+    ...Array.from({ length: nStalls }, (_, i) => stallRow(launch, start + 1000 + i * 1000, 200)),
+    { ts: new Date(start + spanMs).toISOString(), t: start + spanMs, launch, kind: 'minute' },
+  ];
+  const rows = [...mk('A', S0, 100, H), ...mk('B', S0 + 2 * H, 40, H), ...mk('C', S0 + 4 * H, 40, 5 * 60_000)];
+  const ls = launchSummaries(rows);
+  assert.deepEqual(ls.map((l) => l.launch), ['A', 'B', 'C']);
+  assert.equal(ls[1].vsPrevious.verdict, 'better');
+  assert.ok(Math.abs(ls[1].vsPrevious.stallsPerHourChange - -0.6) < 0.01);
+  assert.equal(ls[2].vsPrevious.comparable, false); // C covers only 5 minutes
+  const worse = launchSummaries([...mk('A', S0, 40, H), ...mk('B', S0 + 2 * H, 100, H)]);
+  assert.equal(worse[1].vsPrevious.verdict, 'worse');
+  const text = render(analyse([...mk('A', S0, 100, H), ...mk('B', S0 + 2 * H, 40, H)]), 0);
+  assert.match(text, /PER LAUNCH/);
+  assert.match(text, /BETTER.*60% fewer stalls an hour/);
+});
+
+test('rhythm finds a 10 s timer, names its phase, and folds the 5 s echo into it', () => {
+  const stalls = timerStalls('L', 10, 6.2, 120).map((r) => ({ start: r.t - r.ms, ms: r.ms }));
+  const [h, ...rest] = rhythmFor(stalls);
+  assert.equal(rest.length, 0);
+  assert.equal(h.periodS, 10);
+  assert.ok(h.share > 0.9, `share ${h.share}`);
+  assert.ok(h.harmonics.includes(5)); // the 5 s fold is the same timer, not a second finding
+});
+
+test('rhythm does not promote a true 5 s timer to a longer period', () => {
+  const stalls = timerStalls('L', 5, 1.2, 150).map((r) => ({ start: r.t - r.ms, ms: r.ms }));
+  const found = rhythmFor(stalls);
+  assert.equal(found.length, 1);
+  assert.equal(found[0].periodS, 5);
+});
+
+test('rhythm reports nothing for stalls scattered at random', () => {
+  const stalls = randomStalls('L', 400, 6 * 3_600_000).map((r) => ({ start: r.t - r.ms, ms: r.ms }));
+  assert.deepEqual(rhythmFor(stalls), []);
+});
+
+test('rhythm needs enough stalls, and the headline names the worst repeating stall', () => {
+  const few = analyseRhythm(timerStalls('FEW', 10, 3, 20));
+  assert.equal(few[0].tested, false);
+  assert.equal(rhythmHeadline(few), null);
+  const rows = [...timerStalls('85e4', 10, 6.2, 100), ...randomStalls('RND', 100, 3_600_000)];
+  const rhythm = analyseRhythm(rows);
+  assert.equal(rhythm.find((l) => l.launch === 'RND').repeating.length, 0);
+  assert.match(rhythmHeadline(rhythm), /^Most engine stalls repeat every 10 s \(\d+% of them, launch 85e4\) — a timer, not real work\./);
+  const a = analyse(rows);
+  assert.match(render(a, 0), /THE SHORT VERSION\n {2}Most engine stalls repeat every 10 s/);
+  assert.match(render(a, 0), /REPEATING STALLS/);
+  assert.equal(JSON.parse(JSON.stringify(a)).rhythm.find((l) => l.launch === '85e4').repeating[0].periodS, 10);
+  assert.equal(analyse(randomStalls('RND', 100, 3_600_000)).headline, null);
 });
