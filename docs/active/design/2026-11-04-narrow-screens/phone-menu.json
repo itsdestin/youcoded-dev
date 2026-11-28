@@ -1,0 +1,229 @@
+{
+  "title": "Phone menu: the full-screen alternative",
+  "key": "phone-menu-alternative",
+  "out": "phone-menu.html",
+  "grows": true,
+  "tag": "feature",
+  "stage": "understanding",
+  "steps": [
+    {
+      "id": "PU-1",
+      "page": "How I understand the alternative",
+      "intro": "Mark each line Holds or Fails. A note on any of them is welcome.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-1",
+      "surface": "Phone layout",
+      "path": "What I think you want",
+      "words": true,
+      "headline": "This is a second option to compare against the layout you already approved. Neither is chosen yet.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "I build it as a switch in the practice app, beside the approved layout, so you can click through both. The real app does not change.",
+      "notice": "You end up with two clickable versions side by side and pick one, or mix them."
+    },
+    {
+      "id": "U-2",
+      "surface": "Phone top bar",
+      "path": "Top left of the screen",
+      "words": true,
+      "headline": "The three-line menu and the session name become one button on the left.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "There is no separate three-line button and no session dropdown. Tapping the name opens the new full-screen menu.",
+      "notice": "One tap target on the left instead of two. The name stops being centred and starts right after the menu icon."
+    },
+    {
+      "id": "U-3",
+      "surface": "Phone top bar",
+      "path": "Under the session name",
+      "words": true,
+      "headline": "The status dots move to the left, lined up with the start of the menu icon and name.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "Today's approved design centres the dots under a centred name. Here they start at the left edge of the combined button.",
+      "notice": "The dots read as part of the menu button rather than floating in the middle."
+    },
+    {
+      "id": "U-4",
+      "surface": "Phone top bar",
+      "path": "Top right of the screen",
+      "words": true,
+      "headline": "Session files gets its own button again, beside the terminal switch, with no number on it.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "Today on a phone, Session files is a row in the three-line menu showing a count, like \"Session files (3)\". Here it is a button at top right, icon only.",
+      "notice": "Files for this chat are one tap away instead of two. You no longer see how many there are until you open it."
+    },
+    {
+      "id": "U-5",
+      "surface": "Full-screen menu",
+      "path": "Tap the name at top left",
+      "words": true,
+      "headline": "The menu fills the screen: New session at the top, then Active sessions, then Previous sessions.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "This replaces both today's three-line menu and the session dropdown. It works like the ChatGPT, Claude and Gemini phone apps: one list of every chat, open ones first.",
+      "notice": "Everything about chats is in one place, and past chats are visible without asking for them."
+    },
+    {
+      "id": "U-6",
+      "surface": "Full-screen menu",
+      "path": "The Previous sessions section",
+      "words": true,
+      "headline": "On a phone there is no separate Resume button. Tapping a past chat reopens it.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "Today you press Resume to open a separate page of past chats, then pick one. Here past chats are already listed in the menu.",
+      "notice": "Reopening a past chat takes one tap from the menu instead of two plus a page."
+    },
+    {
+      "id": "U-7",
+      "surface": "Full-screen menu",
+      "path": "The New session button at the top",
+      "words": true,
+      "headline": "New session still opens the full form, with every option it has today.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "Folder, model, permissions and the rest stay. Only where the form appears changes, to fit the full-screen menu.",
+      "notice": "Nothing you can set when starting a chat goes away."
+    },
+    {
+      "id": "U-8",
+      "surface": "Full-screen menu",
+      "path": "Below the sessions",
+      "words": true,
+      "headline": "Projects, Pages, Browser and Games move into this menu too.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "Today they are rows in the three-line menu with Settings and Session files. Here they sit in the full-screen menu, and Session files leaves for the top bar.",
+      "notice": "The menu becomes the one place for everything that is not the chat itself."
+    },
+    {
+      "id": "U-9",
+      "surface": "Full-screen menu",
+      "path": "The bottom of the menu",
+      "words": true,
+      "headline": "Settings is its own button at the bottom and opens today's full-screen Settings page.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "On a phone, Settings already opens as a full-screen page. The only change is reaching it from a button at the foot of the new menu.",
+      "notice": "Settings stays where your thumb rests, like the phone apps you named."
+    },
+    {
+      "id": "U-10",
+      "surface": "Phone layout",
+      "path": "Under the message box, and session rows everywhere",
+      "words": true,
+      "headline": "The pills, shortcut chips and model-only rows you approved stay the same in this alternative.",
+      "yes": "Holds",
+      "no": "Fails",
+      "changed": "Only the top bar and the menus differ between the two options.",
+      "notice": "Comparing the two means comparing the top and the menu, nothing else."
+    },
+    {
+      "id": "PU-2",
+      "page": "What it covers",
+      "intro": "Who gets it, and what happens to things the Resume page does today.",
+      "stage": "understanding"
+    },
+    {
+      "id": "Q-1",
+      "surface": "Phone layout",
+      "path": "Who sees the alternative",
+      "words": true,
+      "headline": "Should the alternative also apply to a narrow computer window, or only to phones?",
+      "today": "The layout you approved applies whenever the screen is narrow, phone or computer window alike.",
+      "checked": "Read in the branch's top-bar code on 2026-11-27: the narrow layout follows screen width, not device.",
+      "problem": "A full-screen menu on a computer window would hide the chat entirely while open, which a computer user may not expect.",
+      "proposal": "Draw it for phones first, and decide the narrow computer window once you have seen it.",
+      "options": [
+        {
+          "id": "phones",
+          "label": "Phones only",
+          "recommended": true,
+          "summary": "A narrow computer window keeps the approved layout.",
+          "pros": [
+            "A computer window keeps a small menu that does not cover the chat."
+          ],
+          "cons": [
+            "Phone and narrow computer window would look different from each other."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Phones and windows",
+          "summary": "Any narrow screen gets the full-screen menu.",
+          "pros": [
+            "One narrow layout everywhere."
+          ],
+          "cons": [
+            "The menu covers the whole window on a computer, too."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "surface": "Full-screen menu",
+      "path": "The Previous sessions section",
+      "words": true,
+      "headline": "With Resume gone on phones, how do you find an old chat that is far down the list?",
+      "today": "The Resume page has a search box and can be narrowed to one project folder. It lists every past chat.",
+      "checked": "Read in the app's Resume page code on master on 2026-11-27.",
+      "problem": "A plain list in a menu has neither. Finding a chat from last month would mean a lot of scrolling.",
+      "proposal": "Put a search box at the top of the menu, as the ChatGPT and Claude phone apps do.",
+      "options": [
+        {
+          "id": "search",
+          "label": "Search in menu",
+          "recommended": true,
+          "summary": "A search box at the top of the menu filters every chat, open and past.",
+          "pros": [
+            "Any chat is a few letters away.",
+            "Matches the phone apps you named."
+          ],
+          "cons": [
+            "One more thing at the top of the menu."
+          ]
+        },
+        {
+          "id": "see-all",
+          "label": "See all link",
+          "summary": "The menu lists recent chats; a See all row at the end opens today's Resume page with its search.",
+          "pros": [
+            "Keeps search and project filtering exactly as today."
+          ],
+          "cons": [
+            "The Resume page lives on, just reached differently."
+          ]
+        },
+        {
+          "id": "list-only",
+          "label": "List only",
+          "summary": "Just the list, scrolled.",
+          "pros": [
+            "Simplest menu."
+          ],
+          "cons": [
+            "No way to search past chats on a phone."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "surface": "Full-screen menu",
+      "path": "How you picture it",
+      "words": true,
+      "headline": "Anything about how you picture these screens before I draw them? Skip if not.",
+      "answer": "words",
+      "prompt": "e.g. groups by date, big New session button, icons along the bottom…",
+      "today": "You have described the order: New session, Active sessions, Previous sessions, other places, Settings at the bottom.",
+      "checked": "From your message of 2026-11-27.",
+      "problem": "I will draw two to four versions of the menu and the top bar next; a picture in your head saves a round.",
+      "proposal": "Write anything you already see. Leave it blank and I draw from your message alone."
+    }
+  ]
+}
