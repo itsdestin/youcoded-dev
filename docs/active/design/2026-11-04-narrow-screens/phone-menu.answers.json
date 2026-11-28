@@ -1,0 +1,114 @@
+{
+ "deck": "phone-menu-alternative",
+ "started": "2026-11-28T06:28:01.364Z",
+ "submitted": "2026-11-28T06:36:46Z",
+ "cur": 1,
+ "answers": {
+  "U-1": {
+   "v": "yes",
+   "t": 1795847548035,
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-2": {
+   "v": "yes",
+   "t": 1795847548035,
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-3": {
+   "v": "yes",
+   "t": 1795847548035,
+   "note": "they still stay under the name, to the right of the 3-line button. but they align with the left side of name now instead of centering",
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-4": {
+   "v": "yes",
+   "t": 1795847548035,
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-5": {
+   "v": "yes",
+   "t": 1795847548035,
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-6": {
+   "v": "yes",
+   "t": 1795847548035,
+   "note": "i suspect this will be the most odd or potentially problematic part of this design. i'm not sure how the underlying architecture treats resuming a session, and how this would differ from something like opencode/gemini app/claude app/etc, but this may require slight changes? and some ux/ui design? like, for example, i wouldn't want a session to actually count as \"resumed\" until a user sends a new message in that chat, and i would still expect users to manually hit the X on active sessions to \"end\" them even if they kinda stay in the same list.",
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-7": {
+   "v": "yes",
+   "t": 1795847548035,
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-8": {
+   "note": "browser can stay next to session files.",
+   "t": 1795847548035,
+   "v": "other",
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-9": {
+   "v": "yes",
+   "t": 1795847548035,
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "U-10": {
+   "v": "yes",
+   "t": 1795847548035,
+   "seconds": 27,
+   "theme": "halftone-dimension"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "phones",
+   "t": 1795847804253,
+   "seconds": 85,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "search",
+   "t": 1795847804253,
+   "seconds": 85,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "wrote",
+   "text": "i think, at least at some point, i would like to further expand youcoded's appearance menus and customization options to basically let users change the styling of their main ui/homepage/framework as they deem fit. we dont need to build this right now, but the goal would be to eventually let a user decide whether they want something like option 1, option 2, or an entirely custom ui that lets them manage their sessions and app features as they please.",
+   "t": 1795847804253,
+   "seconds": 85,
+   "theme": "halftone-dimension"
+  }
+ },
+ "built": {
+  "at": "2026-11-28T00:10:11Z",
+  "branch": "session/narrow-screen-proposals",
+  "commit": "d532a4699400d3ae52544e871c5869217b17433d",
+  "spec_sha256": "fa7d298afe208bc809b32a2b5383151472c0e60cf8b2d37e0a40c11274833e70",
+  "spec_dirty": false,
+  "ids": [
+   "U-1",
+   "U-2",
+   "U-3",
+   "U-4",
+   "U-5",
+   "U-6",
+   "U-7",
+   "U-8",
+   "U-9",
+   "U-10",
+   "Q-1",
+   "Q-2",
+   "Q-3"
+  ]
+ }
+}
