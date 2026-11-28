@@ -1,7 +1,7 @@
 import React from 'react';
 import { Composition, Still } from 'remotion';
 import { FPS } from './brand';
-import { Banner, Poster } from './posters';
+import { Banner, LinkedIn, LinkedInIcon, Poster } from './posters';
 import { Take1 } from './round2/take1';
 import { Take1B } from './round2/take1b';
 import { Take1C } from './round2/take1c';
@@ -40,6 +40,9 @@ export const Root: React.FC = () => (
     {IDEAS.flatMap((idea) => Object.entries(POSTER_SIZES).map(([name, [w, h]]) => (
       <Still key={`${idea}-${name}`} id={`poster-${idea}-${name}`} component={Poster} width={w} height={h} defaultProps={{ idea }} />
     )))}
+    {/* LinkedIn page: 6:1 cover and square profile picture */}
+    <Still id="linkedin-icon" component={LinkedInIcon} width={800} height={800} />
+    {(['night', 'day'] as const).map((look) => <Still key={look} id={`linkedin-${look}`} component={LinkedIn} width={4200} height={700} defaultProps={{ look }} />)}
     {BANNERS.map(([w, h]) => <Still key={`${w}x${h}`} id={`banner-${w}x${h}`} component={Banner} width={w * 2} height={h * 2} />)}
   </>
 );

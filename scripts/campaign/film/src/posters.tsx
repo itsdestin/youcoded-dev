@@ -396,3 +396,36 @@ export const Banner: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+// ---- LinkedIn page: cover picture (6:1) and profile picture ----
+// WHY its own layout: LinkedIn lays the page's profile picture over the cover's bottom-left corner and trims the
+// edges differently on phones, so nothing sits in the left fifth or near the top and bottom edges. The app icon is
+// the profile picture right beside it, so the cover carries the name and address only, never a second icon.
+export const LinkedIn: React.FC<{ look: 'night' | 'day' }> = ({ look }) => {
+  const { width: W, height: H } = useVideoConfig();
+  const dark = look === 'night';
+  const size = H * 0.2;
+  const row: React.CSSProperties = { fontFamily: DMSANS, fontWeight: 900, fontSize: size, letterSpacing: '-0.05em', lineHeight: 0.98, whiteSpace: 'nowrap', color: C.nightText };
+  return (
+    <AbsoluteFill>{dark ? <BgNight /> : <BgDay />}<Fill kind="wash" dark={dark} word="" />
+      <div style={{ position: 'absolute', left: W * 0.22, right: W * 0.06, top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {dark ? (
+          <div>
+            <div style={{ ...row, marginBottom: GAP * size }}>you'll own<span style={{ display: 'inline-block', width: 0.26 * size }} /><Struck word="nothing." fix="everything." size={size} anchorRight /></div>
+            <div style={row}>and you'll be happy.</div>
+          </div>
+        ) : <Head text="software you *own,* / not rent." size={H * 0.24} />}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: H * 0.03, flex: 'none' }}>
+          <Wordmark size={H * 0.17} dark={dark} />
+          <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: H * 0.075, color: dark ? C.nightText : C.plum }}>youcoded.ai</span>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+/** The profile picture: the app icon filling the square, as on a phone's home screen. */
+// WHY edge to edge: LinkedIn shows this small beside every post; set inside a margin the face shrank to a dot.
+export const LinkedInIcon: React.FC = () => {
+  const { width: W } = useVideoConfig();
+  return <AbsoluteFill style={{ background: C.lavender }}><Img src={staticFile('icon.png')} style={{ width: W, height: W }} /></AbsoluteFill>;
+};
