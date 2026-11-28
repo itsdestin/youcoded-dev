@@ -1731,3 +1731,62 @@ step plus bytes through the proxy, as `perf-reports/<stamp>-<sha>-phone[-label].
 - **terminal output**: a stall whose last request was `session:terminal-ack` is labelled "during terminal output, no specific request" (that message is simply the most frequent one, so naming it as a cause misleads).
 
 Tests: `node --test scripts/perf-lab/tests/hitch-report.test.mjs` (synthetic data only; run the file, not the directory).
+
+## Realistic performance test on the desktop PC (`remote.mjs`, 2026-11-28; offline-tested, desktop runs pending)
+
+**What it is.** One command on the laptop runs the real packaged app on the desktop PC (RTX 4070 SUPER, real screen) with
+the conditions where the app actually hitches, and compares two builds: a generated history the size of the Z13's (136 project
+folders, ~1,800 session files, ~870 MB), 16 Claude Code chats (the fake `claude`), the heavy glass + particle theme, and four
+scenarios. Spec: `docs/active/specs/2026-11-28-remote-realistic-perf-lane.md`. **Status:** every piece is unit-tested offline;
+it has NOT yet run on the desktop (it was asleep when written), so the first run is also the validity check. The in-page menu
+finders (`lane-page.mjs`) and the key/menu scripts were written from the app source, not watched working.
+
+**Files.** `remote.mjs` (laptop side: SSH, throwaway folder, build, copy back, cleanup), `lane-run.mjs` (desktop side:
+scenarios), `lane-page.mjs` (in-page helper), `lane-measure.mjs` (raw readings to numbers), `lane-report.mjs` (builds side by side),
+`history-gen.mjs` (generated history + fixture settings). Reused, not copied: `launch.mjs`, `cdp.mjs`, `fixture.mjs`, `content.mjs`,
+`fake-claude.cjs`, `gpu.mjs`, `gpu-cost-parse.mjs`, `realism-page.mjs` / `realism-stats.mjs` / `realism.mjs`'s `analyseRun`,
+`probe-ipc.mjs`, `hitch-report.mjs` (stall reading and `rhythmFor`), `build.mjs`.
+
+**Safety rules (enforced by the tool, pinned by `tests/remote.test.mjs`, `tests/lane-run.test.mjs`, `tests/history-gen.test.mjs`).**
+- It never touches the desktop's installed YouCoded. The first remote step refuses if ANY YouCoded process other than this
+  lab's own is running (checked by where its executable lives), or if no logged-in graphical session is found. Nothing here signals a process
+  (the lab's own apps are stopped through `launch.mjs`'s owned-process cleanup).
+- No remote command names `~/.youcoded`, `~/.claude` or `~/.config/youcoded`. Every leg has its own HOME and userData under
+  `~/perf-lab-runs/<run-id>/`; `history-gen.mjs` refuses any target inside the real home's app/Claude folders.
+- No personal data leaves the laptop: only the lab scripts and the public `devils-garden` theme are sent, and the history is
+  generated filler. No Claude sign-in is copied; all replies come from `fake-claude.cjs`, so runs cost nothing.
+- Fixture settings: analytics off (env), no sync configured, remote-access server off, automatic update install off. The
+  app may still make its own read-only update or registry checks; this is not proven off at the network level.
+- Everything lives in one folder, deleted at the end (and after a failure, unless `--keep-remote`). A sweep at the start removes
+  `run-*` folders older than a day, inside `~/perf-lab-runs` only. Sleep is blocked with `systemd-inhibit` for the run.
+- Only runs when started by hand. It takes over the desktop's screen while running.
+
+**How to run.**
+```bash
+node scripts/perf-lab/remote.mjs doctor                         # reachable? node, git, GPU, screen, disk, installed app not running
+node scripts/perf-lab/remote.mjs run --build <new-commit> --against <old-commit> --dry-run   # print every remote command, run none
+node scripts/perf-lab/remote.mjs run --build <new-commit> --against <old-commit> \
+     [--scenarios type,menus,switch,idle] [--repeats 3] [--idle-minutes 10] [--keep-remote]
+```
+`--build` is the candidate, `--against` the baseline; both are hex commit ids (`git -C youcoded rev-parse <branch>`). The run
+is detached on the desktop, so a dropped connection does not stop it; the laptop polls. A full run (2 builds x 3 repeats x
+4 scenarios, 10 idle minutes) takes roughly 1.5 to 2 hours after the builds. Results land in `scratch/perf-lab/lane-runs/<run-id>/`
+(`lane-results.json`, `lane-report.json`, `lane-report.txt`, `run.log`); `node scripts/perf-lab/lane-report.mjs <lane-results.json>` re-renders them.
+
+**The scenarios.** Every leg is a fresh launch of one build; builds alternate baseline, candidate, baseline, candidate.
+- `type`: 15 resumed chats + a fresh one focused; a seeded human-paced typing pattern (~110 keys) while 4 chats stream replies.
+  Reads Event Timing per key (the browser reports 16 ms and up; the rest are counted as fast), long animation frames with their code,
+  frames presented vs dropped (Chrome trace), IPC round trips and engine stalls.
+- `menus`: session menu, model picker, ||| menu, folder picker, 10 opens each; first open is kept apart from repeat opens
+  (press to painted menu). A menu the script cannot find is reported as "could not open", never as a fast result.
+- `switch`: ~60 s of seeded clicks through the session strip, four destinations mid-answer; press to settled and wrong-chat count.
+- `idle`: 16 chats open, nothing touched, 10 minutes (`--idle-minutes` to shorten); engine stalls, their rhythm (`hitch-report`'s
+  `rhythmFor`, needs 50+ stalls), CPU, and a one-minute frame trace at the end.
+A leg counts only if the app was on the graphics card (software rendering marks it `invalid`) and the heavy theme was active.
+
+**How to read the report.** Per scenario, baseline and candidate side by side, the middle of the repeat runs and (in brackets) the
+ups and downs between them. BETTER or WORSE is printed only when the two builds differ by more than that spread on either side AND
+by more than a small floor; otherwise "same". Fewer than two good runs on a side gives "not enough runs", never a guess. Lower is
+always better. Legs that failed or were invalid are listed under their scenario and left out of the numbers.
+**Validity check before trusting it:** run it on the build before youcoded#803 against the one after; the folder-scan freezes must
+show on the first and not the second. If not, fix the tool first.

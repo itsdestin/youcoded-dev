@@ -78,7 +78,11 @@
     "stall-fixtures-ladder.test.mjs",
     "workload-lane.test.mjs",
     "scenario-workloads.test.mjs",
-    "workloads-run.test.mjs"
+    "workloads-run.test.mjs",
+    "history-gen.test.mjs",
+    "lane-report.test.mjs",
+    "lane-run.test.mjs",
+    "remote.test.mjs"
   ],
   "uiFiles": [
     "scripts/ui-review/tests/dom-growth.test.mjs",
@@ -97,7 +101,10 @@
   ],
   "notes": {
     "interference-watch.test.mjs": "Offline: scripted fake /proc, sysfs and clock readers only (injected); proves the mid-window interference verdicts, report incomplete mapping and comparability refusals. No app, no real /proc or sensor reads.",
-    "scenario-bigfence-stream.test.mjs": "Offline: big-fence reply planning, fake-DOM page sources in VM, row classification, aggregation, CLI; no app, server, build or boot.", "scenario-longconv-open.test.mjs": "Offline: saved-conversation generator, page sources, row classification, seeding into a temp file, CLI; no app, server, build or boot.", "scenario-pathlist-stream.test.mjs": "Offline: reply planning, fake-DOM page sources in VM, window/typing maths, row classification, aggregation and CLI parsing; no app, server, build or boot.", "asset-gate-quiet-wait.test.mjs": "Offline: injected fs/network stubs and fake clock/load only; proves asset-download refusal and the separate quiet-wait bound. No app, network or sensor.",
+    "scenario-bigfence-stream.test.mjs": "Offline: big-fence reply planning, fake-DOM page sources in VM, row classification, aggregation, CLI; no app, server, build or boot.",
+    "scenario-longconv-open.test.mjs": "Offline: saved-conversation generator, page sources, row classification, seeding into a temp file, CLI; no app, server, build or boot.",
+    "scenario-pathlist-stream.test.mjs": "Offline: reply planning, fake-DOM page sources in VM, window/typing maths, row classification, aggregation and CLI parsing; no app, server, build or boot.",
+    "asset-gate-quiet-wait.test.mjs": "Offline: injected fs/network stubs and fake clock/load only; proves asset-download refusal and the separate quiet-wait bound. No app, network or sensor.",
     "scenario-native-stream.test.mjs": "Pure summaries, deterministic delta splitting and VM/parse-only emitted sources; no server/app.",
     "legacy-evidence.test.mjs": "Synthetic legacy execution/report fixtures and validators only.",
     "legacy-gates.test.mjs": "Synthetic missing/tail mutations against pure run/comparison validators.",
@@ -175,7 +182,11 @@
     "workload-lane.test.mjs": "Pure lane orchestration with fake fixtures/boots/runners, classifier and report-contract checks; no app, no files beyond injected fakes.",
     "scenario-workloads.test.mjs": "Injected bounded runner, fake CDP/fs seams, vm-evaluated page sources against a minimal fake DOM, and disposable temp directories for the copy/child-op checks; the pinned original JPEG is only READ if present (never copied or opened elsewhere). No app launch.",
     "workloads-run.test.mjs": "Pure run.mjs/identity/ab/queue helper calls and reading the checked-in queue file; nothing launches, no build, no machine state.",
-    "busy-interleave.test.mjs": "Busy-machine interleaved comparison: pure schedule/verdict/summary functions on fake reports plus ab.mjs loop with run.mjs main() replaced by a fake and injected freshness/hash/lock/disk adapters; temp dir only; no build, app or process."
+    "busy-interleave.test.mjs": "Busy-machine interleaved comparison: pure schedule/verdict/summary functions on fake reports plus ab.mjs loop with run.mjs main() replaced by a fake and injected freshness/hash/lock/disk adapters; temp dir only; no build, app or process.",
+    "history-gen.test.mjs": "Offline: generates a few MB of filler history in a disposable os.tmpdir folder and removes it; no app, network or real home (the safety refusal is tested with a made-up home path).",
+    "lane-report.test.mjs": "Offline: pure arithmetic over hand-made readings (noise rule, rhythm, key and frame reductions); no files, app or clock.",
+    "lane-run.test.mjs": "Offline: option parsing, schedule, a fake /proc table, and the in-page helper run against a fake page object. Imports lane-run.mjs (import has no side effects); launches nothing.",
+    "remote.test.mjs": "Offline: plans and runs the remote steps against a fake executor; one subprocess runs `remote.mjs --dry-run` with an emptied PATH to prove it spawns no ssh or tar. No network."
   },
   "excludedEffectfulExamples": {
     "ipc-close-reproducer.integration.mjs": "Real Node fork/disconnect reproduction; not source-only.",
