@@ -331,9 +331,13 @@ def window(piece, y, sr, start, length, lag):
     lo, hi = max(0, t0), min(len(y), t0 + n)
     if hi > lo:
         seg[lo - t0:hi - t0] = y[lo:hi]
-    v = _voice_track(piece, int(round((start + length) * sr)) + 1, sr)
-    if v is not None:
-        g = 10 ** (float(piece.voice_mux.get("music_db", -10.0)) / 20)
+    if getattr(piece, "voice_mux", None):
+        # WHY voicemix.mux (2026-11-27): her voice treated and levelled, the music set by the gap,
+        # the same mux the narrator checks measure (it was the raw voice at music_db)
+        import voicemix
+        v, g = voicemix.mux(piece, y, sr)
+        if len(v) < int(round((start + length) * sr)) + 1:
+            v = np.vstack([v, np.zeros((int(round((start + length) * sr)) + 1 - len(v), 2))])
         seg = seg * g + v[int(round(start * sr)):int(round(start * sr)) + n]
         pk = np.abs(seg).max()
         if pk > 0.89:
@@ -463,9 +467,8 @@ def shelf(pieces_):
 def deliver(piece, out_dir, picture=None, start=0.0):
     """THE DELIVERABLES: <out_dir>/<name>-music.mp3 (256k) from the last render, and with a
     picture, <out_dir>/<name>.mp4: the picture from `start` s for the piece's length with its sound
-    REPLACED by the music, or, for a narrated piece (voice_mux), the picture's own sound (her voice)
-    plus the music at voice_mux's music_db, the same mux the voice-margin check measured, through a
-    -1 dBTP limiter.
+    REPLACED by the music, or, for a narrated piece (voice_mux), her voice treated and levelled
+    plus the music at the narrator gap (voicemix.mux, the same mux the narrator checks measure).
     WHY (first-shot b, c, d): three composers muxed by hand with ffmpeg, each a little differently
     (one summed voice and music with no limiter)."""
     import shutil
@@ -487,10 +490,23 @@ def deliver(piece, out_dir, picture=None, start=0.0):
         vm = getattr(piece, "voice_mux", None)
         cmd = ["ffmpeg", "-v", "error", "-y", "-ss", f"{start:g}", "-t", f"{piece.length:g}", "-i", picture, "-i", wav]
         if vm:
-            g = vm.get("music_db", -10.0)
-            cmd += ["-filter_complex", f"[1:a]volume={g}dB[m];[0:a][m]amix=inputs=2:normalize=0:duration=first,"
-                    "alimiter=limit=0.89:level=false[a]", "-map", "0:v", "-map", "[a]"]
-            L.append(f"   picture: {mp4} (her voice from the picture + the music at {g:g} dB, limited)")
+            # WHY a mix made here (2026-11-27): the picture's own sound is her RAW voice; the mux
+            # the checks measure is voicemix.mux (her voice treated and levelled, the music set by
+            # the gap), so that mix is written and used instead
+            import soundfile as sf
+            import voicemix
+            y, sr_ = sf.read(wav, dtype="float64", always_2d=True)
+            v, g_lin = voicemix.mux(piece, y, sr_)
+            mixed = y * g_lin + v
+            pk = float(np.abs(mixed).max())
+            if pk > 0.89:
+                mixed *= 0.89 / pk                  # a plain gain, never a pumping limiter
+            mixwav = os.path.join(out_dir, piece.name + "-mix.wav")
+            sf.write(mixwav, mixed, sr_, subtype="PCM_24")
+            cmd = ["ffmpeg", "-v", "error", "-y", "-ss", f"{start:g}", "-t", f"{piece.length:g}", "-i", picture,
+                   "-i", mixwav, "-map", "0:v", "-map", "1:a"]
+            gv, gm = voicemix.levels(piece, y, sr_)
+            L.append(f"   picture: {mp4} (her voice treated, {gv:+.1f} dB; the music {gm:+.1f} dB; {mixwav})")
         else:
             cmd += ["-map", "0:v", "-map", "1:a"]
             L.append(f"   picture: {mp4} (the picture's sound replaced by the music)")

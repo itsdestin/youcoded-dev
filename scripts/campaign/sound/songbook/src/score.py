@@ -543,12 +543,17 @@ class Band:
         self.lead_early = 0.015
         self.shine_all = 0.0
         self.pan_max = 1.0
+        self.tune_lift = 0.08
+        self.voice_touch = 0.0
         try:
             import options as _O
             self.woven = _O.get("tune_voice", piece) == "woven"
             self.lead_early = float(_O.get("lead_early_ms", piece)) / 1000.0
             self.shine_all = float(_O.get("shine_all", piece))
             self.pan_max = float(_O.get("pan_max", piece))
+            # WHY (2026-11-27): see engine/options.py "CLEAR PARTS"
+            self.tune_lift = float(_O.get("tune_lift", piece))
+            self.voice_touch = float(_O.get("voice_touch", piece))
         except ImportError:
             pass
         if self.v3:
@@ -583,6 +588,11 @@ class Band:
         if self.v3:
             sd = min(sd, 0.015)
         return float(np.clip(v + sd * _h("v", self.piece.seed, key), 0.04, 0.95))
+
+    def _in_words(self, t, pad=0.05):
+        """True when second `t` falls inside one of the narrator's words (Piece.speech.words)."""
+        words = getattr(getattr(self.piece, "speech", None), "words", None) or ()
+        return any(a - pad <= t < b for _, a, b in words)
 
     def _log(self, t, beat, m, beats, vel, bus, role, part):
         self.log.append(dict(t=float(t), beat=float(beat), m=int(m), dur=float(beats), vel=float(vel), bus=bus,
@@ -624,7 +634,14 @@ class Band:
         # closes and the loud sample layer (touch >= 0.7) is never reached; 1.0 changes nothing
         tch = float(getattr(self.piece, "touch", 1.0) or 1.0)
         v = self.vary(vel, key) if tch == 1.0 else float(np.clip(self.vary(vel, key) * tch, 0.04, 0.95))
+        if self.voice_touch and role != "lead" and not (canon and canon[0] == "logo") and self._in_words(t):
+            # WHY (2026-11-27, voice_touch; v4 -0.05): "piano is also fighting her voice a bit for
+            # attention". A bed note struck while she speaks is played a little softer, which on the
+            # felt piano is also rounder and darker (its filter follows the touch); notes already
+            # ringing are untouched, so nothing dips or pumps on her words
+            v = float(np.clip(v + self.voice_touch, 0.04, 0.95))
         self._log(t, beat, m, beats, v, bus, role, "piano")
+        self.log[-1]["pedal"] = bool(pedal)     # WHY: the clear-parts readings model how long a note rings
         self.log[-1]["canon"] = canon        # WHY: the checks tell the logo's own notes from the tune's
         if self.dry:
             return self._put(bus, None, t, p, role, int(m), canon)
@@ -649,6 +666,7 @@ class Band:
         t = self.sec(beat)
         p = float(np.clip(p, -self.pan_max, self.pan_max))      # WHY: one place for the band (v4 pan_max)
         self._log(t, beat, m, beats, vel, "pad", role, "pad")
+        self.log[-1]["release"] = release        # WHY: the clear-parts readings model each pad tail (None = default)
         if self.dry:
             return self._put("pad", None, t)
         d = self.secs(beat, beats)

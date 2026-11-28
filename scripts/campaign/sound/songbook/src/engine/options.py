@@ -71,6 +71,18 @@ DEFAULTS = dict(
     bowed_eq="off",              # "soft": HP 80 Hz, LP 4.5 kHz 12 dB/oct, -3 dB at 3 kHz on bowed buses
     piano_glue="off",            # "on": one gentle compressor reading ALL the piano buses together
     pan_max=1.0,                 # the widest any single note is panned (woven: 0.15)
+    # ---- CLEAR PARTS, NOT MUSH (2026-11-27, round-10 sketches: "the notes almost feel like they mush
+    # together", "the different layers still clash/fight for attention"). Measured (src/unity.py
+    # readings, SONGBOOK "Clear parts"): no limiter at work (at most 1.2 dB, 0.1 % of the time), so
+    # not over-compression; instead (1) the pad's 2.2 s release let each old pad note ring on a
+    # semitone against the next chord's note (G4 under A-flat 4, D4 under E-flat 4) for a third of
+    # Make it mine, where Own everything (round 8) had 15 %; (2) the woven tune was only 0.08 touch
+    # (~1.8 dB) over a figure playing six times as many notes, so no part led and every part
+    # competed; (3) under a narrator the piano kept striking while she spoke.
+    tune_lift=0.08,              # woven tune's touch over the figure's (v4: 0.18; measured ~+3 dB over the bed notes around it)
+    pad_handover="tail",         # "tail": a pad note rings out its full release | "clean": a pad note whose next
+                                 #   chord brings a note a semitone/tone (or a 7th/9th) away releases in 0.35 s
+    voice_touch=0.0,             # touch added to bed piano notes struck inside her words (v4: -0.05: softer, rounder)
 )
 
 # WHY profiles by Piece.style: pieces the owner has already heard pin style="v1" and promise to
@@ -91,7 +103,9 @@ PROFILES = {
     # (film_woven.py, 2026-11-25): shine off 5-16 kHz -61 dB, shine capped -52.5 dB. The pad stays
     # at 900 Hz: opened to 1500-1800 Hz it owned 72-81 % of 2-6 kHz (the strings' fault again).
     "v4": dict(tune_voice="woven", lead_early_ms=3.0, shine_all=0.08, piano_shine="capped", room="shared",
-               bowed_eq="soft", piano_glue="on", pan_max=0.15),
+               bowed_eq="soft", piano_glue="on", pan_max=0.15,
+               # WHY (2026-11-27, see "CLEAR PARTS" above): the round-10 fixes as v4 defaults
+               tune_lift=0.18, pad_handover="clean", voice_touch=-0.05),
 }
 DEFAULTS["hall_predelay"] = "tempo"   # "tempo": 25 ms, opening toward 120 ms at or below 80 BPM | seconds
 

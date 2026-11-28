@@ -60,12 +60,22 @@ that "overpower". A full texture is welcome when it is one piece. So:
    is fixed, move the phrase within the key; if neither fits, leave the tune out.
 4. **Layers interlock in register.** Bass, pad, figure and tune each own a stretch of the
    keyboard and touch the next one; no wide empty gap, no two layers fighting in one spot.
-5. **Levels sit close and move together.** The layers are within a few dB of each other and
-   share one dynamic shape (beat 1 strongest everywhere); one gentle glue over the piano.
+5. **Levels move together, in a clear order.** One dynamic shape for every layer (beat 1
+   strongest everywhere); one gentle glue over the piano. Close is not equal: the tune leads by
+   about 3 dB (`tune_lift` 0.18, reading `tune-lift` +2.5 to +6), the figure under it, the held
+   layer under that. Everything at one level is what he heard as layers that "fight for attention".
 6. **One room.** The same reverb on every layer; nothing panned far from the rest.
 7. **Nothing enters or leaves abruptly.** A layer fades in over two bars or is there from the
    start.
 8. **At most three or four layers have notes in any bar.**
+9. **Clear parts, not mush** (round 10: "the notes ... mush together", "poor/compressed"). The
+   master was NOT squashing it (limiter at most 1.2 dB); the writing was. No semitone rings on
+   under the next chord (`pad_handover="clean"` lets a pad note go in 0.35 s when the next chord
+   rubs against it; `semitone-rub` liked 15-18 %, rejected 33-41 %). The 150-500 Hz band goes
+   to at most two of bass, figure and pad: the pad three notes, above the figure's top note
+   (`low-mid-share` liked 48-52 %, round 10 64-69 %). The loudness moves: rests, a thinner bar,
+   a softer phrase (`loudness-range` liked 2.6-3.2 LU; 0.8 is a flat wall). A faster or swung
+   B of the same notes adds overlap: thin it, do not just speed it up (purple B: "a LOT more").
 
 ## The tune
 
@@ -96,9 +106,21 @@ register. A calm film gets fewer notes, not just quieter ones.
 
 About **120 bpm with room for her breaths** (his pick, "D: 120 with breaths"). The music
 supports her and never chases her syllables; no melody in her range (F3-E5) while she speaks;
-her voice stays at least 6 dB over the music; the level is set by hand per section, never
-ducking on each word. He still hears the current voice as "too fast/harsh for our music": that
-is an open question about the read, not something the music can fix by itself.
+the level is set by hand per section, never ducking on each word. Round 10 (her 15-17 LU over
+the music: "FAR too loud", "piano is also fighting her voice"), so:
+
+- **Her voice is treated and levelled** (`voicemix.prep`, automatic for v4: 70 Hz high-pass, a
+  de-esser, a 2.5:1 levelling compressor, -1.5 dB at 3.4 kHz). Never record or generate a voice.
+- **Give no `music_db`.** `voice_mux=dict(path, t_from, start_at)` sets her at -16 LUFS and the
+  music **10 LU under her** (`gap_lu`, 8-12; `music_db` only for a level you mean by hand).
+- **Struck notes go in her pauses.** While she speaks: a held chord, at most about one soft
+  attack a second (`starts-under-her`), nothing high and ticking (a B-flat 5 tick sits right in
+  her 250 Hz-3 kHz band). Bed notes struck inside her words play 0.05 softer automatically
+  (`voice_touch`). Movement, the figure and fills belong to her pauses.
+- **The margin**: a worst 1.67 s window under 3 dB over the music is a hard fault; 3-6 dB means
+  thin the music in that phrase, never lower the whole film.
+
+He still hears her read as "too fast/harsh" and picked a re-record: the music cannot fix that.
 
 ## The process (approved)
 
@@ -210,7 +232,10 @@ voice) all return a v4 piece unless told `style="v3"` (the older pieces are pinn
 A v4 report is the hard faults (clipping, silence, an unmarked clash, the narrator masked, the
 wrong length: these fail a render) plus the **unity readings** (`src/unity.py`), never a
 failure: `tune-in-harmony`, `tune-in-bed`, `above-tune`, `tune-duty`, `layers-per-bar`,
-`struck-together`, `levels-together`, `level-gap`, `held-2-6k-share`, `one-room`, `tone`. A `*`
+`struck-together`, `levels-together`, `level-gap`, `held-2-6k-share`, `one-room`, `tone`, and
+the clear-parts readings `semitone-rub`, `tune-lift`, `low-mid-share`, `loudness-range`,
+`limiter`; under a narrator (`src/voicemix.py`) `voice-gap`, `voice-treatment`, `voice-hard`,
+`starts-under-her`, `her-band-share`, `touch-under-her`. A `*`
 marks a reading outside where the accepted pieces sit. Read them next to the shelf
 (`render.sh --shelf <film>`, `reference/README.md`); report them as numbers; change the music
 only for a musical reason.
@@ -259,7 +284,7 @@ line: `motif.write("Bb4/1 G5/1 F5/2 | Eb5/1 F5/1 G5/2")` (`~/2` ties over a bar 
 | Level | -16.5 (subtle) / -15 LUFS | -16 / -15 | her level by hand (-6 dB), -16.5 |
 
 Narrated: map her words with `films.speech_from_words(words.json, t_from, start_at=1.5)`, give
-`voice_mux=dict(path, t_from, start_at, music_db)` so her margin is measured. If she speaks into
+`voice_mux=dict(path, t_from, start_at)` (no `music_db`: the gap sets it; see Under a narrator). If she speaks into
 the name, ask the editor for 1-2 s after her last word; otherwise `ending="short"` and report it.
 
 ## The change plan
@@ -272,7 +297,8 @@ steps), `"pool"`, `"density"`, `"brightness"` (0.7-1.3 on the pad filter), `"ech
 
 Order: `Piece.sound`, then `SONGBOOK_SOUND="k=v,..."`, then the style profile (v1 old sound, v2,
 v4 the unity defaults), then DEFAULTS. The unity switches: `tune_voice`, `lead_early_ms`,
-`shine_all`, `room`, `bowed_eq`, `piano_glue`, `pan_max`. Others: `piano` (upright-kw |
+`shine_all`, `room`, `bowed_eq`, `piano_glue`, `pan_max`; the clear-parts switches (v4 values)
+`tune_lift` 0.18, `pad_handover` "clean", `voice_touch` -0.05. Others: `piano` (upright-kw |
 vcsl-upright | salamander), `pad_timbre` (saw | triangle), `pad_cutoff`, `pad_sub`, `air_db`
 (capped at +1.5), `glue`, `echo`, `voice_cut`, `damper_thump`.
 
@@ -287,7 +313,8 @@ stress · `voice_busy` 3 | 5. These are his to decide by ear; never decide them 
 `clipping` (a clipped sample or true peak over -1 dBTP) · `silence` (over a second of nothing
 before the name) · `clash` (a semitone or minor ninth held between sustained notes below C5, in a
 bar not marked in `Piece.clash_ok`) · `narrator-masked` (a tune note in her range while she
-speaks; her voice under 6 dB over the music) · `length` (wrong length, the name over 10 ms off,
+speaks; her voice, as heard, under 3 dB over the music in its worst window; 6 dB for an
+untreated voice, `prep="none"`) · `length` (wrong length, the name over 10 ms off,
 a non-silent first or last sample, under 1.5 s after the name).
 
 ## Pitfalls
@@ -320,7 +347,7 @@ show the old dashboard. The old guide's full text is in git history (this file b
 ## Files (`src/`)
 
 `recipes.py` (the recipes, `Brief`, `OWNER_V4`, tune-led chords, `land_after`) · `unity.py` (the
-readings) · `studio.py` (brief, notes, sketch, shelf, deliver) · `bed.py` (the held layer and its
+readings) · `voicemix.py` (her treatment, the gap, the narrator readings) · `studio.py` (brief, notes, sketch, shelf, deliver) · `bed.py` (the held layer and its
 voicing) · `blocks.py` (tune, figure, pulse, endings) · `score.py` (sections, the band) · `mix.py`
 (buses, room, glue, bowed EQ) · `engine/options.py` (sound switches and profiles) ·
 `engine/sounds.py` (instruments) · `timing.py` · `tune.py` · `motif.py` · `tunebank.py` ·

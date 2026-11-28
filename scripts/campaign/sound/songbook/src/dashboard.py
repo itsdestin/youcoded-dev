@@ -160,14 +160,28 @@ def hard(band, plans, piece, form_results=(), y=None, st=None):
                and _spoken(e["t"], words) and not (e.get("canon") or ("",))[0] == "logo"]
         margin = None
         vm = getattr(piece, "voice_mux", None)
+        import voicemix
+        treated = bool(vm) and voicemix._mode(piece, vm) not in (None, "none", False, "")
         if y is not None and vm:
-            import measure as M
-            margin = M.voice_margin(y, vm["path"], piece.speech.words, start_at=vm.get("start_at", 0.0),
-                                    t_from=vm.get("t_from", 0.0), music_db=vm.get("music_db", -10.0))
-        masked = margin is not None and margin[1] < 6.0
+            if treated:
+                # WHY the heard mux (2026-11-27): her voice is now treated and levelled (voicemix),
+                # so the margin is measured on what is heard
+                margin = voicemix.margin(piece, y)
+            else:
+                import measure as M
+                margin = M.voice_margin(y, vm["path"], piece.speech.words, start_at=vm.get("start_at", 0.0),
+                                        t_from=vm.get("t_from", 0.0), music_db=vm.get("music_db", -10.0))
+        # WHY 3 dB for a treated voice (was 6 for all, 2026-11-27): the 6 dB worst-window floor on a
+        # raw, unlevelled read pushed the music down until her speech sat 15-17 LU over it, which the
+        # owner heard as "FAR too loud"; with her levelled and the music 10 LU under her, the worst
+        # 1.67 s window measured 4.0-6.1 dB on the four round-10 narrated sketches. A window where
+        # she is under 3 dB over the music in the phone band is a real masking fault; 3-6 is a
+        # reading to fix in that phrase (fewer, softer notes there), not by lowering the whole film
+        masked = margin is not None and margin[1] < (3.0 if treated else 6.0)
         out.append(dict(id="narrator-masked", ok=not bad and not masked,
                         value=(f"{len(bad)} notes" + (f", margin {margin[0]}/{margin[1]} dB" if margin else "")),
-                        limit="no melody in F3-E5 under her words; voice >= 6 dB over the music",
+                        limit=("no melody in F3-E5 under her words; voice >= "
+                               f"{3 if treated else 6} dB over the music (worst 1.67 s, phone band)"),
                         why=("her words are clear of melody in her own range" + (
                             f"; her voice stands {margin[0]} dB (median) above the music in the phone band, "
                             f"{margin[1]} dB at worst ({margin[2]} s)" if margin else
@@ -232,7 +246,10 @@ def dashboard(band, plans, piece, rows, form_results=(), y=None, st=None, mix_te
         # (round 8). A v4 report is the hard faults plus the handful of signs that separated the
         # pieces he accepted from those he rejected (unity.py), read next to the reference shelf.
         import unity
-        return unity.rows(band, plans, piece, y)
+        import voicemix
+        # WHY st and the voice rows (2026-11-27): the clear-parts readings need the master's limiter
+        # record; a narrated piece adds the narrator readings (voicemix.readings)
+        return unity.rows(band, plans, piece, y, st) + voicemix.readings(band, plans, piece, y)
     out = []
     tm = band.tm
     land_b = plans[-1].beat0 + plans[-1].blen
@@ -682,7 +699,7 @@ GROUP_ORDER = ["unity", "the bed", "how busy", "harmony", "change", "touch and t
 
 def text(name, hard_rows, dash_rows, piece):
     bad = [r for r in hard_rows if not r["ok"]]
-    if dash_rows and all(r["group"] == "unity" for r in dash_rows):
+    if dash_rows and all(r["group"] in ("unity", "voice") for r in dash_rows):
         return _text_v4(name, hard_rows, dash_rows, bad)
     L = [f"{'PASS' if not bad else 'FAIL'}  {name}: hard checks (faults whatever the music: clipping, silence, an "
          f"unmarked clash, the narrator masked, the wrong length)" + ("" if not bad else " -- " + ", ".join(r['id'] for r in bad))]

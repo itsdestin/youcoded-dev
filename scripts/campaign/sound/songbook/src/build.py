@@ -46,14 +46,19 @@ def one(piece, extra_fn=None, path=None):
     extra audio (a film's sound effects) to add before the final limiter."""
     raw, band, plans, gains = render(piece)
     xm = X.premaster_music(raw, plans, piece)
+    import master as MA
+    glue_db = MA.LAST.get("glue_level_drop_db", 0.0)
     extra = extra_fn(xm, plans) if extra_fn else None
     y = X.finish_piece(xm, piece, extra)
+    # WHY copied now (2026-11-27): the bed-only render below runs the master again and overwrites LAST
+    limiter = dict(MA.LAST.get("limiter") or {}, glue_db=glue_db or 0.0)
     path = path or os.path.join(OUT, f"{piece.name}.wav")
     sf.write(path, y, SR, subtype="PCM_24")
     y, _ = sf.read(path, dtype="float64", always_2d=True)
     st = measure(y, os.path.basename(path))
     st["logo"] = dict(kind=piece.logo, **M.landing(band, plans, piece))
     st["loudness_target"] = getattr(piece, "loudness", -14.0)
+    st["limiter"] = limiter
     # WHY: the air-band gauge (mix_tests) depends on which master the piece went through
     st["air_db"] = X.air_for(piece)
     st["style"] = getattr(piece, "style", "")

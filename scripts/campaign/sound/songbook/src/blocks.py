@@ -353,11 +353,17 @@ def play_tune(band, p, dyn, plans):
                 # inside +-0.03, struck with the band (lead_early_ms, 0-5 ms).
                 ft = float(getattr(sec, "fig_touch", 0.30) or 0.30)
                 arch = 0.0 if k3 is None else float(np.clip(k3[0], -0.03, 0.03))
-                wv = (ft + 0.08 * (sec.lead if sec.lead is not None else 1.0) + arch) * dyn.v(beat)
+                # WHY tune_lift (2026-11-27; v4 0.18, was a fixed 0.08): at +0.08 (~1.8 dB) over a
+                # figure with six times its notes, no part led and the owner heard the layers "fight
+                # for attention"; round 8's Own everything, which he liked, had its tune ~5 dB over
+                # the figure per note. 0.18 measures ~+3 dB (unity 'tune-lift'; 0.14 measured +2.0, the
+                # notes' phrase shape and the figure's downbeat accent eat some): the same piano, plainly the top line
+                lift = float(getattr(band, "tune_lift", 0.08))
+                wv = (ft + lift * (sec.lead if sec.lead is not None else 1.0) + arch) * dyn.v(beat)
                 wv *= 0.85 if p.sec.narration else 1.0
-                band.piano("piano", beat, m, d, float(np.clip(wv, 0.05, ft + 0.12)),
+                band.piano("piano", beat, m, d, float(np.clip(wv, 0.05, ft + lift + 0.04)),
                            tone=-0.3 + 0.2 * tone, pedal=pedal, p=0.0, role="lead", canon=canon,
-                           early=band.lead_early, phrase_vel=ft + 0.08)
+                           early=band.lead_early, phrase_vel=ft + lift)
                 continue
             if piano_on:
                 band.piano("lead", beat, m, d, min(v, 0.69), tone=tone, pedal=pedal, p=-0.1,

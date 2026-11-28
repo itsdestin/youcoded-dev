@@ -338,6 +338,11 @@ def play(band, plans, piece):
             cut = float(options.get("pad_cutoff", piece))
         except (ImportError, KeyError):
             cut = 900.0
+    try:
+        import options
+        handover = options.get("pad_handover", piece)
+    except (ImportError, KeyError):
+        handover = "tail"
     for v, L in lines.items():
         for i, (b, m, d) in enumerate(L):
             b1 = bl.first_on("sustain", b, d)
@@ -349,11 +354,22 @@ def play(band, plans, piece):
             nxt = L[i + 1][1] if i + 1 < len(L) else None
             ov = 0.0 if (nxt is not None and abs(nxt - m) <= 2) else 0.25
             bright = bl.param("brightness", bl.bar_no(b), 1.0)
+            rel = None
+            if handover == "clean":
+                # WHY (2026-11-27, pad_handover "clean", v4): the "no overlap" above stopped the
+                # written note at the change, but the pad's 2.2 s release kept it sounding: measured on
+                # Make it mine, a pad G4 rang on under the next chord's A-flat 4 (and D4 under E-flat 4)
+                # for a third of the film, the main "clash" the owner heard. When the next chord holds
+                # a note that rubs against this one (a semitone, a tone, a major 7th or minor 9th
+                # away, in ANY voice), this note lets go in 0.35 s; elsewhere the long release stays
+                after = bl.pad_at(b + d + 1e-3)
+                if any(abs(x - m) in (1, 2, 11, 13) for x in after if x != m):
+                    rel, ov = 0.35, 0.0
             if kind == "pad":
                 # WHY the slight overlap (0.25 beat): the release of one note and the attack of the
                 # next cross-fade, so a voice moving to a new pitch never leaves a hole
                 band.pad(b, m, d + ov, cfg["touch"], cutoff=cut * bright,
-                         p=(-0.3, 0.3, -0.12, 0.12)[v % 4])
+                         p=(-0.3, 0.3, -0.12, 0.12)[v % 4], release=rel)
             elif kind == "held":
                 band.bow("vla" if m < note("D4") else "vln", b, m, d + 0.15, 0.16, 0.16, p=(-0.35, 0.35, 0.0, 0.15)[v % 4],
                          bus="bowed", attack=min(1.2, band.secs(b, 2)), release=0.6)

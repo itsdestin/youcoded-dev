@@ -161,7 +161,100 @@ def audio_readings(band, plans, piece, y):
     return R
 
 
+def _ring_level(e, band, t, pad_rel):
+    """A rough level (dB, touch-scaled) of note `e` at second `t`: a felt note fades about 4 dB a
+    second while held, then by its damper (0.16 s), pedal (1.4 s) or pad release time constant."""
+    if t < e["t"]:
+        return None
+    d = band.secs(e["beat"], e["dur"]) * 0.97
+    is_pad = e.get("part") == "pad"
+    lv = 22.0 * (0.25 if is_pad else e["vel"]) - (0.0 if is_pad else 4.0 * (t - e["t"]))
+    if t > e["t"] + d:
+        if is_pad:
+            tau = float(e.get("release") or pad_rel) / 2.2      # the pad's release reaches ~-20 dB at its time
+        else:
+            tau = 1.4 if e.get("pedal") else 0.16
+        lv -= 8.69 * (t - e["t"] - d) / tau
+    return lv
+
+
+def clear_readings(band, plans, piece, y=None, st=None):
+    """THE CLEAR-PARTS READINGS (2026-11-27): the measures behind "the notes mush together", "the
+    layers clash/fight for attention" and "the audio quality feels poor/compressed" on the round-10
+    sketches. Shelf values (measured 2026-11-27): Own everything r8 (liked) / own15-a ("a smidge
+    clashy") / Make it mine r10 ("too chaotic") / purple-a / purple-b ("a LOT more clashy")."""
+    import options as O
+    R = {}
+    t_end = plans[-1].t0
+    ev = [e for e in band.log if e["t"] < t_end and e["bus"] != "sub"]
+    pad_rel = float(O.get("pad_release", piece))
+    # 1. semitone rubs: two audible notes (within 12 dB of the loudest) a semitone apart below C6
+    hits = n = 0
+    for t in np.arange(0.5, t_end, 0.05):
+        s = [(e["m"], _ring_level(e, band, t, pad_rel)) for e in ev]
+        s = [(m, l) for m, l in s if l is not None]
+        if not s:
+            continue
+        top = max(l for _, l in s)
+        ms = sorted({m for m, l in s if l > top - 12 and m < 84})
+        hits += any(b - a == 1 for i, a in enumerate(ms) for b in ms[i + 1:])
+        n += 1
+    if n:
+        r = 100.0 * hits / n
+        R["semitone-rub"] = (f"{r:.0f} % of the time", r <= 20.0)
+    # 2. the tune's lift over the bed notes struck near it (touch -> dB on the felt piano)
+    tune = [e for e in ev if e["role"] == "lead"]
+    bed = [e for e in ev if e["role"] != "lead" and e.get("part") == "piano"]
+    lifts = []
+    for e in tune:
+        near = [b["vel"] for b in bed if abs(b["t"] - e["t"]) <= band.secs(e["beat"], 1.0)]
+        if near:
+            lifts.append(22.0 * (e["vel"] - float(np.median(near))))
+    if lifts:
+        lf = float(np.median(lifts))
+        R["tune-lift"] = (f"{lf:+.1f} dB over the bed notes around it", 2.5 <= lf <= 6.0)
+    if y is not None:
+        from dsp import SR
+        from scipy import signal
+        yy = np.asarray(y, float)[: int(piece.length * SR)]
+        f, p = signal.welch(yy.mean(axis=1), SR, nperseg=8192)
+        tot = p[f >= 20].sum()
+        lm = float(10 * np.log10(p[(f >= 150) & (f < 500)].sum() / tot))
+        R["low-mid-share"] = (f"{100 * 10 ** (lm / 10):.0f} % of the energy in 150-500 Hz", lm <= -2.5)
+        R["loudness-range"] = (f"{_lra(yy, SR):.1f} LU", _lra(yy, SR) >= 2.0)
+    lim = (st or {}).get("limiter")
+    if lim:
+        R["limiter"] = (f"max {lim['max_gr_db']:.1f} dB, over 1 dB {lim['pct_over_1db']:.1f} % of the time; "
+                        f"glue {lim.get('glue_db', 0):.1f} dB", lim["max_gr_db"] <= 3.0 and lim["pct_over_1db"] <= 5.0)
+    return R
+
+
+def _lra(y, sr):
+    """Loudness range (EBU-style: 3 s windows every 0.1 s, gated, 10th to 95th percentile), LU."""
+    import pyloudnorm as pyln
+    met = pyln.Meter(sr)
+    n, h = int(3 * sr), int(0.1 * sr)
+    st = []
+    for i in range(0, len(y) - n, h):
+        try:
+            v = met.integrated_loudness(y[i:i + n])
+        except ValueError:
+            continue
+        if np.isfinite(v) and v > -70:
+            st.append(v)
+    if len(st) < 3:
+        return 0.0
+    st = np.array(st)
+    st = st[st > 10 * np.log10(np.mean(10 ** (st / 10))) - 20]
+    return float(np.percentile(st, 95) - np.percentile(st, 10))
+
+
 MEANING = {
+    "semitone-rub": "two notes a semitone apart both clearly heard (r8 Own everything 15 %, own15-a 18 %, mim r10 33-36 %, purple 37-41 %)",
+    "tune-lift": "the tune's touch over the bed notes around it, in dB (woven at +0.08 read ~+1.8; r8 liked ~+5)",
+    "low-mid-share": "the share of energy in 150-500 Hz, the 'mud' band (r8 liked 48-52 %; r10 mim/own15/purple 66-68 %)",
+    "loudness-range": "how much the music's loudness moves (r8 liked 2.6-3.2 LU; mim r10 0.8: a flat wall)",
+    "limiter": "the final limiter's and glue's gain reduction (round 10: at most 1.2 dB: NOT squashed by the master)",
     "tune-in-harmony": "held tune notes (1.5 beats or longer) that are tones of the chord under them",
     "tune-in-bed": "held tune notes whose pitch is also sounding lower in the bed (the tune grows out of it)",
     "above-tune": "tune notes with another layer sounding above them (the tune is the top voice: 0)",
@@ -176,10 +269,12 @@ MEANING = {
 }
 
 
-def rows(band, plans, piece, y=None):
+def rows(band, plans, piece, y=None, st=None):
     R = notes_readings(band, plans, piece)
     if y is not None and getattr(band, "stems", None):
         R.update(audio_readings(band, plans, piece, y))
+    # WHY (2026-11-27): the clear-parts readings (mush, clash, "compressed") for every v4 piece
+    R.update(clear_readings(band, plans, piece, y if getattr(band, "stems", None) else None, st))
     out = []
     for k, (v, near) in R.items():
         out.append(dict(id=k, group="unity", value=v, target="read it next to the shelf (render.sh --shelf)",

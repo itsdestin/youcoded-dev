@@ -645,7 +645,8 @@ def narrated(name, length, *, land, speech, bpm=None, chords=None, turn=None, tu
     her words; after them -2 dB (present) or the same level (subtle). subtle (default from the brief's
     feel) also gives the quiet logo and -16.5 LUFS. whimsy=True (storybook): a bell-like high
     double (an octave up, very soft) of the tune's first phrase and every third one after. voice_mux = dict(path, t_from,
-    start_at, music_db) measures her margin over the music."""
+    start_at) mixes her (treated, voicemix.prep) with the music gap_lu (default 10) LU under her and
+    measures her margin; music_db only for a level set by hand (2026-11-27, voicemix.py)."""
     import films
     from timing import narrator_band, phrase_ends
     o = owner(owner_over, style)

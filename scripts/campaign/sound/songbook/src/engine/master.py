@@ -69,6 +69,18 @@ def finish(x, target, ceiling=-1.3, add=None, add_at=0, iters=8, tp_max=-1.05):
         if abs(err) < 0.02:
             break
         g += err
+    # WHY (2026-11-27): the owner heard round 10 as "poor/compressed"; the limiter was the first
+    # suspect, so its work is now recorded for the readings (10 ms peak blocks, limited vs not)
+    pre = to_stereo(x) * undb(g)
+    w = int(0.01 * SR)
+    k = min(len(pre), len(y)) // w
+    if k:
+        a = np.abs(pre[:k * w]).max(axis=1).reshape(k, w).max(axis=1)
+        b = np.abs(y[:k * w]).max(axis=1).reshape(k, w).max(axis=1)
+        ok = a > 1e-4
+        gr = 20 * np.log10(np.maximum(b[ok], 1e-9) / a[ok]) if ok.any() else np.zeros(1)
+        LAST["limiter"] = dict(max_gr_db=round(max(0.0, -float(gr.min())), 2),
+                               pct_over_1db=round(100 * float((gr < -1).mean()), 2))
     return y
 
 
