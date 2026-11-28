@@ -3324,7 +3324,166 @@
      "why": "The buttons should sit below the words. Android's own build wasn't run here.",
      "result": "todo"
     }
-   ]
+   ],
+   "resolved": "You tried both yourself and marked them Passed."
+  },
+  {
+   "id": "P-w1",
+   "page": "Wording",
+   "intro": "Click any words on a screen and retype them. Leave a screen alone to keep it.",
+   "stage": "after"
+  },
+  {
+   "id": "WD-strip-held",
+   "words": true,
+   "surface": "Notices",
+   "path": "The strip when Claude is waiting on a question",
+   "headline": "Message held back",
+   "screen": "wording/dev-toast-strip-held.html"
+  },
+  {
+   "id": "WD-held-else",
+   "words": true,
+   "surface": "Notices",
+   "path": "The floating notice naming the chat",
+   "headline": "Held back in another chat",
+   "screen": "wording/dev-toast-held-elsewhere.html"
+  },
+  {
+   "id": "WD-send-unsure",
+   "words": true,
+   "surface": "Notices",
+   "path": "Shared sentence for every unconfirmed send",
+   "headline": "Not sure your message went through",
+   "screen": "wording/dev-toast-n-send-unconfirmed.html"
+  },
+  {
+   "id": "WD-busy",
+   "words": true,
+   "surface": "Notices",
+   "path": "Same shape for compact, clear and skills",
+   "headline": "Can't while Claude is working",
+   "screen": "wording/dev-toast-n-compact-busy.html"
+  },
+  {
+   "id": "WD-not-live",
+   "words": true,
+   "surface": "Notices",
+   "path": "Same shape for compact, clear and skills",
+   "headline": "Chat isn't running",
+   "screen": "wording/dev-toast-n-compact-not-live.html"
+  },
+  {
+   "id": "WD-not-skill",
+   "words": true,
+   "surface": "Notices",
+   "path": "With Browse skills",
+   "headline": "Not an installed skill",
+   "screen": "wording/dev-toast-n-skill-not-a-skill.html"
+  },
+  {
+   "id": "WD-native-cmd",
+   "words": true,
+   "surface": "Notices",
+   "path": "Typed anyway",
+   "headline": "Command not available in this kind of chat",
+   "screen": "wording/dev-toast-n-not-in-native-runtime.html"
+  },
+  {
+   "id": "WD-failed",
+   "words": true,
+   "surface": "Notices",
+   "path": "Red strip with Try again",
+   "headline": "Something failed before sending",
+   "screen": "wording/dev-toast-strip-failed.html"
+  },
+  {
+   "id": "WD-stop-unsure",
+   "words": true,
+   "surface": "Notices",
+   "path": "Shared sentence for Stop",
+   "headline": "Not sure Stop went through",
+   "screen": "wording/dev-toast-n-stop-not-confirmed.html"
+  },
+  {
+   "id": "WD-needs-you",
+   "words": true,
+   "surface": "Notices",
+   "path": "Floating",
+   "headline": "A notice that needs you, with a quick one above",
+   "screen": "wording/dev-toast-two-needs-you-and-quick.html"
+  },
+  {
+   "id": "WD-model",
+   "words": true,
+   "surface": "Notices",
+   "path": "Floating until closed",
+   "headline": "Model switch failed",
+   "screen": "wording/dev-toast-n-model-switch-failed.html"
+  },
+  {
+   "id": "WD-attach",
+   "words": true,
+   "surface": "Notices",
+   "path": "Short floating",
+   "headline": "Attachments left out",
+   "screen": "wording/dev-toast-n-attachments-ignored.html"
+  },
+  {
+   "id": "WD-card",
+   "words": true,
+   "surface": "Notices",
+   "path": "The red card, Details open",
+   "headline": "Compact failed, in the chat",
+   "screen": "wording/chat-control-failure-compact-detail.html"
+  },
+  {
+   "id": "WD-resume",
+   "words": true,
+   "surface": "Notices",
+   "path": "On the resume list",
+   "headline": "Couldn't resume",
+   "screen": "wording/chat-resume-failed.html"
+  },
+  {
+   "id": "WD-handoff",
+   "words": true,
+   "surface": "Notices",
+   "path": "On the move screen",
+   "headline": "Couldn't finish moving a chat",
+   "screen": "wording/chat-handoff-note.html"
+  },
+  {
+   "id": "WD-theme",
+   "words": true,
+   "surface": "Notices",
+   "path": "The theme button's new-chat popup",
+   "headline": "Build a new theme",
+   "screen": "wording/settings-theme-new-chat.html"
+  },
+  {
+   "id": "WD-which",
+   "words": true,
+   "surface": "Notices",
+   "path": "The question in the strip",
+   "headline": "Two skills with one name",
+   "screen": "wording/chat-which-skill.html"
+  },
+  {
+   "id": "WD-greyed",
+   "words": true,
+   "surface": "Notices",
+   "path": "Its reason line",
+   "headline": "Skill that can't start here",
+   "screen": "wording/chat-skills-native-greyed.html"
+  },
+  {
+   "id": "WD-unread",
+   "words": true,
+   "surface": "Notices",
+   "path": "Its reason line",
+   "headline": "Skill whose instructions can't be read",
+   "screen": "wording/chat-skills-unreadable.html"
   }
  ],
  "notes_handled": {
