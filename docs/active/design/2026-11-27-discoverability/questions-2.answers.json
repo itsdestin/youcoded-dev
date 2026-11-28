@@ -1,0 +1,52 @@
+{
+ "deck": "discoverability-questions-2",
+ "started": "2026-11-28T01:30:44.982Z",
+ "submitted": "2026-11-28T01:39:36Z",
+ "cur": 1,
+ "answers": {
+  "S-why": {
+   "v": "yes",
+   "t": 1795829453315,
+   "seconds": 8,
+   "theme": "halftone-dimension"
+  },
+  "Q-cowork": {
+   "v": "other",
+   "t": 1795829974921,
+   "note": "We can try building this. I still don't see how this differs significantly from what our homepage already offers or what our homepage is trying to market. And I do also feel like this might be grouping too many different things into the same thing because are selling like the way that we would be selling ourselves against something like Clawed Cowork is going to be entirely different from how we're selling ourselves against something like Hermes. Because like the features that Hermes has that Cowork doesn't have and vice versa are like like they're different they have different strengths and different weaknesses like if we're pitching ourselves against co-work co work already has you know and Claude just recently announced like install apps that you build in co-work on your own desktop and that sounds kind of cool that sounds very similar to what you coded already has. And so for co-work our pitch has to note like how does our apps, how do our customizations, how do our integrations differ from co-work's. Whereas for something like Ermes, Ermese doesn't have have a build your own app feature. It doesn't really have that level of like customization. But it does have the open source element. And so we're not going to s well for cowork we might sell ourselves as ours is open source, ours is truly like do whatever you want with it. own your own shit own your own data against Coldwork Hermes already lets you own your own data own your own shit but it doesn't have some of the the the full like feature build outs that like co work has and so we really like again the pitch needs to be tuned for the specific application people are moving away from and kind of just grouping them all together like this misses what our strengths are against each app and misses our niche in the market.",
+   "seconds": 131,
+   "theme": "halftone-dimension"
+  },
+  "Q-story": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1795829974921,
+   "note": "open to testing this, unsure if we'll keep it.",
+   "seconds": 131,
+   "theme": "halftone-dimension"
+  },
+  "Q-apps": {
+   "note": "There's already a U-coded marketing campaign branch in progress, and in that branch we're working on a video, the Make It Yours video, that basically completely fakes a fake version of the finance page, a fake version of the home page. just for marketing animation purposes. Um I think realistically we should just be doing something similar here. I don't understand why we I also think we need a frame this isn't like the the framing here is very important. The the benefit is not make your own app. Like no no one wants to make their own app. What the fuck is the point of making my own app? I don't want to make my own app. No, that's that's stupid. That is not going to get anybody to be interested in actually using you coded. The way that we need to frame this is you as a user get to make your technology work for you. You get to keep your data private to you in a way that no other platform really allows or enables. You get to make your UI surfaces look how you want your UI surfaces to look. Like again, I think our Make It Yours video does a pretty good job of this of explaining like why you would want to do something like this. Like where the customization that you could have allowed would actually be interesting and helpful. Um and how that like iteration and just being able to make your computer meet your mind and make your computer work in the way that your like mind wants it to work. That's the framing. It's not just like build your own app by the way. That's that's unhelpful. It's it's look at the ways in which you can customize your tech to make your life easier and more efficient and more straightforward without dealing with like the bloat and the data loss and the cost and expense of everything. Uh uh of the own nothing be having a happy a c economy. So this needs to be based, I think, heavily on that open marketing work because we've done a lot to kind of like refine these messages. Um and I don't wanna be like reinventing these what what it's so fun. while we're looking to meet like just shittier versions of our existing messages from scratch.",
+   "t": 1795829974921,
+   "v": "other",
+   "seconds": 131,
+   "theme": "halftone-dimension"
+  },
+  "S-mesh": {
+   "v": "yes",
+   "t": 1795829974921,
+   "seconds": 131,
+   "theme": "halftone-dimension"
+  }
+ },
+ "built": {
+  "at": "2026-11-28T01:25:14Z",
+  "branch": "session/discoverability",
+  "commit": "82bf5a0383b0918b68588e2786e0ad92ab679bd3",
+  "spec_sha256": "c5b4065c6282e1d4729fd4aadfbdf7b4e3f96ad558680b937e85923e8aa3966e",
+  "spec_dirty": true
+ },
+ "pageNotes": {
+  "P-pages": "Just as a general note, I still feel like you're splitting this in in very strange ways. Again, you need to think about like what are people actually going to be searching for? And in my mind, people are gonna be searching for like open source clawed alternative, open source gem. alternative open source GPT alternative or better Ermes or easy to use Hermes or easy open source AI assistant like like people we're looking for people who like maybe don't even entirely know what exactly they're searching for they're not gonna be typing in exactly like I want Hermes without this but with this but without that but with th like that's that's not how people are going to be searching. People are going to be searching very broad, very vague terms um that generally fall in the realm of again the the things that people are going to The the things that people would search for that would make them interested in U code it would be stuff to the effect of again like open source AI assistant. Very general, very vague, but like that's what we have here. Or again there the There might be some uh there might be some room to try and market this towards someone who is searching for a term like, you know, custom home assistant dashboards. Uh but I don't know if that would be our most likely or like best audience. Um So I just uh I want to think through how we're splicing and dicing this to make sure that each page truly fits a a real audience. Not just like a single search term or a single group of search terms, but that each page is a unique thing drafted for a unique audience and actually make sense in the context of which it's right."
+ }
+}

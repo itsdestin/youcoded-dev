@@ -1,0 +1,399 @@
+{
+  "title": "Getting YouCoded found: posts, listings and search pages",
+  "key": "discoverability-questions",
+  "out": "questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-ai",
+      "page": "How we talk about the AI-built part",
+      "intro": "Several communities now check how a project was made. These two decide how honest-and-loud we are about it, and where we skip."
+    },
+    {
+      "id": "Q-ai-story",
+      "words": true,
+      "surface": "Posts and listings",
+      "path": "Every post, directory listing and store page that goes out under your name",
+      "headline": "How should posts and listings describe that YouCoded was built entirely by talking to AI?",
+      "today": "The drafted Hacker News and Claude-community posts open with it as the story: you never coded, AI wrote every line. The README and website say it once, near the bottom.",
+      "checked": "Read the drafts in the launch kit and the live README and site on 2026-11-27.",
+      "problem": "That story is our best hook for some crowds and an instant removal for others. In 2026 the open-source, self-hosting and Linux-store communities started banning or flagging AI-built projects, and readers there go looking. If it comes out after a post that skipped it, it reads as hiding, and the thread turns into that.",
+      "proposal": "Pick how loudly we say it. Whatever you pick applies to every post and listing, so nothing contradicts anything else.",
+      "options": [
+        {
+          "id": "plain-everywhere",
+          "label": "Plain everywhere, lead only where it helps",
+          "pros": [
+            "One line in every post says it plainly, so nobody can say we hid it.",
+            "Hacker News and the Claude community still get it as the opening story, where it draws people in.",
+            "Places that care about tools, not origins (local AI, smart home) hear about the app first."
+          ],
+          "cons": [
+            "We give up communities that ban AI-built projects outright (next question)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "lead-everywhere",
+          "label": "Lead with it everywhere",
+          "pros": [
+            "The most memorable version of the story, told the same way every time.",
+            "Matches your own r/opensource draft, which argues for it."
+          ],
+          "cons": [
+            "In local-AI and self-hosting places the comments become an argument about AI coding, not about the app.",
+            "More posts get removed by moderators."
+          ]
+        },
+        {
+          "id": "only-if-asked",
+          "label": "Mention it only if asked",
+          "pros": [
+            "Posts are about what the app does, nothing else."
+          ],
+          "cons": [
+            "The repo says it openly, so someone will find it and post it, and then it looks like hiding.",
+            "Several places (Lemmy, the Home Assistant forum, Flathub) require saying it up front, so we would break their rules."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-ai-skip",
+      "words": true,
+      "surface": "Posts and listings",
+      "path": "r/opensource on Reddit, and Flathub (the main Linux app store)",
+      "headline": "Should we skip the places that ban or restrict AI-built projects?",
+      "today": "Your r/opensource post is written and parked. Flathub was on the not-yet list because it needs extra packaging work.",
+      "checked": "Rules found on 2026-11-27: r/opensource through a Linux Magazine report (Reddit itself blocked us), Flathub from its own requirements page.",
+      "problem": "r/opensource reportedly requires a year-old project with three or more contributors, and rejects projects that obviously use AI. YouCoded is 8 months old, one person, AI-built: the post would be removed and the account could be banned. Flathub forbids AI tools writing or opening the submission and asks for disclosure of AI-written code — every line of ours.",
+      "proposal": "Skipping costs us those two places for now. Posting anyway risks a ban that also blocks your later posts in that community.",
+      "options": [
+        {
+          "id": "skip",
+          "label": "Skip both for now",
+          "pros": [
+            "No removal, no ban, nothing that follows your account around.",
+            "Your r/opensource draft stays saved: the essay could go to your own blog or a Hacker News comment instead."
+          ],
+          "cons": [
+            "Loses the single biggest open-source community on Reddit.",
+            "Linux users who only install from Flathub won't find us there."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "post-anyway",
+          "label": "Post anyway and see",
+          "pros": [
+            "Your argument is aimed squarely at that crowd; a removal can itself start a conversation elsewhere."
+          ],
+          "cons": [
+            "Most likely outcome is a quiet removal nobody sees.",
+            "A ban there can't be undone by us."
+          ]
+        },
+        {
+          "id": "ask-mods",
+          "label": "Ask the moderators first",
+          "pros": [
+            "A clear yes or no, no ban risk."
+          ],
+          "cons": [
+            "Moderators often don't answer; and a no is almost certain under the rule as reported."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-selfhost",
+      "page": "The self-hosting crowd",
+      "intro": "You asked what the self-hosting issue is. It is a fit question, not a rule we break."
+    },
+    {
+      "id": "Q-selfhost",
+      "words": true,
+      "surface": "Posts and listings",
+      "path": "r/selfhosted, Lemmy's self-hosting community, the awesome-selfhosted list and the selfh.st directory",
+      "headline": "How should we approach people who run their own software at home?",
+      "today": "'Self-hosted' means software on their own always-on machine (a home server), reached from other devices. YouCoded is mostly a desktop and phone app. Its self-hosted parts: your computer can serve the app to your phone's browser (set up through Tailscale), and free AI models can run entirely on your machine. Sync goes through GitHub, a company.",
+      "checked": "Rules read 2026-11-27: awesome-selfhosted's contributing page; r/selfhosted through a mirror of its rules (Reddit blocked us); Lemmy from its sidebar as quoted in a thread.",
+      "problem": "awesome-selfhosted bans desktop and phone apps. r/selfhosted allows a post (we're past its 3-month age bar), but calling it a 'self-hosted AI assistant' invites 'this is a desktop app that syncs to GitHub' as the top comment. Lemmy needs a 30-day-old account and an 'AI used' tag. Data on hardware you own (the Mesh) is planned, not built.",
+      "proposal": "We can go now with an honest, narrower pitch, or wait until owning your own data is real.",
+      "options": [
+        {
+          "id": "narrow-now",
+          "label": "Go now, pitched narrowly",
+          "summary": "Pitch: run AI free and offline on your own machine, and reach your home computer's assistant from your phone. Never call it 'self-hosted' as a whole. Also submit to the selfh.st directory.",
+          "pros": [
+            "Everything we say is already true, so the comments argue about features, not labels.",
+            "Reaches the people you named (newcomers to self-hosting) while they're looking."
+          ],
+          "cons": [
+            "Smaller pull than a 'fully self-hosted' pitch would get.",
+            "Lemmy waits 30 days if you make a new account."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "wait-mesh",
+          "label": "Wait until the Mesh exists",
+          "pros": [
+            "Arrive with the pitch this crowd actually wants: your data on hardware you own, no company in the middle."
+          ],
+          "cons": [
+            "Could be months; the crowd keeps finding other apps meanwhile.",
+            "You can usually only introduce a project to a community once."
+          ]
+        },
+        {
+          "id": "directory-only",
+          "label": "Directory only, no posts",
+          "pros": [
+            "Low effort, no comment section to defend."
+          ],
+          "cons": [
+            "A directory entry alone brings few people; the posts are what get mentioned and remembered."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-posts",
+      "page": "Which posts, and who presses Post",
+      "intro": "I draft everything; you post from your own accounts. These decide where we go first."
+    },
+    {
+      "id": "Q-where",
+      "words": true,
+      "pick": "several",
+      "surface": "Posts",
+      "path": "Communities where a post would fit",
+      "headline": "Which places should get a post in the first round?",
+      "today": "Drafts exist for Hacker News, r/ClaudeAI, r/LocalLLaMA and r/SideProject. None has been posted.",
+      "checked": "Launch kit read 2026-11-27; no post links recorded there or in the cards.",
+      "problem": "Mentions in these places are what AI search tools and Google lean on most, but each place allows roughly one introduction, so a weak first post is wasted. Spacing them a week apart also lets us fix what the first one teaches us.",
+      "proposal": "Pick as many as you want in round one. I'd space them about a week apart, starting with the one you pick that's most forgiving.",
+      "options": [
+        {
+          "id": "hn",
+          "label": "Hacker News (Show HN)",
+          "pros": [
+            "The biggest single spike of visitors, and links from it count heavily with Google.",
+            "Your built-by-AI story is the hook there."
+          ],
+          "cons": [
+            "You need to answer comments for about 3 hours straight; the crowd is blunt."
+          ]
+        },
+        {
+          "id": "claudeai",
+          "label": "r/ClaudeAI",
+          "pros": [
+            "The friendliest audience: they already use Claude and want a nicer window for it."
+          ],
+          "cons": [
+            "Self-promotion rules need checking first; easy to drown among many similar posts."
+          ]
+        },
+        {
+          "id": "localllama",
+          "label": "r/LocalLLaMA",
+          "pros": [
+            "Exactly the free, offline AI crowd; the built-in engine is on topic."
+          ],
+          "cons": [
+            "Newer rules need a minimum of account history (karma) and are strict about self-promotion."
+          ]
+        },
+        {
+          "id": "homeassistant",
+          "label": "r/homeassistant",
+          "pros": [
+            "Your real Home page is something they can't get elsewhere: a control panel made by asking."
+          ],
+          "cons": [
+            "Rules unverified; must lead with the dashboard, not the product."
+          ]
+        },
+        {
+          "id": "selfhosted",
+          "label": "r/selfhosted",
+          "pros": [
+            "The newcomers you named, if pitched the way you chose above."
+          ],
+          "cons": [
+            "Partial fit for a desktop app."
+          ]
+        },
+        {
+          "id": "sideproject",
+          "label": "r/SideProject",
+          "pros": [
+            "Welcomes exactly this kind of post; low risk practice run."
+          ],
+          "cons": [
+            "Small audience of other builders, few real users."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-accounts",
+      "words": true,
+      "answer": "words",
+      "prompt": "e.g. Reddit: yes, a few years old, some karma; Hacker News: no account",
+      "surface": "Posts",
+      "path": "Your own Reddit, Hacker News and Lemmy accounts",
+      "headline": "Which of these accounts do you already have, and are they older than a month with some history?",
+      "today": "I don't know which accounts you have. Posts go out under your name, so they need your accounts.",
+      "checked": "Nothing about your accounts is in the workspace notes as of 2026-11-27.",
+      "problem": "Several places quietly hide posts from new or empty accounts: r/LocalLLaMA needs a minimum karma, Lemmy's self-hosting community a 30-day-old account, and Hacker News buries brand-new accounts' posts. If an account is new, the order of posts changes: start it now and post where age doesn't matter first.",
+      "proposal": "Tell me in a line; I'll plan the order around it."
+    },
+    {
+      "id": "Q-paid",
+      "words": true,
+      "surface": "Listings",
+      "path": "Paid app directories",
+      "headline": "Should we pay for any directory listings yet?",
+      "today": "All our listings so far are free (AlternativeTo, SourceForge, the Windows install command, the Claude Code list).",
+      "checked": "Prices read from each site's own pages on 2026-11-27.",
+      "problem": "Two good-fit directories charge. OpenAlternative, which already has pages comparing apps like ours, appears to cost $97 to $197 (I couldn't find a free option). There's An AI For That charges $437 and asks not to be listed elsewhere first, which we already are.",
+      "proposal": "We can see which listings bring visitors through the site's own visitor stats before spending anything.",
+      "options": [
+        {
+          "id": "not-yet",
+          "label": "Not yet",
+          "pros": [
+            "Free lists and posts first; we pay only for what the stats suggest works.",
+            "No money spent on a guess."
+          ],
+          "cons": [
+            "OpenAlternative's comparison pages keep ranking without us meanwhile."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "openalt",
+          "label": "OpenAlternative only",
+          "pros": [
+            "Strong fit: people there are hunting for open-source replacements.",
+            "A followed link from it helps Google ranking."
+          ],
+          "cons": [
+            "About $100 to $140 before we know it brings anyone."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both",
+          "pros": [
+            "Maximum reach right away."
+          ],
+          "cons": [
+            "$530 or more; There's An AI For That may reject us for being listed elsewhere first."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-pages",
+      "page": "Which search pages to build",
+      "intro": "You asked that every page be truly different. A reviewer who hadn't seen my draft cut six ideas to four, plus one new one."
+    },
+    {
+      "id": "Q-pages",
+      "words": true,
+      "pick": "several",
+      "surface": "Website",
+      "path": "New pages on youcoded.ai, each reached mainly from search",
+      "headline": "Which of these pages should we design first?",
+      "today": "The site is one page. Someone searching 'Claude Code on Android' or 'run AI offline' lands on a homepage that mentions it in a single line, or more likely on a competitor's page.",
+      "checked": "Read the live homepage, its AI summary file and the brand guide on 2026-11-27; a separate reviewer estimated how much each idea repeated them.",
+      "problem": "My first list had pages that repeated each other: 'use the plan you already pay for' was half the Claude Code page, and a 'self-hosting' page was 70% homepage text plus claims stretched too far. Those are dropped below. Each remaining page has a different searcher and things only it can show.",
+      "proposal": "Pick the ones worth designing; each is built around one real proof, not filler. Dropped: a separate 'your plan' page (now part of the Claude Code page), a self-hosting page (its useful parts go into phone and offline), a general 'make your own apps' page (mostly homepage) and finance (held until we can show how bank data gets in).",
+      "options": [
+        {
+          "id": "phone",
+          "label": "AI on your phone",
+          "summary": "For people who searched 'Claude Code on Android' or 'Claude Code iPhone'. Built around one unedited phone recording from install to first answer, with a clock visible.",
+          "pros": [
+            "Our best opening: everything they find today is do-it-yourself setup that breaks when Claude Code updates.",
+            "Explains plainly that the assistant runs on the phone itself, not remote control.",
+            "Gives iPhone searchers the honest answer: use it in the browser, through your computer."
+          ],
+          "cons": [
+            "Needs a real phone recording, which we don't have yet.",
+            "I must test how ours handles Claude Code updates before saying anything about it."
+          ]
+        },
+        {
+          "id": "offline",
+          "label": "Free AI, offline",
+          "summary": "For people who searched 'Ollama / LM Studio alternative' or 'private AI on my computer'. Built around measured speeds of named models on two or three real computers.",
+          "pros": [
+            "A 'which computer can run what' guide nobody else writes in plain words.",
+            "Honest about what small free models can't do, and shows switching to a cloud model mid-chat.",
+            "Takes in the privacy points the dropped self-hosting page would have made."
+          ],
+          "cons": [
+            "The speed numbers have to be measured on real machines; without them the page is generic.",
+            "Crowded search: Jan and LM Studio already rank well."
+          ]
+        },
+        {
+          "id": "claudecode",
+          "label": "Claude Code, no terminal",
+          "summary": "For people who searched 'Claude Code GUI' or 'use my Claude plan in another app'. Built around one real task shown in the terminal and in YouCoded side by side.",
+          "pros": [
+            "Maps each terminal habit to what you see in the app, so users know what they keep.",
+            "Leads with people who don't code, which is your own story and our difference from other Claude Code apps.",
+            "The 'sign in with the plan you already pay for' section lives here."
+          ],
+          "cons": [
+            "Crowded: several other Claude Code apps rank already.",
+            "I must check the current rules on using a Claude or ChatGPT plan in other apps before we rank for that."
+          ]
+        },
+        {
+          "id": "homeassistant",
+          "label": "Home Assistant dashboard",
+          "summary": "For people who searched 'Home Assistant dashboard AI'. Built around the exact sentence you typed and a recording of a real light turning on from the page.",
+          "pros": [
+            "The most specific search and the most unusual thing we do: a control panel made by asking.",
+            "Your real Home page already exists."
+          ],
+          "cons": [
+            "I need to confirm your Home page actually goes through Home Assistant before using the name.",
+            "Recording a real light means filming at your place, or with your help."
+          ]
+        },
+        {
+          "id": "office",
+          "label": "AI that edits Office files",
+          "summary": "New idea from the reviewer: for people who searched 'AI that edits my Excel / Word file'. Built around a real before-and-after file with the version history showing.",
+          "pros": [
+            "A different searcher from the other four, and the brand guide already counts the Office editor as one of our differences.",
+            "Easy to prove with a screen recording, no special equipment."
+          ],
+          "cons": [
+            "Desktop only; phone users would bounce.",
+            "Microsoft's own Copilot ranks heavily for these searches."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-bar",
+      "words": true,
+      "surface": "Website",
+      "path": "How each new page gets made",
+      "headline": "No page reaches you until a reviewer who never saw it confirms it isn't repeating the homepage or another page.",
+      "changed": "For each page I write down first: who searched, the two to four things only this page gives them, and its one real proof (a recording, a real screenshot or a measured number). After drafting, a fresh reviewer with no context compares it line by line with the homepage and the other pages and marks repeated parts; those get cut, not reworded. Then you edit the wording on the real page.",
+      "notice": "Pages will be short. Some may end up as half a screen plus one recording, and a page that can't pass gets dropped rather than padded.",
+      "yes": "Holds",
+      "no": "Fails"
+    }
+  ]
+}

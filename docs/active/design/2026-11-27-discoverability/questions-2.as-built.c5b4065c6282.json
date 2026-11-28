@@ -1,0 +1,142 @@
+{
+  "title": "Getting YouCoded found: the search pages, rethought",
+  "key": "discoverability-questions-2",
+  "out": "questions-2.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-why",
+      "page": "What went wrong last time",
+      "intro": "You called the last page ideas bad and off-vision. Here is what I think caused that, for you to confirm."
+    },
+    {
+      "id": "S-why",
+      "words": true,
+      "surface": "Website",
+      "path": "The new pages built for search",
+      "headline": "The last ideas led with things every rival has, and treated one example as the whole point.",
+      "changed": "Free offline models, any model, Claude Code support and the phone app are what the brand guide calls table stakes: true, said briefly, never the pitch. Four of my five pages were built on them. The Home Assistant page took one example of 'it becomes what you ask for' and made it the subject.",
+      "notice": "Every page below opens with one of the things only YouCoded does (it becomes what you ask for; it's made for people who don't code; anyone can build it and share), and uses examples only as examples.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-pages",
+      "page": "Three pages, in the order I'd build them",
+      "intro": "Researched against what people actually type, then checked by a reviewer who had your vision, the brand guide and your comments."
+    },
+    {
+      "id": "Q-cowork",
+      "words": true,
+      "surface": "Website",
+      "path": "New page: an AI helper for people who don't code",
+      "headline": "Build a page for people looking for an open-source, no-terminal alternative to Claude Cowork, OpenClaw or Hermes?",
+      "today": "People who want an AI to do tasks on their computer search 'Claude Cowork alternative open source', 'OpenClaw without the setup' or 'Hermes agent GUI'. What they find is closed (Cowork), needs developer keys (OpenWork, Open Cowork), or is so hard to set up that people pay services to install it (OpenClaw).",
+      "checked": "Search research on 2026-11-27; each rival claim will carry its dated source on the page or be cut.",
+      "problem": "Our homepage never meets these people: it doesn't use their words. And competing with these tools on their own ground (asks before acting, open source, use your own plan) loses, because they all claim the same.",
+      "proposal": "The page opens with what they can't get elsewhere: made for people who don't code, and it grows into what you ask for (pages, looks, skills). Permissions and open source get one line each. Proof: an unedited recording from first launch to a finished task, GitHub sign-up included since it's required. Yes starts the design."
+    },
+    {
+      "id": "Q-story",
+      "words": true,
+      "surface": "Website",
+      "path": "New page: how a non-programmer built YouCoded",
+      "headline": "Build a page telling your story: an entire app built by someone who never coded, by asking AI?",
+      "today": "The homepage has a short Story section. People search 'build an app with AI no coding experience' a lot, and the brand guide calls your story our strongest material.",
+      "checked": "Read the homepage Story section, the brand guide and your 2026-10-22 voice notes on 2026-11-27.",
+      "problem": "Those searchers want proof it can be done and how, which a short homepage section can't give. It is also the clearest proof of the core idea: everyone who installs YouCoded can become a developer.",
+      "proposal": "A longer page in your own words (quoted from your voice notes, which you edit), showing what you built and how, and ending with how a visitor can do the same inside YouCoded. It puts your name and story in search results.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes, in my words",
+          "pros": [
+            "Unlike any rival page: theirs are written by developers.",
+            "Feeds every post too: Hacker News and r/ClaudeAI will link it."
+          ],
+          "cons": [
+            "Your name and story become very findable, permanently.",
+            "The AI-built part draws critics; the page has to welcome that, not hide from it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "anonymous",
+          "label": "Yes, but less personal",
+          "pros": [
+            "Same story, less about you as a person."
+          ],
+          "cons": [
+            "Loses most of what makes it believable."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "No",
+          "pros": [
+            "Nothing personal goes public beyond today's homepage."
+          ],
+          "cons": [
+            "Gives up our most distinctive search page."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-apps",
+      "words": true,
+      "surface": "Website",
+      "path": "New page: make your own apps by asking, and keep them",
+      "headline": "When should we build the page for people who want to make their own apps by asking?",
+      "today": "People search 'personal apps with AI', 'what can I build with AI as a non-technical person' and 'personal dashboard AI'. What ranks is about building and publishing an app as a product, or tools that host your app and keep it on their servers. The site has four example pages, two of them your own daily ones.",
+      "checked": "Search research and the homepage Ideas wall, both on 2026-11-27.",
+      "problem": "This is our core idea, but the homepage already says it. A new page earns its place only with what the homepage lacks: one sentence becoming a working app on video, then a big gallery of real examples, each with its sentence and its own heading ('trip planner', 'personal dashboard'). Four is too thin, and we can't call them community-made.",
+      "proposal": "Pick when. Replacing paid apps and the marketplace stay out of this page (the reviewer found they turned it into a second homepage); finance stays out until bank data can really come in.",
+      "options": [
+        {
+          "id": "after-gallery",
+          "label": "Once there are 8+ real examples",
+          "pros": [
+            "Arrives with the proof that makes it worth reading.",
+            "Making the examples is also good recordings for posts."
+          ],
+          "cons": [
+            "Later: someone has to make and record at least four more real pages first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "now",
+          "label": "Now, with the four we have",
+          "pros": [
+            "Starts ranking sooner."
+          ],
+          "cons": [
+            "Thin, and it repeats the homepage, which is what you asked to avoid."
+          ]
+        },
+        {
+          "id": "homepage",
+          "label": "Grow the homepage instead",
+          "pros": [
+            "No new page to maintain."
+          ],
+          "cons": [
+            "The homepage stays one page trying to match every search."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-mesh",
+      "words": true,
+      "surface": "Website",
+      "path": "Held page: your own private AI cloud",
+      "headline": "A page for people who want their AI and data on their own always-on computer waits until the Mesh ships; I write it now.",
+      "changed": "Its searchers type 'self-hosted ChatGPT on Raspberry Pi', 'Mac mini AI server' or 'private AI cloud at home'. Today sync needs GitHub, so 'no company holds your data' would be false. The draft is written now, assuming the Mesh, and published only after it is in a release.",
+      "notice": "Once out, this page and a written install guide for the always-on computer are also what lets us apply to awesome-selfhosted (their rules checked again before we do).",
+      "yes": "Holds",
+      "no": "Fails"
+    }
+  ]
+}
