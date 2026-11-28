@@ -405,8 +405,8 @@ export const Banner: React.FC = () => {
 // better fit/styling"): those floated small words in the middle with the name stranded far right. Now the words are
 // as large as the strip allows, the name and address sit right under them as on every poster, and the right half
 // is either the colour field alone or the real app in several looks.
-export type LinkedInProps = { look: 'night' | 'day'; head: string; shots?: string[]; struck?: boolean };
-export const LinkedIn: React.FC<LinkedInProps> = ({ look, head, shots, struck }) => {
+export type LinkedInProps = { look: 'night' | 'day'; head: string; shots?: string[]; struck?: boolean; ai?: 'soft' | 'same' | 'light' };
+export const LinkedIn: React.FC<LinkedInProps> = ({ look, head, shots, struck, ai }) => {
   const { width: W, height: H } = useVideoConfig();
   const dark = look === 'night';
   const left = W * 0.15;                                   // clear of the profile picture LinkedIn lays over the bottom-left corner
@@ -429,8 +429,9 @@ export const LinkedIn: React.FC<LinkedInProps> = ({ look, head, shots, struck })
         </>) : <Head text={head} size={size} dark={dark} />}
         <div style={{ height: H * 0.075 }} />
         <div style={{ display: 'flex', alignItems: 'baseline', gap: H * 0.045, whiteSpace: 'nowrap' }}>
-          <Wordmark size={H * 0.1} dark={dark} />
-          <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: H * 0.062, color: dark ? C.nightText : C.plum }}>youcoded.ai</span>
+          <Wordmark size={H * 0.1} dark={dark} ai={ai} />
+          {/* with the joined name-and-address logo the separate address is dropped: saying it twice was the complaint */}
+          {!ai && <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: H * 0.062, color: dark ? C.nightText : C.plum }}>youcoded.ai</span>}
           <span style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: H * 0.048, color: dark ? C.nightText2 : C.plum2 }}>Free · Windows · Mac · Linux · Android</span>
         </div>
       </div>
@@ -442,4 +443,24 @@ export const LinkedIn: React.FC<LinkedInProps> = ({ look, head, shots, struck })
 export const LinkedInIcon: React.FC = () => {
   const { width: W } = useVideoConfig();
   return <AbsoluteFill style={{ background: C.lavender }}><Img src={staticFile('icon.png')} style={{ width: W, height: W }} /></AbsoluteFill>;
+};
+
+/** A sheet of the joined name-and-address logo in its three treatments, on light and dark, for choosing one. */
+export const WordmarkAiSheet: React.FC = () => {
+  const { width: W, height: H } = useVideoConfig();
+  const kinds = ['soft', 'same', 'light'] as const;
+  return (
+    <AbsoluteFill style={{ flexDirection: 'row' }}>
+      {[false, true].map((dark) => (
+        <div key={String(dark)} style={{ flex: 1, background: dark ? C.night : C.lavender, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: H * 0.09, paddingLeft: W * 0.07 }}>
+          {kinds.map((k, i) => (
+            <div key={k} style={{ display: 'flex', alignItems: 'baseline', gap: W * 0.025 }}>
+              <span style={{ fontFamily: DMSANS, fontWeight: 700, fontSize: H * 0.05, color: dark ? C.nightText2 : C.plum2, width: W * 0.02 }}>{i + 1}</span>
+              <Wordmark size={H * 0.16} dark={dark} ai={k} />
+            </div>
+          ))}
+        </div>
+      ))}
+    </AbsoluteFill>
+  );
 };

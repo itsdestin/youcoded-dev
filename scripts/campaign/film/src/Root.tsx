@@ -1,7 +1,7 @@
 import React from 'react';
 import { Composition, Still } from 'remotion';
 import { FPS } from './brand';
-import { Banner, LinkedIn, LinkedInIcon, Poster, type LinkedInProps } from './posters';
+import { Banner, LinkedIn, LinkedInIcon, Poster, WordmarkAiSheet, type LinkedInProps } from './posters';
 import { Take1 } from './round2/take1';
 import { Take1B } from './round2/take1b';
 import { Take1C } from './round2/take1c';
@@ -29,6 +29,13 @@ const LINKEDIN: [string, LinkedInProps][] = [
   ['d-own-row', { look: 'day', head: 'own your data. intelligence. software. *everything.*' }],
   ['e-updates', { look: 'day', head: 'stop waiting / for *updates.*', shots: LOOKS }],
   ['f-own-not-rent', { look: 'night', head: 'software you *own,* not rent.' }],
+  // round 2 (Destin: likes the own-row; wants "make your technology yours"; one joined youcoded.ai logo)
+  ['own-row-day', { look: 'day', head: 'own your data. intelligence. software. *everything.*', ai: 'soft' }],
+  ['own-row-night', { look: 'night', head: 'own your data. intelligence. software. *everything.*', ai: 'soft' }],
+  ['yours-day', { look: 'day', head: 'make your technology *yours.*', ai: 'soft' }],
+  ['yours-night', { look: 'night', head: 'make your technology *yours.*', ai: 'soft' }],
+  ['yours-app-day', { look: 'day', head: 'make your / technology *yours.*', shots: LOOKS, ai: 'soft' }],
+  ['yours-app-night', { look: 'night', head: 'make your / technology *yours.*', shots: LOOKS, ai: 'soft' }],
 ];
 export const Root: React.FC = () => (
   <>
@@ -51,6 +58,7 @@ export const Root: React.FC = () => (
       <Still key={`${idea}-${name}`} id={`poster-${idea}-${name}`} component={Poster} width={w} height={h} defaultProps={{ idea }} />
     )))}
     {/* LinkedIn page: 6:1 cover and square profile picture */}
+    <Still id="wordmark-ai" component={WordmarkAiSheet} width={2400} height={1000} />
     <Still id="linkedin-icon" component={LinkedInIcon} width={800} height={800} />
     {LINKEDIN.map(([id, props]) => <Still key={id} id={`linkedin-${id}`} component={LinkedIn} width={4200} height={700} defaultProps={props} />)}
     {BANNERS.map(([w, h]) => <Still key={`${w}x${h}`} id={`banner-${w}x${h}`} component={Banner} width={w * 2} height={h * 2} />)}

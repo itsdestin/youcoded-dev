@@ -227,9 +227,14 @@ export const Wall: React.FC<{ at: number; out: number; stills: string[]; cols: n
 
 // ---------- logo and end card ----------
 /** The typed logo (brand §3): Outfit 600, -3.5% tracking, "you" in the gradient, "coded" in plum. */
-export const Wordmark: React.FC<{ size: number; dark?: boolean }> = ({ size, dark }) => (
+// WHY `ai`: Destin, 2026-11-27: "i want to stop putting "youcoded.ai" next to bare "youcoded"... a styled version that
+// just combines the marketing name youcoded with the link into a single styled youcoded.ai". Optional, for pieces
+// where the name and the address would otherwise sit side by side. 'soft' = quieter colour, 'same' = same as
+// "coded", 'light' = same colour in a thinner weight.
+export const Wordmark: React.FC<{ size: number; dark?: boolean; ai?: 'soft' | 'same' | 'light' }> = ({ size, dark, ai }) => (
   <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: size, letterSpacing: '-0.035em', lineHeight: 1, whiteSpace: 'nowrap', color: dark ? C.nightText : C.plum }}>
     <span style={{ paddingRight: '0.02em', background: GRADIENT, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>you</span>coded
+    {ai && <span style={{ fontWeight: ai === 'light' ? 300 : 600, color: ai === 'soft' ? (dark ? '#8F8399' : C.tagGrey) : undefined }}>.ai</span>}
   </span>
 );
 export const Icon: React.FC<{ size: number }> = ({ size }) => (
