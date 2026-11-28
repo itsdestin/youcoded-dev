@@ -14,9 +14,9 @@ platform: Phone and web
 vision: sync.follow.remote, everywhere.platforms.web
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Phones now share the computer's engine via the Android rebuild (#604, #625). Phone remote access was made faster and steadier (#688, 2026-10-23). Phone attach-file button works (uploads land on the computer). Game lobby channels are bridged to phones (needs a real-phone check).
+Next: Destin decides whether a phone may change provider keys. Destin decides whether slow buttons for a busy chat, question answers and Esc stop are acceptable. Decide if editing files from a phone is wanted. Real-phone pass to confirm the lobby and speed.
+Blocked: nothing recorded. Real-phone pass still owed (from one-core handoff).
 
 See also #1: 112's remaining item (a), Android joining the shared phone protocol, is phases A2 to A4 of the Android rebuild in 1.
 

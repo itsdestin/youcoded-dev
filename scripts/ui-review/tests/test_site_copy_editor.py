@@ -13,6 +13,20 @@ sce = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(sce)
 
 
+# WHY: bare open() in json.load/json.dump/read() left the file handle for the garbage collector to close,
+# which printed a ResourceWarning per call and buried real failures in the output (card #15 e).
+def _jload(p):
+    with open(p) as f:
+        return json.load(f)
+
+def _jdump(o, p):
+    with open(p, 'w') as f:
+        json.dump(o, f)
+
+def _read(p, **kw):
+    with open(p, **kw) as f:
+        return f.read()
+
 def marked(html):
     """The ids identify_text_blocks assigned, in document order."""
     out, count = sce.identify_text_blocks(html)
@@ -97,7 +111,7 @@ class SaveTests(unittest.TestCase):
         jpath, mpath, wrote = sce.write_edits(d, state)
         self.assertTrue(wrote)
         self.assertTrue(os.path.exists(jpath))
-        body = open(mpath, encoding='utf-8').read()
+        body = _read(mpath, encoding='utf-8')
         self.assertIn('- was: Old hero', body)
         self.assertIn('- now: New hero', body)
 
@@ -105,7 +119,7 @@ class SaveTests(unittest.TestCase):
         import tempfile
         d = tempfile.mkdtemp()
         _, mpath, _ = sce.write_edits(d, {'key': 'k', 'edits': {}})
-        self.assertIn('_No edits._', open(mpath, encoding='utf-8').read())
+        self.assertIn('_No edits._', _read(mpath, encoding='utf-8'))
 
     def test_an_empty_state_CANNOT_overwrite_a_real_submission(self):
         # WHY: an autosave from a stale tab (a page left open across a server
@@ -118,7 +132,7 @@ class SaveTests(unittest.TestCase):
         sce.write_edits(d, real)
         _, _, wrote = sce.write_edits(d, {'key': 'k', 'submitted': None, 'edits': {}})
         self.assertFalse(wrote)
-        kept = json.load(open(os.path.join(d, 'edits.json')))
+        kept = _jload(os.path.join(d, 'edits.json'))
         self.assertEqual(kept['edits']['b0']['current'], 'new')
 
     def test_a_REAL_new_submission_still_overwrites(self):
@@ -130,7 +144,7 @@ class SaveTests(unittest.TestCase):
         _, _, wrote = sce.write_edits(d, {'key': 'k', 'submitted': 'B',
                                           'edits': {'b0': {'original': 'old', 'current': 'two'}}})
         self.assertTrue(wrote)
-        kept = json.load(open(os.path.join(d, 'edits.json')))
+        kept = _jload(os.path.join(d, 'edits.json'))
         self.assertEqual(kept['edits']['b0']['current'], 'two')
 
     def test_an_explicit_clear_of_a_NEVER_submitted_state_is_allowed(self):

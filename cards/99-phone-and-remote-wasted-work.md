@@ -14,9 +14,9 @@ platform: Phone and web
 vision: sync.follow.remote
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Re-read the phone paths; nothing new safe to fix from the desktop side. Garbled-start cause located (terminal copy trimmed on chunk boundaries) but a fix shifts positions phones resume from, so not changed.
+Next: Real-phone checks; decide on the garbled-start fix after a phone shows it.
+Blocked: the phone checks need a real phone.
 
 Chats
 

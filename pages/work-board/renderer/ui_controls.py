@@ -86,7 +86,7 @@ function search(inp){
   const w=document.createElement('span');w.className='uisearch';w.dataset.tip=inp.dataset.tip||'';inp.parentNode.insertBefore(w,inp);
   w.innerHTML=`<span class="uiglyph">__GLYPH__</span>`;w.appendChild(inp);w.addEventListener('click',()=>inp.focus())}
 function all(){document.querySelectorAll('select').forEach(enhance);document.querySelectorAll('input[type=search], input.field[type=text], input.field:not([type])').forEach(search)}
-if(document.readyState==='loading')addEventListener('DOMContentLoaded',all);else all();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',all);else all();
 window.uiControls=all;
 })();
 '''.replace('__GLYPH__', SEARCH_GLYPH)

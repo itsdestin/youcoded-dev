@@ -12,6 +12,7 @@ import { cpus, loadavg, tmpdir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CHROME_FLAGS } from '../ui-review/cdp-helpers.mjs';
+import { tryAcquireLock } from '../lib/lock.mjs';
 
 // SHOOT_SCALE=1.5 photographs at a screen's pixel density instead of 1×. WHY: Destin's
 // laptop runs at 1.5×, where half-pixel offsets show that a 1× picture rounds away — a tag
@@ -98,12 +99,14 @@ export async function ensureBuild(checkout, log = () => {}) {
   if (ready()) return use();
 
   // One build at a time per checkout: a second `shoot` waits instead of building the same thing twice.
-  const lock = join(home, 'lock');
-  for (let t0 = Date.now(); ; await sleep(200)) {
-    try { mkdirSync(lock); break; } catch {
-      if (Date.now() - t0 > 120_000) { rmSync(lock, { recursive: true, force: true }); continue; } // a crashed builder's lock
-      if (ready()) return use();
-    }
+  // WHY shared helper: a crashed builder's lock is now recognised by its dead pid instead of
+  // being force-removed after 120s (which also stole the lock from a slow but live builder).
+  // Ceiling 15 min covers a stuck-but-alive builder.
+  let held;
+  for (;; await sleep(200)) {
+    held = tryAcquireLock(join(home, 'lock'), { maxAgeMs: 15 * 60_000 });
+    if (held.acquired) break;
+    if (ready()) return use();
   }
   try {
     // WHY re-check after taking the lock (2026-09-26): shoot --check and journeys start together
@@ -128,7 +131,7 @@ export async function ensureBuild(checkout, log = () => {}) {
     log(`built in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
     sweepOldBuilds(home, dist);
     return use();
-  } finally { rmSync(lock, { recursive: true, force: true }); }
+  } finally { held.release(); }
 }
 
 // ─── Serving it ─────────────────────────────────────────────────────────────
@@ -244,7 +247,8 @@ async function connect(port) {
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
     if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.rej(new Error(m.error.message)) : p.res(m.result); return; }
-    if (m.sessionId) sessions.get(m.sessionId)?.(m);
+    // WHY the typeof check (code scanning, 2026-11-11): the id comes off the wire; only a handler this file registered is ever called.
+    if (m.sessionId) { const handler = sessions.get(m.sessionId); if (typeof handler === 'function') handler(m); }
     else if (m.method) for (const f of browserEvents) f(m);
   };
   // WHY every command has a time limit: without one a single stuck page hung a whole
@@ -302,12 +306,22 @@ async function makeTab(b, targetId) {
     browser: b, sessionId,
     /** Every protocol event for this tab (console messages, navigations…). Returns an unsubscribe. */
     on: (f) => { listeners.add(f); return () => listeners.delete(f); },
-    still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),
+    // WHY cap + 35 s (2026-11-18): a page's hold (__shootHoldUntil) can extend the wait up to 30 s past the cap; the old
+    // cap + 5 s command limit gave up first, returned -1 and let the picture be taken while the page was still loading.
+    still: (cap) => evaluate(STILL(cap), cap + 35_000).catch(() => -1),
     takeErrors: () => { const e = errors; errors = []; return [...new Set(e)].slice(0, 5); },
     /** `reducedEffects`: turn on the app's own Reduce visual effects setting (its localStorage key)
      *  before the page loads — journeys only; pictures leave it alone so they keep showing the glass. */
     async prepare({ theme, width: w, height: h, reducedEffects = false }) {
+      // WHY (first-draw-stability under load): SHOOT_CPU_THROTTLE=N slows only THIS page N times, to reproduce a busy machine deterministically.
+      if (process.env.SHOOT_CPU_THROTTLE) await send('Emulation.setCPUThrottlingRate', { rate: Number(process.env.SHOOT_CPU_THROTTLE) });
       if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
+      // WHY (2026-11-11): a tab is reused from screen to screen and the app remembers, per tab, which chat it was on
+      // (desktop-place.ts, card #146). A screen that opened another chat left the next screens in this tab on that
+      // chat: 9 file and project screens went "no opener registered" in the full check and passed alone. Each screen
+      // starts with that one memory emptied, once, here (not on every load: a journey may reload on purpose).
+      // Only that one key: emptying everything made two different screens draw the same picture (chat = dev/toast#none).
+      await evaluate(`try{sessionStorage.removeItem('youcoded-desktop-place')}catch{}`, 5000).catch(() => {});
       if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
       const effects = reducedEffects ? `localStorage.setItem('youcoded-reduced-effects','1');` : '';
       themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});${effects}}catch{}` })).identifier;

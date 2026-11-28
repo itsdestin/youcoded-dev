@@ -1,0 +1,360 @@
+{
+  "title": "Nine approved designs that were never built: card each one, fold it into an existing card, or drop it",
+  "key": "work-inventory-designs-2026-11-09",
+  "out": "designs.questions.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Usage",
+      "path": "Settings, and the usage chips in the status bar",
+      "headline": "Still want usage stats: one place that adds up what you have used, by day, provider and model?",
+      "today": "Usage is scattered: small chips in the status bar for the current chat, a card you get by typing a command, and plan limit bars in Cloud providers. Each shows one chat or one moment. The chips link out to provider websites.",
+      "problem": "There is no single place to see what you used today or this week, or which model or chat ate your plan or credit.",
+      "proposal": "Decided 2026-09-29: a usage view inside Cloud providers (lower down), also opened by clicking the status-bar chips, replacing their links out to provider sites. Breakdowns by day, provider and model, showing both amounts and percent of plan or cost, kept 90 days. You said: \"dont bother with android\". A written definition of done was drafted and the look was approved.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card it, build later",
+          "pros": [
+            "Everything is already decided and drawn, so building can start at once.",
+            "Gives you the one overview you asked for.",
+            "The chips become useful instead of sending you to other websites."
+          ],
+          "cons": [
+            "Takes real build time.",
+            "Desktop only, so phones do not get it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Frees the time for other work.",
+            "Chips and limit bars keep working as today."
+          ],
+          "cons": [
+            "You keep having no overview of your spending.",
+            "The approved look would need redoing later."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Status lights",
+      "path": "The light on each conversation, and the chat itself",
+      "headline": "Still want the assistant to tell you when something is ready, with a blue card that glows until you click it?",
+      "today": "The app guesses when a reply is ready by watching when the assistant stops talking, then turns the light blue. Questions that block the assistant turn it red. The assistant's browser asking permission shows nothing on your phone.",
+      "problem": "You can miss that a reply is waiting, and a browser question can sit unseen until it times out after 90 seconds.",
+      "proposal": "Approved 2026-10-26 over four review rounds: the assistant sends a short label that replaces \"Response ready\", shown as a tab on the reply that glows until you hover, click or send, plus a Jump button. On 2026-10-27 you rejected the part where the assistant alone decides \"ready\" (\"overcomplicated and potentially unreliable\"). You also said phone browser approvals should work \"like every other approval card\" (this is card #205's problem). The last code is paused and not approved.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card it, build later",
+          "pros": [
+            "Keeps the look you approved.",
+            "Lets a fresh design session fix the rejected part cleanly.",
+            "Browser approvals on your phone get solved with it."
+          ],
+          "cons": [
+            "Needs one more short design talk before building.",
+            "Old unfinished code must be thrown away and rebuilt."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Nothing changes, so no new surprises.",
+            "Avoids the part you did not trust."
+          ],
+          "cons": [
+            "You keep missing waiting replies.",
+            "Phone browser approvals stay invisible unless card #205 fixes them."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Phone layout",
+      "path": "The whole app at phone width or in a narrow window",
+      "headline": "Still want the phone layout: a new top bar, a full-width session list and one row of small pills?",
+      "today": "On a phone or a narrow window the desktop layout is squeezed: a crowded top bar, a side list and a wide row of pills under the message box.",
+      "problem": "Buttons crowd each other, labels are cut off and the session list is hard to use with a thumb.",
+      "proposal": "Decided 2026-11-05 over four decks: width under 640 pixels decides. Top bar has menu and Projects on the left, New session and chat/terminal switch on the right, and one name button in the middle with tiny lights for your other sessions. Tapping it opens a full-width list. Pills become one short row you swipe. Shortcut chips stay as they are. You wanted the \"everything panel\" kept only as a future option. It exists only in the test workbench, not the real app.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card it, build later",
+          "pros": [
+            "Fully decided, so a clean build can start.",
+            "Fixes the squeezed top bar and pills for phones and small windows.",
+            "Can be tested at phone width before you see it."
+          ],
+          "cons": [
+            "Touches the top bar everyone uses, so it needs careful testing.",
+            "Overlaps phone cards #139, #213, #222 and #225, which must be coordinated."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Leaves today's desktop layout untouched.",
+            "Phone polish can still go through card #139."
+          ],
+          "cons": [
+            "Phones keep the crowded layout.",
+            "Four rounds of your decisions go unused."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Developer tools",
+      "path": "Settings, Development",
+      "headline": "Still want the X-ray view, which shows what the assistant is really doing in a conversation, plus a live health monitor?",
+      "today": "Settings has Development with bug reporting, Known issues and Roadmap. Nothing shows what the assistant was actually sent, or why the app froze or slowed down.",
+      "problem": "When the assistant loops or acts strangely, you cannot see why. Freezes are hard to trace.",
+      "proposal": "Decided 2026-10-04: build X-ray first, desktop only, hidden until unlocked, with a filter. Then a monitor that records freezes, errors, stuck work and memory, with a status bar chip. A first picture was rejected: \"not app-native\", \"jargony\", unclear what is recorded. You also said no automatic testers: \"i will do reviews manually\". No restyled version exists.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card it, build later",
+          "pros": [
+            "Still addresses why the assistant misbehaves.",
+            "Redesign can use plain wording, as you asked.",
+            "Monitor part stays planned for later."
+          ],
+          "cons": [
+            "Needs a fresh design round, since the first look was rejected.",
+            "Mostly useful to you, not everyday users."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Spares a design round on a tool few people use.",
+            "Existing bug reporting still works."
+          ],
+          "cons": [
+            "Strange behavior stays hard to explain.",
+            "Freezes stay hard to track."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Model picker",
+      "path": "The model menu",
+      "headline": "Model tags are already on card #47. Fold the approved design into it, or drop it?",
+      "today": "The model menu lists models with little to tell them apart. It is also empty on a new device.",
+      "problem": "You cannot tell a great-value model from a poor-value one at a glance.",
+      "proposal": "Decided 2026-09-11: a 0-100 capability score that adjusts against the newest top models, and a value rating from score against price, with hover showing real prices. Labels \"FREE - LOCAL\" and \"SUBSCRIPTION PLAN\". Source picked: Artificial Analysis. Hover text was too wordy, so shorten it. Card #47 already covers the picker.",
+      "options": [
+        {
+          "id": "merge-into",
+          "label": "Fold into #47",
+          "pros": [
+            "No duplicate card to keep track of.",
+            "The design is attached where the work will happen.",
+            "Also fixes the empty menu on new devices."
+          ],
+          "cons": [
+            "Card #47 grows bigger.",
+            "The scoring idea is tied to a bug fix."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Keeps the picker simpler.",
+            "Avoids depending on an outside ratings source."
+          ],
+          "cons": [
+            "Back to guessing which model is worth it.",
+            "Your scoring decisions go unused."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Sign-in and startup",
+      "path": "Model sign-ins, the first screen of a new conversation",
+      "headline": "Still want honest offline messages, sign-in again when a login runs out, and the startup question fix?",
+      "today": "Sign-in buttons open the browser even with no internet. An expired Claude, ChatGPT or OpenRouter login gives no \"sign in again\" button. A dropped connection shows raw errors like \"fetch failed\". Claude Code's startup questions were not recognized.",
+      "problem": "You get confusing errors and dead ends instead of one clear message and a button that fixes it.",
+      "proposal": "Decided 2026-09-14: check the internet before opening the browser, show a plain notice with Retry, check logins on app open and when a message fails, and offer sign-in again via a notice and dot. Claude re-login runs the real login in the app. OpenRouter uses whichever way you first connected. You said \"should have a retry button\". Cards #216 and #55 are about phones and YouCoded accounts, so they do not cover this.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card it, build later",
+          "pros": [
+            "Fixes real dead ends for everyone.",
+            "Decisions are complete.",
+            "Stays separate from #216 and #55."
+          ],
+          "cons": [
+            "Several small pieces, so one long task.",
+            "The startup fix may already be done and needs a check."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "merge-into",
+          "label": "Fold into #216",
+          "pros": [
+            "Keeps sign-in work in one place."
+          ],
+          "cons": [
+            "#216 is about phones, a poor fit.",
+            "The card gets muddled."
+          ]
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Less to build.",
+            "Today's behavior stays familiar."
+          ],
+          "cons": [
+            "Expired logins stay confusing.",
+            "Offline errors stay raw."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Connected accounts",
+      "path": "Settings, connected accounts",
+      "headline": "Cards #155 to #160 already cover connected accounts. Fold your everyday-actions answers into them, or drop?",
+      "today": "Google tools need about 500 MB of downloads, many browser steps, and a new sign-in every 7 days. They only work in Claude Code chats, not the app's own assistant or Android.",
+      "problem": "Asking the assistant to check your calendar, email or files is painful to set up, and it breaks weekly.",
+      "proposal": "Research and answers, 2026-09-26: yes to the idea but you wanted to think more. Calendar, email, contacts, files and tasks first, Google, Microsoft and iCloud, combined across accounts. Separate draft and finish steps, with permissions in Settings and cautious defaults (no automatic sending). Deleting allowed with strong warnings. A later calendar page was suggested. Old add-ons: undecided.",
+      "options": [
+        {
+          "id": "merge-into",
+          "label": "Fold into #155",
+          "pros": [
+            "Your safety and permission rules reach every card.",
+            "Research stays beside the work.",
+            "No duplicate planning."
+          ],
+          "cons": [
+            "Cards #155 to #160 get heavier to read."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Cards stand alone and stay simple."
+          ],
+          "cons": [
+            "Your safety wording and warnings could be lost.",
+            "The research may be repeated."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Developer tools",
+      "path": "A page on your computer for your own branch copies",
+      "headline": "Still want the dev dashboard that lists branch copies, launches test windows and says which hold unsaved work?",
+      "today": "Branch copies of the app are tracked by command-line tools and the Work board page, which tracks cards. The old release dashboard was removed on 2026-11-05 for the Analytics page, which is a different thing.",
+      "problem": "It is hard to see which copies are running, saved, pushed or merged, and which would lose work if deleted.",
+      "proposal": "Decided 2026-09-05: a real YouCoded screen on its own address, following your theme. Rows show Running with Stop, one click to launch, all check suites (paid one marked), a verdict with details behind a toggle, and status per copy. You asked for multi-select with a Request cleanup button. A plan exists but nothing was built. Not replaced by the Analytics page, though the Work board overlaps a little.",
+      "options": [
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Spares building a tool only you use.",
+            "The Work board and existing scripts already give some of this."
+          ],
+          "cons": [
+            "Branch status stays scattered.",
+            "Cleanup stays manual."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "card",
+          "label": "Card it, build later",
+          "pros": [
+            "Answers which copies are safe to delete.",
+            "Plan is written."
+          ],
+          "cons": [
+            "Real build time for a tool only you use.",
+            "Overlaps the Work board."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Assistant personality",
+      "path": "How the assistant talks, in every conversation",
+      "headline": "Still want the new assistant personality, the encouraging version that explains why, to become the app's built-in default?",
+      "today": "The built-in assistant instructions read like a policy manual, a list of rules.",
+      "problem": "Answers feel stiff and sometimes skip checking or explaining.",
+      "proposal": "Drafted 2026-10-22: your persona merged with the stock rules, written as a mentor's philosophy with reasons, plus four hard safety lines. In a blind test of 12 pairs you preferred the persona 8 times, stock once, 3 even. Not yet put in the app. You noted longer is only better when it adds something.",
+      "options": [
+        {
+          "id": "card",
+          "label": "Card it, build later",
+          "pros": [
+            "Evidence favors it, 8 to 1.",
+            "Changes how every conversation feels.",
+            "Cheap: it is one text file."
+          ],
+          "cons": [
+            "Shifts every answer, so you should watch for wordiness.",
+            "The paid test of the final wording is your call."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Drop, keep record",
+          "pros": [
+            "Keeps today's behavior.",
+            "Nothing to check for wordiness."
+          ],
+          "cons": [
+            "Gives up a result you clearly preferred."
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -25,17 +25,17 @@ What stays here is everything built ON those pictures and on the running rendere
 
 | File | Job |
 |---|---|
-| `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. Live panes come from the deck's own server (`/app/`, the photo-only build). **Which kind to pick: `.claude/rules/review-deck.md`. Every field, command and refusal: `deck/AUTHORING.md`. One worked template per kind: `templates/`.** |
+| `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance; the last two only finish a feature that already has a signed contract — new work is steered through the walkthrough deck, `.claude/rules/feature-flow.md`) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. Live panes come from the deck's own server (`/app/`, the photo-only build). **Which kind to pick: `.claude/rules/review-deck.md`. Every field, command and refusal: `deck/AUTHORING.md`. One worked template per kind: `templates/`.** |
 | `record.mjs` + `scenes/*.json` | a scripted scene filmed as a WebM loop + WebP poster (below). |
 | `record-pair.sh` + `montage-ab.sh` | before/after clips and sheets for a deck's CLIP steps. |
-| `site-assets.sh` | regenerates the landing page's loops, gallery (`shot.mjs` + `plans/site-gallery.json`, the one plan still in use) and embed. |
+| `site-assets.sh` | regenerates the landing page's loops and embed. The four ideas-wall pictures are not part of it: `site-idea-stills.sh` makes them by hand, only when Destin asks. |
 | `shot.mjs` | the old self-verifying plan driver, kept for `site-gallery.json`; on the engine (free ports). New pictures: `shoot`. |
 | `contrast-report.mjs` | painted-pixel contrast (fg vs *actual* bg) from a `shoot --contrast` run (`contrast.md`), or an old sweep's manifests. Over-reports on glass themes; read it, don't paste it. |
 | `coverage.mjs` | covered / MISSED per surface for an old sweep's run folders (decks still read them). |
 | `dom-size-sweep.mjs` | every screen of the shoot list, opened by name in the `stress` scenario, under 8,000 elements (below). |
 | `drag-probe.mjs`, `drag-fuzz.mjs` | per-frame positions during a session-pill drag (below). |
 | `design-check/` | lint:design warnings boxed on the real screen (`shoot --collect`). |
-| `tester-kit.md`, `ux-tester.md`, `code-reviewer.md`, `grader.md`, `contract-agent.md` | the feature flow's reviewer briefs. |
+| `tester-kit.md`, `ux-tester.md`, `code-reviewer.md`, `grader.md`, `contract-agent.md` | the reviewer briefs. `ux-tester` and `code-reviewer` are the checks Destin switches on or off in a build's checks menu; `grader` and `contract-agent` remain only for a feature that already has a signed contract (`.claude/rules/feature-flow.md`, Older work with a contract). |
 
 **The DOM-size sweep** (`dom-size-sweep.mjs`) opens every default-scenario screen of the shoot
 list in the `stress` scenario (2,000 rows) and counts the elements each builds. Any screen over
@@ -198,9 +198,10 @@ Things worth knowing before you author one:
 
 Spec: `docs/archive/specs/2026-08-31-live-review-panes-design.md`.
 
-Rebuild every landing-page asset at once (loops, gallery stills, live embed):
-`bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]` — refuses to overwrite a gallery
-when any shot failed verification; `--out` writes everything to a scratch folder instead.
+Rebuild the landing page's generated assets at once (loops, live embed):
+`bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]`; `--out` writes everything to a scratch folder instead.
+It never touches the four ideas-wall pictures (`docs/gallery/idea-*.webp`): those pages are mostly one-off examples
+Destin made, so they are replaced by hand only when he asks (`site-idea-stills.sh <app-checkout> <gallery-dir>`; Destin, 2026-11-11).
 
 **`"zoom": 1.25`** (scene field, default 1) films the page zoomed in the way Ctrl+= does in the
 app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
@@ -347,7 +348,7 @@ a journey or `explore start --params` passes them, a scene puts them in its `bas
 `open: ['<button label>']` and `shoot` clicks it before the picture (`scripts/shoot/README.md` →
 "Open this first"). A switch is for practice DATA (signed in, offline, ten friends), not clicks.
 
-Added 2026-10: `?autoInstall=off` (the update popup's auto-install switch starts off), `?gate=connecting|unreachable|tab|login` (the Android connection gate screen), `?refresh=fail` (the model-list refresh reports OpenRouter unreachable), `?slow=1` (the phone's "Waiting for your computer" strip), `?toast=password` (the saved-password-refused notice instead of the lost-send one).
+Added 2026-10: `?autoInstall=off` (the update popup's auto-install switch starts off), `?gate=connecting|unreachable|tab|login` (the Android connection gate screen), `?refresh=fail` (the model-list refresh reports OpenRouter unreachable), `?slow=1` (the phone's "Waiting for your computer" strip), `?toast=password` (the saved-password-refused notice instead of the lost-send one), `?statsFail=1` (the marketplace's votes/installs service answers 503, so the stats-unavailable notices show).
 
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
@@ -435,7 +436,21 @@ quit warning), `?switchFit=summary|working|error` (every model switch asks first
 runs forever; or it fails — default: fits), `?adminPasswordFail=1` (the admin-password card's
 "ask expired" state), `?docCommentsFail=<code>` (every new document comment fails with that
 real error code, e.g. `file-open-elsewhere`), `?docCommentsDetached=1` (one comment whose
-quoted text is no longer in its file).
+quoted text is no longer in its file), `?statsFail=1` (the marketplace's install and like
+counts fail to load, for the "could not load" notice with Try again; card #134 — read in
+`fixtures/marketplace/worker-api-mock.ts`, not the shim).
+
+Added since (documented 2026-11-19; the anchors check found them undocumented):
+`?signIn=waiting` (a started Claude sign-in stays on "finish in your browser"; unset it finishes
+after 2.5 s), `?online=0` (the app's connection check says offline; on the first-run sign-in step,
+a sign-in pressed with no internet; card #236), `?mpRefresh=fail` (the marketplace list loads once,
+then every refresh fails over the older list), `?turnedOff=1` (the turned-off practice plugin, Tab
+Tidy, appears), `?pastedPicture=1` (a picture lands in the message box, for the phone-paste review
+screen; card #134), `?buddySession=<id>` (with `?view=buddy-chat`: which session the buddy chat
+shows — default the first), `?phoneBrowser=site|final|handoff` (the Browser's open card as a phone
+receives it; card #205; read in `seed-chat.ts`). `?variant=` is not a switch of its own: it is the
+example name in `WorkbenchFrame.tsx`'s note that every unknown URL setting is passed through to
+the screen being compared.
 
 Added by the UI consistency round (documented 2026-10-13; same file):
 `?friends=none|many|requests|lots` (with `?signedIn=1`: no friends, four friends showing every
@@ -573,5 +588,6 @@ strip packs to ONE pill while a scenario needs three. Both together —
 FUZZ_H=900`. **A `worst:` line of all dashes, with no numbered scenario rows above it, is a
 run that drove zero drags, not a clean sweep** (it printed exactly that six times on
 2026-09-07 before anyone noticed); the sweep now exits 1 rather than saying it. Frames of
-any scenario are in `drag-fuzz.json` — but the write of that file throws on a 60-drag run
-(filed as dev-workspace work), so read the scores off stdout until that is fixed.
+a scenario that FAILED are in `drag-fuzz-frames.ndjson` (one line per failing scenario; passing
+scenarios keep no frames, so a 60-drag run no longer overflows). `drag-fuzz.json` holds only the
+scores and `drag-fuzz.md` the table.

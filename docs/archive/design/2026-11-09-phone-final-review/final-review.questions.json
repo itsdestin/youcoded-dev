@@ -1,0 +1,731 @@
+{
+  "title": "Android phone fixes (card #213): final review before merge",
+  "key": "phone-final-review",
+  "out": "final-review.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "1. The review in short",
+      "intro": "Four statements of what I found after reading all three branches myself. Nothing has been changed. Tell me where I have it wrong before the decisions start."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "The whole phone app",
+      "path": "Card #213, branch session/android-ux-test in three places: the app, the workspace, the server",
+      "headline": "What this work is for: a new person can install YouCoded on a phone and use it start to finish.",
+      "changed": "On 2026-11-01 you tested the Android app by hand. It could not start its assistant, sync failed, games were down, attach did nothing, a new person's first chat hung, and the phone showed computer screens. The released versions 1.3.1 to 1.3.3 very likely have the startup failure too. This work exists to fix that. I read three goals into it: (1) the phone app works from install to a finished task, (2) it feels made for a phone, (3) it cannot quietly break like this again.",
+      "notice": "The work is 60 changes to the app, 1 to the server (game rooms) and 30 to the workspace (review decks and notes). None of it is on master. The rest of this deck measures the work against those three goals.",
+      "yes": "Those are the goals",
+      "no": "Not quite"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "The whole phone app",
+      "path": "All 34 findings and the 3 leftover questions, checked against the code",
+      "headline": "Goal 1 (it works) is met on your phone today, but not yet on the version that would actually ship.",
+      "changed": "I checked every answer you gave against the code. 28 are fully built, 6 are partly built (page 4), none is missing. The six show-stoppers are all fixed on the branch. But master has moved 131 changes since, mostly the security overhaul, and the two have never run together. One of them clashes: put together, the phone shows computer screens again (page 2).",
+      "notice": "Everything you approved on the Flip7 is real and is in the code. What you have not seen is this work combined with the security work, a brand-new install of it, or four things that were never tried: two-device sync, a two-player game, ChatGPT sign-in and the cover screen.",
+      "yes": "Understood",
+      "no": "I disagree"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "The whole phone app",
+      "path": "Phone layouts, keyboard, terminal view, first-launch screens",
+      "headline": "Goal 2 (feels made for a phone) is the strongest part. Goal 3 (cannot quietly break again) is mostly unmet.",
+      "changed": "The phone layouts, keyboard and terminal view went through many rounds with you and ended in a good place. Protection is thin: of the six show-stoppers, only sync and the game rooms have an automated check that would fail if the bug returned. Nothing automated starts the assistant the way a phone does, tests attach, or runs a first launch. The phone has 36 automated checks in two files; the desktop has 22,392.",
+      "notice": "If the startup crash came back in a later release, the first sign would again be a phone that will not start. Today's runs: phone checks 36 of 36 pass. Desktop checks 22,379 pass and 1 fails, a Pages check that passes when run alone (it is sensitive to a busy computer).",
+      "yes": "Understood",
+      "no": "I disagree"
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "The code itself",
+      "path": "Keyboard, terminal view, the Android shell, first-launch screens, how the app knows it is a phone",
+      "headline": "Is the code well written? The design choices are right; I would rebuild nothing, and tidy four fragile spots.",
+      "changed": "Sound: not letting the keyboard resize the page, never resizing Claude Code's terminal on touch, sync, the game rooms, the notifications. Fragile: (1) the startup fix fails silently in two ways, (2) the first-launch cards depend on Claude Code's exact wording with no safety net, (3) the app decides \"this is a phone\" in about eight different ways, so phone changes leak onto computers, (4) the keyboard code grew by patching and is hard to follow, with notes that read like diaries.",
+      "notice": "A rebuild of the keyboard or terminal handling would risk the behaviour you already approved, for no gain you would see. The four fragile spots each get a decision later in this deck.",
+      "yes": "Agreed, no rebuild",
+      "no": "I want a rebuild"
+    },
+
+    {
+      "id": "P-2",
+      "page": "2. Must be settled before anything merges",
+      "intro": "Four problems that would reach people if this merged as it stands. Each has a fix I recommend."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The whole phone app",
+      "path": "The three branches compared with master",
+      "headline": "Should I bring the branches up to date with master and have you retest, before anything merges?",
+      "today": "Master is 131 changes ahead of this work in the app and 23 ahead on the server. The security work changed the way the phone app opens its own page. This work recognises \"I am the phone app\" by the old way, in about ten places.",
+      "problem": "Merged as it stands, the phone stops recognising itself. It shows the computer's settings and screens again (your show-stopper 6) and may not reach its own assistant. Nothing warns of this: the automated checks on both sides pretend the old way. Seven files also clash outright; one careless choice in the server file would silently switch off the hourly attack alarm.",
+      "proposal": "Catching up happens on the branches only, never on master. I fix the clash and the seven files, rebuild the Dev copy for your phone, and you retest that.",
+      "options": [
+        {
+          "id": "catch-up-retest",
+          "label": "Catch up, then retest",
+          "pros": ["What you test is exactly what ships.", "The security work and the phone work are seen together on a phone for the first time."],
+          "cons": ["One more round on the phone for you.", "About a day of my work before the build is ready."],
+          "recommended": true
+        },
+        {
+          "id": "catch-up-no-retest",
+          "label": "Catch up, skip retest",
+          "pros": ["No phone time needed from you."],
+          "cons": ["The security work changed how the page loads, which touches the keyboard, attach and sign-in. Those would ship unseen."]
+        },
+        {
+          "id": "merge-as-is",
+          "label": "Merge as it stands",
+          "pros": ["Fastest."],
+          "cons": ["Master would carry a phone that shows computer screens until fixed.", "Any release cut from master in that window ships it."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Phone startup",
+      "path": "Opening the app: the loading screen, then the assistant starting",
+      "headline": "How strongly should we guard against the \"assistant can't start\" crash coming back?",
+      "today": "The crash was caused by a missing language-data file in the phone's bundled programs. The fix adds the file and tells the assistant where it is.",
+      "problem": "The fix can fail silently in two ways. If a future build leaves the file out, the build still succeeds. And if an update changes the file's version, an updated phone keeps the old and new copies side by side, the app then picks neither, and the same crash returns for everyone who updated. No automated check starts the assistant with the phone's own programs.",
+      "proposal": "Three levels of protection. Nothing here changes what you see on the phone when things are healthy.",
+      "options": [
+        {
+          "id": "full-guard",
+          "label": "Fix both and add a check",
+          "pros": ["The build stops if the file is missing.", "Updated phones can no longer end up with two copies.", "Every build runs the phone's own program against the exact line that crashed."],
+          "cons": ["About half a day of work.", "The new check adds a little time to each phone build."],
+          "recommended": true
+        },
+        {
+          "id": "fix-only",
+          "label": "Fix both, no check",
+          "pros": ["Closes the two known ways it fails.", "Quicker."],
+          "cons": ["A third, unknown way would again be found by a phone that will not start."]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": ["No work."],
+          "cons": ["The crash that likely broke 1.3.1 to 1.3.3 on phones stays one update away."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Online games",
+      "path": "Games, then Connect 4 or Chess against a friend",
+      "headline": "The new game rooms on our server are open to anyone on the internet. Should they be limited?",
+      "today": "The old game host was shut down, so this work moved the Connect 4 and Chess rooms onto our own server. Each room holds two players.",
+      "problem": "The rooms sit in front of every protection the server has: no sign-in check, no limit on how fast someone can open rooms, no cap on how many. A stranger with a script could open rooms without end, and we pay for each one. The security work's new limits cover the rest of the server but not this address.",
+      "proposal": "Pick the level of protection. Players in a normal game would notice nothing with either of the first two.",
+      "options": [
+        {
+          "id": "rate-limit",
+          "label": "Limit per connection",
+          "summary": "Each internet address can open only a sensible number of rooms per minute, using the limiter the server already has.",
+          "pros": ["Stops a script from running up cost.", "Small change; nobody playing normally would hit it."],
+          "cons": ["Several people behind one shared address (a school, an office) share one allowance."],
+          "recommended": true
+        },
+        {
+          "id": "signed-in-only",
+          "label": "Signed-in players only",
+          "pros": ["Strongest: every room belongs to an account."],
+          "cons": ["I have not confirmed every way into a game already has an account; if not, some people lose online games.", "More work, and it changes the app as well as the server."]
+        },
+        {
+          "id": "leave-open",
+          "label": "Leave open",
+          "pros": ["No work."],
+          "cons": ["An open, paid-for address with no limit, shipped right after a security overhaul."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "First Claude Code chat",
+      "path": "A new person's first chat: text style, security notes and Trust this folder",
+      "headline": "If Claude Code rewords its first-run screens, a new person is stuck again. What safety net do you want?",
+      "today": "Claude Code shows three screens of its own the first time it runs. This work reads them off the hidden terminal and redraws each as a chat card. It recognises them by their exact wording.",
+      "problem": "Claude Code updates often and rewords things. If one of these three screens changes, the card silently stops appearing and the chat hangs on \"Initializing session…\", which was your show-stopper 2. The daily watch that warns us about Claude Code changes covers the trust screen but, as far as I can tell, not the text-style or security-notes screens.",
+      "proposal": "Two ideas that can be combined. The second is the one I would have tried first had I built this, but I have not proved it works.",
+      "options": [
+        {
+          "id": "fallback-card",
+          "label": "Add a fallback card",
+          "summary": "If a new chat shows nothing for several seconds before its first message, show \"Claude Code is asking something\" with a button to open the terminal view. Also add the two screens to the daily watch.",
+          "pros": ["A new person always has a way forward, whatever the wording.", "Small, and changes nothing you approved."],
+          "cons": ["The fallback is plainer than the proper cards."],
+          "recommended": true
+        },
+        {
+          "id": "fallback-and-skip",
+          "label": "Fallback, and skip the screens",
+          "summary": "As above, plus try telling Claude Code up front that setup is done, so the text-style and security screens never appear at all.",
+          "pros": ["One or two fewer screens for every new person.", "Does not depend on wording when it works."],
+          "cons": ["Unproven: I have not confirmed Claude Code honours it, and it could stop working after an update.", "Skips Claude Code's own security notes, which you may want people to see.", "More work and a fresh-install test."]
+        },
+        {
+          "id": "leave-cards",
+          "label": "Leave as built",
+          "pros": ["No work."],
+          "cons": ["One Claude Code update can return the first-chat hang, on phone and computer."]
+        }
+      ]
+    },
+
+    {
+      "id": "P-3",
+      "page": "3. What computer users would get without asking",
+      "intro": "This work was aimed at the phone and tested only on the phone, but parts of it change the computer app and remote access from a browser. The trust prompt becoming a chat card on computers was your own choice, so it is not asked again."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Files tab, on a computer",
+      "path": "A project, then Files",
+      "headline": "Hidden files (names starting with a dot) are now hidden on computers too. Keep that?",
+      "today": "On master, the Files tab lists everything in a project folder. On this branch, files whose names start with a dot are hidden until \"Show hidden files\" is ticked in the filter menu, on every device, and the tick is forgotten when you leave.",
+      "problem": "It was added so the phone would stop listing the app's own settings files as your project files. On a computer the same rule hides files people do look for, and they must re-tick the box each visit.",
+      "proposal": "Choose where the rule applies.",
+      "options": [
+        {
+          "id": "phone-only",
+          "label": "Phone only",
+          "pros": ["Computer users see no change from today.", "The phone still gets the tidier list."],
+          "cons": ["Phone and computer differ in one more small way."],
+          "recommended": true
+        },
+        {
+          "id": "everywhere-remembered",
+          "label": "Everywhere, remembered",
+          "pros": ["Same on every device.", "Tick the box once and it stays."],
+          "cons": ["Existing computer users will notice files have gone until they find the box."]
+        },
+        {
+          "id": "keep-as-built",
+          "label": "Keep as built",
+          "pros": ["No work."],
+          "cons": ["An unannounced change for computer users, and the box must be re-ticked every visit."]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Chat, in a narrow window on a computer",
+      "path": "The app window dragged or snapped narrower than about half a small laptop screen",
+      "headline": "A narrow computer window now gets the phone look. How much of it should a mouse user get?",
+      "today": "The phone look is switched on by window width, not by being a phone. So a narrow computer window gets tighter spacing, popups that fill the width, no chat scrollbar, and message times hidden except the newest (click a message to see its time).",
+      "problem": "Tighter spacing suits a narrow window on any device. But losing the scrollbar and the message times was designed for a thumb, and a mouse user never asked for it.",
+      "proposal": "Choose what a narrow computer window gets.",
+      "options": [
+        {
+          "id": "split",
+          "label": "Spacing yes, rest no",
+          "summary": "Narrow computer windows keep the tighter spacing and full-width popups, but keep their scrollbar and message times.",
+          "pros": ["Narrow windows use their space well.", "Mouse users lose nothing they rely on."],
+          "cons": ["A little work to separate \"narrow\" from \"touch\"."],
+          "recommended": true
+        },
+        {
+          "id": "all-phone-look",
+          "label": "Full phone look",
+          "pros": ["One look for every narrow screen.", "No work."],
+          "cons": ["No scrollbar to drag with a mouse.", "Times hidden on a device with room to show them."]
+        },
+        {
+          "id": "phones-only",
+          "label": "Phones only",
+          "pros": ["Computer app exactly as on master."],
+          "cons": ["Narrow computer windows stay as roomy and cramped-feeling as they are today."]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Terminal view, off the phone",
+      "path": "Terminal view on a computer, and on a laptop browser using remote access",
+      "headline": "The phone's terminal behaviour also reaches laptops on remote access and the computer app. Narrow it?",
+      "today": "Two phone fixes apply more widely than the phone. First, the floating message box and the \"never resize, slide instead\" rule apply to anything that is not the computer app, which includes a laptop's browser on remote access. Second, on the computer app a terminal you are not looking at now resizes its session while you drag the window; before, it waited until you looked at it.",
+      "problem": "A laptop on remote access has a mouse and nothing covering its terminal, yet its terminal no longer refits when the message box grows. The second change is probably an improvement, but nobody has watched it on a computer, and a resize is exactly what makes Claude Code print lines twice.",
+      "proposal": "Choose how far the phone's terminal rules reach.",
+      "options": [
+        {
+          "id": "touch-only-and-check",
+          "label": "Touch devices only",
+          "summary": "The phone rules apply only on touch screens. The computer change stays, and I check it on a computer before merge.",
+          "pros": ["Laptops on remote access behave as before.", "Phones and phone browsers keep what you approved."],
+          "cons": ["A small change to something you tested; it gets one more look on the phone."],
+          "recommended": true
+        },
+        {
+          "id": "undo-off-phone",
+          "label": "Undo both off the phone",
+          "pros": ["Nothing changes anywhere but the phone app."],
+          "cons": ["Loses a likely improvement on computers.", "Phone browsers on remote access lose the double-line fix."]
+        },
+        {
+          "id": "leave-wide",
+          "label": "Leave as built",
+          "pros": ["No work."],
+          "cons": ["Laptop users on remote access get a terminal designed for thumbs."]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Mode badge",
+      "path": "The NORMAL / AUTO badge on a new Claude Code chat, on any device",
+      "headline": "The mode badge now hides for 6 seconds on every new chat. Is that the fix you wanted?",
+      "today": "You reported the badge starting on NORMAL and flipping to AUTO by itself. The fix on the branch has two parts: the phone now reads the badge correctly, and every new Claude Code chat, on computers too, shows no badge for up to 6 seconds until the real mode is read.",
+      "problem": "Your note asked for the badge to start on the real setting. The branch waits instead of knowing, so for a few seconds you cannot see which mode you are in, and computer users get that wait without having had the bug.",
+      "proposal": "Choose how the badge should start.",
+      "options": [
+        {
+          "id": "start-from-setting",
+          "label": "Start from the setting",
+          "summary": "Show the mode the chat was actually started with straight away, then correct it if Claude Code says otherwise.",
+          "pros": ["A badge from the first moment, and the right one.", "It is what your note described."],
+          "cons": ["More work; I need to confirm the starting mode is always known up front."],
+          "recommended": true
+        },
+        {
+          "id": "keep-wait",
+          "label": "Keep the wait",
+          "pros": ["Never shows a wrong badge.", "No work."],
+          "cons": ["No badge for up to 6 seconds on every new chat, on every device."]
+        },
+        {
+          "id": "wait-on-phone",
+          "label": "Wait on phone only",
+          "pros": ["Computers behave as on master."],
+          "cons": ["The phone still has the blank moment."]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "The computer app as a whole",
+      "path": "Chat scrolling, the skills drawer, sync badge, popups",
+      "headline": "How should the computer app be checked before merge, given nobody has looked at it?",
+      "today": "Besides the items above, this work reworked chat scrolling and the skills drawer for every device, replaced the red dot for \"sync never set up\" with a grey \"Sync off\", and changed how permission cards wrap their text. The automated checks pass, but those do not judge feel.",
+      "problem": "These were tuned on a phone under slow-phone conditions. Scrolling and dragging feel are exactly what automated checks miss.",
+      "proposal": "Pick how the computer side gets looked at.",
+      "options": [
+        {
+          "id": "deck-and-try",
+          "label": "Pictures, then you try",
+          "summary": "I send a before/after deck of every changed computer screen, and you spend ten minutes scrolling and dragging in a Dev window.",
+          "pros": ["You see every visible change.", "Feel is judged by a person, on the real thing."],
+          "cons": ["Ten or fifteen minutes of your time."],
+          "recommended": true
+        },
+        {
+          "id": "deck-only",
+          "label": "Pictures only",
+          "pros": ["Quick for you."],
+          "cons": ["Pictures cannot show whether scrolling feels worse."]
+        },
+        {
+          "id": "skip-desktop",
+          "label": "Skip it",
+          "pros": ["No time spent."],
+          "cons": ["Computer users, the largest group, get untested changes."]
+        }
+      ]
+    },
+
+    {
+      "id": "P-4",
+      "page": "4. Answers of yours that were only partly delivered",
+      "intro": "These five came out of the earlier decks. Each was built in part, or differently from what you wrote."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Quick chips",
+      "path": "The row of shortcut chips above the message box",
+      "headline": "Everyday chips reach new installs only. Should existing installs get them too?",
+      "today": "You chose everyday chips in place of Git Status, Review PR and Fix Tests. The branch changes the starting set, so a fresh install gets the everyday chips. Anyone who already has the app, your Dev copy included, keeps the old ones.",
+      "problem": "Most people who will receive this update already have the app, so most would never see the change you asked for.",
+      "proposal": "Choose who gets the new chips.",
+      "options": [
+        {
+          "id": "if-untouched",
+          "label": "If never customised",
+          "pros": ["Everyone still on the original set gets the everyday chips.", "Nobody's own edits are overwritten."],
+          "cons": ["Someone who liked the old default set loses it and must add those chips back."],
+          "recommended": true
+        },
+        {
+          "id": "new-only",
+          "label": "New installs only",
+          "pros": ["Nothing changes under anyone's feet."],
+          "cons": ["Existing users keep the programmer chips indefinitely."]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Fullscreen display mode",
+      "path": "A new Claude Code chat on the phone, terminal view",
+      "headline": "Fullscreen mode is switched on quietly, with no way to change it in the app. Add a switch?",
+      "today": "On the phone, new Claude Code chats now start in fullscreen display mode, by writing that choice into Claude Code's own settings when none is set. You confirmed it looks good. You also asked how the setting gets changed and what people see when they do; that was never checked.",
+      "problem": "The only way back is typing a Claude Code command. Nothing in YouCoded says the mode exists, and the phone now behaves differently from the computer with no explanation.",
+      "proposal": "Choose how visible the setting should be.",
+      "options": [
+        {
+          "id": "switch",
+          "label": "A switch in Settings",
+          "pros": ["People can see and change it without knowing any command.", "I check what changing it looks like, as you asked."],
+          "cons": ["One more setting on the phone, and a small design step (it would come to you as a picture first)."],
+          "recommended": true
+        },
+        {
+          "id": "check-only",
+          "label": "Check, no switch",
+          "summary": "I test changing it by command and report what people see. No new setting.",
+          "pros": ["Answers your question with no new screen."],
+          "cons": ["Still no way to change it without a command."]
+        },
+        {
+          "id": "leave-quiet",
+          "label": "Leave as built",
+          "pros": ["No work."],
+          "cons": ["Your request to verify it stays unanswered."]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Signing in",
+      "path": "Any sign-in that opens Chrome on the phone",
+      "headline": "Only two of the sign-ins bring you back to the app afterwards. Finish the rest?",
+      "today": "You asked that signing in returns you to the app instead of leaving you in Chrome. That now works for the first Claude sign-in and for ChatGPT.",
+      "problem": "Signing in to your YouCoded account (used for sync, games and friends), and signing in to Claude again later, still leave you in Chrome to find your own way back. The security work also rebuilt account sign-in, and that has not been tried on a phone at all.",
+      "proposal": "Yes: every sign-in on the phone returns to the app, and account sign-in gets tested on the phone with the security work in place. No: leave the two that work.",
+      "options": [
+        {
+          "id": "finish",
+          "label": "Finish all sign-ins",
+          "pros": ["One consistent experience.", "Account sign-in gets its first phone test."],
+          "cons": ["Small extra work and one more thing on your retest list."],
+          "recommended": true
+        },
+        {
+          "id": "leave-two",
+          "label": "Leave the two",
+          "pros": ["No work."],
+          "cons": ["Sync and games sign-in still strand people in Chrome."]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Releases",
+      "path": "The phone's bundled programs, refreshed for each release",
+      "headline": "You asked for the bundled programs' versions to refresh automatically each release. It is a manual step. Automate it?",
+      "today": "The phone ships a fixed, known-good set of bundled programs. Refreshing that set for a release is one line in a document that someone has to remember.",
+      "problem": "A forgotten step means a release ships old programs, including old security fixes. You answered \"lock versions, and automate upgrading them each release\"; only the lock was built.",
+      "proposal": "Choose how the refresh happens.",
+      "options": [
+        {
+          "id": "auto-proposal",
+          "label": "Automatic proposal",
+          "summary": "A scheduled job notices the set is out of date and prepares the update for review, the same way other updates already arrive.",
+          "pros": ["Nothing to remember.", "Each refresh is still looked at before it goes in."],
+          "cons": ["One more kind of routine update to approve."],
+          "recommended": true
+        },
+        {
+          "id": "block-release",
+          "label": "Block stale releases",
+          "pros": ["A release cannot go out with an old set."],
+          "cons": ["Can stop a release at the last minute over something minor."]
+        },
+        {
+          "id": "manual",
+          "label": "Stay manual",
+          "pros": ["No work."],
+          "cons": ["Depends on memory; not what you asked for."]
+        }
+      ]
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "Startup failure screen",
+      "path": "The screen shown when the assistant cannot start",
+      "headline": "\"Report bug\" on the startup failure screen pre-fills app log lines into a public ticket. Change it?",
+      "today": "The failure screen now has plain words, Show details, Try again and Report bug. Report bug opens a public ticket with the last 40 lines of the app's log already filled in. The person can edit it before sending.",
+      "problem": "Tickets are public. Log lines can include folder names or other personal details, and the screen does not say they are being included. The security work added a \"this is what will be sent\" step to bug reports elsewhere; this screen does not use it.",
+      "proposal": "Yes: the screen says what will be included and lets the person leave the log out, matching the rest of the app. No: leave it as built.",
+      "options": [
+        {
+          "id": "say-and-ask",
+          "label": "Say what is sent",
+          "pros": ["Matches the security work's bug-report step.", "No surprise personal details in public."],
+          "cons": ["One extra tap when reporting."],
+          "recommended": true
+        },
+        {
+          "id": "leave-prefill",
+          "label": "Leave as built",
+          "pros": ["Fastest possible report."],
+          "cons": ["Log lines go into a public ticket unannounced."]
+        }
+      ]
+    },
+
+    {
+      "id": "P-5",
+      "page": "5. What I would add, tidy or leave alone",
+      "intro": "My own view of the code, beyond what was asked for. The first is a gap, the second is about how much tidying is worth doing before merge, the third is a batch of small jobs."
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "surface": "Attach file",
+      "path": "The paperclip in the message box, on the phone",
+      "headline": "Attached files are copied into the app and never removed. Add a size limit and clean-up?",
+      "today": "Tapping the paperclip opens the phone's file picker. Each picked file is copied into the app's own storage so the assistant can read it. Cancel and several files at once both work.",
+      "problem": "The copies are never deleted, there is no size limit, and if a copy fails the app shows nothing at all, as if you had cancelled. Attach a long video a few times and the phone's storage fills with copies you cannot see.",
+      "proposal": "Yes: old copies are removed after a day, very large files are refused with a clear message, and a failed copy says so. No: leave it as built.",
+      "options": [
+        {
+          "id": "limit-and-clean",
+          "label": "Limit and clean up",
+          "pros": ["The app stops quietly growing.", "A failure is explained instead of looking like nothing happened."],
+          "cons": ["A very large file is refused where today it would be copied.", "A day-old attachment cannot be re-read by an old chat."],
+          "recommended": true
+        },
+        {
+          "id": "leave-attach",
+          "label": "Leave as built",
+          "pros": ["No work."],
+          "cons": ["Storage grows without limit; failures stay silent."]
+        }
+      ]
+    },
+    {
+      "id": "Q-16",
+      "words": true,
+      "surface": "The code itself",
+      "path": "Keyboard handling, terminal sizing, and how the app knows it is a phone",
+      "headline": "How much code tidying should happen before merge, given tidying risks what you already approved?",
+      "today": "The keyboard and terminal code reached the right behaviour through about twenty rounds. What is left works, but one piece does five jobs, some notes are long stories of past attempts, two leftover debugging lines remain, and \"is this a phone?\" is answered about eight different ways across the app.",
+      "problem": "That last point is why phone changes leaked onto computers (page 3) and why the security work clashed with this work (page 2). Left alone, the next phone change will leak the same way. But a large tidy now touches the keyboard and terminal you spent days approving, and would need another full retest.",
+      "proposal": "Choose how much to do now. In every case nothing you see should change.",
+      "options": [
+        {
+          "id": "small-now-card-rest",
+          "label": "Small now, rest later",
+          "summary": "Now: remove the debugging lines, shorten the diary-style notes, add a guard so the keyboard height can never get stuck, and add checks around the fragile terminal sizing. Later, as its own card: one single place that answers \"phone, small screen, touch, or assistant on this device\".",
+          "pros": ["Low risk to what you approved.", "The bigger fix gets proper attention and its own retest."],
+          "cons": ["Until the later card is done, new phone changes can still leak onto computers."],
+          "recommended": true
+        },
+        {
+          "id": "all-now",
+          "label": "All of it now",
+          "pros": ["The leak problem is fixed at the root before release."],
+          "cons": ["About two more days and a full phone and computer retest.", "Real risk of breaking keyboard or terminal behaviour you signed off."]
+        },
+        {
+          "id": "no-tidy",
+          "label": "No tidying",
+          "pros": ["Nothing approved is touched."],
+          "cons": ["The next person to change this code, me included, is more likely to break it."]
+        }
+      ]
+    },
+    {
+      "id": "Q-17",
+      "words": true,
+      "pick": "several",
+      "surface": "Small jobs",
+      "path": "Loose ends found during the review",
+      "headline": "Which of these small jobs should be done before merge? Pick every one you want.",
+      "today": "Each of these is small and independent. None changes anything you approved on the phone.",
+      "problem": "Left undone, each is a small wrong thing that ships or a loose end that gets forgotten.",
+      "proposal": "I would do all five. Pick the ones you agree with.",
+      "options": [
+        {
+          "id": "partykit-wording",
+          "label": "Old game host name",
+          "summary": "About, Terms and Privacy still name PartyKit, the shut-down game host. Update them to say our own server.",
+          "pros": ["The legal pages match what the app does."]
+        },
+        {
+          "id": "flaky-test",
+          "label": "Unreliable Pages check",
+          "summary": "One automated Pages check fails when the computer is busy and passes alone. Our rule is to fix these when found.",
+          "pros": ["A red result means a real problem again."]
+        },
+        {
+          "id": "save-decks",
+          "label": "Back up deck files",
+          "summary": "21 review-deck pages and pictures from the earlier rounds exist only on this computer. Save them online with the rest.",
+          "pros": ["The record of what you approved survives a lost laptop."]
+        },
+        {
+          "id": "old-home-chats",
+          "label": "Old Home chats",
+          "summary": "The phone's old \"Home\" project is now hidden rather than moved. I could not confirm its old chats still show under Resume. Check, and add a way to reach them if they do not.",
+          "pros": ["Nobody's earlier phone chats quietly vanish. Few people are affected, since released phones likely could not start."]
+        },
+        {
+          "id": "pin-watch",
+          "label": "Daily watch hardening",
+          "summary": "The new daily online-services check does not follow the security work's rule for locked-down automation steps. Bring it in line.",
+          "pros": ["The new check meets the same standard as everything else after the security overhaul."]
+        }
+      ]
+    },
+
+    {
+      "id": "P-6",
+      "page": "6. Testing, release order and closing out",
+      "intro": "What gets tried on a real phone, in what order things go live, and what happens to the work that outlives this card."
+    },
+    {
+      "id": "Q-18",
+      "words": true,
+      "pick": "several",
+      "surface": "Your phone retest",
+      "path": "The Dev copy on the Flip7, rebuilt with the security work included",
+      "headline": "Which of these never-tested things will you try on the phone? Pick every one.",
+      "today": "Your Dev copy has been updated in place for nine days, so it has never gone through a first launch of this work. Four areas were never tried on any phone, and the security work adds a fifth.",
+      "problem": "Each of these is something no automated check covers and no person has seen.",
+      "proposal": "I would do the first four at least. I prepare a short checklist for whichever you pick. Upgrading from the released 1.3.3 cannot be tried safely, because that would mean touching your real app.",
+      "options": [
+        {
+          "id": "fresh-install",
+          "label": "Fresh install",
+          "summary": "A brand-new copy: unpacking, sign-in, the welcome screen, first Claude Code chat with its three cards, one finished task. About 15 minutes.",
+          "pros": ["This is the path every new person takes, and the one that was broken."]
+        },
+        {
+          "id": "sync-two-devices",
+          "label": "Two-device sync",
+          "summary": "Set up sync on the phone and the computer and watch one chat cross over. About 10 minutes.",
+          "pros": ["Sync has only ever been proven on a single device."]
+        },
+        {
+          "id": "two-player-game",
+          "label": "Two-player game",
+          "summary": "One Connect 4 or Chess game between phone and computer. Needs the server part live first (next question). About 5 minutes.",
+          "pros": ["The new rooms have never carried a real game."]
+        },
+        {
+          "id": "account-and-chatgpt",
+          "label": "Sign-ins",
+          "summary": "ChatGPT sign-in, and YouCoded account sign-in with the security work in place. About 10 minutes.",
+          "pros": ["Neither has been completed on a phone."]
+        },
+        {
+          "id": "cover-screen",
+          "label": "Cover screen",
+          "summary": "Open the app on the Flip's outer screen, then fold and unfold mid-chat. About 5 minutes.",
+          "pros": ["Nothing has ever been checked at that size; other small phones behave similarly."]
+        },
+        {
+          "id": "phone-to-computer",
+          "label": "Phone to computer",
+          "summary": "Connect the phone app to your computer over remote access and send a message. About 5 minutes.",
+          "pros": ["The security work changed this connection, and the phone must still know it is a phone while using it."]
+        }
+      ]
+    },
+    {
+      "id": "Q-19",
+      "words": true,
+      "surface": "Release order",
+      "path": "The server part (game rooms) and the app",
+      "headline": "The server part and the app must go live in order. Server first, tested, then the app?",
+      "today": "The app's online games now look for rooms on our server. The server change is on its own branch. When that branch merges, it goes live by itself within minutes, after its own checks pass.",
+      "problem": "If the app ships first, online games fail to start until the server catches up. The reverse is harmless: people on today's app still look at the dead old host and never touch the new rooms.",
+      "proposal": "Choose the order. Nothing merges until you say so in chat; this only records the plan.",
+      "options": [
+        {
+          "id": "server-first",
+          "label": "Server first, then test",
+          "summary": "Merge the server part, with the room limit from page 2, when you say so. You play one real game from the Dev copy. The app merges later with your other workstreams.",
+          "pros": ["Games are proven working before any app release depends on them.", "Harmless to everyone using the current app."],
+          "cons": ["Two merge moments instead of one.", "The rooms are live, and costing a little, slightly before anything uses them."],
+          "recommended": true
+        },
+        {
+          "id": "together",
+          "label": "Both together",
+          "pros": ["One merge moment."],
+          "cons": ["The first real two-player game happens after the app is already on master."]
+        }
+      ]
+    },
+    {
+      "id": "Q-20",
+      "words": true,
+      "surface": "Automated checks",
+      "path": "The note \"test infrastructure rethink\" written on 2026-11-01",
+      "headline": "A written plan to rethink our automated checks has no card. What should happen to it?",
+      "today": "After the phone test, a plan was written asking why 22,000 automated checks missed six show-stoppers. It proposes: a list, made with you, of what must never break; for each item the cheapest real check (start the real assistant, a scripted run on a real phone, daily service checks); removing checks that only pin wording; and a plain-language gate before each release. Only the daily service check has been built.",
+      "problem": "The plan lives in a file no card points to, so it will be forgotten. The part that matters most for this release, starting the phone's assistant for real, is already covered by your answer on page 2.",
+      "proposal": "Choose where the rest goes.",
+      "options": [
+        {
+          "id": "card-after",
+          "label": "A card, after release",
+          "pros": ["It is tracked and will not be lost.", "This release is not held up by a large piece of work."],
+          "cons": ["Until it is done, most phone behaviour is still protected only by you testing it."],
+          "recommended": true
+        },
+        {
+          "id": "before-release",
+          "label": "Do it before release",
+          "pros": ["The release goes out behind a real safety net."],
+          "cons": ["Several days of work, and it needs your time to agree the must-never-break list."]
+        },
+        {
+          "id": "drop",
+          "label": "Drop it",
+          "pros": ["Nothing to manage."],
+          "cons": ["The reason this all happened stays unaddressed."]
+        }
+      ]
+    },
+    {
+      "id": "Q-21",
+      "words": true,
+      "answer": "words",
+      "prompt": "Anything missing, wrong, or that you want rebuilt differently…",
+      "surface": "This review",
+      "path": "Everything above",
+      "headline": "Is there anything this review missed, or anything you would steer differently?",
+      "today": "The deck covers what the work is for, how well it meets its goals, the state of the code, what leaks onto computers, the partly delivered answers, and how to test and close.",
+      "problem": "You have used this phone app more than anyone. There may be something that still feels wrong that no reading of the code would find.",
+      "proposal": "Type anything you want added, dropped or rebuilt. Leave it empty if the deck covered it."
+    }
+  ]
+}

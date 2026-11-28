@@ -20,7 +20,8 @@
 //   A scenario needs 3+ pills in the strip, so pass FUZZ_W=1400 FUZZ_H=900 — see W/H below.
 //
 //   FUZZ_W / FUZZ_H  emulated window (default 460x600, the deck pane's width)
-//   OUT_DIR=.        drag-fuzz.json (every scenario's frames) + drag-fuzz.md (the table)
+//   OUT_DIR=.        drag-fuzz.json (scores) + drag-fuzz.md (the table) + drag-fuzz-frames.ndjson
+//                    (every frame, ONLY for scenarios that failed — see drag-fuzz-output.mjs)
 //   DPR=1.5          device scale factor (Destin's panel is 1.5)
 //   UNLIMITED=1      lift Chrome's frame-rate cap (a 180Hz panel runs the rAF loop 3x
 //                    faster than headless's 60; more frames per pointer event)
@@ -39,6 +40,7 @@
 // Anything non-zero is a defect; the table names the scenario so drag-probe can replay it.
 import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { retainScenario, writeSummary, FRAMES_FILE } from './drag-fuzz-output.mjs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { CHROME_FLAGS, readDevToolsPort, waitForCdp } from './cdp-helpers.mjs';
@@ -254,10 +256,15 @@ function score(log, marks, heldId) {
   return { m, where, nAfter: after.length, nBefore: before.length };
 }
 
+const OUT_DIR = process.env.OUT_DIR ?? '.';
+// A frames file left from an earlier run would read as this run's failures.
+rmSync(join(OUT_DIR, FRAMES_FILE), { force: true });
 const results = [];
 for (let n = 1; n <= COUNT; n++) {
-  const r = await runScenario(n);
-  if (!r) break;
+  const full = await runScenario(n);
+  if (!full) break;
+  // WHY: frames of a scenario are not kept in memory; failures go to disk now (card #18(f)).
+  const r = retainScenario(full, OUT_DIR);
   results.push(r);
   const { m, desc } = r;
   process.stdout.write(`#${String(n).padStart(2)} ${desc.pointer.padEnd(5)} ${desc.pressFirst ? 'press+' : 'cold  '} ${desc.fromIdx}→${desc.toIdx}${desc.overshoot ? (desc.overshoot > 0 ? '+' : '') + desc.overshoot : ''} grab ${desc.grab} ${String(desc.dragMs).padStart(3)}ms wob ${desc.wobble} ${desc.release.padEnd(9)} ${desc.after.padEnd(5)} delay ${desc.delay}  | contact ${m.contact.toFixed(1)} cont ${m.continuity.toFixed(1)} rev ${m.reversal.toFixed(1)} others ${m.others.toFixed(1)} blink ${m.blink} frame ${m.longFrame.toFixed(0)}ms\n`);
@@ -274,7 +281,5 @@ for (const k of ['contact', 'continuity', 'reversal', 'others', 'blink']) {
   worst[k] = best ? { value: best.m[k], n: best.desc.n, where: best.where[k] } : null;
 }
 console.log('\nworst: ' + Object.entries(worst).map(([k, v]) => `${k} ${v ? v.value.toFixed(1) + ' (#' + v.n + (v.where ? ' ' + JSON.stringify(v.where) : '') + ')' : '-'}`).join(' · '));
-const out = process.env.OUT_DIR ?? '.';
-writeFileSync(join(out, 'drag-fuzz.json'), JSON.stringify({ url, DPR, unlimited: !!process.env.UNLIMITED, results }));
-writeFileSync(join(out, 'drag-fuzz.md'), results.map((r) => `#${r.desc.n} ${JSON.stringify(r.desc)} → ${JSON.stringify(r.m)} ${JSON.stringify(r.where)}`).join('\n') + '\n');
+writeSummary(OUT_DIR, { url, DPR, unlimited: process.env.UNLIMITED, results });
 process.exit(0);

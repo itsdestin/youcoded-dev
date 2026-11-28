@@ -1,0 +1,362 @@
+[
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/creme.png",
+    "ms": 1346,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud/openrouter#verified",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/openrouter#verified/midnight.png",
+    "ms": 1354,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud/openrouter#verified",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/openrouter#verified/light.png",
+    "ms": 1356,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/dark.png",
+    "ms": 1363,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/midnight.png",
+    "ms": 1870,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud/openrouter#verified",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/openrouter#verified/creme.png",
+    "ms": 1961,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/light.png",
+    "ms": 2259,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/halftone-dimension.png",
+    "ms": 2274,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud/openrouter#verified",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/openrouter#verified/halftone-dimension.png",
+    "ms": 2518,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud/openrouter#verified",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/openrouter#verified/dark.png",
+    "ms": 2603,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud/openrouter#verified",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/openrouter#verified/meadow-mist.png",
+    "ms": 3308,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/cloud/meadow-mist.png",
+    "ms": 3488,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "chat/usage",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/chat/usage/dark.png",
+    "ms": 1263,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  },
+  {
+    "name": "chat/usage",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/chat/usage/midnight.png",
+    "ms": 1333,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  },
+  {
+    "name": "chat/usage",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/chat/usage/creme.png",
+    "ms": 1343,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/usage/light.png",
+    "ms": 1403,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/usage/midnight.png",
+    "ms": 1421,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/usage/creme.png",
+    "ms": 1631,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "chat/usage",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/chat/usage/halftone-dimension.png",
+    "ms": 1672,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/usage/halftone-dimension.png",
+    "ms": 2128,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/usage/dark.png",
+    "ms": 2356,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "chat/usage",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/chat/usage/meadow-mist.png",
+    "ms": 2373,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  },
+  {
+    "name": "chat/usage",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/chat/usage/light.png",
+    "ms": 2483,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/after/settings/assistant/usage/meadow-mist.png",
+    "ms": 3501,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  }
+]

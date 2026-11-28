@@ -10,12 +10,12 @@ created: 2026-10-15
 summary: The model picker can be empty on a new or second device, and its rows don't say how fast, costly or smart a model is.
 area: Chat
 side: screens
-work: session/model-picker-tags, session/google-connections-planning, session/custom-providers-catalog
+work: session/model-picker-tags
 vision: yours.model.tags, yours.model.any
 ---
 Progress
-Done: Custom providers shipped in youcoded#668 (92a6d9f): model lists for custom endpoints, Add-provider service list, Check for new models, key-check memory for every key type, model counts, 250K/32K unknown-context default, overflow recovery; key cards under OpenRouter with no heading. Spec/plan archived under docs/archive/.
-Next: Remaining on this card: speed/cost tags in the picker, and the model list being empty on new devices.
+Done: Custom model lists for your own AI providers, catalog refresh and key-check memory shipped in release 1.3.2 (youcoded PR 668). That work belongs on card 176. The picker no longer opens empty on a brand-new install: it shows Claude's built-in and suggested models (ModelPicker.tsx:130, commit be21fc1cb).
+Next: Build the speed/cost tags per the answered 2026-09-11 decks, now on master at docs/active/design/2026-09-11-model-picker-tags/ (Destin 2026-11-10: fold that design into this card; the old code branch was deleted, the backend facts map is docs/active/investigations/2026-09-11-model-facts-backend-map.md). Then the empty-picker-on-new-devices fault.
 Blocked: nothing recorded.
 
 Chats

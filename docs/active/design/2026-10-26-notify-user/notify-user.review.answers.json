@@ -1,0 +1,38 @@
+{
+ "deck": "notify-user-review",
+ "started": "2026-10-26T09:00:03.296Z",
+ "submitted": "2026-10-26T09:02:16Z",
+ "cur": 3,
+ "answers": {
+  "N-1": {
+   "note": "i think it should disappear when i send a message or if i hover over the message containing the notification.  the blue outline should go around the whole message i think, i want to see a few different styles/alternatives",
+   "t": 1793005312159,
+   "v": "other",
+   "seconds": 109,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-2": {
+   "v": "yes",
+   "t": 1793005325159,
+   "note": "should be at top of screen",
+   "seconds": 13,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-3": {
+   "v": "yes",
+   "t": 1793005330981,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-4": {
+   "v": "yes",
+   "t": 1793005335277,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

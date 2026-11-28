@@ -1,0 +1,45 @@
+{
+  "title": "Two new heads-ups about signing out",
+  "key": "sign-out-notices-review",
+  "out": "sign-out-notices.review.html",
+  "images": "images/sign-out-notices.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings, Remote access, Devices",
+      "crop": "settings/remote#devices-expired",
+      "headline": "A phone that was signed out for going unused stays in the list, greyed out, saying why.",
+      "changed": "A phone that does not connect for 90 days is signed out of your computer. Before, its row simply vanished. Now it stays, faded, with the line Signed out after 90 days unused, and a Remove button.",
+      "notice": "You can see which phone was signed out and why. To use it again, pair it with Add device. Remove clears the row with no questions asked. A phone you removed yourself still disappears, as before.",
+      "risk": "A phone that signs in again after being signed out appears as a new row, so the old faded row sits beside it until you press Remove.",
+      "highlight": "panel"
+    },
+    {
+      "id": "S-2",
+      "surface": "Anywhere in the app",
+      "path": "A small box above the message box, with a Sign in again button",
+      "crop": "dev/toast#signed-out",
+      "headline": "If the app signs you out of your YouCoded account by itself, a small notice tells you and offers to sign you back in.",
+      "changed": "Before, the sign-out happened silently and friends saw you as offline with no word to you. Now one notice appears: You were signed out of your YouCoded account. Friends see you as offline until you sign in again. It has a Sign in again button.",
+      "notice": "The notice appears once, stays about 30 seconds without blocking anything, and goes away on its own or when you press the button. It never appears when you sign out yourself, and a phone browser never sees it.",
+      "risk": "If you are away from the screen for more than 30 seconds you will miss the notice; the Friends panel still shows you as signed out.",
+      "highlight": {
+        "box": [
+          24,
+          86,
+          52,
+          8
+        ]
+      }
+    }
+  ]
+}

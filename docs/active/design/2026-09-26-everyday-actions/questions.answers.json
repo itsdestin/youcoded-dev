@@ -1,0 +1,94 @@
+{
+ "deck": "everyday-actions-questions",
+ "started": "2026-09-26T20:40:00.757Z",
+ "submitted": "2026-09-26T20:57:16Z",
+ "cur": 3,
+ "answers": {
+  "Q-idea": {
+   "v": "yes",
+   "t": 1790455431336,
+   "note": "i want to think more about this though. which tools would you propose? what use cases actually exist for each? which provide the highest value/effort ratio? what will the assistant/user actually need for all potential use cases to be covered? ",
+   "seconds": 77,
+   "theme": "meadow-mist"
+  },
+  "Q-actions": {
+   "v": "picks",
+   "picks": [
+    "calendar",
+    "email",
+    "contacts",
+    "files",
+    "tasks"
+   ],
+   "t": 1790455431336,
+   "note": "i think for calendar and reminders/todos, i would also like to build YouCoded Pages that offer to fully integrate the information from various providers for users. this can be a later follow up tho. i think this would help for users who use mac and windows or something, cuz saying \"add to calendar\" could use the youcoded native calendar as a holding space until the user launches youcoded on the mac, at which point we could complete the request and sync the calendars.",
+   "seconds": 77,
+   "theme": "meadow-mist"
+  },
+  "Q-many-accounts": {
+   "v": "pick",
+   "pick": "combine",
+   "t": 1790455431336,
+   "seconds": 77,
+   "theme": "meadow-mist"
+  },
+  "Q-confirm": {
+   "note": "i think we should have separate draft/finalize actions for some of these, so the assistant can do as much as possible before requiring user permission. i think these permissions should be configurable in settings, but default to more restrictive (no auto send or create). but a user could allow their assistant to autonomously reply to emails if they so choose. ",
+   "t": 1790455634116,
+   "v": "other",
+   "seconds": 102,
+   "theme": "meadow-mist"
+  },
+  "Q-delete": {
+   "v": "yes",
+   "t": 1790455634116,
+   "note": "but with a LOT of warnings and such on first use. it should be apparent to users that 1) AI generally may make mistakes, 2) small/open models especially may make mistakes when given full autonomy, 3) youcoded does not take responsibility for them fucking their shit",
+   "seconds": 102,
+   "theme": "meadow-mist"
+  },
+  "Q-own-google": {
+   "v": "yes",
+   "t": 1790456137700,
+   "note": "want to understand a bit better what this actually would look like and require in practice.",
+   "seconds": 168,
+   "theme": "meadow-mist"
+  },
+  "Q-gmail-read": {
+   "v": "other",
+   "t": 1790456137700,
+   "note": "i think option a, but can you explain C further? what is that exactly?",
+   "seconds": 168,
+   "theme": "meadow-mist"
+  },
+  "Q-providers": {
+   "v": "picks",
+   "picks": [
+    "google",
+    "microsoft",
+    "icloud"
+   ],
+   "t": 1790456137700,
+   "seconds": 168,
+   "theme": "meadow-mist"
+  },
+  "Q-old-plugin": {
+   "v": "other",
+   "t": 1790456235069,
+   "note": "unsure. depending on functional differences between this new buildout and the old add-ons, we may want to keep them in some capacity? but may be fine to delete if they don't really add any value after our changes.",
+   "seconds": 32,
+   "theme": "meadow-mist"
+  },
+  "S-long-tail": {
+   "v": "yes",
+   "t": 1790456235069,
+   "seconds": 32,
+   "theme": "meadow-mist"
+  },
+  "S-everywhere": {
+   "v": "yes",
+   "t": 1790456235069,
+   "seconds": 32,
+   "theme": "meadow-mist"
+  }
+ }
+}

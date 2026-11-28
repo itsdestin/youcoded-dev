@@ -18,7 +18,7 @@ paths:
   - "**/desktop/src/renderer/components/buddy/**"
   - "**/desktop/src/renderer/components/mascot/**"
   - "**/desktop/src/renderer/styles/buddy.css"
-last_verified: 2026-10-30
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/shared/buddy-geometry.ts
     contains: "BAR_TOOLTIP_ROOM"
@@ -52,7 +52,7 @@ Geometry is pure (`shared/buddy-geometry.ts`); windows belong to `BuddyWindowMan
 ## Group layout
 - **The mascot/chat/bar move as one rigid group, and the CHAT's fit constrains the MASCOT's position** — not the reverse. `computeGroupLayout` is a fixed point: chat x is mascot x plus a constant, so keeping the chat onscreen pins the mascot's x; where neither above nor below fits, the chat pins to the work-area edge and the mascot is pushed to meet it. **Never clamp a buddy window independently.**
 - **That can shove the mascot off his edge, so returning to `peeking` must re-flush him** — `peeking` is positioned-flush only when `moveMascot`'s drag-peek enters it; `syncEngagement` → `reconcilePeekPosition()` glides him back. Every engage/disengage path keeps it.
-- **Gaps are measured to the ARTWORK, not the window edge** — the ink sits inside 5/30 headroom above and 2/30 below, so equal gaps look lopsided. `mascotInkRect` + `MASCOT_INK_*_INSET` carry it; the bar's bottom is level with his feet.
+- **Gaps are measured to the ARTWORK, not the window edge** — the ink sits inside 5/30 headroom above and 4/30 below, so equal gaps look lopsided. `mascotInkRect` + `MASCOT_INK_*_INSET` carry it; the bar's bottom is level with his feet.
 - **Mascot motion is transforms inside fixed-size windows; the ONLY window-bounds animation is the edge-snap glide.** The side-peek lean MUST live on its own inner element — CSS resolves `rotate` BEFORE `transform`, so combining them swings the body out of frame.
 
 ## Rig SVGs

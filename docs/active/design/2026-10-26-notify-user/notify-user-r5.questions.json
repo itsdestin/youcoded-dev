@@ -1,0 +1,88 @@
+{
+  "title": "Notifications: red for every block, and letting the assistant decide \"ready\"",
+  "key": "notify-user-r5-questions",
+  "out": "notify-user-r5.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1", "words": true,
+      "surface": "Status lights", "path": "The light on each conversation, on the computer and on your phone",
+      "headline": "When the assistant's browser asks you something, how should your phone show it?",
+      "today": "When the browser asks permission (visit a site, buy, send, sign in), the conversation's light stays green, and your phone shows nothing at all; after 90 seconds the browser gives up.",
+      "problem": "You think the assistant is busy while it is actually waiting on you. On the phone you can't even answer: the browser runs on the computer.",
+      "proposal": "On the computer it turns red with the usual chime. The question is the phone.",
+      "options": [
+        { "id": "red-plus-note", "label": "Red, plus a note", "recommended": true,
+          "pros": ["You learn it's waiting wherever you are.", "The note tells you why you can't answer it there."],
+          "cons": ["A red you can't act on from the phone."] },
+        { "id": "computer-only", "label": "Red on the computer only",
+          "pros": ["The phone never shows red you can't act on."],
+          "cons": ["Away from the computer, you never find out; it times out."] }
+      ]
+    },
+    {
+      "id": "Q-2", "words": true,
+      "surface": "Status lights", "path": "Claude Code conversations",
+      "headline": "Should Claude Code's on-screen dialogs turn the light red?",
+      "today": "Dialogs like \"Usage limit reached\", \"Message flagged\", \"Switch model?\" and the first-run setup questions show as cards in the chat, but the light stays green or turns amber.",
+      "problem": "The conversation is stopped until you answer, but nothing says so.",
+      "proposal": "Treat any unanswered dialog card like a question card: red and the chime, on both screens. Pop-ups the app can't read (it already blocks sending while one is up) count too.",
+      "options": [
+        { "id": "all-red", "label": "All of them red", "recommended": true,
+          "pros": ["Red always means \"it's waiting on you\", no exceptions to learn."],
+          "cons": ["\"Usage limit reached\" goes red even when the only answer is waiting."] },
+        { "id": "choices-only", "label": "Only ones with a real choice",
+          "pros": ["Red only when you can actually decide something."],
+          "cons": ["Usage limit and similar stay green, so you may not notice it stopped.", "A rule you'd have to remember."] }
+      ]
+    },
+    {
+      "id": "Q-3", "words": true,
+      "surface": "Status lights", "path": "Conversations with cloud models and big local models",
+      "headline": "If the assistant finishes while you're away and does NOT notify you, what should its light show?",
+      "today": "The app turns it blue (\"Response ready\") on its own whenever a reply finishes while you're looking elsewhere.",
+      "problem": "You want the assistant, not the app, to decide what is worth your attention. But if it forgets, something has to show.",
+      "proposal": "Small local models keep today's automatic blue either way. This is about every other session.",
+      "options": [
+        { "id": "gray", "label": "Gray: trust the assistant",
+          "pros": ["Blue only ever means the assistant has something for you.", "No false alarms when it stops just to wait on its helpers."],
+          "cons": ["When it forgets, you won't know it finished until you look."] },
+        { "id": "quiet-finished", "label": "A quiet \"Finished\"", "recommended": true,
+          "pros": ["Nothing is ever lost: a forgotten one still says it stopped.", "Blue still only means \"the assistant flagged this\"."],
+          "cons": ["One more state to tell apart (a gray light with the word Finished)."] }
+      ]
+    },
+    {
+      "id": "Q-4", "words": true,
+      "surface": "Testing", "path": "How we find out whether the assistant notifies reliably",
+      "headline": "How should we switch cloud-model sessions over?",
+      "today": "Nothing is switched yet; your real app has the old automatic blue.",
+      "problem": "We don't yet know how often each assistant forgets to notify, or notifies too much.",
+      "proposal": "Every option starts with about 20 scripted conversations in the test copy (free, normal usage on your account).",
+      "options": [
+        { "id": "switch-and-log", "label": "Switch, and keep score", "recommended": true,
+          "pros": ["You feel the real thing right away.", "A hidden log compares it with the old behaviour on every reply, so after a week we have numbers."],
+          "cons": ["For that week, a forgotten notification really is missed (unless Q-3 is \"Finished\")."] },
+        { "id": "shadow-first", "label": "Score first, switch later",
+          "pros": ["Nothing changes for you until the numbers are in."],
+          "cons": ["You don't feel the new behaviour for a week.", "Assistants notify the same either way, so the score is just as good."] }
+      ]
+    },
+    {
+      "id": "Q-5", "words": true,
+      "surface": "Testing", "path": "The harness evaluator, which runs real assistants against scripted cases",
+      "headline": "Run the paid test across several cloud models?",
+      "today": "The evaluator can run the same ten situations (finished while away, checkpoint, waiting on helpers, quick answer…) against Claude, GPT, Gemini and a big local model, three times each, and score misses, noise and label quality.",
+      "problem": "Your own week of use mostly covers the models you use; a model you don't use could be bad at this and we'd never know.",
+      "proposal": "A free practice run first shows the exact cost. The real run stops at a spending limit you set, and needs a key file you create for it.",
+      "options": [
+        { "id": "yes-capped", "label": "Yes, with a cap",
+          "pros": ["Numbers for every model before anyone else's app depends on it."],
+          "cons": ["Costs money (estimate shown before it runs)."] },
+        { "id": "later", "label": "Not now", "recommended": true,
+          "pros": ["Free; your week of use answers it for the models you use."],
+          "cons": ["Other models go untested until someone reports a problem."] }
+      ]
+    }
+  ]
+}

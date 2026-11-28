@@ -1,0 +1,111 @@
+diff --git a/scripts/close-out.sh b/scripts/close-out.sh
+index d86886cad..93a51eb18 100755
+--- a/scripts/close-out.sh
++++ b/scripts/close-out.sh
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env bash
+-# Close-out report for a merged branch. READ-ONLY — it changes nothing, and it
+-# ALWAYS EXITS 0. It is advisory; do not gate anything on its exit code.
++# Advisory close-out report for a branch. Refreshes local Git metadata
++# (fetch/prune); does not edit working files, merge, push, or delete local
++# branches/worktrees. ALWAYS EXITS 0; do not gate anything on its exit code.
+ #
+ # Usage: bash scripts/close-out.sh <branch> [<repo-dir>]
+ #   e.g. bash scripts/close-out.sh feat/games-arcade-shell youcoded
+@@ -47,10 +48,17 @@ echo "Close-out: $BRANCH in $REPO"
+ echo
+ echo "Git"
+ 
+-git -C "$REPO_DIR" fetch origin --quiet 2>/dev/null
++# WHY: cached or deleted remote aliases cannot prove a current server backup.
++# Keep the report-only exit convention, but never recommend cleanup offline.
++if ! git -C "$REPO_DIR" fetch origin --prune --quiet 2>/dev/null; then
++  fail "cannot refresh origin — remote ancestry and backup status are unverified"
++  exit 0
++fi
+ 
+-SHA=$(git -C "$REPO_DIR" rev-parse --verify -q "origin/$BRANCH" 2>/dev/null \
+-   || git -C "$REPO_DIR" rev-parse --verify -q "$BRANCH" 2>/dev/null || true)
++# WHY: assess the current local tip, not an older same-name remote ref that
++# could hide newer unpushed work. A renamed remote backup is handled by ancestry.
++SHA=$(git -C "$REPO_DIR" rev-parse --verify -q "$BRANCH" 2>/dev/null \
++   || git -C "$REPO_DIR" rev-parse --verify -q "origin/$BRANCH" 2>/dev/null || true)
+ BASE=$(git -C "$REPO_DIR" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
+ 
+ # The DEFAULT BRANCH is never a close-out target, and saying so has to come before
+@@ -251,15 +259,15 @@ if [[ "$MERGED" == yes ]]; then
+   # is the dry-run tool that reports which ones are actually safe to delete.
+   note "other worktrees: node scripts/prune-worktrees.mjs (dry run; --apply <key> needs Destin naming the exact ones)"
+ else
+-  if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+-    pass "pushed to origin — a reviewer can see it"
++  if [[ -n "$SHA" ]] && [[ -n $(git -C "$REPO_DIR" for-each-ref --contains "$SHA" --format='%(refname:short)' refs/remotes/origin 2>/dev/null) ]]; then
++    pass "pushed to origin — a reviewer can see it (remote history contains the local tip)"
+   elif [[ -n "${ELSEWHERE:-}" ]]; then
+     # The line above already said which repo it is in. Repeating "never pushed"
+     # here would contradict it, and that contradiction is what made the wrong
+     # answer convincing in the first place.
+     note "not asking whether it was pushed — it is not this repo's branch"
+   else
+-    fail "never pushed — nobody else can review this branch yet"
++    fail "local tip is not backed up on origin — a same-name branch may contain only older work"
+   fi
+ fi
+ 
+diff --git a/scripts/ui-review/tests/close-out-wrong-repo.test.sh b/scripts/ui-review/tests/close-out-wrong-repo.test.sh
+index 888e2d542..d94831cab 100755
+--- a/scripts/ui-review/tests/close-out-wrong-repo.test.sh
++++ b/scripts/ui-review/tests/close-out-wrong-repo.test.sh
+@@ -64,4 +64,51 @@ missing=$(run definitely-no-such-branch-zz9)
+ grep -q "never pushed, or the name is wrong" <<<"$missing" || {
+   echo "lost the real never-pushed warning"; echo "$missing"; exit 1; }
+ 
+-echo "close-out wrong-repo guard: ok"
++# 4. A local branch may be backed up under a different remote name.
++# The app release keeps its original session name but pushes a 1.3.1 candidate alias.
++git -C "$TMP/ws/youcoded" checkout -q -b session/release-source
++echo alias >> "$TMP/ws/youcoded/a.txt"
++git -C "$TMP/ws/youcoded" commit -qam alias-work
++git -C "$TMP/ws/youcoded" push -q origin HEAD:refs/heads/release/candidate
++alias=$(run session/release-source)
++grep -q 'pushed to origin' <<<"$alias" || {
++  echo 'did not recognize backup under a different remote branch name'; echo "$alias"; exit 1; }
++grep -q 'never pushed' <<<"$alias" && {
++  echo 'alias backup was falsely reported as lost'; echo "$alias"; exit 1; }
++
++# A deleted server alias must not survive as false evidence in cached refs.
++git -C "$TMP/ws/youcoded" config remote.origin.prune false
++git --git-dir="$TMP/ws/youcoded.git" update-ref -d refs/heads/release/candidate
++stale=$(run session/release-source)
++grep -q 'not backed up' <<<"$stale" || {
++  echo 'a deleted server alias was mistaken for a current backup'; echo "$stale"; exit 1; }
++
++# 5. An old same-name remote ref must not hide a newer, genuinely unpushed tip.
++git -C "$TMP/ws/youcoded" push -q origin HEAD:refs/heads/session/release-source
++echo newer >> "$TMP/ws/youcoded/a.txt"
++git -C "$TMP/ws/youcoded" commit -qam local-only-tip
++newer=$(run session/release-source)
++grep -q 'not backed up' <<<"$newer" || {
++  echo 'older remote tip hid local-only work'; echo "$newer"; exit 1; }
++
++# 6. Merging the older remote tip does not make newer local work safe to delete.
++git -C "$TMP/ws/youcoded" checkout -q master
++git -C "$TMP/ws/youcoded" merge -q --no-ff session/release-source~1 -m 'Merge already-pushed work'
++git -C "$TMP/ws/youcoded" push -q origin master
++git -C "$TMP/ws/youcoded" checkout -q session/release-source
++partial=$(run session/release-source)
++grep -q 'PRE-MERGE' <<<"$partial" || {
++  echo 'an older merged remote tip hid newer local work'; echo "$partial"; exit 1; }
++grep -q 'not backed up' <<<"$partial" || {
++  echo 'newer local work was treated as backed up'; echo "$partial"; exit 1; }
++
++# 7. An unavailable origin cannot justify a current backup or cleanup verdict.
++mv "$TMP/ws/youcoded.git" "$TMP/ws/youcoded.offline.git"
++offline=$(run session/release-source)
++grep -q 'remote ancestry and backup status are unverified' <<<"$offline" || {
++  echo 'an unavailable origin did not produce an explicit unknown verdict'; echo "$offline"; exit 1; }
++if grep -q 'pushed to origin\|local branch still exists' <<<"$offline"; then
++  echo 'an offline report claimed a backup or recommended branch deletion'; echo "$offline"; exit 1
++fi
++
++echo "close-out wrong-repo and remote-alias guards: ok"

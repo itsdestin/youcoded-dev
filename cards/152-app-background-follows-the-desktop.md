@@ -2,6 +2,7 @@
 id: 152
 title: App background follows the desktop wallpaper
 stage: explore
+priority: P3
 tags: themes, feature
 vision: yours.look.finetune
 branch: 152-app-background-follows-the-desktop

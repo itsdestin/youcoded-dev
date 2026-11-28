@@ -2,6 +2,7 @@
 id: 208
 title: Move Destin's 5 roundup comments to the outside-file store after the #207 update
 stage: planning
+priority: P3
 tags: doc-comments, housekeeping
 related: 207
 branch: 208-move-destin-s-5-roundup
@@ -10,7 +11,7 @@ why: 5 comments on roundup-base-2026-10-27.md (a file outside youcoded-dev) were
 ---
 Progress
 Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Next: wait for a build that includes the outside-file comment change (it is not in any release yet; last release is v1.3.3 from 2026-10-23), or ask Destin to close the app and approve the move.
+Blocked: waiting on the app update (or a safe closed-app window) plus Destin's OK, because the move writes to his comment storage.
 
 Chats

@@ -4,7 +4,6 @@ title: Pages: the next phases and seven follow-ups
 stage: build
 priority: P2
 tags: other-features, misc, window-chrome, needs-repro, feature
-release: v1.3.2
 report: docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 branch: 90-youcoded-pages-let-people-create
 roadmap: other-features: YouCoded Pages: let people create and install their own nati
@@ -16,17 +15,16 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: Steps 1, 1b, 2 and 3 built on session/90-pages-finish and tried by Destin: step 3 = each page's own assistant chat, earlier chats, versions with Put back (2026-11-05, 'step 3 looks good'). Main-chat scroll jump under load found and fixed on the branch. Not on master yet.
-Next: Step 4: assistants and automations (page buttons running the assistant in the background with a fixed allowed list, scheduled runs, spending limits; card #61 joins). Open question first: what an unattended run does when it needs to ask.
-Blocked: none
+Done: Step 4 (automations) built on session/90-pages-finish: runner, both engines, page button, propose from chat, real Delete page; reviewed and tried in a dev copy
+Next: When the app design kit (card 150) exists, rebuild the Pages kit from its approved examples and reusable pieces, so Page guidance is tied to the real app UI (Destin, design-guidance deck, 2026-11-18).
+Blocked: step 4 build waits on that deck.
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
+- 2026-11-09 session/90-pages-finish: chat started
 - 2026-11-06 session/90-pages-finish: chat started
 - 2026-10-24 session/90-pages-finish: chat started
-- 2026-10-24 session/90-pages-finish: chat started
-- 2026-10-19 session/90-work-board-loading: chat started
 - 2026-10-19 session/90-work-board-loading: chat started
 - 2026-10-19 session/page-custom-icons: Shipped purpose-designed Page icons: app/source and live embed in youcoded#645 (f1d11a4c9), Page Builder 0.3.0 in wecoded-marketplace#111 with successful registry rebuild. Public browser verified the pinned Home house; public skill source requires new custom artwork. Approved I-1/I-2; final local verifier passed 4,462 related tests, all 403 screens, types/lints/knip/invariants/journeys; required app Linux/Android and plugin CI passed. Real Home manifest already has the approved artwork with a private backup; installed older app keeps its fallback until updated. No app release or installed-plugin mutation. This icon subtask is complete; leave other #90 follow-ups open.
 - 2026-10-19 session/page-custom-icons: Custom Page icons implemented locally and visually approved (I-1/I-2). Page metadata now supports validated per-page vector artwork with legacy fallback; Home has the approved house in source/demo and icon-only metadata in its real manifest (older installed app displays fallback until updated). Page Builder 0.3.0 source requires a new purpose-designed icon for every new Page. Integrated verification passed 4,461 related tests plus all other gates; plugin reference/example checks passed. Repo changes are uncommitted and not published; no app release or installed-plugin update.

@@ -14,9 +14,9 @@ side: screens
 vision: chat.converse.local
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Landed 2026-11-13 (PR #747): Gemma download popup showing its licence (Gemma 4 is Apache 2.0).
+Next: Shared downloader part of this card not started.
+Blocked: Nothing recorded as blocking. Refactor is on hold by Destin's choice since 2026-09-18.
 
 Chats
 

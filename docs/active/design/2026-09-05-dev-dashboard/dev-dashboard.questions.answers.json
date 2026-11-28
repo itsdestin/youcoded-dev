@@ -1,0 +1,27 @@
+{
+ "answers": {
+  "build-shape": {
+   "pick": "Build it as a real YouCoded screen from the start, served on its own address"
+  },
+  "theme-source": {
+   "pick": "Follow your active theme fully \u2014 colours, shapes, wallpaper, blur"
+  },
+  "launch-scope": {
+   "pick": "Launch and track \u2014 each row shows Running or not, with a Stop button"
+  },
+  "launch-warning": {
+   "pick": "Click launches immediately \u2014 you clicked it, you expect a window"
+  },
+  "suite-set": {
+   "pick": "All of them, with the paid one clearly marked and asking to confirm the spend"
+  },
+  "output-view": {
+   "pick": "A verdict line, with the full output behind a 'show details' toggle"
+  },
+  "extras": {
+   "pick": "Status: is it saved, is it pushed, is it merged, would deleting it lose work",
+   "note": "for branches, i would like to be able to multi-select and hit a \"request cleanup\" button to start a new conversation with claude. fine if it just provides a copyable prompt for now"
+  }
+ },
+ "submitted": "2026-09-05T21:09:34Z"
+}

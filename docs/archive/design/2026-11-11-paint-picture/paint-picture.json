@@ -1,0 +1,22 @@
+{
+  "title": "Website: the new paint picture in the ideas strip",
+  "key": "paint-picture-review",
+  "out": "paint-picture.review.html",
+  "images": "images/paint-picture",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "theme": "fixed",
+  "themes": ["light"],
+  "crops": { "ideas": ["site", "ideas", "1340x330+100+350"] },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Website",
+      "path": "Bottom of youcoded.ai, the Ideas strip, third picture",
+      "crop": "ideas",
+      "headline": "The paint picture now shows a finished painting instead of a few thin outlines.",
+      "changed": "Only the third picture was replaced, with the one you chose. The other three and every caption are untouched.",
+      "notice": "Visitors see a painted landscape, which fits the caption about brushes.",
+      "risk": "The new picture has no page list down its left side; the trip picture beside it still has one."
+    }
+  ]
+}

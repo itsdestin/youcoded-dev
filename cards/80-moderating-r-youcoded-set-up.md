@@ -5,14 +5,13 @@ stage: explore
 priority: P3
 tags: operations, feature
 branch: 80-moderating-r-youcoded-set-up
-roadmap: operations: Moderating r/youcoded (set up 2026-09-10) is all by hand: De
 created: 2026-10-15
 summary: Destin approves posts and copies bug reports and ideas into the to-do list by hand; automate the repetitive parts.
 area: Release & business
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: Reddit's automatic rules are set up by hand (Sep 10). New bug, idea and theme posts get an automatic helper reply, and posts from brand-new accounts wait for Destin's approval. Not yet tested in real use.
+Next: Destin decides whether to automate more, such as copying reports into the to-do list.
 Blocked: nothing recorded.
 
 Chats

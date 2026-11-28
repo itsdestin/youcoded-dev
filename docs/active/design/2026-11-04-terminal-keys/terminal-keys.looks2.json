@@ -1,0 +1,45 @@
+{
+  "title": "Phone terminal keys — in-between looks",
+  "key": "terminal-keys-looks2",
+  "out": "terminal-keys.looks2.html",
+  "images": "images/terminal-keys.looks2",
+  "runs": {
+    "today": "runs-looks2/today"
+  },
+  "steps": [
+    {
+      "id": "L2-1",
+      "surface": "Terminal view on a phone",
+      "path": "The row of keys above the message box, and the up/down arrows on the right",
+      "headline": "Which in-between look should the terminal keys use?",
+      "notice": "Soft keys and Keys in a tray are the two new in-between looks. Raised keys and One strip are the two you asked to be between, shown again to compare. The row stays at five keys, as you answered.",
+      "risk": "Soft keys have no outline, so on very pale themes (Light, Crème) the tiles are only a shade darker than the background.",
+      "variants": [
+        {
+          "id": "raised",
+          "label": "Raised keys (A, as before)",
+          "crop": "chat/terminal#keys-raised@390x300+0+544",
+          "summary": "Each key is a filled card with a border. Shown again for comparison."
+        },
+        {
+          "id": "soft",
+          "label": "Soft keys (new)",
+          "crop": "chat/terminal#keys-soft@390x300+0+544",
+          "summary": "Separate keys like A, but each is a soft tinted tile with no border, closer to C's calm look."
+        },
+        {
+          "id": "tray",
+          "label": "Keys in a tray (new)",
+          "crop": "chat/terminal#keys-tray@390x300+0+544",
+          "summary": "C's single soft track, with A's raised keys sitting inside it, like a segmented switch."
+        },
+        {
+          "id": "strip",
+          "label": "One strip (C, as before)",
+          "crop": "chat/terminal#keys-strip@390x300+0+544",
+          "summary": "One soft track with plain labels. Shown again for comparison."
+        }
+      ]
+    }
+  ]
+}

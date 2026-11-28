@@ -1,0 +1,35 @@
+{
+ "deck": "model-picker-tags-review",
+ "started": "2026-09-11T18:10:39.907Z",
+ "submitted": "2026-09-11T18:13:22Z",
+ "cur": 3,
+ "answers": {
+  "L-1": {
+   "v": "pick",
+   "note": "the hover copy is too wordy/complex. simplify/concise/shorten",
+   "pick": "tinted",
+   "seconds": 119,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "sentence",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

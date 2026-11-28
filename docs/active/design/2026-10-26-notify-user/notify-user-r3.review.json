@@ -1,0 +1,33 @@
+{
+  "title": "Notifications, round 3: the tab with the message inside",
+  "key": "notify-user-r3-review",
+  "out": "notify-user-r3.review.html",
+  "images": "images/notify-user-r3.review",
+  "runs": {
+    "after": "runs-r3/after"
+  },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Chat",
+      "path": "A reply where the assistant flagged something for you",
+      "crop": "chat#notify",
+      "new": true,
+      "headline": "The tab on the reply's top edge now holds the label and the whole message.",
+      "changed": "You picked the tab look. The message moved out of the bottom of the reply and into the tab, under its label, so the reply opens with what the assistant wants you to know. The blue outline and glow around the reply are unchanged.",
+      "notice": "Once you send a message, click the reply, or rest your pointer on it, the blue goes: the outline disappears and the tab turns the reply's plain colour, with its words still in it.",
+      "risk": "A long message makes a tall tab at the top of the reply, pushing the reply's own text down."
+    },
+    {
+      "id": "R3-2",
+      "surface": "Chat",
+      "path": "The same reply, on a phone",
+      "crop": "chat#notify-phone",
+      "new": true,
+      "headline": "On a phone the tab wraps to the narrow width the same way.",
+      "changed": "Same tab, its message wrapping over several lines.",
+      "notice": "A tap on the reply clears the blue, since a phone has no pointer to rest.",
+      "risk": "On a phone the tab takes up more of the screen, about four lines here."
+    }
+  ]
+}

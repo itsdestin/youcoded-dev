@@ -1,0 +1,180 @@
+<!doctype html>
+<!-- Mock-ups of PROPOSED review-deck pieces, for the review-deck-rethink questions deck.
+     WHY a hand-drawn page: none of these exist yet; a picture lets Destin judge them before
+     anything is built. shoot.sh screenshots one <section> at a time via ?only=<id>. -->
+<meta charset="utf-8">
+<style>
+:root{--bg:#0b0e14;--panel:#161a22;--well:#0e1118;--inset:#1f232d;--edge:#2c313d;--fg:#e6e8ee;--fg2:#c3c7d1;--muted:#8a90a0;--yes:#4caf7a;--no:#e06c6c;--mark:#f5a623;--info:#6ea8fe}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "JetBrains Mono","Fira Code",ui-monospace,monospace;padding:20px;width:1120px}
+section.shot{display:none} section.shot.on{display:block}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px;margin:0 0 14px}
+.well{background:var(--well);border:1px solid var(--edge);border-radius:10px;padding:10px 12px}
+.opt{background:var(--inset);border:1px solid var(--edge);border-radius:10px;padding:10px 12px;margin-top:10px}
+.opt.on{border-color:var(--mark);background:#2a2618}
+h2{font-size:17px;font-weight:500;margin:4px 0 12px}
+h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;font-weight:500}
+h4{font-size:15px;margin:0 0 4px;font-weight:600}
+p{margin:0;color:var(--fg2)}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+.ok{color:var(--yes)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-top:12px}
+.btn{border:1px solid var(--edge);background:var(--well);color:var(--fg);border-radius:10px;padding:9px 14px;font:inherit;white-space:nowrap}
+.btn.yes{border-color:var(--yes);color:var(--yes)} .btn.no{border-color:var(--no);color:var(--no)}
+.btn.quiet{color:var(--fg2)} .btn.on{border-color:var(--mark);color:var(--mark)}
+.btn.primary{background:#aeb6c8;color:#10131a;border-color:#aeb6c8}
+.note{flex:1 1 240px;border:1px solid var(--edge);background:var(--well);border-radius:10px;padding:9px 12px;color:var(--muted)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.badge{font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--edge);border-radius:6px;padding:2px 6px;color:var(--fg2);margin-left:8px}
+.pro::before{content:"● ";color:var(--yes)} .con::before{content:"● ";color:var(--no)}
+.pro,.con{font-size:13px;color:var(--fg2);margin-top:4px}
+.checked{font-size:12px;color:var(--muted);margin-top:8px} .checked b{color:var(--yes);font-weight:500}
+.label{font-size:12px;color:var(--muted);margin:14px 0 6px}
+.shotbox{background:#11141b;border:1px solid var(--edge);border-radius:10px;height:150px;position:relative;overflow:hidden}
+.fakeapp{position:absolute;inset:10px;border-radius:8px;background:linear-gradient(#1a1e28,#151922);border:1px solid #262b36}
+.fakeapp i{position:absolute;background:#2b3140;border-radius:5px}
+.pin{position:absolute;width:24px;height:24px;border-radius:50%;background:var(--mark);color:#111;font-weight:700;display:grid;place-items:center;font-size:12px;box-shadow:0 0 0 3px rgba(245,166,35,.25)}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13px}
+.kv span:nth-child(odd){color:var(--muted)}
+.item{display:grid;grid-template-columns:230px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--edge)}
+.item:first-of-type{border-top:0}
+.mini{display:flex;gap:6px;margin-top:8px}
+.mini .btn{padding:5px 10px;font-size:12px}
+.quote{border-left:2px solid var(--mark);padding-left:10px;color:var(--fg2);font-style:italic;font-size:13px;margin-top:6px}
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;display:grid;grid-template-columns:26px 1fr auto;gap:10px;padding:8px 0;border-top:1px solid var(--edge);font-size:13px;color:var(--fg2);align-items:center}
+.steps li:first-child{border-top:0}
+.steps li::before{content:counter(s);width:22px;height:22px;border-radius:50%;border:1px solid var(--edge);display:grid;place-items:center;font-size:11px;color:var(--muted)}
+.toc{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.toc span{border:1px solid var(--edge);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--fg2)} .toc span.on{border-color:var(--mark);color:var(--mark)}
+</style>
+
+<!-- A. the answer row -->
+<section class="shot" id="answers">
+ <div class="card">
+  <div class="eyebrow"><span>Question 2 of 4</span></div>
+  <h2>How many blocks should the strip hold at once?</h2>
+  <div class="opt"><h4>A · One <span class="badge">Recommended</span></h4><p>The strip stays as it is today.</p></div>
+  <div class="opt"><h4>B · Two</h4><p>The newest and the one before it.</p></div>
+  <div class="label">None of those fit? One tap tells me exactly why:</div>
+  <div class="row" style="margin-top:0">
+   <span class="btn">Something else</span>
+   <span class="btn quiet">You decide</span>
+   <span class="btn quiet">I need more context</span>
+   <span class="btn on">That's not right</span>
+   <span class="note">Tell me what is wrong or out of date…</span>
+  </div>
+ </div>
+</section>
+
+<!-- B. the question card -->
+<section class="shot" id="question">
+ <div class="card">
+  <div class="eyebrow"><span>Question 3 of 6</span><span>·</span><span>How it looks</span><span class="ok">✓ answered</span></div>
+  <h2>Where should the "assistant is ready" notice appear?</h2>
+  <div class="shotbox" style="height:190px"><div class="fakeapp"><i style="left:14px;top:12px;width:120px;height:14px"></i><i style="left:14px;right:14px;top:40px;height:34px;background:#3a3320;border:1px solid var(--mark)"></i><i style="left:14px;right:160px;top:88px;height:60px"></i></div></div>
+  <div class="checked">Picture: the chat screen today, with the notice boxed.</div>
+  <div class="grid3" style="margin-top:12px">
+   <div class="well"><h3>Today</h3><p>The notice sits above the message box and stays until you click it.</p></div>
+   <div class="well"><h3>The problem</h3><p>It covers the last line of the reply you are reading.</p></div>
+   <div class="well"><h3>Proposal</h3><p>Move it to the top of the chat and let it fade when you type.</p></div>
+  </div>
+  <div class="checked"><b>✓ Checked today</b> — opened the chat screen in a test window and saw the notice cover the last line.</div>
+  <div class="grid2">
+   <div class="opt on"><h4>A · Top of the chat <span class="badge">Recommended</span></h4><div class="pro">Never covers what you are reading.</div><div class="con">Easier to miss on a tall window.</div></div>
+   <div class="opt"><h4>B · Leave it where it is</h4><div class="pro">Nothing changes for you.</div><div class="con">Still covers the last line.</div></div>
+  </div>
+ </div>
+</section>
+
+<!-- C. the cover -->
+<section class="shot" id="cover">
+ <div class="card">
+  <div class="eyebrow"><span>Before you start</span></div>
+  <h2>Saved searches — the design questions</h2>
+  <div class="kv">
+   <span>What this is</span><span>The choices about how saved searches look and behave, before anything is built.</span>
+   <span>What I need</span><span>9 decisions on 3 pages. About 6 minutes.</span>
+   <span>What you'll see</span><span>5 pictures of the search box; 4 written questions.</span>
+   <span>Already decided</span><span>4 small calls I made for you — listed on the last page; change any of them.</span>
+   <span>What happens next</span><span>I draw the design you picked and show it to you. Nothing is built from this deck alone.</span>
+   <span>Facts checked</span><span><span class="ok">✓</span> Every "Today" in this deck was checked against the app on 9 Nov.</span>
+  </div>
+  <div class="row"><span class="btn primary">Start ›</span></div>
+ </div>
+</section>
+
+<!-- D. the walkthrough that replaces the contract -->
+<section class="shot" id="walkthrough">
+ <div class="toc"><span>1 · What this is for</span><span class="on">2 · Every screen</span><span>3 · Behind the scenes</span><span>4 · Calls I made for you</span><span>5 · How it is tested</span><span>6 · What is left</span></div>
+ <div class="card">
+  <div class="eyebrow"><span>Screen 2 of 5</span><span>·</span><span>The saved list under the search box</span></div>
+  <div class="item">
+   <div><div class="shotbox"><div class="fakeapp"><i style="left:12px;right:12px;top:10px;height:22px"></i><i style="left:12px;right:12px;top:40px;height:16px;background:#3a3320"></i><i style="left:12px;right:12px;top:62px;height:16px"></i><i style="left:12px;right:12px;top:84px;height:16px"></i></div></div><div class="checked">Picture of the built screen · click to enlarge</div></div>
+   <div>
+    <h3>What you decided</h3>
+    <p>Saved searches sit under the search box, three at most.</p>
+    <div class="quote">"keep it to three" — your note, design questions, 2 Nov</div>
+    <h3 style="margin-top:12px">What it does</h3>
+    <p>Pressing one runs that search again straight away. Saving a fourth pushes the oldest out.</p>
+    <div class="mini"><span class="btn yes">Looks right</span><span class="btn">Change this</span><span class="btn quiet">Ask about this</span></div>
+   </div>
+  </div>
+ </div>
+ <div class="card">
+  <div class="eyebrow"><span>Behind the scenes</span><span>·</span><span>What happens when you save a search</span></div>
+  <ol class="steps">
+   <li><span>You press Save. The words you searched for are written to a small file on this computer.</span><span class="btn" style="padding:4px 9px;font-size:12px">Change</span></li>
+   <li><span>If you are signed in to sync, the file is copied to your other devices within a minute.</span><span class="btn" style="padding:4px 9px;font-size:12px">Change</span></li>
+   <li><span>If the copy fails, the search still saves here, and a small warning shows in the list.</span><span class="btn on" style="padding:4px 9px;font-size:12px">Changed ✎</span></li>
+  </ol>
+ </div>
+</section>
+
+<!-- E. decided for you -->
+<section class="shot" id="decided">
+ <div class="card">
+  <div class="eyebrow"><span>Calls I made for you</span></div>
+  <h2>Four small things I decided without asking. Change any of them.</h2>
+  <ol class="steps">
+   <li><span><b style="color:var(--fg)">A saved search keeps its name if you edit it.</b><br>Why: renaming on every edit would lose your labels.</span><span class="btn yes" style="padding:4px 9px;font-size:12px">Fine</span></li>
+   <li><span><b style="color:var(--fg)">The list is hidden while you are typing.</b><br>Why: it would cover the results as they arrive.</span><span class="btn yes" style="padding:4px 9px;font-size:12px">Fine</span></li>
+   <li><span><b style="color:var(--fg)">Deleting one asks "Are you sure?" first.</b><br>Why: the app asks before every other delete.</span><span class="btn on" style="padding:4px 9px;font-size:12px">Change this ✎</span></li>
+   <li><span><b style="color:var(--fg)">Saved searches are included in backups.</b><br>Why: everything else you save is.</span><span class="btn yes" style="padding:4px 9px;font-size:12px">Fine</span></li>
+  </ol>
+  <div class="row"><span class="note" style="color:var(--fg2)">#3: no need to ask, there is an undo already</span></div>
+ </div>
+</section>
+
+<!-- F. pin a comment on the picture -->
+<section class="shot" id="pins">
+ <div class="card">
+  <div class="eyebrow"><span>Step 4 of 9</span><span>·</span><span>Account screen</span></div>
+  <h2>Click anywhere on the picture to leave a comment on that exact spot.</h2>
+  <div class="grid2" style="grid-template-columns:1.5fr 1fr">
+   <div class="shotbox" style="height:260px"><div class="fakeapp"><i style="left:16px;top:14px;width:160px;height:16px"></i><i style="left:16px;right:16px;top:44px;height:56px"></i><i style="left:16px;right:16px;top:112px;height:56px"></i><i style="right:16px;bottom:14px;width:110px;height:28px;background:#5a2f2f"></i></div>
+    <span class="pin" style="left:150px;top:52px">1</span><span class="pin" style="right:60px;bottom:22px">2</span></div>
+   <div>
+    <div class="well" style="margin-bottom:8px"><h3><span style="color:var(--mark)">● 1</span> &nbsp;your comment</h3><p>too much copy here, cut it to one line</p></div>
+    <div class="well"><h3><span style="color:var(--mark)">● 2</span> &nbsp;your comment</h3><p>this should match the other delete buttons — second-level menu</p></div>
+    <div class="row"><span class="btn yes">Yes, keep it</span><span class="btn no on" style="border-color:var(--mark);color:var(--mark)">Fix my 2 comments</span></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- G. one link per feature -->
+<section class="shot" id="binder">
+ <div class="card">
+  <div class="eyebrow"><span>Saved searches</span><span>·</span><span>everything in one place</span></div>
+  <h2>One link for the whole feature. Each round is a tab, not a new deck.</h2>
+  <div class="toc"><span>✓ Design questions · 2 Nov</span><span>✓ Pictures, round 1 · 3 Nov</span><span>✓ Pictures, round 2 · 3 Nov</span><span class="on">● Walkthrough · waiting for you</span></div>
+  <div class="well"><h3>Since you last looked</h3><p>Round 2 fixed your 3 comments. 1 new question came up while building. Nothing else changed.</p></div>
+ </div>
+</section>
+
+<script>
+const id = new URLSearchParams(location.search).get('only');
+document.querySelectorAll('section.shot').forEach(s => s.classList.toggle('on', !id || s.id === id));
+</script>

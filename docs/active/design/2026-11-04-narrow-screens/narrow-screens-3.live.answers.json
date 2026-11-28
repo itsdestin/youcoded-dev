@@ -1,0 +1,33 @@
+{
+ "deck": "narrow-screens-live-3",
+ "started": "2026-11-05T09:37:29.594Z",
+ "submitted": "2026-11-05T09:41:41Z",
+ "cur": 2,
+ "answers": {
+  "L-1": {
+   "v": "pick",
+   "pick": "lights",
+   "t": 1793871514288,
+   "note": "but i think we can make it a bit prettier and clean up some of the dead space and improve alignement/centering. lights can probably fade away in expanded view",
+   "seconds": 65,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "other",
+   "t": 1793871630489,
+   "note": "for now it should stay today. but i want to keep a version of hub as a reference for the future full buildout of an alternative mobile mode.  ",
+   "seconds": 116,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "L-3": {
+   "note": "kinda? but the spacing is very weird. like, look at them compared to the journal/inbox/etc chips. they get too close to the edge i think",
+   "t": 1793871700156,
+   "v": "other",
+   "seconds": 70,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

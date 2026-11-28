@@ -1,0 +1,167 @@
+{
+ "deck": "work-inventory-2026-11-08",
+ "started": "2026-11-09T23:19:42.724Z",
+ "submitted": "2026-11-09T23:38:25Z",
+ "cur": 5,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1794266518812,
+   "note": "we should figure out why those \"finished\" session folders weren't removed. i think that's supposed to be mostly automated cleanup when a feature/branch is complete and merged?",
+   "seconds": 68,
+   "theme": "halftone-dimension"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1794266518812,
+   "seconds": 68,
+   "theme": "halftone-dimension"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "save-all",
+   "t": 1794266717478,
+   "seconds": 40,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "all",
+   "t": 1794266717478,
+   "note": "again, need to figure out why this cleanup wasn't carried out automatically.",
+   "seconds": 40,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "drop",
+   "t": 1794266717478,
+   "note": "just do a slightly deeper check on each to make sure there's nothing genuinely unique or useful/valuable that i might prefer to keep around",
+   "seconds": 40,
+   "theme": "halftone-dimension"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "do-all",
+   "t": 1794266717478,
+   "note": "this should also include slightly tightening our workspace instructions. the workspace may help me handle tangential or unrelated tasks, but files pertaining to unrelated tasks or one-off tests should be store elsewhere, not youcoded workspaces.",
+   "seconds": 40,
+   "theme": "halftone-dimension"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794266717478,
+   "seconds": 40,
+   "theme": "halftone-dimension"
+  },
+  "Q-6": {
+   "v": "picks",
+   "picks": [
+    "records",
+    "keychain",
+    "analytics-phones",
+    "crash-wording"
+   ],
+   "t": 1794266831319,
+   "note": "we should do a quick check tho just to ensure each of these 1) wasn't actually merged or superseded, 2) is actually complete and wont have any negative consequences or cause weird ux",
+   "seconds": 114,
+   "theme": "halftone-dimension"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1794267063074,
+   "note": "with the plans work, i think we very frequently revived this or at least started discussing it in more recent chats. i think we need to explore further to confirm what the actual current status of these are, whether all related sessions are accurately tied to this work, etc. i feel like some of this may be obsolete or superseded",
+   "seconds": 46,
+   "theme": "halftone-dimension"
+  },
+  "Q-8": {
+   "v": "other",
+   "t": 1794267063074,
+   "note": "unsure. probably should rebuild? but i think this got temporarily paused at least in part because i wasn't quite happy with the final ui, backend logic, or user flows and such, so i will want to more thoroughly explore the status of that work, where related sessions ended, etc, before we decide how exactly to proceed.",
+   "seconds": 46,
+   "theme": "halftone-dimension"
+  },
+  "Q-9": {
+   "v": "other",
+   "t": 1794267063074,
+   "note": "i feel like this definitely got rebased and merged in or something somehow? this came up again very recently and i remember being told it was never merged and deciding to rebuild/replace/merge it",
+   "seconds": 46,
+   "theme": "halftone-dimension"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "let-me-pick",
+   "t": 1794267063074,
+   "seconds": 46,
+   "theme": "halftone-dimension"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "here",
+   "t": 1794267063074,
+   "seconds": 46,
+   "theme": "halftone-dimension"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794267376574,
+   "note": "but we should like hand each card to its own haiku agent or something and very thoroughly explore/evaluate the current master and recent change history to verify claims accurately and comprehensively, instead of a single large session or handful only skimming. reading through this questions deck has already shown me that we missed quite a bit",
+   "seconds": 79,
+   "theme": "halftone-dimension"
+  },
+  "Q-13": {
+   "v": "picks",
+   "picks": [
+    "merge-dupes",
+    "retest"
+   ],
+   "t": 1794267376574,
+   "note": "i'm open to splitting/reorganzing your so-called \"grab bags\" as well, but only if the content is genuinely unrelated and best conpleted in different sessions/workstreams. my general thesis is that various changes that would impact the same code, ui/ux, user flows, etc, should mostly be grouped together into single cards so large supervisor agents can consider all changes, consequences, related items, etc together",
+   "seconds": 79,
+   "theme": "halftone-dimension"
+  },
+  "Q-14": {
+   "note": "i dont want to deal with approving all 55 though. just show me any major items you may be unceratin about and deal with the rest yourself",
+   "t": 1794267376574,
+   "v": "pick",
+   "pick": "yes",
+   "seconds": 79,
+   "theme": "halftone-dimension"
+  },
+  "Q-15": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794267376574,
+   "seconds": 79,
+   "theme": "halftone-dimension"
+  },
+  "Q-16": {
+   "note": "uhhhh wait what? kinda confused about what we're offering here. this sounds like a major change/proposal but i think i need mroe context",
+   "t": 1794267504449,
+   "v": "other",
+   "seconds": 33,
+   "theme": "halftone-dimension"
+  },
+  "Q-17": {
+   "note": "i think we just need to step back and discuss this whole page/proposal in chat before we get to a questions deck. ",
+   "t": 1794267504449,
+   "v": "other",
+   "seconds": 33,
+   "theme": "halftone-dimension"
+  },
+  "Q-18": {
+   "v": "skip",
+   "seconds": 33,
+   "theme": "halftone-dimension",
+   "t": 1794267504449
+  },
+  "Q-19": {
+   "v": "skip",
+   "seconds": 33,
+   "theme": "halftone-dimension",
+   "t": 1794267504449
+  }
+ }
+}

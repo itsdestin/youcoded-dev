@@ -1,41 +1,49 @@
 # Grader — the brief
 
-You fill in the verdicts for a signed contract, **after** the code reviewer's and UX tester's
-accepted findings have been fixed and folded in as rows. You are a fresh agent and not the
-implementing session, because a builder grading its own work is generous. You do not hunt for
-new problems — that was the reviewers' job. You tick a list, with evidence. Feature-flow
-design §7, §8e.
+You check, with proof, that **everything Destin asked for was built**. You are a fresh agent
+and not the implementing session, because a builder grading its own work is generous. You run
+**after** the build and the reviewers' findings are fixed, and **before** Destin sees the
+after-build walkthrough. You do not hunt for new problems (that was the reviewers' job) and you
+fix nothing. There is no contract: the answered before-build walkthrough is the list.
 
 ## Inputs
-- `<feature>.contract.json` and its folder (the deck specs it cites), the branch name, the
-  worktree path. You may read the code and run anything read-only.
+- The before-build walkthrough spec `<feature>.walkthrough.json` and its answers file
+  `<feature>.walkthrough.answers.json` (what he said, row by row), the branch, the built
+  worktree path, and the "also check" list, if any: comments he left on your row of the checks
+  menu. You may read the code and run anything read-only.
 
-## For every row
-- `mechanical` — run the named `guard` (a test file: `npx vitest run <path>` from
-  `youcoded/desktop`, or `python3 -m unittest` for a workspace test; a script: run it). The
-  verdict is its exit code. Evidence = the command and its last line. **Then read the test:**
-  if it exists but does not test the row's statement, the verdict is `fail` with evidence
-  saying what it tests instead — an existing guard is not a checked criterion.
-- `deck` — re-take the step's picture from the built branch, put it beside the approved one,
-  and say whether what was approved is what was built. Evidence = both paths. A named screen:
-  `node scripts/shoot/shoot.mjs <screen> --worktree <worktree>` (`--list` shows the names). A
-  moment reached by clicking (a hover, a result after a click): `node scripts/shoot/explore.mjs
-  start --worktree <worktree>`, then the steps — every step prints its picture's path.
-- `human` / `live-app` — no verdict; Destin answers these on the acceptance deck. Leave them
-  out of the verdicts file.
+## Which rows
+Every row of the before-walkthrough that quotes him (`decided`) or that he commented on
+(`changes` in the answers file), plus each hard rule he stated. Checks-menu rows (`result`
+run / skip) are not yours. A row he typed a change on means the build must follow his words,
+not the row's original wording.
 
-Never soften a fail into a pass because the difference "looks minor"; write the fail and let
-the acceptance deck carry it. Never skip a graded row: the deck refuses to build without it.
+## For every row, one of three verdicts
+- **built** — what the row says exists in the worktree and works.
+- **built differently** — it exists but not as written: say what is different and why (the
+  implementing session's reason, if you can find it; otherwise "reason not found").
+- **not built** — nothing implements it.
+
+Every verdict carries **proof**: a file path and line, a test name (run it; paste its last
+line; then read it — a test that exists but covers something else is no proof), or a
+screenshot path. Screens: `node scripts/shoot/shoot.mjs <screen> --worktree <worktree>` (`--list`
+names them), or for a state reached by clicking, `node scripts/shoot/explore.mjs start
+--worktree <worktree>` — every step prints its picture's path. Put it beside the approved drawing.
+
+Never soften "not built" into "built differently" because the gap looks small. Never skip a
+row. Anything on screen that is in no approved picture: list it as "new, not shown before".
+Do your "also check" items too and say what you found on each.
 
 ## Output
-Write `<feature>.contract.verdicts.json` beside the contract (same stem):
+Write `<feature>.walkthrough.grades.json` beside the spec:
 
 ```json
-{ "R1": { "verdict": "pass", "evidence": "npx vitest run youcoded/desktop/tests/x.test.ts — 4 passed" },
-  "R4": { "verdict": "fail", "evidence": "tests/y.test.ts covers the empty state only; the row is about overflow" } }
+{ "W-1/save":  { "verdict": "built", "proof": "desktop/src/x.tsx:88; vitest tests/x.test.ts — 4 passed" },
+  "W-1/size":  { "verdict": "built differently", "what": "star is 24px, not 32px", "why": "32px pushed the box wider than the phone", "proof": "shots/star.png" },
+  "W-2/menu":  { "verdict": "not built", "proof": "searched src/ for the menu; nothing references it" } }
 ```
 
-Then run `python3 scripts/ui-review/review-cards.py acceptance <feature>.contract.json` and
-paste its output. Finish with `bash scripts/verify.sh <worktree>`'s summary (desktop only —
-on a workspace-only branch run the tests the touched files' rules name and say so). Your reply is
-the verdicts file's path, the verify summary, and one line per `fail`. Do not fix anything.
+The implementing session turns each into a row of the after-build walkthrough (`"from":
+"<step>/<row>"`; a not-built row either gets built or is `"dropped": "<why>"`) and fills the
+"What changed while building" list from the "built differently" ones. Your reply: the file's
+path, then one line per row that is not "built". Do not fix anything.

@@ -1,0 +1,123 @@
+{
+  "title": "Phones and narrow windows — round 3",
+  "key": "narrow-screens-live-3",
+  "out": "narrow-screens-3.live.html",
+  "stage": "design",
+  "live": {
+    "worktree": "sessions/narrow-screen-proposals/youcoded",
+    "paneWidth": 390
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Top bar",
+      "path": "The strip across the top of a phone screen",
+      "headline": "Which name button do you want between the two pairs of buttons?",
+      "hint": "Each phone keeps your layout: ☰ and Projects on the left, + New session and the terminal switch on the right. Tap the session name in each.",
+      "risk": "The status lights show at most 12 other sessions. Being this small, they're for a glance (\"something's green or red\"), not for telling sessions apart; tap the name for the list.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640
+      },
+      "variants": [
+        {
+          "id": "pair",
+          "label": "Round 2's version",
+          "summary": "For comparison: the name in an outlined pill, a separate arrow, and a \"10\" count beside it.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "pair"
+          },
+          "app": "default"
+        },
+        {
+          "id": "plain",
+          "label": "One plain button",
+          "summary": "Your note: the status dot, the name and the arrow are one button with one shared highlight, no outline and no count. Tapping anywhere on it opens the list.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "plain"
+          },
+          "app": "default"
+        },
+        {
+          "id": "lights",
+          "label": "Plain + status lights",
+          "summary": "The same button, plus a row of tiny lights under the name, one per other open session, in each one's status colour (green working, red needs you, blue reply ready). Idle sessions are faint.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "lights"
+          },
+          "app": "default"
+        }
+      ]
+    },
+    {
+      "id": "L-2",
+      "surface": "☰ menu",
+      "path": "The ☰ button at the top left",
+      "headline": "What should ☰ open on a phone?",
+      "hint": "Tap ☰ at the top left of each phone. In the last one, tapping the session name still opens the plain session list.",
+      "risk": "In the everything panel, tapping a chat under Earlier opens the Resume page for now. The finished version would reopen that chat directly. The workbench's practice data has few past chats, so Earlier is short here.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today's small menu",
+          "summary": "☰ opens the small menu (Settings, Projects, Pages, Files, Games) under the button.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "plain"
+          },
+          "app": "default"
+        },
+        {
+          "id": "drawer",
+          "label": "Side drawer (round 2)",
+          "summary": "For comparison: the panel from round 2. Your open sessions, Resume / New session, then the places as a list.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "drawer"
+          },
+          "app": "default"
+        },
+        {
+          "id": "hub",
+          "label": "Everything panel",
+          "summary": "Your note: one panel from the left with a big New session button on top, your open sessions, your five most recent past chats with See all, and Games, Files, Pages, Projects and Settings as a row of buttons along the bottom.",
+          "params": {
+            "platform": "android",
+            "narrowTop": "hub"
+          },
+          "app": "default"
+        }
+      ]
+    },
+    {
+      "id": "L-3",
+      "surface": "Status pills",
+      "path": "The row of pills under the message box, on a phone browser connected to your computer",
+      "headline": "Do the pills match each other now?",
+      "hint": "Swipe the pill row under the message box sideways and tap a few.",
+      "changed": "Every pill now has the same height, corners, padding and text size, including the pencil at the end. Remote is just a small computer icon. Pills keep their colour only where it means something: the model's brand, the permission mode, a helper that needs you.",
+      "notice": "The row reads as one set instead of seven different shapes.",
+      "risk": "In this round the matching shapes are applied over the existing pills. The finished version would build every pill from one shared piece, so a new pill can't drift. The computer icon alone may not say \"connected to your computer\" to a new user. The words are in its hint, but a phone only shows hints on a long press.",
+      "live": {
+        "app": "default",
+        "paneWidth": 390,
+        "height": 640,
+        "params": {
+          "connection": "remote",
+          "narrowPills": "compact"
+        }
+      },
+      "yes": "Yes, this",
+      "no": "Not yet"
+    }
+  ]
+}

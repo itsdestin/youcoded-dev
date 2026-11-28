@@ -1,0 +1,103 @@
+{
+ "deck": "narrow-screens-questions",
+ "started": "2026-11-05T06:23:23.565Z",
+ "submitted": "2026-11-05T07:15:24Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "other",
+   "t": 1793862548993,
+   "note": "i'm kinda open to either a or c.  honeslty, at some point, i almost feel like i want the home page itself to be a fully configurable page where the user could choose between either style for the session switcher? i think claude/chatgpt/etc all offer the sidebar switcher with a settings button at the bottom? we could maybe build/offer both? but idk",
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1793862548993,
+   "note": "honestly not sure. i want to visualize some of these options better. i think in my mind we get like 2 buttons each on the left/right of the session name in the middle? but idk",
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1793862548993,
+   "note": "replace with a better styled always-on status bar chip.",
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1793862637533,
+   "note": "i could kinda work with any of these? i think i'd need to see/feel them better",
+   "seconds": 30,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1793862637533,
+   "note": "i think we can condense while losing less information. between a/c",
+   "seconds": 30,
+   "theme": "morning-rounds"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1793862637533,
+   "seconds": 30,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "scroll-row",
+   "t": 1793862807177,
+   "note": "and maybe much smaller truncated or icon-based versions for each pill for phone/narrow view?",
+   "seconds": 85,
+   "theme": "morning-rounds"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1793862807177,
+   "note": "i think behind a button could be good. unsure what i want that button to look like, but it can be similar to mic/paperclip in the input bar",
+   "seconds": 85,
+   "theme": "morning-rounds"
+  },
+  "Q-8": {
+   "v": "other",
+   "t": 1793862876434,
+   "note": "a different session is dealing with the message bubbles and such. not your problem",
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1793862876434,
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "S-3": {
+   "v": "other",
+   "t": 1793862876434,
+   "note": "uhhh idk. \"anything that appears on hover always shown\" sounds ill-considered...",
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "width",
+   "t": 1793862923191,
+   "seconds": 24,
+   "theme": "morning-rounds"
+  },
+  "Q-10": {
+   "t": 1793862923191,
+   "v": "picks",
+   "picks": [
+    "top-bar",
+    "session-list",
+    "pills"
+   ],
+   "note": "basically everything beside chat width",
+   "seconds": 24,
+   "theme": "morning-rounds"
+  }
+ }
+}

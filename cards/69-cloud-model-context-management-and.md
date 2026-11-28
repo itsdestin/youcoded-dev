@@ -15,9 +15,9 @@ platform: Desktop only
 vision: chat.harness.tokens, chat.harness.compaction
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: OpenRouter served-by record landed via app PR #750 (2026-11-13).
+Next: About two weeks after the release that carries it, re-run the measuring script to see whether cache misses line up with a change of serving company.
+Blocked: Nothing recorded. The ChatGPT routing-label branch and the Reuse-chip deck need confirming before they can be tracked.
 
 Chats
 

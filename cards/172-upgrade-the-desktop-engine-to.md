@@ -1,7 +1,7 @@
 ---
 id: 172
 title: Upgrade the desktop engine to prevent selection-layout crashes
-stage: explore
+stage: merged
 tags: desktop, bug, crash, release
 branch: 172-upgrade-the-desktop-engine-to
 created: 2026-10-19

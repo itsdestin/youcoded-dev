@@ -13,8 +13,8 @@ side: screens
 vision: yours.look.themes
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: Destin, overnight deck 2026-11-13 C-11: self-built theme previews should become a real captured picture, as its own approved feature later. C-10: publish the rebuilt theme list (wecoded-themes branch session/look-wording-batch, e2a5c52) when the release containing app PR #724 goes out.
+Next: File the real-preview feature card; publish the list at release time.
 Blocked: nothing recorded.
 
 See also #51: Both are about theme preview pictures being unreliable (51b in the marketplace, 130a for themes you build yourself), and Destin asked to fix the whole class.

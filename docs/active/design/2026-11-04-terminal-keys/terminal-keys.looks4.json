@@ -1,0 +1,33 @@
+{
+  "title": "Phone terminal keys — the tray, done properly",
+  "key": "terminal-keys-looks4",
+  "out": "terminal-keys.looks4.html",
+  "images": "images/terminal-keys.looks4",
+  "runs": {
+    "today": "runs-looks4/today"
+  },
+  "steps": [
+    {
+      "id": "L4-1",
+      "surface": "Terminal view on a phone",
+      "path": "The row of keys above the message box, and the up/down arrows on the right",
+      "headline": "The tray rebuilt so its corners match, next to plain chip keys",
+      "notice": "The keys now have the quick chips' own corner, and the tray's corner is exactly that plus the gap around the keys, so the two curves run side by side in every theme, including Halftone's rounder ones. There is now an even 4 px around and between the keys (it was 2 px, which made them look like they were touching the edge). Space is back as the seventh key, with ← → at the end.",
+      "risk": "The tray is now 40 px tall, 8 px taller than the quick chip row in chat view, so the message box sits a little higher in terminal view. The chip keys have no tray and stay at the quick chips' 32 px.",
+      "variants": [
+        {
+          "id": "tray",
+          "label": "Keys in a tray",
+          "crop": "chat/terminal#keys-tray@390x240+0+560",
+          "summary": "One soft track holding seven quick-chip-sized keys, corners nested."
+        },
+        {
+          "id": "chips",
+          "label": "Keys like quick chips",
+          "crop": "chat/terminal#keys-chips@390x240+0+560",
+          "summary": "No track: each key drawn the same way as a quick chip, so the chat and terminal rows look alike."
+        }
+      ]
+    }
+  ]
+}

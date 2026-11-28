@@ -1,0 +1,127 @@
+{
+ "deck": "wave-2-results-2026-11-12",
+ "started": "2026-11-12T09:46:02.967Z",
+ "submitted": "2026-11-12T10:01:37Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794476853299,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794476853299,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794476853299,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794476853299,
+   "seconds": 23,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "ask",
+   "t": 1794477066942,
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "versions",
+   "t": 1794477066942,
+   "note": "i think we should record this as something we may want to come back to in the future to kinda better resolve this or prevent it from occurring in the first place",
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "t": 1794477066942,
+   "pick": "leave",
+   "note": "we should eventually come back to this and walk through the ux/logic flows",
+   "seconds": 71,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "t": 1794477696308,
+   "note": "we should leave a card to come back to this",
+   "pick": "browser",
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "chip",
+   "t": 1794477696308,
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "picks",
+   "picks": [
+    "rightclick",
+    "recent",
+    "replace"
+   ],
+   "t": 1794477696308,
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "go",
+   "t": 1794477696308,
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "no",
+   "t": 1794477696308,
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-13": {
+   "v": "other",
+   "t": 1794477696308,
+   "note": "i think it should be a short confirmation popup after clicking download/continue, that offer a cancel/download buttons.",
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-14": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794477696308,
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-15": {
+   "v": "other",
+   "t": 1794477696308,
+   "note": "i think i want to more thoroughly investigate the initial chats and commit history relating to these. i thought i had some memory of doing work on this front already. i also would want to better understand how we would actually be testing",
+   "seconds": 70,
+   "theme": "midnight"
+  },
+  "Q-16": {
+   "v": "pick",
+   "pick": "review",
+   "t": 1794477696308,
+   "seconds": 70,
+   "theme": "midnight"
+  }
+ }
+}

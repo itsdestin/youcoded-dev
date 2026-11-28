@@ -1,0 +1,32 @@
+[
+  {
+    "name": "chat/xray",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/dev-xray-tools/docs/active/design/2026-10-04-dev-tools/runs2/after/chat/xray/halftone-dimension.png",
+    "ms": 1361,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat/xray",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/dev-xray-tools/docs/active/design/2026-10-04-dev-tools/runs2/after/chat/xray/meadow-mist.png",
+    "ms": 6726,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    }
+  }
+]

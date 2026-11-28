@@ -1,0 +1,68 @@
+{
+  "title": "YouCoded plan — active work and private planning",
+  "key": "master-plan-review",
+  "out": "master-plan.review.html",
+  "images": "images/master-plan.review",
+  "stage": "design",
+  "runs": {"before": "runs/final", "after": "runs/finished"},
+  "labels": {"before": "Earlier mockup", "after": "Candidate"},
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "1", "surface": "YouCoded plan", "path": "Pages → YouCoded plan → Active work",
+      "crop": "pages/page/page-master-plan",
+      "headline": "1. See current work, the next decision and recent progress at a glance.",
+      "changed": "Nested cards became a work list with clear Now and Next groups, owners, next steps and an attention column.",
+      "notice": "You can find what needs action without opening each planning document.",
+      "risk": "All records, people, dates and shipping statuses are fictional design data, not claims about repository progress."
+    },
+    {
+      "id": "2", "surface": "YouCoded plan", "path": "Active work → Edit item",
+      "crop": "pages/page/page-master-plan#edit", "runs": ["after"],
+      "headline": "2. Edit a work item through named fields rather than rewriting its plan.",
+      "changed": "Title, status, timing, owner, source and next step have separate fields with Save and Cancel.",
+      "notice": "A saved draft updates the private overview; detailed documents remain linked.",
+      "risk": "Edits live only in the sandbox frame and reset when it reloads; no files or backend records are written."
+    },
+    {
+      "id": "3", "surface": "YouCoded plan", "path": "Sources & history",
+      "crop": "pages/page/page-master-plan#history", "runs": ["after"],
+      "headline": "3. Follow dated reports back to their author and source.",
+      "changed": "History includes a build report, planning change, community issue and private request, each with a date and reporter.",
+      "notice": "Issue discussion remains in GitHub; private conversation requests are not automatically public reports.",
+      "risk": "Reports and issues are fictional; source buttons reveal local sample text rather than opening real documents or GitHub."
+    },
+    {
+      "id": "4", "surface": "YouCoded plan", "path": "Public changes",
+      "crop": "pages/page/page-master-plan#public", "runs": ["after"],
+      "headline": "4. Compare the public summary before approving each update.",
+      "changed": "Published and proposed text appear side by side, with a second confirmation before approval.",
+      "notice": "Only the listed summaries are reviewed; private notes and full documents stay out of the public view.",
+      "risk": "Approval changes local interface state only: there is no publication, network request or GitHub write."
+    },
+    {
+      "id": "5", "surface": "YouCoded plan", "path": "Folder access",
+      "crop": "pages/page/page-master-plan#access", "runs": ["after"],
+      "headline": "5. See the folder, computer and separate read, write and network permissions.",
+      "changed": "The remembered grant names its host and folder, offers Revoke, and keeps GitHub network access separate.",
+      "notice": "Choosing a folder shows an explicit confirmation with your read and write choices.",
+      "risk": "Folder choices, grants and revocation are interface demonstrations only; no actual permission or file access changes."
+    },
+    {
+      "id": "6", "surface": "YouCoded plan", "path": "Changes need review",
+      "crop": "pages/page/page-master-plan#exceptions", "runs": ["after"],
+      "headline": "6. Stop and review when the host, source or saved draft changes.",
+      "changed": "Dedicated states show a changed host, unavailable source history and competing next-step values.",
+      "notice": "A host grant cannot silently transfer to another computer; draft choices are shown before replacing a value.",
+      "risk": "These are fixture-only exception states, not real failure detection; conflict selection does not reconcile files."
+    },
+    {
+      "id": "7", "surface": "YouCoded plan", "path": "Vision",
+      "crop": "pages/page/page-master-plan#vision", "runs": ["after"],
+      "headline": "7. Keep long-term direction separate from scheduled work.",
+      "changed": "Vision explains ownership, provider choice and reusable tools, with device host selection marked as an open decision.",
+      "notice": "Future direction remains visible without making unscheduled ideas look like current commitments.",
+      "risk": "This direction is candidate copy; it is not a technical architecture or implementation promise."
+    }
+  ]
+}

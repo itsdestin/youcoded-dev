@@ -1,0 +1,47 @@
+{
+ "deck": "usage-stats-review",
+ "started": "2026-09-29T09:52:53.138Z",
+ "submitted": "2026-09-29T09:54:58Z",
+ "cur": 4,
+ "answers": {
+  "B-1": {
+   "note": "this ugly asf",
+   "t": 1790675591301,
+   "v": "other",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-1": {
+   "note": "this should be lower down, bottom of cloud providers. need to think a bit more about how token/usage/cost count periods overlap",
+   "t": 1790675669626,
+   "v": "pick",
+   "pick": "cloud-top",
+   "seconds": 78,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1": {
+   "v": "yes",
+   "t": 1790675683122,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "t": 1790675690252,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "chips-only",
+   "t": 1790675697853,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

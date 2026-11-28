@@ -10,39 +10,25 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
-work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane
+work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane, session/test-suite-rethink
 ---
 Progress
-Done: Hotfix lane merged: youcoded#686 (bug-fix releases own the last number; betas lead to the next feature release), youcoded-admin#19 (hotfix skill, major bugs only with Destin's consent), youcoded-dev#305 (docs; audit skips anchors in repos CI does not clone).
-Next: The rest of this card (faster test runs, build upkeep) is other sessions' work.
-Blocked: No blocker for the merged checkpoint. Five-minute cold/default/all-platform CI is not established; no paid runner, release/signing or branch-protection changes authorized.
+Done: Destin, 2026-11-10: test-speed experiments dropped. The two app changes that existed only on his computer were backed up (branch session/29-ci-fastpaths in the app repo, commits 6ad3d2b87 and a85342b9a); PR #272 closed; the 29-ci-fastpaths work folder removed. Both session/29-ci-fastpaths branches stay on GitHub as the backup.
+Next: Nothing for the experiments. The card's other ideas (a nightly rehearsal build; running one test file on one system) are still unbuilt.
+Blocked: 
 
 Chats
 - 2026-10-22 session/29-hotfix-lane: chat started
 - 2026-10-19 session/29-ci-followup-record: chat started
 - 2026-10-19 session/29-full-ci-five-minute: chat started
 - 2026-10-19 session/29-full-ci-source-probe: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
-- 2026-10-19 session/29-full-ci-source-probe: chat started
-- 2026-10-19 session/29-full-ci-five-minute: chat started
 - 2026-10-19 session/29-android-paired-bench: chat started
-- 2026-10-19 session/29-linux-ci-winner: chat started
 - 2026-10-19 session/29-linux-ci-winner: chat started
 - 2026-10-19 session/29-linux-build-bench: chat started
 - 2026-10-19 session/29-android-build-bench: chat started
 - 2026-10-18 session/29-android-build-bench: chat started
-- 2026-10-18 session/29-android-build-bench: chat started
-- 2026-10-18 session/29-linux-build-bench: chat started
 - 2026-10-18 session/29-linux-build-bench: chat started
 - 2026-10-18 session/29-ci-fastpaths: chat started
-- 2026-10-18 session/29-ci-fastpaths: chat started
-- 2026-10-18 session/29-ci-fastpaths: chat started
-- 2026-10-18 session/29-beta-counter-reset: chat started
 - 2026-10-18 session/29-beta-counter-reset: chat started
 - 2026-10-18 session/release-1-3-2: 1.3.1 preflight: cross-platform test repairs, exact reusable dependency source and Android source/notices pipeline; candidate branch only, no release.
 

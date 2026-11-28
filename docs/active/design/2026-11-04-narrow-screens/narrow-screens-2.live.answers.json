@@ -1,0 +1,48 @@
+{
+ "deck": "narrow-screens-live-2",
+ "started": "2026-11-05T09:07:11.517Z",
+ "submitted": "2026-11-05T09:19:54Z",
+ "cur": 4,
+ "answers": {
+  "L-1": {
+   "v": "other",
+   "t": 1793870119040,
+   "seconds": 422,
+   "theme": "morning-rounds",
+   "zoom": 1,
+   "note": "i want two buttons on each side from pair,a more simply styled namedropdown button kinda like drawer (i want the drowdown chevron, name, status indicator all to be in the same hover container). and maybe a row of indicator lights very small below the name?"
+  },
+  "L-2": {
+   "v": "other",
+   "seconds": 199,
+   "theme": "morning-rounds",
+   "zoom": 1,
+   "t": 1793870251929,
+   "note": "i think i still also want to try a full second/parallely option that includes active sessions + resubable sessions with restyled new session button and settings/other buttons. in place of current 3 line menu."
+  },
+  "L-3": {
+   "note": "every single element in that bottom row appears to have a unique style/size/height/roundness? and some of these need to be shortened, like remote.",
+   "t": 1793870370283,
+   "v": "other",
+   "seconds": 93,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "L-4": {
+   "v": "other",
+   "seconds": 39,
+   "theme": "morning-rounds",
+   "zoom": 1,
+   "t": 1793870384070,
+   "note": "nevermind, lets just leave the current row"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "setting",
+   "t": 1793870393714,
+   "seconds": 10,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

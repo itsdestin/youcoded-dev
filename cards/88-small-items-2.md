@@ -1,7 +1,7 @@
 ---
 id: 88
 title: Two small items: a warning and a community link
-stage: planning
+stage: polish
 priority: P3
 tags: other-features, misc, bug
 branch: 88-small-items-2
@@ -13,9 +13,9 @@ side: both
 vision: together.added.reddit
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Small-choices deck C-1 (2026-11-18): Destin chose to wait; add the website Community link once the subreddit has more posts
+Next: Ask again once r/youcoded has a few posts
+Blocked: nothing.
 
 Chats
 

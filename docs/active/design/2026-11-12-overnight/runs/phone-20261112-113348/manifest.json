@@ -1,0 +1,53 @@
+[
+  {
+    "name": "chat#phone-browser-final",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/phone-followups/scratch/shoot/20261112-113348/chat#phone-browser-final/meadow-mist.png",
+    "ms": 1202,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-browser-handoff",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/phone-followups/scratch/shoot/20261112-113348/chat#phone-browser-handoff/meadow-mist.png",
+    "ms": 1212,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-browser-site",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/phone-followups/scratch/shoot/20261112-113348/chat#phone-browser-site/meadow-mist.png",
+    "ms": 1225,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  }
+]

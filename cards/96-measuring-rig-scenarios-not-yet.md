@@ -12,17 +12,16 @@ summary: Speed testing misses some situations, some of its tools can mislead, an
 area: Developer tools
 side: behind
 vision: together.workflow.perf
-work: session/93-file-viewer-freezes, session/96-merged-evaluation, session/android-ux-test
+work: session/android-ux-test
 ---
 Progress
-Done: App-only viewer/comparison/indexing repairs merged in youcoded#665 (254ff9983aa3657a937dfd65011beb3c6e6508c9); this does not complete measurement-rig coverage or cross-platform runtime criteria. No evaluation code was included in that merge or its app closeout.
-Next: Continue separate performance-lab/evaluation work in preserved session/93-file-viewer-freezes. Retain coverage gaps and Windows/macOS/phone runtime checks; keep this card open.
-Blocked: No new evaluation blocker established by app closeout. Original workspace and nested app worktree contain uncommitted work and must be preserved.
+Done: Fixed two broken lab checks (youcoded-dev session/speed-batch cd893b547, 071de67cc): terminal/files/projects lab phases aborted because the app hides its HOME from the process list; the document phase stopped on a memory cap that over-counted. Filled in terminal switching, files, file-type ladders (lane F, 47 cases), history, scrollback.
+Next: Windows, Mac, phone and real graphics card still unproven.
+Blocked: nothing recorded.
 
 Chats
 - 2026-11-03 session/android-ux-test: Building the phone speed lab (Destin, 2026-11-02: measure frame drops, lag, CPU/GPU on Android when opening the keyboard, managing files, navigating menus)
 - 2026-10-21 session/96-merged-evaluation: chat started
-- 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-file-viewer-freezes: Investigate hardware/document/HTML/path-list/watcher stall impact and extend the performance lab with representative workloads, independent thread signals, bounded execution and fail-closed results.
 

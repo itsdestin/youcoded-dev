@@ -2,6 +2,7 @@
 id: 199
 title: Many more helpers per session, working in parallel
 stage: explore
+priority: P3
 tags: native-harness, specialists, sessions, desktop, feature
 related: 70, 74
 vision: chat.steer.specialists, chat.converse.multi

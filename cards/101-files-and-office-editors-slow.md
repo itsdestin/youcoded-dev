@@ -5,7 +5,6 @@ stage: planning
 priority: P3
 tags: perf, files-panel, desktop, performance, polish
 branch: 101-files-and-office-editors-slow
-roadmap: perf: Files and Office editors: slow and memory-hungry cases (6 th
 created: 2026-10-15
 summary: Huge files can pause on open, big spreadsheets freeze while saving, and each open Office file keeps using memory.
 area: Files & documents
@@ -14,9 +13,9 @@ platform: Desktop only
 vision: chat.files.office
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Destin, overnight deck 2026-11-13 C-13: leave very long path lists as they are for now.
+Next: Nothing now.
+Blocked: Windows and Mac are not measured. Each remaining case needs a real run to confirm.
 
 Chats
 

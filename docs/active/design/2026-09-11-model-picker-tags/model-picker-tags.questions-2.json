@@ -1,0 +1,222 @@
+{
+  "title": "Value and intelligence tags — the follow-up",
+  "key": "model-picker-tags-questions-2",
+  "out": "model-picker-tags.questions-2.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "L-1",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, the intelligence and value tags",
+      "headline": "Artificial Analysis's rules appear to forbid showing its scores in a model list. Where should the scores come from?",
+      "today": "You picked Artificial Analysis, whose scores arrive free inside OpenRouter's model list. Its data terms (version 1.1, 19 August 2026) forbid putting its data in any product people use, and require written permission for anything offering model-choice guidance. We would receive the scores through OpenRouter rather than as its customer, so whether those terms bind us is unclear. This is a reading of the terms, not legal advice.",
+      "problem": "Tags built on scores we may not be allowed to show could have to come out after people rely on them, and the request to remove them would come to you.",
+      "proposal": "Three answers.",
+      "options": [
+        {
+          "id": "epoch",
+          "label": "Epoch AI instead",
+          "summary": "A research group's index built from 59 public tests, released for anyone to reuse with credit. The app would download a small copy of its scores that we refresh on a schedule.",
+          "pros": [
+            "Permission is written down plainly: free to use and share, with credit.",
+            "Covers 264 models, including today's Claude, GPT, Kimi, GLM, DeepSeek, Qwen and Gemma models; updated 11 September.",
+            "Already includes a test of stating facts correctly, one of the two things you asked the number to reflect."
+          ],
+          "cons": [
+            "Not inside the list the app already downloads: a copy we keep up to date is one more thing that can break.",
+            "Scores are matched to models by name; a first simple attempt paired 120 of the 264 with a price, so some models will read Not rated until the matching improves.",
+            "Ranks some models differently from Artificial Analysis: it puts Kimi K3 above GLM 5.3, and GPT-5.6 Luna much higher."
+          ],
+          "measured": "264 models scored, 120 matched to a price on a first try",
+          "recommended": true
+        },
+        {
+          "id": "ask-aa",
+          "label": "Ask Artificial Analysis first",
+          "summary": "Email them for written permission; build on their scores meanwhile; ship only with a yes.",
+          "pros": [
+            "Keeps the source you picked, already inside a list the app downloads.",
+            "Nothing extra to keep up to date."
+          ],
+          "cons": [
+            "Shipping waits on a reply that could take weeks or never come.",
+            "Their terms treat model-choice products as competition, so a yes is uncertain, and a no means rebuilding on another source anyway."
+          ]
+        },
+        {
+          "id": "aa-anyway",
+          "label": "Use it without asking",
+          "pros": [
+            "Fastest: the scores already arrive with the list."
+          ],
+          "cons": [
+            "May break their terms; they could ask for the tags to be removed after people rely on them.",
+            "Every tag would still have to credit them with a link."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F-2",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, the intelligence tag",
+      "headline": "How should following instructions and making things up count toward the intelligence number?",
+      "today": "You asked for the number to reflect how well a model follows instructions and how likely it is to make things up. Epoch's index already includes a test of stating facts correctly among its 59 tests; Artificial Analysis's counts making things up too. Neither measures instruction following in its score. LMArena, where people vote between two unnamed answers, publishes an instruction-following ranking of 399 models that anyone may reuse with credit, dated 2 September.",
+      "problem": "LMArena ranks only models people have voted on, and a ranking of preferences is not a test. Mixing it into the number would give some models a different recipe than others.",
+      "proposal": "Three answers. They apply whichever source you pick above.",
+      "options": [
+        {
+          "id": "hover",
+          "label": "Shown on hover",
+          "summary": "The number stays the source's own score, which already counts factual accuracy. Hovering adds the model's instruction-following rank and its factual-accuracy result, where they exist.",
+          "pros": [
+            "Every model's number means the same thing.",
+            "Both things you care about are one hover away, each credited to where it came from."
+          ],
+          "cons": [
+            "A model that follows instructions badly keeps a high number unless you hover."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "blend",
+          "label": "Mixed into the number",
+          "summary": "The number becomes mostly the source's score with instruction following worked in, for models LMArena ranks.",
+          "pros": [
+            "The number itself rewards models that do what you ask."
+          ],
+          "cons": [
+            "Models LMArena has not ranked are scored by a different recipe from those it has.",
+            "A model's number moves when LMArena adds or drops models, with nothing about the model changing."
+          ]
+        },
+        {
+          "id": "leave-out",
+          "label": "Leave instruction following out",
+          "pros": [
+            "Simplest: one source, one number."
+          ],
+          "cons": [
+            "Instruction following shows up nowhere in the list."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, the intelligence number on a row",
+      "headline": "The intelligence number runs from 0, the tiniest models of 2023 and 2024, to 100, today's best model.",
+      "changed": "Stated, not asked: on Epoch's scores today, GPT-6 Astra is 100, Claude Fable 5.1 96, Kimi K3 87, Claude Sonnet 5 84 and Claude Haiku 4.5 64; GPT-4 at its 2023 launch would be 39. When a better model ships, it becomes 100 and the rest move down a little.",
+      "notice": "Numbers drift down over the months with nothing about the model changing. The hover hint names the model at 100 and the date of the scores.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "P-2",
+      "page": "Value",
+      "intro": "The examples use Epoch's scores and today's OpenRouter prices. With Artificial Analysis's scores the first two ways give the same verdicts on Kimi K3 and Fable 5.1; the third would call Fable 5.1 great instead of poor."
+    },
+    {
+      "id": "F-1",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, the value tag on a priced model",
+      "headline": "Which way should the value tag judge a model?",
+      "today": "You asked for a value tag, judged from intelligence and price, that tells Kimi (great value) from Fable (poor value). I tried three ways on the 120 models with both a score and a price today. Price counts what you send three times as much as what comes back, the usual convention, because chats send far more than they receive.",
+      "problem": "No fair way calls Kimi K3 great value today. It scores 87 for $4.68 per million; GPT-5.6 Luna scores 85 for $0.45, and DeepSeek V4 Flash (0731) scores 82 for $0.09. Any value tag built on these numbers will see that.",
+      "proposal": "Three ways. Each gives great, fair or poor; hovering shows the full listed price and the score.",
+      "options": [
+        {
+          "id": "same-level",
+          "label": "Against its own level",
+          "summary": "Each model is compared only with models at its own intelligence level (80 and up, 50 to 79, under 50). The cheapest third of its level is great value, the priciest third poor.",
+          "pros": [
+            "Closest to your example: Claude Fable 5.1 poor, Kimi K3 fair, GLM 5.3 and GPT-5.6 Luna great.",
+            "A weak model is never called great value just for being cheaper than top models."
+          ],
+          "cons": [
+            "A model that crosses a level line (79 to 80) is suddenly judged against pricier company, and its tag can jump.",
+            "Inside a level, score gaps are ignored: GPT-6 Astra (100) and Claude Sonnet 5 (84) are judged on price alone."
+          ],
+          "measured": "Fable 5.1 poor, Kimi K3 fair, GLM 5.3 great",
+          "recommended": true
+        },
+        {
+          "id": "per-dollar",
+          "label": "Points per dollar",
+          "summary": "Score divided by price, split into thirds across all 120 models.",
+          "pros": [
+            "One simple rule, easy to explain in a hover hint."
+          ],
+          "cons": [
+            "Kimi K3 comes out poor (94th of 120), alongside Fable 5.1 (111th).",
+            "Weak but very cheap models come first: Mistral NeMo scores 28 and ranks 1st."
+          ],
+          "measured": "Fable 5.1 poor, Kimi K3 poor, Mistral NeMo (28) first"
+        },
+        {
+          "id": "cheapest-peer",
+          "label": "Against the cheapest equal",
+          "summary": "How many times the price of the cheapest model that is as smart or nearly so (within 5 points).",
+          "pros": [
+            "Answers exactly \"am I overpaying for this much intelligence?\""
+          ],
+          "cons": [
+            "The smartest model always looks like great value because nothing matches it: GPT-6 Astra comes out great.",
+            "Harsh: 93 of 120 models come out poor, Kimi K3 among them at 50 times DeepSeek V4 Flash's price."
+          ],
+          "measured": "GPT-6 Astra great, Kimi K3 poor, 93 of 120 poor"
+        }
+      ]
+    },
+    {
+      "id": "F-3",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a priced model with no intelligence score",
+      "headline": "What should the value tag show for a priced model that has no intelligence score?",
+      "today": "Value needs both a price and a score. Many models have a price but no score, and more will while name matching is imperfect. You chose a dim \"Not rated\" tag for their intelligence.",
+      "problem": "Without a score there is no value to judge, but leaving money out entirely hides the one thing the list does know about these models.",
+      "proposal": "Three answers.",
+      "options": [
+        {
+          "id": "price-level",
+          "label": "A price level instead",
+          "summary": "Cheap, middle or pricey from the listed price alone, worded as price so it is not mistaken for value.",
+          "pros": [
+            "Every priced row still says something about money.",
+            "The full price stays on hover, as on every other row."
+          ],
+          "cons": [
+            "Two kinds of tag sit in the same place on different rows; a quick reader may take \"pricey\" as \"poor value\"."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "not-rated",
+          "label": "\"Not rated\" again",
+          "pros": [
+            "Consistent: no score means no score-based tag."
+          ],
+          "cons": [
+            "Many rows in a search would show two dim \"Not rated\" tags side by side."
+          ]
+        },
+        {
+          "id": "leave-off",
+          "label": "No value tag",
+          "pros": [
+            "One \"Not rated\" per row instead of two."
+          ],
+          "cons": [
+            "Nothing about money on the row until you hover."
+          ]
+        }
+      ]
+    }
+  ]
+}

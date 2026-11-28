@@ -1,9 +1,6 @@
 # Resolve "which youcoded checkout do you mean?" — used by run-workbench.sh.
 #
-# (run-dev.sh still carries its own copy. This header claimed both used it from
-# the day it was written; corrected 2026-09-10, and folding run-dev into it is
-# filed as dev-workspace work rather than done here — it is the
-# launcher that paints a real window on Destin's desktop.)
+# Used by run-workbench.sh and run-dev.sh (run-dev folded in 2026-11, card #19 i).
 #
 # WHY it is shared: run-workbench had its own three-line version that only knew
 # `worktrees/<name>/desktop`. Session worktrees live at
@@ -34,7 +31,7 @@ resolve_youcoded_checkout() {
   # relative to the workspace, so without this the session shapes can never
   # match and the obvious name fails. Measured 2026-09-10: two failed launches
   # from inside a worktree before falling back to the branch name.
-  local probe="$root"
+  local orig_root="$root" probe="$root"
   while [[ ! -d "$probe/worktrees" && "$probe" != "/" ]]; do
     probe="$(dirname "$probe")"
   done
@@ -42,8 +39,21 @@ resolve_youcoded_checkout() {
 
   local main="$root/youcoded"
 
-  # 1. no target → the main checkout
-  if [[ -z "$target" ]]; then echo "$main"; return 0; fi
+  # 1. no target → the checkout BESIDE the calling scripts, if there is one.
+  # WHY: the probe above re-points `root` at the workspace, so `$main` is the SHARED
+  # checkout even when the script runs from a session worktree that has its own
+  # youcoded/. A bare `run-dev.sh` / `run-workbench.sh` / `shoot` from a session then
+  # launched master instead of the session's code (reviewer repro 2026-11-10; the
+  # probe dates from 2026-09-10, so the workbench and shoot had it first; run-dev
+  # inherited it when it adopted this resolver). Only when the session has no
+  # youcoded/ of its own do we fall back to the shared one — and say so on stderr.
+  if [[ -z "$target" ]]; then
+    if [[ -d "$orig_root/youcoded/desktop" ]]; then echo "$orig_root/youcoded"; return 0; fi
+    if [[ "$orig_root" != "$root" ]]; then
+      echo "note: this session has no youcoded/ worktree of its own; using the shared checkout $main" >&2
+    fi
+    echo "$main"; return 0
+  fi
   # 2. an explicit path to something holding desktop/
   if [[ -d "$target/desktop" ]]; then ( cd "$target" && pwd ); return 0; fi
   # 3. the flat worktrees/<name> layout

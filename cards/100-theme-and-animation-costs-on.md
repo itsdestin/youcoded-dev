@@ -5,7 +5,6 @@ stage: planning
 priority: P3
 tags: perf, performance, themes-screen, polish
 branch: 100-theme-and-animation-costs-on
-roadmap: perf: Theme and animation costs on screen (3 things).
 created: 2026-10-15
 summary: Some themes' effects make the graphics chip work much harder than plain themes; decide defaults for weaker computers.
 area: Settings
@@ -13,9 +12,9 @@ side: both
 vision: yours.look.reduced, yours.look.themes
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Destin, overnight deck 2026-11-13 C-12: keep particle and glass effects on by default.
+Next: Nothing; real-graphics-card cost still unmeasured.
+Blocked: the high-refresh smoothness check needs Destin's eyes on the real screen.
 
 Chats
 

@@ -72,18 +72,20 @@ test('final recheck refuses unrelated tracked edits and new untracked files befo
   }
 });
 
+// WHY a live pid (this test run): a lock whose owner process is gone is now taken over, so a fake dead pid no longer reads as busy.
+const liveOwner = { pid: process.pid, acquiredAt: new Date().toISOString() };
 test('lock contention reports busy without fetching or mutating', t => {
   const f = makeWorkspace(t);
   f.publish('incoming.txt', 'remote\n');
   const lock = path.join(f.root, '.git', 'youcoded-sync.lock');
   fs.mkdirSync(lock);
-  fs.writeFileSync(path.join(lock, 'owner.json'), JSON.stringify({ pid: 4242, acquiredAt: 'then' }));
+  fs.writeFileSync(path.join(lock, 'owner.json'), JSON.stringify(liveOwner));
   const before = f.capture();
   const cachedBefore = f.git(f.root, 'rev-parse', 'refs/remotes/origin/master');
   const out = syncWorkspace({ root: f.root });
   assert.equal(out.report.action.status, 'busy');
   assert.equal(out.report.freshness.status, 'unknown');
-  assert.deepEqual(out.report.lock.owner, { pid: 4242, acquiredAt: 'then' });
+  assert.deepEqual(out.report.lock.owner, liveOwner);
   assert.equal(f.git(f.root, 'rev-parse', 'refs/remotes/origin/master'), cachedBefore);
   assertPreserved(f, before);
   assert.ok(fs.existsSync(lock));

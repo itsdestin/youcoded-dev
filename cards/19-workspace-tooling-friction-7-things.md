@@ -5,16 +5,15 @@ stage: planning
 priority: P3
 tags: dev-workspace, rigs, knowledge, housekeeping
 branch: 19-workspace-tooling-friction-7-things
-roadmap: dev-workspace: Workspace tooling friction: 7 things.
 created: 2026-10-15
 summary: Workspace tools: seven annoyances, docs upkeep, and ten improvement ideas for how chats work on YouCoded.
 area: Workspace
 work: chore/conversation-triage-script
 ---
 Progress
-Done: (h) fresh-install half built on branch session/2-message-timestamps-wrapup (not yet merged): workspace-start now replaces a far-behind node_modules itself (freshInstall: npm ci beside the component, swapped in), and fill-missing-deps.mjs --fresh runs it on demand; test red before green. 4th hit 2026-10-21. Earlier: glob-guard guard 8 judges a leading absolute 'cd <non-worktree> &&' as where the install runs (session/short-campaign-links, 3rd hit)
-Next: (h) merge that branch; then workspace-start provisioning wecoded-marketplace/worker node_modules (shared copy was too old for vitest-pool-workers 2026-10-21); glob-guard guard 8 also blocks a plain text search whose pattern contains an install command (2026-10-21)
-Blocked: nothing recorded.
+Done: Landed on master 2026-11-10 (workspace PR #356): g - a commit holding merge-conflict markers is refused, in session folders too, with a CI backstop; test-launcher fixes moved under #17. Already finished: h (fresh install for far-behind packages), c (triage script branch is gone), docs items a, c, e, f, i (the old roadmap is retired).
+Next: The conflict-marker check reaches existing copies only after setup.sh is re-run (not run overnight). Still open, each a decision not a defect: one-off Fallow/React Doctor scans; the app log keeps only 500 lines in Claude Code's folder; no CI gate for the evaluator; the ten parked ideas. Suggest closing this card and filing only the ones Destin wants.
+Blocked: nothing.
 
 Chats
 

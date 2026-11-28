@@ -1,7 +1,7 @@
 ---
 id: 75
 title: Choose skills and tools per project
-stage: polish
+stage: planning
 priority: P1
 tags: native-harness, skills-mcp, projects, desktop
 branch: 75-per-project-skills-and-tools
@@ -14,9 +14,9 @@ work: session/plugin-project-controls
 vision: projects.controls.skills, agents.added.project-skills
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Built 2026-09-23/24 on session/plugin-project-controls (about 8,400 lines: a Skills and tools tab in Projects, a Marketplace flow, drawer chips, per-session enforcement for the native engine). Destin's last word 2026-09-24: 'I still want to review this UI further before we finalize.' His recorded complaints were about the look, copy and flows ('doesn't match existing app UI', 'what does ask assistant to set it up actually do?'), not the backend. Draft PRs youcoded#571 and youcoded-dev#203 are the record.
+Next: Rebuild inside the Projects, skills and Claude Code workstream with #57 and #77: port the backend files nearly as-is, redo the UI on today's app (master's UI and plugin install were rebuilt since; a trial merge conflicts in 20+ files). First deck asks Destin which part he was unhappy with: tab grouping and copy, the 'ask assistant to set it up' meaning, or the Marketplace starts-off flow.
+Blocked: Waits for that workstream; the old branch and PRs stay as the reference until the port starts.
 
 See also #77: Both decide where a project's skills live and which ones the assistant uses; Destin wants them done together.
 

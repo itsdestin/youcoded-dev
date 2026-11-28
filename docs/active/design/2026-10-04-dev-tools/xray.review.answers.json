@@ -1,0 +1,47 @@
+{
+ "deck": "xray-review-1",
+ "started": "2026-10-04T23:08:36.085Z",
+ "submitted": "2026-10-04T23:13:55Z",
+ "cur": 4,
+ "answers": {
+  "A-1": {
+   "note": "this isn't quite what i'd envisioned. a bit too bare and not styled to fit the window properly. like this doesn't feel app-native at all. ik its dev tooling, but should still be pretty and easily glanceable/comprehensible",
+   "t": 1791155433490,
+   "v": "other",
+   "seconds": 117,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-2": {
+   "note": "kinda confused about how this works and what things mean",
+   "t": 1791155485931,
+   "v": "other",
+   "seconds": 52,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-3": {
+   "v": "yes",
+   "t": 1791155500767,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-filters": {
+   "v": "no",
+   "t": 1791155544386,
+   "seconds": 50,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "note": "totally unclear what begind the scenes or bookkeeping actually means. also unclear what inputs/outputs for the model are exactly. jargony"
+  },
+  "Q-native-extra": {
+   "note": "this is confusing. can you explain what we do/don't record, and why? how do other platforms (hermes/pi/et) handle this?",
+   "t": 1791155634213,
+   "v": "other",
+   "seconds": 90,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 // construction (seeded PRNG, no clock, no entropy pool) — see its header.
 import { assistantContentBlocks, realisticTranscriptLines, messagesPerTurn } from './content.mjs';
 import { FAKE_MODEL_ID, FAKE_PROVIDER_ID, FAKE_PROVIDER_PORT } from './fake-provider.mjs';
-import { downloadAsset as download, completedAsset } from './download.mjs';
+import { downloadAsset as download, adoptVerifiedAsset } from './download.mjs';
 import { assertApprovedCheckoutPath } from './supervised-package.mjs';
 
 const HERE = resolve(fileURLToPath(new URL('.', import.meta.url)));
@@ -47,6 +47,12 @@ const DEFAULT_CHECKOUT = join(WORKSPACE, 'youcoded');
 // nativeFirstTokenMs measures the app's path rather than a 400.
 const GGUF_URL = 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf';
 const GGUF_NAME = 'qwen2.5-0.5b-instruct-q4_k_m.gguf';
+// The published SHA-256 and size of that file (Hugging Face's LFS record for it, read 2026-11-11 from
+// /api/models/Qwen/Qwen2.5-0.5B-Instruct-GGUF/tree/main; the cached copy here hashed to the same value). Lets the kit
+// accept a whole copy that predates the download receipt (download.mjs adoptVerifiedAsset).
+const GGUF_SHA256 = '74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db';
+const GGUF_BYTES = 491400032;
+const ggufIsComplete = (p) => adoptVerifiedAsset(p, { sha256: GGUF_SHA256, bytes: GGUF_BYTES, url: GGUF_URL });
 
 // ---------------------------------------------------------------------------
 // Slug + transcript shapes — mirrors of app code, verified against it
@@ -361,7 +367,7 @@ export function assetsReady({ checkout = DEFAULT_CHECKOUT } = {}) {
   const ggufSrc = join(ASSETS_DIR, GGUF_NAME);
   const engineSrc = join(ASSETS_DIR, `engine-${pin.version}-${pin.backend}`);
   // WHY: a nonzero file may be the interrupted prefix of a failed download.
-  if (!completedAsset(ggufSrc)) return null;
+  if (!ggufIsComplete(ggufSrc)) return null;
   try {
     const m = JSON.parse(readFileSync(join(engineSrc, '.complete'), 'utf8'));
     if (m.version !== pin.version || !existsSync(join(engineSrc, m.binaryRelPath))) return null;
@@ -421,7 +427,7 @@ export async function ensureAssets({ log = () => {}, checkout = DEFAULT_CHECKOUT
   const ggufSrc = join(ASSETS_DIR, GGUF_NAME);
   const engineSrc = join(ASSETS_DIR, `engine-${pin.version}-${pin.backend}`);
 
-  if (!completedAsset(ggufSrc)) {
+  if (!ggufIsComplete(ggufSrc)) {
     log(`[fixture] downloading ${GGUF_NAME}\u2026`);
     await download(GGUF_URL, ggufSrc);
   }

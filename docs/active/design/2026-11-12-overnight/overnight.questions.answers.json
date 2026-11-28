@@ -1,0 +1,150 @@
+{
+ "deck": "overnight-results-2026-11-12",
+ "started": "2026-11-13T10:52:57.433Z",
+ "submitted": "2026-11-13T11:04:13Z",
+ "cur": 3,
+ "answers": {
+  "L-1": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794567351621,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "L-2": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794567351621,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "L-3": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794567351621,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "L-4": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794567351621,
+   "note": "can you just explain the timing logic before we merge this. i want to understand what was wrong and how it was fixed.",
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "L-5": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794567351621,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "L-6": {
+   "v": "pick",
+   "pick": "land",
+   "t": 1794567351621,
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "C-1": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1794567849054,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-2": {
+   "v": "pick",
+   "pick": "four",
+   "t": 1794567849054,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-3": {
+   "v": "pick",
+   "pick": "reorder",
+   "t": 1794567849054,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-4": {
+   "v": "other",
+   "seconds": 34,
+   "theme": "midnight",
+   "t": 1794567849054,
+   "note": "i want to see this. idk if i love strip above box styling"
+  },
+  "C-5": {
+   "v": "pick",
+   "seconds": 34,
+   "theme": "midnight",
+   "t": 1794567849054,
+   "pick": "later"
+  },
+  "C-6": {
+   "v": "pick",
+   "seconds": 34,
+   "theme": "midnight",
+   "t": 1794567849054,
+   "pick": "maybe"
+  },
+  "C-7": {
+   "v": "other",
+   "t": 1794567669621,
+   "note": "claude and deepseek and such definitely support higher contexts? i think 250k is good to keep, but we should ensure we handle hte potential failure cases.",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-8": {
+   "v": "pick",
+   "pick": "derive",
+   "t": 1794567669621,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-9": {
+   "v": "pick",
+   "pick": "open",
+   "t": 1794567669621,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-10": {
+   "v": "pick",
+   "pick": "with",
+   "t": 1794567669621,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-11": {
+   "v": "pick",
+   "pick": "real",
+   "t": 1794567669621,
+   "note": "",
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-12": {
+   "v": "pick",
+   "pick": "on",
+   "t": 1794567669621,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "C-13": {
+   "v": "pick",
+   "pick": "leave",
+   "t": 1794567669621,
+   "seconds": 34,
+   "theme": "midnight"
+  },
+  "W-1": {
+   "v": "other",
+   "t": 1794567852574,
+   "note": "confused",
+   "seconds": 53,
+   "theme": "midnight"
+  }
+ }
+}

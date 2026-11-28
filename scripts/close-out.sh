@@ -75,9 +75,34 @@ fi
 # "delete the branch" then would be actively wrong advice, so the script asks
 # whether the work landed FIRST and changes what it checks accordingly.
 MERGED=no
+
+# UNCOMMITTED WORK ON THE BRANCH'S OWN WORKTREE (card #22 item e). WHY: "the branch tip is an
+# ancestor of base" is also true when the branch never got a single commit (its tip IS the base
+# commit) while the whole implementation sits uncommitted or untracked in its worktree. The old
+# report then said "the work landed" and the wrap-up skill's next lines suggested deleting the
+# worktree and branch — it recurred four times (2026-10-06 .. 2026-10-18), each time caught only
+# because the session happened to notice. A merge verdict is about COMMITS; edits that were never
+# committed cannot have landed, so a dirty worktree always overrides the "landed" wording below.
+# --untracked-files=all so a brand-new file counts; ignored files (node_modules) do not.
+DIRTY_WT=""; DIRTY_COUNT=0
+while read -r _p; do
+  [[ -n "$_p" && "$(git -C "$_p" branch --show-current 2>/dev/null)" == "$BRANCH" ]] || continue
+  _n=$(git -C "$_p" status --porcelain --untracked-files=all 2>/dev/null | wc -l | tr -d ' ')
+  if [[ "${_n:-0}" -gt 0 ]]; then DIRTY_WT="$_p"; DIRTY_COUNT="$_n"; break; fi
+done < <(git -C "$REPO_DIR" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
+dirty_warning() {
+  _tip=$(git -C "$REPO_DIR" rev-parse --short "$SHA" 2>/dev/null)
+  if [[ "$(git -C "$REPO_DIR" rev-parse "$SHA" 2>/dev/null)" == "$(git -C "$REPO_DIR" rev-parse "$BASE" 2>/dev/null)" ]]; then
+    fail "NOTHING LANDED from the uncommitted work — the branch tip $_tip equals the base commit (a branch with no commits of its own, or one already fast-forwarded), and $DIRTY_COUNT file(s) in $DIRTY_WT are UNCOMMITTED or untracked. That work exists only in that folder. UNCOMMITTED WORK HERE: DO NOT delete this worktree or branch; commit and push it first."
+  else
+    fail "UNCOMMITTED WORK HERE — $DIRTY_COUNT file(s) in $DIRTY_WT are uncommitted or untracked, so they did not land with the branch. DO NOT delete this worktree or branch; commit and push them first."
+  fi
+}
+
 if [[ -n "$SHA" ]]; then
   if git -C "$REPO_DIR" merge-base --is-ancestor "$SHA" "$BASE" 2>/dev/null; then
-    pass "the branch tip is an ancestor of $BASE — the work landed"; MERGED=yes
+    if [[ -n "$DIRTY_WT" ]]; then dirty_warning; else pass "the branch tip is an ancestor of $BASE — the work landed"; fi
+    MERGED=yes
   else
     note "not merged into $BASE yet — PRE-MERGE close-out. Branch, worktree and"
     note "dead-name checks are SKIPPED: they would all tell you to delete things"
@@ -153,7 +178,11 @@ else
     # branch yet", which reads as lost work and invites a session to redo it
     # (observed 2026-09-03).
     ELSEWHERE=""
-    for _cand in workspace youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
+    # WHY read scripts/workspace-repos.json (X-2): one repo list for every script; the typed list is a fallback.
+    _list=$(node -e 'try{console.log(Object.keys(require(process.argv[1])).join(" "))}catch{}' "$WORKSPACE/scripts/workspace-repos.json" 2>/dev/null || true)
+    [[ -n "$_list" ]] || _list="workspace youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace"
+    read -r -a _cands <<< "$_list"
+    for _cand in "${_cands[@]}"; do
       [[ "$_cand" == "$REPO" ]] && continue
       if [[ "$_cand" == workspace ]]; then _dir="$WORKSPACE"; else _dir="$WORKSPACE/$_cand"; fi
       [[ -e "$_dir/.git" ]] || continue
@@ -216,6 +245,10 @@ if [[ "$MERGED" == yes ]]; then
     pass "remote branch deleted (the work is on $BASE, so it was pushed and cleaned up)"
   fi
 
+  # WHY the DIRTY_WT branch: never print a delete command next to uncommitted work (card #22 e).
+  if [[ -n "$DIRTY_WT" ]]; then
+    note "local branch and worktree: KEEP — see the UNCOMMITTED WORK line above; deleting them would destroy the only copy"
+  else
   git -C "$REPO_DIR" show-ref --verify -q "refs/heads/$BRANCH" \
     && fail "local branch still exists — git branch -D $BRANCH  (-D, not -d: --no-ff merges leave the tip non-ancestral)" \
     || pass "local branch deleted"
@@ -228,6 +261,7 @@ if [[ "$MERGED" == yes ]]; then
     fail "worktree still registered at $WT — git worktree remove '$WT'"
   else
     pass "no worktree left on this branch"
+  fi
   fi
 
   for d in "$WORKSPACE"/worktrees/*/; do
@@ -250,6 +284,9 @@ if [[ "$MERGED" == yes ]]; then
   # worktree (this workspace's, and every component repo's), `node scripts/prune-worktrees.mjs`
   # is the dry-run tool that reports which ones are actually safe to delete.
   note "other worktrees: node scripts/prune-worktrees.mjs (dry run; --apply <key> needs Destin naming the exact ones)"
+  # GitHub deletes a merged pull request's branch on its own (delete-branch-on-merge, all repos, 2026-11-10);
+  # a branch that landed another way (cherry-pick, folded into a different branch) is the one still to delete.
+  note "remote branch: deleted automatically when its PR merged; delete by hand only if it landed another way"
 else
   if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
     pass "pushed to origin — a reviewer can see it"
@@ -276,8 +313,21 @@ echo "Contract"
 # honestly as "escaped for regex use", not "happens to work".
 BRANCH_RE=$(printf '%s' "$BRANCH" | sed 's/[.[\*^$]/\\&/g')
 CONTRACTS=$(rg -l --glob '*.contract.json' -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$DOCS_DIR" 2>/dev/null || true)
-if [[ -z "$CONTRACTS" ]]; then
-  note "no contract names this branch — the feature flow was not used, or the contract has no \"branch\""
+# Walkthrough flow (rethink round 9): a feature with a `<feature>.walkthrough.json` naming this
+# branch and NO contract beside it is gated by `walkthrough-check` instead (found here, run below).
+# A folder that still has a signed contract keeps the old path above, untouched.
+WALKTHROUGHS=""
+for w in $(rg -l --glob '*.walkthrough.json' -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$DOCS_DIR" 2>/dev/null || true); do
+  ls "$(dirname "$w")"/*.contract.json >/dev/null 2>&1 || WALKTHROUGHS+="$w"$'\n'
+done
+WALKTHROUGHS="${WALKTHROUGHS%$'\n'}"
+# Hands-off route (Destin, 2026-11-18, "do all of this without me ... I just want to see it at the very end"): there is no before-build deck, so
+# the ONE growing deck that carries "hands_off" and names this branch is gated by the same command, which reads it as a hands-off deck.
+for h in $(rg -l --glob '*.json' --glob '!*.answers*' --glob '!*.as-built.*' -e '"hands_off"' "$DOCS_DIR" 2>/dev/null || true); do
+  rg -q -e "\"branch\"[[:space:]]*:[[:space:]]*\"$BRANCH_RE\"" "$h" 2>/dev/null && WALKTHROUGHS+="${WALKTHROUGHS:+$'\n'}$h"
+done
+if [[ -z "$CONTRACTS" && -z "$WALKTHROUGHS" ]]; then
+  note "no contract or walkthrough names this branch — the feature flow was not used, or the spec has no \"branch\""
 else
   while IFS= read -r c; do
     REL="${c#"$WORKSPACE"/}"
@@ -298,6 +348,23 @@ else
     fi
   done <<<"$CONTRACTS"
 fi
+# The walkthrough gate: exit 1 + reasons on stderr when unfinished; `ok:` / `note:` lines when done.
+# WHY `fail` (a TODO) and not an exit: close-out only reports, like every other check here.
+while IFS= read -r w; do
+  [[ -z "$w" ]] && continue
+  REL="${w#"$WORKSPACE"/}"
+  if OUT=$(python3 "$WORKSPACE/scripts/ui-review/review-cards.py" walkthrough-check "$w" 2>&1); then
+    while IFS= read -r line; do
+      case "$line" in
+        ok:\ *) pass "${line#ok: } — $REL" ;;
+        *)      note "${line#note: }" ;;
+      esac
+    done <<<"$OUT"
+  else
+    fail "walkthrough not finished — $REL:"
+    echo "$OUT" | sed 's/^/       /'
+  fi
+done <<<"$WALKTHROUGHS"
 
 echo
 echo "Docs"

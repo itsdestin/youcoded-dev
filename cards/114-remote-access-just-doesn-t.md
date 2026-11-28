@@ -5,7 +5,6 @@ stage: planning
 priority: P2
 tags: remote-access, standalone, remote, bug
 branch: 114-remote-access-just-doesn-t
-roadmap: remote-access: Remote access "just doesn't work sometimes" and the phone gi
 created: 2026-10-15
 summary: When remote access fails the phone shows a blank error instead of what's wrong, and the remote setup screen has four unclear spots.
 area: Devices & sync
@@ -14,9 +13,9 @@ platform: Phone and web
 vision: sync.follow.remote
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Phone-app 'cannot reach' message (commit a71a0a92d). Checked 2026-11-19: password confirm + show/hide and the 'removed' notice are ready to build; Keep awake redesign and setup step count are still undecided
+Next: Build-ready part: (1) Settings remote password (SettingsPanel.tsx password inputs ~1937 and ~2635): confirm box + show/hide, reuse the look of ApiKeySetup.tsx / AdminPasswordPrompt.tsx. (2) Disconnect a device (unpair ~3051): 'Device removed' notice with Undo only if the pairing can be restored safely without the password; otherwise notice only and explain why in the deck. Before/After deck. Separately undecided: phone-browser offline page (needs a service worker), Keep awake redesign with time left (Destin 2026-09-24), setup step count.
+Blocked: Keep awake and step count need Destin's design decision; parked 2026-11-19
 
 Chats
 

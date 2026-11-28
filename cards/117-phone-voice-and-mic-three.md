@@ -15,9 +15,9 @@ platform: Phone and web
 vision: chat.converse.voice, everywhere.platforms.web
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: waits on #115 — A phone browser can only use the microphone on an encrypted connection, which 115 builds.
+Done: Part (b) needs a real phone (remote web view has no microphone); added to the phone checklist.
+Next: Real-phone retest; part (a) still waits on #115.
+Blocked: waits on #115.
 
 See also #115: 115's encrypted browser connection is exactly what would give a phone browser the microphone that 117(a) is missing.
 

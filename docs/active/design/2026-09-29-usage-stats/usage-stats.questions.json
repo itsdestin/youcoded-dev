@@ -1,0 +1,164 @@
+{
+  "title": "Usage statistics — the questions before anything is drawn",
+  "key": "usage-stats-questions",
+  "out": "usage-stats.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Usage",
+      "path": "Wherever you would go to see how much you have used",
+      "headline": "Where should a full picture of your usage live?",
+      "today": "Usage is scattered: status-bar chips for the current chat, a /usage card you type for, and plan limit bars inside Settings → Cloud providers. Each shows one chat or one moment.",
+      "problem": "There is no single place to see what you used today, this week, or which model or chat ate your ChatGPT plan or OpenRouter credit.",
+      "proposal": "Add one home for usage. Pick where you would actually look for it.",
+      "options": [
+        {
+          "id": "settings-page",
+          "label": "New Usage page",
+          "summary": "Its own page in Settings, next to Cloud providers, with limit bars, balances and history together.",
+          "pros": ["Room for history, charts and every provider at once.", "The limit bars and balances already live nearby in Settings, so everything about accounts stays together."],
+          "cons": ["Two clicks away while you are chatting.", "One more Settings page."],
+          "recommended": true
+        },
+        {
+          "id": "status-popup",
+          "label": "Status-bar popup",
+          "summary": "Clicking a usage chip in the status bar opens a larger panel.",
+          "pros": ["One click from any chat.", "No new page to learn."],
+          "cons": ["A popup is small, so history and per-model breakdowns get cramped.", "Only reachable if you have a usage chip turned on."]
+        },
+        {
+          "id": "both",
+          "label": "Both",
+          "summary": "A small summary in the status-bar popup, with a button to the full Usage page.",
+          "pros": ["Quick glance while chatting, full detail when you want it."],
+          "cons": ["Two surfaces to keep consistent, so this is more work to build and keep working."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Usage",
+      "path": "The new usage view",
+      "headline": "Which breakdowns do you want to see?",
+      "today": "The app records how much each reply used and cost in the app's own chats, but never adds them up past one chat.",
+      "problem": "Without breakdowns you cannot tell whether one long chat, one expensive model, or the helpers used up your allowance. In the last 3 days, helpers were 59% of your ChatGPT usage and nothing in the app shows that.",
+      "proposal": "Pick every breakdown you would use. Fewer means a simpler page.",
+      "pick": "several",
+      "options": [
+        {"id": "by-day", "label": "By day", "pros": ["Shows when usage spikes, and whether a day's work was unusual."], "cons": ["Adds a chart."]},
+        {"id": "by-provider", "label": "By provider", "pros": ["ChatGPT plan vs OpenRouter vs Claude side by side."], "cons": ["None worth noting."]},
+        {"id": "by-model", "label": "By model", "pros": ["Shows whether a pricier model is the cause."], "cons": ["Model names change often, so the list can get long."]},
+        {"id": "by-chat", "label": "By chat", "pros": ["Finds the one runaway conversation.", "Could link straight to it."], "cons": ["A long list once you have many chats."]},
+        {"id": "helpers", "label": "Helpers vs main chat", "pros": ["Answers the exact question from today: helpers were the biggest chunk."], "cons": ["Another split to read."]}
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Usage",
+      "path": "The new usage view",
+      "headline": "Should Claude Code sessions be counted in the same view?",
+      "today": "Claude Code keeps its own records on your computer, and the app shows only its plan limit bars and the current session's cost.",
+      "problem": "If only the app's own chats are counted, the page tells half the story for someone like you who uses both.",
+      "proposal": "Yes: read Claude Code's records too and show them as their own provider. No: this view covers only the app's own chats; Claude Code keeps its limit bars.",
+      "options": [
+        {"id": "yes", "label": "Include it", "pros": ["One place for everything you use.", "Makes comparisons like today's (Claude Code sent 5x more) visible."], "cons": ["Its dollar figure is what the work would cost at pay-per-use prices, not what your subscription charges, which could alarm you if read wrong.", "Reading Claude Code's records adds some startup work."], "recommended": true},
+        {"id": "no", "label": "App chats only", "pros": ["Simpler, and every number is from the app itself."], "cons": ["Can't compare the two side by side."]}
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Usage",
+      "path": "The new usage view, for ChatGPT and Claude plans",
+      "headline": "For monthly plans, what should the numbers say?",
+      "today": "Plans like ChatGPT and Claude show percentage bars for their 5-hour and 7-day limits. Neither company says exactly how a reply counts against them.",
+      "problem": "A raw count of words processed means nothing to most people, and a dollar figure for a plan you already paid for can mislead.",
+      "proposal": "Pick how plan usage is described.",
+      "options": [
+        {"id": "bars-and-share", "label": "Limit bars plus shares", "summary": "Keep the limit bars, and show each chat's or model's share of the usage as a percentage.", "pros": ["Answers 'what ate my limit' without inventing a price.", "Nothing that looks like a bill."], "cons": ["No way to compare with OpenRouter in dollars."], "recommended": true},
+        {"id": "dollar-equivalent", "label": "Dollar equivalent", "summary": "Show what the same work would cost at pay-per-use prices, clearly labelled as an estimate.", "pros": ["One unit (dollars) across every provider."], "cons": ["It is an estimate, and can look like a charge you owe."]},
+        {"id": "both", "label": "Both", "pros": ["The most information."], "cons": ["Busier page; the dollar figure still needs a careful label."]}
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Balances and warnings",
+      "intro": "The first page decided what the history shows. These decide what live account info appears, and whether the app warns you."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "OpenRouter",
+      "path": "Settings → Cloud providers → OpenRouter, and the usage view",
+      "headline": "Should the app show your remaining OpenRouter credit?",
+      "today": "The OpenRouter row only says whether your key works. To see your balance you go to OpenRouter's website. This was already designed in August but never built.",
+      "problem": "You find out credit is gone when a reply fails.",
+      "proposal": "Yes: show the balance (refreshed every few minutes and after each reply) on the OpenRouter row and the usage view, built to the August design. No: keep linking to the website.",
+      "options": [
+        {"id": "yes", "label": "Show balance", "pros": ["You see credit running down before it runs out.", "Already designed, so it's quicker to build."], "cons": ["A light extra check with OpenRouter every few minutes while the app is open."], "recommended": true},
+        {"id": "no", "label": "Keep the link", "pros": ["Nothing changes."], "cons": ["Surprise failures stay possible."]}
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "ChatGPT",
+      "path": "Settings → Cloud providers → ChatGPT, and the usage view",
+      "headline": "Should the ChatGPT row also show extra credits and per-model limits ChatGPT already sends?",
+      "today": "ChatGPT sends more than the app shows: an extra-credits balance and usage per model. The app reads only the 5-hour and 7-day bars.",
+      "problem": "If your plan includes extra credits or a separate limit for one model, the app hides it, so a stop can look unexplained.",
+      "proposal": "Yes: show them when ChatGPT provides them and hide them when it doesn't. No: bars only.",
+      "options": [
+        {"id": "yes", "label": "Show them", "pros": ["Explains stops the bars alone don't.", "No extra requests: the data already arrives."], "cons": ["Depends on details ChatGPT doesn't document, so a line may disappear if they change it."], "recommended": true},
+        {"id": "no", "label": "Bars only", "pros": ["Simpler row."], "cons": ["Hidden limits stay hidden."]}
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Warnings",
+      "path": "Anywhere in the app while you work",
+      "headline": "Should the app warn you before a plan limit or credit balance runs out?",
+      "today": "Nothing warns you. The first sign is a failed reply or a limit message.",
+      "problem": "A long task can stop halfway, and you only learn why afterwards.",
+      "proposal": "Pick how loud a warning should be.",
+      "options": [
+        {"id": "none", "label": "No warnings", "pros": ["Nothing interrupts you."], "cons": ["Surprise stops continue."]},
+        {"id": "quiet", "label": "Quiet colour change", "summary": "The usage chip and the Settings gear turn amber at 80% and red at 95%.", "pros": ["Visible without interrupting.", "Matches the red dot already planned for OpenRouter."], "cons": ["Easy to miss if the chip is turned off."], "recommended": true},
+        {"id": "notice", "label": "One notice at 80%", "summary": "A single message in the chat when you cross 80%, plus the colour change.", "pros": ["Hard to miss."], "cons": ["Interrupts; could feel naggy for people near their limit often."]}
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Usage",
+      "path": "The new usage view",
+      "headline": "How far back should usage history go?",
+      "today": "The app keeps no usage history beyond each chat's own record. Nothing leaves your computer.",
+      "problem": "Without history you can't compare this week with last week, or tell whether a change helped.",
+      "proposal": "Pick how long to keep daily totals. They stay on your computer either way.",
+      "options": [
+        {"id": "90d", "label": "90 days", "pros": ["Covers a full plan cycle plus comparisons.", "Tiny on disk."], "cons": ["Older history is gone."], "recommended": true},
+        {"id": "forever", "label": "Forever", "pros": ["Full history."], "cons": ["Grows slowly without end; not useful to most people."]},
+        {"id": "30d", "label": "30 days", "pros": ["Smallest."], "cons": ["Too short to compare months."]}
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Android",
+      "path": "The Android app",
+      "headline": "On Android, this first version shows Claude Code usage only.",
+      "changed": "Stated, not asked: Android can't run the app's own assistant yet, so it has no ChatGPT or OpenRouter chats to count. Android picks up the rest when that arrives.",
+      "notice": "The usage view on your phone lists Claude Code only, with a line saying the rest comes later.",
+      "yes": "That's fine",
+      "no": "Not acceptable"
+    }
+  ]
+}

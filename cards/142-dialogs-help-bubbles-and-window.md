@@ -5,7 +5,6 @@ stage: planning
 priority: P3
 tags: user-interface, desktop, bug
 branch: 142-dialogs-help-bubbles-and-window
-roadmap: user-interface: Dialogs, help bubbles and window drag (3 things).
 created: 2026-10-15
 summary: Closing some dialogs closes the menu too, help bubbles cover what they explain, and dragging a chat between windows shows nothing.
 area: Chat
@@ -13,8 +12,8 @@ side: screens
 platform: Desktop only
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: LANDED PR #756: Known issues, Roadmap and Reddit rows leave Help open
+Next: remaining items on this card
 Blocked: nothing recorded.
 
 Chats

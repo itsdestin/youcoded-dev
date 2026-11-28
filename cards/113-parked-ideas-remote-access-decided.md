@@ -2,10 +2,10 @@
 id: 113
 title: Remote access: three ideas left as they are
 stage: explore
+work: session/android-ux-test
 priority: P3
 tags: remote-access, one-core, remote, security, polish
 branch: 113-parked-ideas-remote-access-decided
-roadmap: remote-access: Parked ideas: remote access, decided to leave as is (three t
 created: 2026-10-15
 summary: Small remote-access quirks Destin chose to leave, like the blue reply-ready dot still showing on the phone after reading it.
 area: Devices & sync
@@ -15,9 +15,9 @@ paused: Destin decided to leave these as they are for now
 vision: sync.follow.remote
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Nothing code-side; real-phone checks listed in the overnight checklist.
+Next: Run the phone checklist.
+Blocked: needs a real Android phone; nothing in code blocks it.
 
 Chats
 

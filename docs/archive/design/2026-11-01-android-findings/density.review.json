@@ -1,0 +1,117 @@
+{
+  "title": "Phone screens — a smaller trust card and more text on each screen",
+  "key": "android-density-review",
+  "out": "density.review.html",
+  "images": "images/density-review",
+  "runs": {
+    "before": "runs-density/before",
+    "after": "runs-density/after"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "D-1",
+      "surface": "Chat",
+      "path": "A new Claude Code session in a folder it has not been told to trust yet",
+      "crop": "chat#trust-phone",
+      "headline": "The Trust this folder card is about a third shorter and now looks like a permission card.",
+      "changed": "Claude Code's long paragraph becomes the folder's name, its path in small print, and one sentence. The header gets a folder icon, and the buttons are the permission card's green Yes and red No, Yes first.",
+      "measured": "Card about 190 px tall on a phone, was about 290 px",
+      "notice": "You can tell which folder you are trusting at a glance, and it reads as the same kind of question as Yes / No on a command. This card changes on the computer too, not only the phone.",
+      "risk": "Claude Code's own wording (the 'quick safety check' paragraph and the 'Security guide' line) is no longer shown. If Claude Code ever rewords its dialog so the folder can't be found, the card falls back to showing Claude Code's full text, as today. The keyboard still starts on 'No, exit', as in the terminal."
+    },
+    {
+      "id": "D-2",
+      "surface": "Chat",
+      "path": "Any conversation, on a phone",
+      "crop": "chat#phone",
+      "headline": "On a phone, chat messages use more of the screen width and sit closer together.",
+      "changed": "Phone width only, borrowed from the buddy floater: half the space at the screen edges, wider bubbles (Claude's 96% of the row, yours 88%), less padding inside each bubble, and slightly closer lines and paragraphs.",
+      "measured": "Text per line on a 390 px phone: 230 → 312 px",
+      "notice": "Long replies wrap into fewer, longer lines, so more of a reply fits on one screen.",
+      "risk": "Denser text is a little harder to read for some people. The computer, and windows wider than 640 px, are unchanged; the buddy floater keeps its own spacing."
+    },
+    {
+      "id": "D-3",
+      "surface": "Settings",
+      "path": "Settings → Backup & sync on a phone (every settings popup changes the same way)",
+      "crop": "settings/sync",
+      "headline": "On a phone, popups fill the screen width and have less padding, so they are shorter.",
+      "changed": "Phone width only: popups reach to 8 px from the screen edge (they stopped at 88% of the width), with a slimmer title bar and less padding inside. Small \"Are you sure?\" confirmations keep their size.",
+      "measured": "Popup width 341 → 374 px on a 390 px phone; Backup & sync about 35 px shorter",
+      "notice": "Less wrapping inside popups and less empty space around them.",
+      "risk": "Very little dimmed background shows around a popup now; tapping the dim edge or pressing Back still closes it. The computer is unchanged."
+    },
+    {
+      "id": "D-4",
+      "words": true,
+      "surface": "Backup & sync",
+      "path": "Settings → Backup & sync, on a phone",
+      "headline": "Should the 'Additional backups' section fold into one row on a phone?",
+      "today": "Backup & sync shows three sections on top of each other: Main backup, Additional backups (with its on/off switch, each extra copy such as Google Drive, and two buttons), and History, which is already a single row you tap to open.",
+      "problem": "Additional backups is the tallest section, and most people set it up once and rarely look again, so on a phone it pushes the popup past one screen.",
+      "proposal": "On phones only, Additional backups becomes one row reading for example 'Additional backups · Google Drive, backed up 5 min ago', which opens in place to show everything it shows today.",
+      "options": [
+        {
+          "label": "Fold it on phones",
+          "recommended": true,
+          "pros": [
+            "Backup & sync fits on one phone screen, and the section you check most (main backup) is always visible."
+          ],
+          "cons": [
+            "Pausing the extra copies or adding a destination takes one more tap.",
+            "A problem with the extra copy would only show as the row's summary until you open it."
+          ],
+          "id": "fold"
+        },
+        {
+          "label": "Leave it open",
+          "pros": [
+            "Everything visible at once, as on the computer."
+          ],
+          "cons": [
+            "The popup stays longer than one phone screen and needs scrolling."
+          ],
+          "id": "open"
+        }
+      ]
+    },
+    {
+      "id": "D-5",
+      "words": true,
+      "surface": "Chat",
+      "path": "The small time under each message, on a phone",
+      "headline": "On a phone, should only the newest message show its time?",
+      "today": "Every message bubble ends with a small line showing when it was sent (when message times are on in Appearance).",
+      "problem": "On a phone that line costs about one line of text per message, and most of the times are not needed.",
+      "proposal": "On phones, only the newest message keeps its time, like the buddy floater. On the computer nothing changes.",
+      "options": [
+        {
+          "label": "Newest message only",
+          "pros": [
+            "About one more line of text per message on each screen."
+          ],
+          "cons": [
+            "A phone has no hover, so there would be no way to see an older message's time on the phone.",
+            "The buddy shows it when you rest the pointer on a message, which a phone can't do."
+          ],
+          "id": "newest"
+        },
+        {
+          "label": "Keep every time",
+          "recommended": true,
+          "pros": [
+            "You can always see when anything was said."
+          ],
+          "cons": [
+            "The space stays as it is."
+          ],
+          "id": "all"
+        }
+      ]
+    }
+  ]
+}

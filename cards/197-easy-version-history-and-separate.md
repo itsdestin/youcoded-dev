@@ -10,8 +10,8 @@ created: 2026-10-24
 why: clearer worktree management/isolation for sessions built into the app, plus a version history that makes git feel intuitive for normal people, like a Google Docs version history
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: nothing yet on this card. Existing groundwork: the app already keeps file version history (Office files, and artifact files for 30 days) and has cloud restore code.
+Next: plan it, starting from that groundwork.
 Blocked: nothing.
 
 Chats

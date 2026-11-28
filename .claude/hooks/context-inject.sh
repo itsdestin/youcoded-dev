@@ -28,11 +28,23 @@ if [[ -f "$WORKSPACE/scripts/workspace-start.mjs" ]]; then
     echo 'Development edits: start/resume with node scripts/workspace-start.mjs --session <stable-key> [repo…]. Read its reorientation report and changed guidance before proceeding; use returned absolute paths. Uncommitted guidance is a proposal, not automatically authoritative. Do not manually repair shared checkouts to start work.'
 fi
 
+# Repos marked "archived": true in scripts/workspace-repos.json are read-only on GitHub.
+# WHY: nothing will ever land upstream, so the "commits behind" / "cached ref" warnings
+# below are permanent noise for them and train sessions to ignore the real ones. Their
+# checkout stays on disk and usable; only the staleness warnings are skipped.
+ARCHIVED_REPOS=" $(node -e 'try{const r=require(process.argv[1]);console.log(Object.entries(r).filter(([,v])=>v.archived).map(([k])=>k).join(" "))}catch{}' "$WORKSPACE/scripts/workspace-repos.json" 2>/dev/null || true) "
+
 collect_repo_state() {
     local repo_dir="$1"
     local repo_name="$2"
 
     [[ ! -e "$repo_dir/.git" ]] && return
+
+    if [[ "$ARCHIVED_REPOS" == *" $repo_name "* ]]; then
+        echo "### $repo_name (archived on GitHub — read-only, no updates expected)"
+        echo ""
+        return
+    fi
 
     local branch recent dirty dirty_count behind
     branch=$(git -C "$repo_dir" branch --show-current 2>/dev/null || echo "detached")
@@ -80,7 +92,12 @@ collect_repo_state() {
 
 # Detect multi-repo workspace by checking for known sub-repos
 SUB_REPOS=()
-for candidate in youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
+# WHY read scripts/workspace-repos.json (X-2, 2026-11-27): this loop kept its own hand-typed copy of the
+# repo list, which drifted from the main one. The typed list is only a fallback if node cannot read it.
+REPO_LIST=$(node -e 'try{console.log(Object.keys(require(process.argv[1])).filter(k=>k!=="workspace").join(" "))}catch{}' "$WORKSPACE/scripts/workspace-repos.json" 2>/dev/null || true)
+[[ -n "$REPO_LIST" ]] || REPO_LIST="youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace"
+read -r -a REPO_NAMES <<< "$REPO_LIST"
+for candidate in "${REPO_NAMES[@]}"; do
     if [[ -e "$WORKSPACE/$candidate/.git" ]]; then
         SUB_REPOS+=("$candidate")
     fi

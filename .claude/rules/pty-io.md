@@ -19,7 +19,7 @@ paths:
   - "**/desktop/src/renderer/state/submit-outgoing.ts"
   - "**/desktop/src/main/claude-queue-*.ts"
   - "**/desktop/src/shared/terminal-widths.ts"
-last_verified: 2026-10-23
+last_verified: 2026-11-19
 verify:
   - path: youcoded/desktop/src/main/pty-worker.js
   - path: youcoded/desktop/src/main/session-manager.ts

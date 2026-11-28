@@ -1,0 +1,30 @@
+{
+ "deck": "phone-leftovers-questions",
+ "started": "2026-11-08T09:15:29.470Z",
+ "submitted": "2026-11-08T09:18:22Z",
+ "cur": 0,
+ "answers": {
+  "L-1": {
+   "v": "other",
+   "t": 1794129501058,
+   "note": "just do the simplest fix we can for now to optimize ux (even if that's just dropping the button). we have a few cards or something somewhere to more thoughtfully reconsider session presets, no-folder/no-project sessions, etc. we should pull this phone thing into that work since it will probably overlap a bit ",
+   "seconds": 57,
+   "theme": "halftone-dimension"
+  },
+  "L-2": {
+   "v": "pick",
+   "pick": "fullscreen",
+   "t": 1794129501058,
+   "note": "i think we need to actually test the functionality and such of this, but im open to it. we also need to verify how we would change this setting and how users would experience the change",
+   "seconds": 57,
+   "theme": "halftone-dimension"
+  },
+  "L-3": {
+   "v": "pick",
+   "pick": "card",
+   "t": 1794129501058,
+   "seconds": 57,
+   "theme": "halftone-dimension"
+  }
+ }
+}

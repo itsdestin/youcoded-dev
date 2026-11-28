@@ -1,0 +1,16 @@
+{
+ "deck": "phone paste picture",
+ "started": "2026-11-18T21:41:15.555Z",
+ "submitted": "2026-11-18T21:42:14Z",
+ "cur": 0,
+ "answers": {
+  "P-1": {
+   "v": "yes",
+   "t": 1795038133418,
+   "seconds": 59,
+   "theme": "light",
+   "zoom": 1,
+   "note": "how does pasting work for the android app? what about the paste previews?"
+  }
+ }
+}

@@ -1,0 +1,519 @@
+{
+  "title": "Security and server batch — built and waiting on the branch",
+  "key": "security-server-batch-questions",
+  "out": "security-server-batch.questions.html",
+  "themes": ["midnight", "light"],
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Sync between your devices",
+      "path": "The server that decides which device holds a chat",
+      "headline": "Should the fix that stops one device posing as another go live, given its 45-second cost?",
+      "today": "When you open a chat, your device tells the server \"this chat is mine\" so a second device cannot open it at the same time. The server believes whatever device name the message carries. The fix is built and tested but not live.",
+      "problem": "Someone signed in to your account from a modified app could pretend to be your laptop and take or release its chats. The fix stops that while your laptop is connected, but it has a cost: after a connection drops badly (wifi switch, laptop waking, patchy phone data) the server can ignore that device for up to 45 seconds, about 22 on average. In that window opening a chat takes about 10 seconds longer, a hand-off to that device is refused, and the same chat could be opened on two devices. A normal restart has no delay.",
+      "proposal": "Choose whether the server fix goes live with the next merge. It reaches every released app version within minutes, with no app update. A complete fix, where each install proves who it is, needs an app release as well.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Ship now, full fix next",
+          "pros": [
+            "Protection starts for everyone as soon as it is merged.",
+            "The 45-second window goes away once the full fix is out and old versions are retired."
+          ],
+          "cons": [
+            "Until then, a bad reconnect can mean a slow chat open or a refused hand-off.",
+            "The full fix is a second piece of work, in the app and the server."
+          ],
+          "measured": "Up to 45 seconds, about 22 on average",
+          "recommended": true
+        },
+        {
+          "id": "ship-only",
+          "label": "Ship as built, stop there",
+          "pros": [
+            "Protection now, no further work."
+          ],
+          "cons": [
+            "The 45-second window stays for good.",
+            "Someone holding your sign-in can still claim a device that is offline, or claim it first and lock the real one out."
+          ]
+        },
+        {
+          "id": "hold",
+          "label": "Hold it, build the full fix",
+          "pros": [
+            "Nobody ever gets the 45-second window.",
+            "A real guarantee rather than a partial one."
+          ],
+          "cons": [
+            "Nothing improves until an app release.",
+            "People on old versions stay exposed."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Games with friends",
+      "path": "Win and loss records",
+      "headline": "How should fake forfeit wins be stopped?",
+      "today": "The server accepts a message saying \"my opponent quit, I win\" and writes it to both players' records for good. Nothing checks that a match took place. No released app sends this message; only a hand-modified one can.",
+      "problem": "A friend with a modified app can give themselves a permanent win against you the moment you go offline. This batch only limits how fast they can do it (30 results per 5 minutes).",
+      "proposal": "Pick how to close it. Honest players notice nothing with any of these, because the app has no forfeit feature yet.",
+      "options": [
+        {
+          "id": "off",
+          "label": "Switch forfeits off",
+          "pros": [
+            "Closes the hole completely.",
+            "Small and quick; nobody loses anything because no app uses it."
+          ],
+          "cons": [
+            "When a real forfeit feature is built, it has to be switched back on with a proper check."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "prove",
+          "label": "Keep, but check the match",
+          "summary": "Accept a forfeit only when the server itself saw the match start and the opponent leave.",
+          "pros": [
+            "Forfeits are ready for the day the app has them."
+          ],
+          "cons": [
+            "More server work now, for a feature nobody can use yet.",
+            "Needs careful testing; a mistake could reject real results later."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No work."
+          ],
+          "cons": [
+            "Fake wins stay possible, only slower to spam."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Messaging plugin",
+      "path": "Marketplace › Messaging › Google Messages on Windows",
+      "headline": "The rebuilt Google Messages program has never been run. How should it go out?",
+      "today": "The Messaging plugin ships one Windows program that connects to Google Messages. I rebuilt it with the patched security library. A scan finds no known flaw it can reach (the old one had 24), and the file is a valid Windows program, 1.7 MB larger.",
+      "problem": "This computer has no Windows, so nobody has started the new program, paired a phone, or sent a text with it. If it is broken, Windows users who update the plugin lose texting until a fix.",
+      "proposal": "Choose whether it waits for a hands-on test. The test is: on a Windows computer, pair Google Messages, send one text and receive one.",
+      "options": [
+        {
+          "id": "test-first",
+          "label": "You test on Windows first",
+          "pros": [
+            "A broken build never reaches anyone."
+          ],
+          "cons": [
+            "The whole marketplace branch waits on you having a Windows computer and a paired phone to hand."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "split",
+          "label": "Take it off this branch",
+          "summary": "The server fixes go ahead; the rebuilt program waits on its own until tested.",
+          "pros": [
+            "Server protection is not held up by a Windows test."
+          ],
+          "cons": [
+            "The old program, with its known flaws, stays in the marketplace longer.",
+            "The Mac and Linux fix for this plugin waits with it."
+          ]
+        },
+        {
+          "id": "untested",
+          "label": "Ship it untested",
+          "pros": [
+            "Fastest; the patched program reaches people within about an hour of merging."
+          ],
+          "cons": [
+            "If it does not start, Windows users lose texting and find out before we do."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Themes",
+      "path": "Marketplace › Themes › Update button",
+      "headline": "Should I prepare a rebuild of the theme list so the missed-update fix can work?",
+      "today": "A theme whose pictures changed without a new version number never shows Update (Morning Rounds kept its old mascot this way). The app-side fix is built: it compares a fingerprint of the theme's files. The online theme list does not carry those fingerprints yet; it was last built on 5 October.",
+      "problem": "Until the theme list is rebuilt, the fix does nothing. Even after, it only helps themes installed or updated after the next app release, so Morning Rounds needs one reinstall.",
+      "proposal": "Yes: I prepare the rebuilt theme list on a branch for your word; nothing changes for users until you merge it. No: the app fix ships asleep and wakes whenever the list is next rebuilt."
+    },
+    {
+      "id": "P-2",
+      "page": "Sign-outs nobody is told about",
+      "intro": "Two places where the app signs something out and says nothing. Nothing is built for either; each is small once you choose."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Settings › the list of phones signed in to this computer",
+      "headline": "When a phone is signed out after 90 days unused, should the computer's owner be told?",
+      "today": "A phone that has not connected for 90 days is signed out of your computer. The phone gets a clear \"expired\" answer. On the computer nothing is shown and nothing is written down; the phone simply drops out of the list in Settings.",
+      "problem": "If you notice the phone is gone, there is no explanation anywhere, and it can look like a fault or like someone removed it.",
+      "proposal": "Pick how much the computer says about it.",
+      "options": [
+        {
+          "id": "tell",
+          "label": "Tell the owner quietly",
+          "summary": "A line in the device list such as \"Signed out after 90 days unused\".",
+          "pros": [
+            "You understand why the phone vanished, in the place you would look.",
+            "Nothing pops up or interrupts you."
+          ],
+          "cons": [
+            "One more line to read, about a phone you had stopped using.",
+            "New wording on screen that needs your approval."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "log",
+          "label": "Silent, but logged",
+          "pros": [
+            "Nothing new on screen.",
+            "A bug report would show what happened."
+          ],
+          "cons": [
+            "A person who notices the missing phone still has no explanation."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No work."
+          ],
+          "cons": [
+            "A vanished phone with no trace anywhere."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Your YouCoded account",
+      "path": "Friends panel and account settings",
+      "headline": "When the server rejects a call and the app signs you out of your account, should you be told?",
+      "today": "If the server rejects one account call, the app signs you out of your YouCoded account without a word. Two of the places that do this do not even write it to the log.",
+      "problem": "Friends see you offline from then on, and you only find out by opening the friends panel. It can go unnoticed for days.",
+      "proposal": "Pick how visible the sign-out should be.",
+      "options": [
+        {
+          "id": "notice",
+          "label": "Notice with Sign in",
+          "summary": "A small notice when it happens, with a Sign in button.",
+          "pros": [
+            "You know at once and fix it in one press.",
+            "Friends stop seeing you offline for no reason."
+          ],
+          "cons": [
+            "A new message can appear while you are working.",
+            "Needs wording and a place on screen, which you would review first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "panel-only",
+          "label": "Only where you look",
+          "summary": "Shown in the friends panel and account settings, and always logged.",
+          "pros": [
+            "Never interrupts you."
+          ],
+          "cons": [
+            "You still find out late, which is the complaint."
+          ]
+        },
+        {
+          "id": "log-only",
+          "label": "Log only",
+          "pros": [
+            "Nothing visible changes."
+          ],
+          "cons": [
+            "A bug report shows it; the person never sees it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Marketplace listings that mislead",
+      "intro": "I left all of these alone because each changes what a listing shows. None is built."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Marketplace › tool listings packaged with Docker",
+      "headline": "What should happen to the Docker listings that cannot be installed?",
+      "today": "293 listings are packaged in a way the app cannot install. Their page shows \"Open source\" instead of \"Get\". For 77 of them that button is greyed out, because the listing names no source.",
+      "problem": "A person browsing finds a listing, opens it, and hits a button that does nothing.",
+      "proposal": "Pick what to do with them.",
+      "options": [
+        {
+          "id": "hide-77",
+          "label": "Hide the 77 dead ones",
+          "pros": [
+            "No more dead buttons.",
+            "The other 216 still lead somewhere useful."
+          ],
+          "cons": [
+            "77 listings vanish from browsing and search."
+          ],
+          "measured": "77 of 293 listings",
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No work; the wording is honest."
+          ],
+          "cons": [
+            "77 listings stay a dead end."
+          ]
+        },
+        {
+          "id": "build",
+          "label": "Build Docker installs",
+          "pros": [
+            "A working \"Get\" on all 293."
+          ],
+          "cons": [
+            "The person must already have Docker, which most everyday users do not.",
+            "A large build, including a screen for entering service keys."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Marketplace › Todoist",
+      "headline": "Todoist's Install button always fails. What should it do instead?",
+      "today": "Todoist shows an Install button. Pressing it always fails with \"This integration's setup method isn't supported in this version\". Try again fails the same way.",
+      "problem": "A button that can never work, on a well-known name, makes the marketplace look broken.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "soon",
+          "label": "Mark it \"Coming soon\"",
+          "pros": [
+            "Quick and honest; nobody presses a button that fails."
+          ],
+          "cons": [
+            "Todoist still does not work."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "build",
+          "label": "Build key-entry setup",
+          "pros": [
+            "Todoist works, and so can other tools that need a key."
+          ],
+          "cons": [
+            "Needs a new screen and safe storage for the key; a real feature with its own design round."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Marketplace › Messaging",
+      "headline": "The Messaging listing says \"SMS/iMessage\" but only does Google Messages on Windows. How should it read?",
+      "today": "The listing promises SMS and iMessage and looks installable on every computer. It contains one Windows program for Google Messages and nothing for iMessage. This batch already stops Mac and Linux getting a broken tool from it.",
+      "problem": "Mac and Linux users can install a plugin that does nothing for them, and everyone is promised iMessage that is not there.",
+      "proposal": "Pick how far to correct it.",
+      "options": [
+        {
+          "id": "word-and-windows",
+          "label": "Fix wording, Windows only",
+          "pros": [
+            "The listing matches what it does.",
+            "Nobody installs something that cannot work on their computer."
+          ],
+          "cons": [
+            "The listing disappears for Mac and Linux users."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "word-only",
+          "label": "Fix the wording only",
+          "pros": [
+            "Accurate text, visible to everyone."
+          ],
+          "cons": [
+            "Mac and Linux users can still install it and get nothing."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Library › installed plugins",
+      "headline": "Should the app repair plugins that vanish, even though I found no sign it still happens?",
+      "today": "In July, installed plugins disappeared when another program re-downloaded the folder they live in. I checked: that automatic re-download has been off since April, and every plugin installed from July to November is still in place on your computer.",
+      "problem": "If it ever happens again, the missing plugins stay gone until reinstalled by hand. I did not build a repair, because it would be code for a problem I cannot see happening.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "wait",
+          "label": "Do nothing until seen again",
+          "pros": [
+            "No new code to go wrong.",
+            "Avoids a file that another unfinished piece of work also changes."
+          ],
+          "cons": [
+            "If it recurs, someone loses plugins before we can respond."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "repair",
+          "label": "Add a repair at launch",
+          "pros": [
+            "Missing plugins come back by themselves."
+          ],
+          "cons": [
+            "Extra code and a slightly busier launch, for a problem not seen since July."
+          ]
+        },
+        {
+          "id": "move",
+          "label": "Move installs to our own folder",
+          "pros": [
+            "The permanent fix: nothing else can wipe them."
+          ],
+          "cons": [
+            "Every installed plugin is moved once, which can itself go wrong.",
+            "Needs a design pass first."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Marketplace › the \"Likely safe\" badge on a listing",
+      "headline": "The \"Likely safe\" badge only checks for leaked keys. Should the wording or the check change?",
+      "today": "The badge appears when a plugin has no leaked passwords or keys and its files are the right shape. Nothing looks at what the plugin does. In September you said to keep the wording and add an AI review; in October that was postponed.",
+      "problem": "A person reads \"Likely safe\" as \"someone checked this will not harm me\". Nobody did.",
+      "proposal": "Pick one. They can be combined over time: reword now, restore the name once a real review exists.",
+      "options": [
+        {
+          "id": "reword",
+          "label": "Reword to what is checked",
+          "summary": "For example \"No leaked keys found\", until a real review exists.",
+          "pros": [
+            "Honest from the next release, at almost no cost."
+          ],
+          "cons": [
+            "Listings look less reassuring.",
+            "Goes against your September choice to keep the wording."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ai-review",
+          "label": "Keep wording, add AI review",
+          "pros": [
+            "The badge earns its name."
+          ],
+          "cons": [
+            "A real build with a running cost per plugin.",
+            "The AI can be wrong both ways: passing a bad plugin or flagging a good one.",
+            "The badge keeps over-promising until it is built."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No work."
+          ],
+          "cons": [
+            "The badge keeps promising more than is checked."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Housekeeping",
+      "intro": "One leftover from starting this session."
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "The development workspace",
+      "path": "Old work folders on this computer",
+      "headline": "Five old work folders hold unmerged work untouched for two weeks or more. What should happen to them?",
+      "today": "The folders are: Google files (#155), faster automated checks (#29), specialists plans (#74), batcher counters (#93) and readme models. Each holds work that never reached the main copy. Users are not affected either way.",
+      "problem": "They clutter every session's start-up report, and nobody remembers whether what is in them still matters.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "report",
+          "label": "Look inside, then report",
+          "summary": "I check each against the main copy and tell you what is still worth keeping. Nothing is deleted.",
+          "pros": [
+            "Nothing is lost by accident.",
+            "You decide each one knowing what it holds."
+          ],
+          "cons": [
+            "One more short report for you to read."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep them all",
+          "pros": [
+            "No risk, no work."
+          ],
+          "cons": [
+            "The clutter and the start-up warning stay."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove the folders",
+          "summary": "Delete the folders on this computer; the online backup copies stay.",
+          "pros": [
+            "Clean start-up report."
+          ],
+          "cons": [
+            "Anything in them that was never backed up online is gone for good."
+          ]
+        }
+      ]
+    }
+  ]
+}

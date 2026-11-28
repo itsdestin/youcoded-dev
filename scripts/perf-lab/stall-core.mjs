@@ -127,7 +127,10 @@ export async function runCoreStallCase({ checkout, fixture, outDir, timeoutMs = 
   return row;
 }
 
-export async function executeOwned({ jobFile, jobDir, home, timeoutMs, maxRssMb, entry = SELF }) {
+// WHY cleanupBounds: the default 1 s kill wait is wall-clock; on a starved machine this controller may not
+// get CPU to reap its SIGKILLed leader (it stays a zombie) before the budget lapses, which reads as a
+// survivor. Callers that run under load (the test) can widen it; the loop still exits the moment the family is gone.
+export async function executeOwned({ jobFile, jobDir, home, timeoutMs, maxRssMb, entry = SELF, cleanupBounds }) {
   assertSafeNeedles([jobDir]);
   const child = spawn(process.execPath, [`--max-old-space-size=${Math.max(32, Math.floor(maxRssMb * 0.6))}`, entry, '--child', jobFile], {
     detached: true, cwd: jobDir, env: { PATH: process.env.PATH, HOME: home, TMPDIR: jobDir,
@@ -152,7 +155,7 @@ export async function executeOwned({ jobFile, jobDir, home, timeoutMs, maxRssMb,
       observed.cleanupError ??= 'Private leader identity was not captured; cleanup authority unavailable';
       return;
     }
-    Object.assign(observed, await family.cleanup());
+    Object.assign(observed, await family.cleanup(cleanupBounds));
   };
   const stop = (status, error) => {
     observed.forcedStatus ??= status; observed.error ??= error;

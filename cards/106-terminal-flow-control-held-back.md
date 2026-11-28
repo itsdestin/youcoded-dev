@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.converse.multi
 ---
 Progress
-Done: 2026-10-21: pty-worker-flow 'delivers a large flood byte for byte' failed ONCE on Linux 7.2 at load ~90 (12388904 vs 12388903 chars: one extra character in ~12 MB) and passed alone, in 3 reruns, and under added load. Not reproduced; the test now reports the first differing position and its context on failure (session/fix-anthropic-many-image-brick), so the next occurrence says whether it is a doubled \\r or duplicated output.
-Next: If it recurs, read the first-difference message before changing the worker.
+Done: 2026-11-12: terminals keep their graphics past 16 Claude Code chats, LANDED (app PR #736). Destin to look on a real build with 20+ chats.
+Next: Destin to look on a real screen with 20+ Claude Code chats: switching into terminals untouched for a while (no blank or wrong-size frame, colours match the theme), scrollback, selection, typing, resize, wallpaper themes, a second window. Unverified: Android may allow fewer than 16 layers (then 9 to 16 chats there behave as before); switching to a chat whose layer was given away costs an estimated 30 to 50 ms, not measured on a real graphics card. Not built, Destin to decide: fault (1) fix (clear and repaint after cutting a hidden window's backlog; could flash briefly when the window is reopened). Still true: no terminal-width resize log exists.
 Blocked: nothing recorded.
 
 Chats

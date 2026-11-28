@@ -2,6 +2,7 @@
 id: 147
 title: Management surface: the next round
 stage: planning
+priority: P2
 tags: management-surface, dev-workspace, housekeeping
 branch: 147-management-surface-the-next-round
 created: 2026-10-16
@@ -10,14 +11,16 @@ summary: Three follow-ups: rebuild priority and version tags, make Screens compl
 area: Developer tools
 side: screens
 vision: together.workflow.surface
-work: session/work-cards-20261014
+work: session/147-work-board-release-view
 ---
 Progress
-Done: the Work board runs as Destin's own YouCoded page (merged 2026-10-16)
-Next: the three follow-ups below, starting with a full human review in a new session
+Done: 2026-11-14 (youcoded-dev PR #378, merged): 'Since the last release' is worked out live; each merged change carries lines for users (cards.mjs notice) shown in one box with a changelog draft; Big picture's Shipped list comes from merged items and the Became real card is gone; dead buttons wired or removed; spacing, focus ring, hover flicker, menu position and phone-width cards fixed. This covered part of follow-up 3 (review of the page), not all of it. The priority and version tags are still not back.
+Next: (1) Bring back priority and version tags in a way that works. (2) Make the Screens tab cover every app screen, with better picture history and sorting. (3) Finish the page review: Screens and Big picture in the app theme, hover and press at phone width, and a look inside YouCoded itself.
 Blocked: nothing.
 
 Chats
+- 2026-11-14 session/147-work-board-release-view: chat started
+- 2026-11-11 session/147-work-board-release-view: chat started
 - 2026-10-17 session/work-cards-20261014: built the Work board this round builds on (merged 2026-10-16)
 
 What it covers (Destin, 2026-10-16)

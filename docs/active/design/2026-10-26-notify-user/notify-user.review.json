@@ -1,0 +1,74 @@
+{
+  "title": "The assistant can tell you something is ready",
+  "key": "notify-user-review",
+  "out": "notify-user.review.html",
+  "images": "images/notify-user.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "N-1",
+      "surface": "Chat",
+      "path": "A reply where the assistant flagged something for you",
+      "crop": "chat#notify",
+      "headline": "The assistant's notification is its own card in the chat, glowing blue until you click it.",
+      "changed": "When the assistant notifies you, its short label and message show as a blue card at the end of its reply. Before, the same call would have been a grey tool line saying \"NotifyUser\".",
+      "notice": "The card stands out from the reply around it. Clicking it stops the glow; the card stays, plain, so you can find it again. The click is remembered after a restart.",
+      "risk": "The glow is the only \"unread\" mark: if you read the card without clicking it, it keeps glowing until you do. Clicking is remembered per device, so your phone and computer each track their own.",
+      "highlight": "panel"
+    },
+    {
+      "id": "N-2",
+      "surface": "Chat",
+      "path": "A conversation where the assistant notified you, then kept writing",
+      "crop": "chat#notify-jump",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "A \"Jump to notification\" button appears when the card is out of sight.",
+      "changed": "The button sits where \"Jump to bottom\" does, in the same blue as the card. It shows only while the latest notification is unclicked and off screen; if both show, it sits just above \"Jump to bottom\".",
+      "notice": "Here the assistant said \"Slow tests fixed\" and kept working, so the card scrolled away. One click scrolls back up to it.",
+      "risk": "It only points at the latest notification since your last message; older ones still glow but have no button.",
+      "highlight": {
+        "box": [
+          42.5,
+          80.5,
+          15,
+          5
+        ]
+      }
+    },
+    {
+      "id": "N-3",
+      "surface": "Session list",
+      "path": "The list of conversations (the arrow beside the session names)",
+      "crop": "chat/switcher#notify",
+      "headline": "The conversation's status says the assistant's own words, like \"Slow tests fixed\", in blue.",
+      "changed": "The second row said \"Working\" in green. Now it shows the assistant's label with a blue light, even though it is still working, until you open that conversation.",
+      "notice": "You can tell which conversation wants you, and why, without opening it. Opening it puts the light back to normal.",
+      "risk": "While the label shows, you can't see from the list that it is still working. Labels longer than about three words are cut short with \"…\".",
+      "highlight": {
+        "box": [
+          36.5,
+          12.5,
+          27,
+          5.5
+        ]
+      }
+    },
+    {
+      "id": "N-4",
+      "surface": "Chat",
+      "path": "The same reply, on a phone",
+      "crop": "chat#notify-phone",
+      "headline": "On a phone the card fits the narrow chat the same way.",
+      "changed": "Same card, its message wrapping to the phone's width.",
+      "notice": "Your phone also shows the label in its list of conversations, the same as the computer.",
+      "risk": "",
+      "highlight": "panel"
+    }
+  ]
+}

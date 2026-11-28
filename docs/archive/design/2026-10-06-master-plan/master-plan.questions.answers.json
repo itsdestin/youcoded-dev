@@ -1,0 +1,36 @@
+{
+ "deck": "master-plan-questions",
+ "started": "2026-10-06T10:13:05.566Z",
+ "submitted": "2026-10-06T10:20:07Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "active-work",
+   "t": 1791281694348,
+   "seconds": 55,
+   "theme": "devils-garden"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "structured-fields",
+   "t": 1791281694348,
+   "seconds": 55,
+   "theme": "devils-garden"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "scoped-folder",
+   "t": 1791282005560,
+   "seconds": 156,
+   "theme": "devils-garden"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "approve-every-update",
+   "t": 1791282005560,
+   "seconds": 156,
+   "theme": "devils-garden"
+  }
+ }
+}

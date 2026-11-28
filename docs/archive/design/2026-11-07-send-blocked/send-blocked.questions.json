@@ -1,0 +1,205 @@
+{
+  "title": "Can't send: \"Queue identity is not ready\"",
+  "key": "send-blocked-questions",
+  "out": "send-blocked.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "The message box, when you press Send",
+      "headline": "The error comes from a small helper inside Claude Code that has stopped answering \"ready\".",
+      "changed": "When you press Send, the app first asks a helper inside Claude Code \"can you take a message?\" Unless it answers yes (or the chat doesn't use the helper at all), the app shows \"Queue identity is not ready\", puts your words back in the box and sends nothing.",
+      "notice": "Once the helper is stuck, every later message in that chat fails the same way. Other chats are usually fine.",
+      "yes": "Makes sense",
+      "no": "Unclear"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "The message box, when you press Send",
+      "headline": "Two app design choices turn any small hiccup into a chat you can't use.",
+      "changed": "1) The helper says WHY it isn't ready, but the app throws that reason away and always shows the same words. 2) The older way of sending (typing your message straight into the terminal) would still work here, but the app refuses to use it.",
+      "notice": "This is why the error looks random and never goes away. Both were confirmed by the independent reviewer.",
+      "yes": "Makes sense",
+      "no": "Unclear"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "Behind the scenes",
+      "headline": "Correction: my first top suspect (laptop sleep) turned out unlikely. Three stronger suspects replace it.",
+      "changed": "The reviewer showed that waking from sleep only causes a short hiccup that fixes itself. The likelier causes: (a) the helper shuts itself off after one kind of Claude Code \"session ended\" signal and never turns back on; (b) if YouCoded's add-on reloads in the middle of an action, the chat is sealed off for good; (c) in a brand-new chat, the helper's first \"here's my conversation\" report can be rejected, so the chat can never be set up before its first message.",
+      "notice": "Which one hits you isn't proven yet. They are all real paths in the code, but none was reproduced. The questions at the end help narrow it.",
+      "yes": "Makes sense",
+      "no": "Unclear"
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "Behind the scenes",
+      "headline": "Several other errors lock a chat the same way, under different wording.",
+      "changed": "\"Conversation identity changed\": one brief setup hiccup leaves the chat marked \"switching\" forever, and an add-on reload does the same. \"Saved queue request could not be read\": one unreadable saved message blocks every send in that chat. Resending the exact same words can repeat an old failure on a loop. \"Clear is still frozen\": a /clear that fails halfway pauses the chat. \"Queue already bound\": a chat that didn't close cleanly can't be reopened until the app restarts.",
+      "notice": "The phone shows the same errors, because it asks the same computer. I haven't checked the Android app's own copy.",
+      "yes": "Makes sense",
+      "no": "Unclear"
+    },
+    {
+      "id": "S-5",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "Until a fix ships",
+      "headline": "Closing the stuck chat and reopening that conversation from history should fix it in most cases.",
+      "changed": "Reopening starts a fresh helper, which clears most of these locks. The one exception is a chat that didn't close cleanly: that one needs a full app restart.",
+      "notice": "This is a workaround, not a fix. It's based on reading the code and hasn't been tested.",
+      "yes": "Makes sense",
+      "no": "Unclear"
+    },
+    {
+      "id": "P-2",
+      "page": "What I recommend",
+      "intro": "How the app should behave when the helper isn't ready, so a chat can never get stuck."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "The message box, when you press Send",
+      "headline": "Which fix should we build first?",
+      "today": "When the helper isn't ready, your message is refused and the chat stays stuck until you reopen it.",
+      "problem": "We can't yet tell which hidden cause you're hitting, and new causes may appear later, so fixing causes one at a time leaves people stuck in the meantime.",
+      "proposal": "Pick the combination to build. Each one also logs the real reason, so the next time it happens we can see exactly what caused it.",
+      "options": [
+        {
+          "id": "backup-reconnect-fixes",
+          "label": "Backup send + Reconnect",
+          "summary": "If the helper isn't ready, send the message the older way (typed into the terminal) and show a short note with the real reason, plus a Reconnect button. Then fix each cause we can prove.",
+          "pros": [
+            "Your message always goes out: the chat never gets stuck.",
+            "Reconnect repairs the chat with one click instead of hiding the problem.",
+            "Safe: at this point nothing has been queued yet, so the message can't be delivered twice."
+          ],
+          "cons": [
+            "In a chat sent the backup way, the waiting-messages strip (Cancel / Send now) won't work until you press Reconnect.",
+            "Reconnect restarts the chat's Claude Code, which takes a few seconds. Your conversation stays.",
+            "If other messages are already waiting in that chat's queue, the backup way is skipped (to keep them in order), so you'd still need Reconnect."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "backup-only",
+          "label": "Backup send only",
+          "summary": "Always send the backup way when the helper isn't ready, but no Reconnect button.",
+          "pros": [
+            "Smallest change; messages always go out."
+          ],
+          "cons": [
+            "The chat silently stays in its weaker mode until you reopen it yourself.",
+            "Hides the fault, so it's easy to never notice the real bug."
+          ]
+        },
+        {
+          "id": "reconnect-only",
+          "label": "Reconnect button only",
+          "summary": "Keep refusing the message, but show the real reason and a Reconnect button that repairs the chat.",
+          "pros": [
+            "Never sends a message any way other than the normal one.",
+            "Fixes rather than hides."
+          ],
+          "cons": [
+            "You still hit a failed send and must click and wait before trying again."
+          ]
+        },
+        {
+          "id": "fix-causes-only",
+          "label": "Fix causes only",
+          "summary": "No new behavior: fix each suspected cause one by one.",
+          "pros": [
+            "Nothing changes in how the app looks."
+          ],
+          "cons": [
+            "Any cause we haven't found yet still locks chats, with the same vague error."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "Behind the scenes",
+      "headline": "Should the app also try to wake a silent helper on its own, before you ever see an error?",
+      "today": "Nothing checks whether the helper inside Claude Code has gone quiet. You only find out when a send fails.",
+      "problem": "A stuck chat looks normal until you've typed and pressed Send.",
+      "proposal": "Yes: the app notices a silent helper and quietly restarts it, so most stuck chats repair before you notice. No: rely on the fix above. This is the hardest part to test well, so I'd do it after the main fix."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "Under a message sent the backup way",
+      "headline": "When a message goes out the backup way, how should the app tell you?",
+      "today": "No backup route exists yet; the send just fails with a vague error.",
+      "problem": "Saying nothing hides a problem that may make queue buttons stop working. Saying too much is noise for a message that did arrive.",
+      "proposal": "Pick how loud the note should be.",
+      "options": [
+        {
+          "id": "small-note",
+          "label": "Small note + Reconnect",
+          "pros": ["You know why the queue buttons may act differently, and you can fix it in one click."],
+          "cons": ["One extra line of text in the chat."],
+          "recommended": true
+        },
+        {
+          "id": "silent",
+          "label": "Say nothing",
+          "pros": ["Cleanest; the message simply sends."],
+          "cons": ["Nobody, including us, learns the chat is in a weaker mode."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Help me find your cause",
+      "intro": "Your answers point at which hidden cause is hitting you, so the specific fix lands first."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "When the error first appears",
+      "headline": "When does the error usually start in a chat?",
+      "today": "The error appears at some point and then every send in that chat fails.",
+      "problem": "Each hidden cause starts at a different moment, so the moment tells us which one it is.",
+      "proposal": "Pick every moment you remember it starting.",
+      "pick": "several",
+      "options": [
+        { "id": "first-message", "label": "First message", "summary": "In a brand-new chat, before anything was sent." },
+        { "id": "after-idle", "label": "After idle or sleep", "summary": "After the chat sat unused or the laptop slept." },
+        { "id": "after-clear", "label": "After /clear or resume", "summary": "Right after clearing, or after reopening an old conversation." },
+        { "id": "after-update", "label": "After app update", "summary": "Or after plugins or add-ons reloaded." },
+        { "id": "mid-chat", "label": "Middle of a chat", "summary": "During normal back-and-forth, with no obvious trigger." }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Claude Code chat",
+      "path": "After the error starts",
+      "headline": "Once it starts, what makes it go away?",
+      "today": "You've been hitting it repeatedly.",
+      "problem": "Whether it clears by itself, or only after reopening or restarting, separates the causes further.",
+      "proposal": "Pick what you've seen.",
+      "options": [
+        { "id": "never", "label": "Nothing so far", "summary": "I gave up or started a new chat." },
+        { "id": "by-itself", "label": "Goes away alone", "summary": "After waiting a while it sent fine." },
+        { "id": "reopen", "label": "Reopening the chat", "summary": "Closing and resuming that conversation fixed it." },
+        { "id": "restart", "label": "Restarting the app", "summary": "Only a full app restart fixed it." }
+      ]
+    }
+  ]
+}

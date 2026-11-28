@@ -1,0 +1,82 @@
+{
+  "title": "Office front page — file buttons, menu, search and Show all",
+  "key": "office-home-conveniences-review-1",
+  "out": "office-home.review.html",
+  "images": "images/office-home.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Office",
+      "path": "Office → Home",
+      "crop": "office/home",
+      "headline": "A search box now sits beside Open a file… and narrows both lists as you type.",
+      "changed": "New search box on the Recent line. Every other part of the page is where it was. (The test app's project now has more files, so the list below is longer than in the before picture.)",
+      "notice": "Typing a few letters of a name shows only the files that match, in Recent and in your project's list at once.",
+      "risk": "It only searches the files Home already lists (Recent's 12 and the project's first 50), not your whole computer. The box is hidden while Home has no files at all."
+    },
+    {
+      "id": "R-2",
+      "surface": "Office",
+      "path": "Office → Home → point at any file",
+      "crop": "office/home#hover",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Pointing at a file shows four small buttons: Ask about this, Rename, View in folder, and More (⋯).",
+      "changed": "The buttons appear only on the row under the pointer, left of the time. On a touch screen they always show, since there is no pointing.",
+      "notice": "Ask about this puts the file into your chat box as a pill, ready for your question. View in folder opens your computer's file manager with the file picked out.",
+      "risk": "View in folder is left out on a phone or a remote browser, where there is no file manager to open. Hovering a button shows its name; the icons alone are small."
+    },
+    {
+      "id": "R-3",
+      "surface": "Office",
+      "path": "Office → Home → right-click a file (or its ⋯ button)",
+      "crop": "office/home#menu",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Right-clicking a file opens the app's usual menu: Open, Ask about this, Rename, Make a copy, View in folder, Copy as path, Remove from Recent.",
+      "changed": "Same menu look and wording as right-clicking a file in chat. Remove from Recent appears only on Recent's files; it takes the row off the list and never touches the file.",
+      "notice": "Make a copy puts \"name (copy).docx\" beside the original and it shows up in the project list.",
+      "risk": "There is no Delete here on purpose — a mis-click there loses work. Remove from Recent uses a minus sign, not a bin, so it doesn't look like deleting."
+    },
+    {
+      "id": "R-4",
+      "surface": "Office",
+      "path": "Office → Home → Rename (button, menu, or the F2 key)",
+      "crop": "office/home#rename",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Rename turns the file's name into a small box right in the row; Enter saves, Escape cancels.",
+      "changed": "Only the part before .docx is typed — the ending stays as it is, so the file keeps opening in Office. Same rename-in-place as the file panel's header.",
+      "notice": "If the name is taken or not allowed, the box stays open with the reason under it, so a rename never silently does nothing.",
+      "risk": "Renaming a file that is open in a tab has to rename the tab too, and carry the file's Versions history to the new name. Both are part of building the real backend, not shown in this picture."
+    },
+    {
+      "id": "R-5",
+      "surface": "Office",
+      "path": "Office → Home → type in Search files",
+      "crop": "office/home#search",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Searching \"garden\" leaves only the matching files; a section with no matches says so in one line.",
+      "changed": "Matches are by file name. When nothing at all matches, Home says: No files match \"…\".",
+      "notice": "A search always shows every match, even past the first 12 of a long project list.",
+      "risk": "It matches names only, not the words inside documents."
+    },
+    {
+      "id": "R-6",
+      "surface": "Office",
+      "path": "Office → Home → bottom of the project list",
+      "crop": "office/home#show-all",
+      "runs": ["after"],
+      "new": true,
+      "headline": "A project with more than 12 files now ends its list with \"Show all 15\" instead of stopping silently.",
+      "changed": "Clicking it shows the rest (up to 50, the most Home has ever looked for).",
+      "notice": "You can tell when there are more files than the list shows.",
+      "risk": "A project with over 50 Office files still lists only the 50 most recently changed; search or Open a file… reach the rest."
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What the phone branch changes</title>
+<style>
+  :root { --bg:#f6f7f5; --ink:#1d2622; --soft:#5b6862; --line:#d5dbd6; --card:#fff; --warn:#a4541a; --warnbg:#fdf1e4; --ok:#2f6b4a; --okbg:#e8f3ec; --ask:#3b4fa3; --askbg:#e9ecfa; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#151a18; --ink:#e7ece9; --soft:#9aa8a1; --line:#2c3531; --card:#1d2421; --warn:#f0b27a; --warnbg:#3a2a1a; --ok:#8fd0aa; --okbg:#1c3327; --ask:#aab6f5; --askbg:#232a4a; } }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, sans-serif; }
+  main { max-width:980px; margin:0 auto; padding:24px 16px 72px; }
+  h1 { font-size:26px; margin:0 0 4px; } h2 { font-size:21px; margin:44px 0 6px; padding-top:8px; border-top:1px solid var(--line); } h3 { font-size:16px; margin:22px 0 4px; }
+  p { margin:6px 0; max-width:78ch; } .soft { color:var(--soft); }
+  ul { padding-left:20px; max-width:84ch; margin:6px 0; } li { margin:5px 0; }
+  .tag { display:inline-block; font-size:12px; font-weight:600; padding:1px 8px; border-radius:99px; margin-left:4px; white-space:nowrap; }
+  .ok { color:var(--ok); background:var(--okbg); } .warn { color:var(--warn); background:var(--warnbg); } .ask { color:var(--ask); background:var(--askbg); }
+  .box { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin:12px 0; }
+  .box.ask { color:inherit; border-color:var(--ask); background:var(--askbg); }
+  .row { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:14px; margin:12px 0; align-items:start; }
+  figure { margin:0; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px; }
+  figure img { width:100%; height:260px; object-fit:contain; border-radius:6px; background:var(--bg); display:block; }
+  figcaption { font-size:14px; margin-top:8px; } figcaption b { display:block; }
+  nav a { margin-right:14px; color:inherit; }
+</style>
+<main>
+  <h1>What the phone branch changes</h1>
+  <p class="soft">Card #213, branch <code>session/android-ux-test</code> in the app and the server. Written 10 Nov 2026. Nothing is merged.</p>
+  <nav><a href="#decide">Decisions</a><a href="#phone">Phone app</a><a href="#pc">Computer app</a><a href="#remote">Remote access</a><a href="#behind">Behind the scenes</a><a href="#review">Review</a><a href="#proof">How it was checked</a></nav>
+
+  <h2 id="decide">1. Your decisions (10 Nov)</h2>
+  <div class="box">
+    <ul>
+      <li><b>Start mode:</b> "auto is fine as built". New and resumed sessions start in auto on the phone and the computer, unless Skip permissions is on, or you or the folder set a default mode. Two cases remain untested: a computer with an old Claude Code that does not know auto, and an account that has never accepted Claude's "Enable auto mode?" question.</li>
+      <li><b>Attachments:</b> kept seven days, then cleaned up.</li>
+      <li><b>Arrow buttons:</b> left as they are for now. They stay phone-layout only and still cover the right end of Claude Code's input line.</li>
+    </ul>
+  </div>
+
+  <h2 id="phone">2. Phone app</h2>
+  <div class="row">
+    <figure><img src="terminal-by-device/phone-app.png" alt=""><figcaption><b>Terminal view</b>Message box, key row and arrows float over the terminal and ride up with the keyboard.</figcaption></figure>
+  </div>
+  <h3>Starting up</h3>
+  <ul>
+    <li>The crash on first start is fixed, and if the engine ever fails to start you get a plain screen with Try again and a bug report that lists exactly what it will send.</li>
+    <li>New loading screens in the app's own style. The first launch after this update takes a little longer once (roughly ten seconds, by the reviewer's estimate), while files are laid out again; later updates are faster than before.</li>
+    <li>Claude's first-run questions (theme, sign-in choice, security notes, folder trust) appear as cards in the chat. A new or reworded question from Claude still gets buttons where the app can read it safely; if it cannot, the loading screen says "Claude Code is asking something" with a button to open the terminal. It never switches to the terminal by itself.</li>
+    <li>Sign-ins that send you to the web browser bring you back to YouCoded when they finish: Claude, ChatGPT, your YouCoded account, OpenRouter and GitHub. <span class="tag warn">Not covered</span> typing <code>/login</code> inside a running session.</li>
+  </ul>
+  <h3>Typing and the keyboard</h3>
+  <ul>
+    <li>The page no longer squashes and redraws when the keyboard opens. The message box, the newest messages and the frame's edge glide up together, and a popup's own text field no longer drags the chat with it.</li>
+    <li>The keyboard-height overshoot on your Flip is corrected and remembered.</li>
+  </ul>
+  <h3>Terminal view</h3>
+  <ul>
+    <li>Claude Code no longer prints its banner or replies twice. The session starts at the size it will keep, and the keyboard or a taller message box slides the terminal instead of resizing it.</li>
+    <li>Claude Code runs in its fullscreen display on the phone, and a swipe scrolls it. No tip or switch for it (a tip was built, then removed 10 Nov: too technical). Typing <code>/tui default</code> in a chat still switches back.</li>
+    <li>A key row (Ctrl, Esc, Tab, Enter, Space, arrows) styled like the quick chips. Files and games open in terminal view instead of a black screen. The terminal starts below the header.</li>
+    <li>One green scroll bar, visible inside the frame.</li>
+  </ul>
+  <h3>Chat and screens</h3>
+  <ul>
+    <li>Tighter spacing and taller tap targets. No chat scroll bar. Message times show only where they help; tap a message to see its time.</li>
+    <li>Popups fit and centre on the screen. Settings opens without a "Loading" flash. Pages and Resume show one pane at a time, including on the Flip's wide inner screen.</li>
+    <li>The permission badge shows the right mode from the first second.</li>
+    <li>The skills drawer slides smoothly while dragged.</li>
+    <li>The "Home" project is gone from folder lists; a session with no folder opens in an empty one. Older sessions that were filed under Home still appear in Resume and All sessions (the list is built from every saved conversation, not from the folder list); they are just no longer grouped under a Home project. Nothing is deleted.</li>
+    <li>Backup and sync shows the phone's real name instead of "localhost", sizes in MB/GB, and device rows that fit.</li>
+    <li>Attachments keep their real names, there is a size limit with a clear message, and copies are cleaned up after seven days.</li>
+    <li>Games: two-player rooms work again (after the server is merged). Solo games were unaffected.</li>
+    <li>"Needs you" alerts: on a locked phone they now say only "A session needs you"; the detail shows after unlocking.</li>
+  </ul>
+
+  <h2 id="pc">3. Computer app</h2>
+  <p>Terminal view looks and sizes exactly as in the released app; the pictures match apart from the scroll bar.</p>
+  <div class="row">
+    <figure><img src="terminal-by-device/computer-app.png" alt=""><figcaption><b>Wide window</b>Unchanged, except one scroll bar instead of two.</figcaption></figure>
+    <figure><img src="terminal-by-device/computer-app-narrow.png" alt=""><figcaption><b>Narrow window</b>Taller buttons and tighter spacing only.</figcaption></figure>
+  </div>
+  <h3>What you may notice</h3>
+  <ul>
+    <li><b>Start mode:</b> new and resumed sessions start in AUTO (see section 1).</li>
+    <li><b>Terminal:</b> the grey second scroll bar is gone; only the green one shows. It cannot be dragged (the grey one could). With a wallpaper theme, the strip above the terminal and under its last row is tinted like the rest of the sheet.</li>
+    <li><b>Narrow window (under about 640 wide):</b> tighter bubbles, popups sized to fit, taller answer buttons and quick chips, and slightly more left padding in the terminal. The chat scroll bar and message times stay, as you decided ("spacing yes, rest no").</li>
+    <li><b>Quick chips for new installs</b> read Summarize, Plan my day, Explain this. Existing lists are untouched.</li>
+    <li><b>Chat titles</b> skip a leading file path.</li>
+    <li><b>Skills drawer</b> is laid out at full height and slides.</li>
+    <li><b>Files filter menu</b> closes when the page behind it scrolls. The projects page keeps its scroll fade.</li>
+    <li><b>About, Terms, Privacy</b> say game rooms run on YouCoded's own server. <span class="tag ask">Your call</span> whether the privacy date should be bumped.</li>
+    <li><b>Hidden-files tick</b> in the file browser is remembered.</li>
+  </ul>
+  <h3>What should not have changed, and how I know</h3>
+  <ul>
+    <li>A hidden terminal does nothing, as before. A phone fix had briefly reached the computer here; it is phone-only again, with a test.</li>
+    <li>The terminal keeps one size in chat view and terminal view (new test), and a paste into the chat cannot reach a hidden terminal (new test, proved by breaking the guard).</li>
+    <li>The keyboard code does nothing on a computer (tested).</li>
+    <li>Buddy windows keep their normal button sizes.</li>
+  </ul>
+
+  <h2 id="remote">4. Remote access (a web browser reaching your computer)</h2>
+  <div class="row">
+    <figure><img src="terminal-by-device/laptop-browser-before.png" alt=""><figcaption><b>Laptop with a mouse, before</b>Phone controls stretched wide, two ways to type.</figcaption></figure>
+    <figure><img src="terminal-by-device/laptop-browser-after.png" alt=""><figcaption><b>Laptop with a mouse, after</b>The computer's terminal. Colours unchanged; the mismatched strip at the bottom is fixed.</figcaption></figure>
+    <figure><img src="terminal-by-device/phone-browser.png" alt=""><figcaption><b>Phone's browser</b>Same as the phone app.</figcaption></figure>
+  </div>
+  <ul>
+    <li><b>Laptop with a mouse:</b> terminal view is the computer's terminal. The Buddy row in Settings is hidden there, because a browser cannot float a buddy.</li>
+    <li><b>Phone or tablet browser:</b> gets the phone's taller buttons, key row, sliding terminal and the terminal starting below the header.</li>
+    <li>Signed-in browsers stop asking for the online-friends list after a few tries (the computer refuses it to browsers; it used to ask forever).</li>
+  </ul>
+
+  <h2 id="behind">5. Behind the scenes</h2>
+  <ul>
+    <li><b>Server (separate branch, merge first):</b> two-player game rooms now run on YouCoded's server. Joining needs a one-time pass that only a signed-in player can get; rooms have message limits, close after 30 idle minutes or 6 hours, and an empty room closes at its first check. Older app versions are no worse off: their games were already broken by the old host shutting down.</li>
+    <li><b>Daily watch:</b> the check that compares the newest Claude Code's screens with saved copies now includes the first-install screens, and pings your phone when it fails or times out. <span class="tag warn">Needs</span> the alert setting your security watch uses to exist on the app's repository; otherwise it stays silent.</li>
+    <li><b>Weekly proposal</b> to refresh the phone's bundled parts. <span class="tag warn">Needs</span> the repository setting that lets automation open proposals. If you add a fix to its proposal, next week's run overwrites it.</li>
+    <li><b>One device rule:</b> "is this a phone, a touch screen, a narrow window?" is now answered in one place, with tests, instead of about fifteen.</li>
+    <li><b>Keyboard code</b> split into three small parts, with a test written before the split.</li>
+  </ul>
+
+  <h2 id="review">6. Independent review</h2>
+  <p>Three fresh reviewers read the whole branch: screens on every device, the phone shell and shared engine, and the menu reader, watch jobs and server.</p>
+  <h3>Found and fixed</h3>
+  <ul>
+    <li>Narrow computer windows lost the chat scroll bar and message times. Now touch screens only.</li>
+    <li>During startup, a quoted message or a half-typed draft could have been mistaken for a menu and given buttons. The reader now refuses those, with tests using the reviewer's exact screens.</li>
+    <li>A folder's own default permission mode was overridden by "auto". Now respected.</li>
+    <li>A later chat that mentioned "auto mode is unavailable" could flip a correct AUTO badge to NORMAL. Now only believed in a session's first 30 seconds.</li>
+    <li>Lock-screen alerts could show a command. Now hidden until unlock.</li>
+    <li>Buddy windows got taller buttons. Fixed.</li>
+    <li>The computer terminal wrote to storage on every window-drag step. Removed.</li>
+    <li>Browsers on remote access retried the friends list forever. Capped.</li>
+    <li>The phone alert did not fire when a check timed out. Fixed.</li>
+    <li>An abandoned game room lingered for 6 hours. Fixed.</li>
+    <li>A small leak each time the phone restarted its engine. Fixed.</li>
+    <li>The "Signed in" alert also showed after a failed sign-in. Reworded "Back to YouCoded".</li>
+  </ul>
+  <h3>Found and left, with reasons</h3>
+  <ul>
+    <li><b>Older Home sessions on the phone</b> no longer sit under a project row. They still show in Resume and All sessions (confirmed by reading how that list is built, not on a phone).</li>
+    <li><b>A stray local web request could bring the app forward once</b> while a YouCoded account sign-in is open, and use up the real return. It needs a lucky guess of a hidden number; low risk, no data exposed.</li>
+    <li><b>Scrolling a very long chat on the computer</b> may be slightly less smooth from a fix made for the phone. Not measured.</li>
+    <li><b>A phone build can fail on the day</b> a bundled part is republished upstream, until the weekly refresh runs. It blocks a release rather than shipping a wrong one.</li>
+    <li><b>One network with many players</b> (a classroom) could hit the room-pass limit of 20 a minute and see "wait a minute".</li>
+    <li><b>The phone's arrow buttons</b> can sit in the wrong place after a session switch until the next redraw.</li>
+  </ul>
+
+  <h2 id="proof">7. How it was checked, and what was not</h2>
+  <ul id="numbers">
+    <li>Computer and shared code: 24,362 tests pass (12 skipped by design), plus the type, dead-code, lint and rule checks.</li>
+    <li>Phone shell: 55 unit tests pass. No phone build was made from the final state.</li>
+    <li>Server: 505 tests pass. One of them failed once while the machine was busy with the big suite and passed on every run since; I could not make it fail again to find the cause.</li>
+    <li>Pictures of every named screen open, and the saved click-paths pass.</li>
+  </ul>
+  <p><b>Tested by Destin on his Flip on 10 Nov</b> (the Dev copy, updated in place). He reported five things, all fixed the same day: the Tailscale warning, the &ldquo;cannot reach&rdquo; message, the fullscreen tip (removed), the arrow buttons shifting sideways, and two test copies (now one). <b>Not possible to test yet:</b> phone to computer (his computer app, 1.3.3, refuses the new phone app), two-player games and sync (need the server change live). Which remaining guide items he has confirmed is his to say; this page does not record it.</p>
+  <p><b>Not done:</b></p>
+  <ul>
+    <li>A Dev copy for your Flip from this exact branch (I can start the build on your word).</li>
+    <li>The two-player game and sync test between two Dev copies. It needs the server merged first and two signed-in accounts.</li>
+  </ul>
+  <p><b>Order when you are ready:</b> server first, then the app, then your retest on the Flip: keyboard open and close in chat and terminal, a fresh install, each sign-in, and phone-to-computer.</p>
+</main>

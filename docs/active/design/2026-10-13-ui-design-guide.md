@@ -86,6 +86,14 @@ A job none of these does needs a new shared piece and Destin's look for it — n
 3. **Quiet by default.** Small grey labels in sentence case. Show what the user needs to act on; drop
    details nobody asked for, and options or information that would confuse someone who has never seen
    the app or used its features. Headers are one line.
+   **The layout explains the screen, not the words** (Destin, 2026-11-12): "With menu text,
+   especially headers and subheaders, less is always more. A user should be able to tell, without
+   reading anything at all, what a page's sections, subsections and options are, from clear visual
+   hierarchy. The way a page is organised should tell the user how to navigate, not duplicative text
+   re-explaining each menu, submenu and button." So: no sentence under a heading that restates it,
+   no footnote explaining how the screen works, no count said twice, and never text styles stacked
+   with no clear order of what to read first. Text meant to be read sits in a card, never bare.
+   A row or question must make sense on its own to someone returning after days; background goes behind More.
 4. **Three heading levels, no more.** If a screen seems to need a fourth, it needs fewer sections.
 5. **Cards for things, rows for lists, styled by level.** Something you open or install (a plugin, a
    Page, a file) is a raised card. A list you read or pick from (settings, a menu) is rows. Inside a
@@ -255,6 +263,10 @@ Every small label is plain (final-review#ST-21).
 - **A control that exists on one platform says which**: "Remove KDE helper" (nothing-bare-3#N3-3).
 
 ### Spacing
+- **No dividing lines across a container or the screen.** Separate things with space (the scale below) or by
+  making each its own control, never a 1px rule that cuts a card, a pair of buttons or the whole width in two
+  (Destin, 2026-11-05: "i don't like horizontal lines that bisect a container or the full screen. the line between the
+  arrows is grodi").
 - One scale: **4 · 8 · 12 · 16 · 24 px.** 4 between an icon and its label; 8 between things inside a
   card; 12 inside a card's edge; 16 between groups; 24 for major breaks.
 - In popups: **16px between groups, 8px between neighbouring boxes or rows** (the Settings list's gap,
@@ -567,8 +579,10 @@ app's own.
 - **A wrong input that trying again can't fix** (a file that isn't the right kind) offers the way to
   fix it ("Choose another file") as the notice's filled button instead of Try again (gt-r1 import
   builder; Destin did not object).
-- **"No internet" only when the computer reports no network** (amber); otherwise say the server could
-  not be reached (red). Never guess the cause (`docs/error-message-standards.md`).
+- **"No internet" only when the computer reports no network**, otherwise say the server could not be
+  reached; both are red, like the other failures beside them (Destin, card #236 review R-4/R-9,
+  2026-11-18: "probably make red instead of yellow" — it had been amber). Never guess the cause
+  (`docs/error-message-standards.md`).
 - **When an action finishes, keep its subject.** The card the action was about stays on screen, tagged
   with a status pill ("Submitted", "Not sent") and one line at its foot saying what happened; the
   next buttons sit where the action's were. While it runs, a single box with the spinner sits under the
@@ -933,6 +947,7 @@ recipe and ask.
 - [ ] Every retry button reads "Try again"; machine words only under Details.
 - [ ] No hard-coded colour, pill or corner size; theme colours and shape only; no status colour in text.
 - [ ] Sentence case; no spaced-out capitals; headings from the three levels.
+- [ ] Cover every word that explains the screen: can he still tell its sections and options apart? Then delete those words.
 - [ ] Actions on the right; one filled button (one per row in a list of actions); nothing filled alone
       at the bottom-left.
 - [ ] Spacing from the scale; cards styled by level; a label first; no loose text; no full-width lines.

@@ -13,9 +13,9 @@ area: Workspace
 vision: pages.agents.attached, agents.background.scheduled
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: waits on #61 — Item (f), sending automation results to Telegram, Discord or email, says it waits until Agents and Automations exists.
+Done: The announcement banner text is now cleaned of hidden terminal codes and cut to 300 characters (shipped Oct 30, commit c34c0f370). Still open: the banner is not signed, so a compromised update file could still show any text to every user. The other six ideas are not started.
+Next: not decided. Only a decision on item (c) (signing the banner) would move any of this forward.
+Blocked: the Telegram/Discord/email item (f) waits until the automations feature (card #61) exists.
 
 Chats
 

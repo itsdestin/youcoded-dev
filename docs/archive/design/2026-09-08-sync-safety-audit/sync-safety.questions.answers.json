@@ -1,0 +1,32 @@
+{
+ "deck": "sync-safety-questions",
+ "started": "2026-09-09T08:18:27.311Z",
+ "submitted": "2026-09-09T08:19:06Z",
+ "cur": 0,
+ "answers": {
+  "Q-approach": {
+   "v": "pick",
+   "pick": "staged",
+   "seconds": 10,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-deletion": {
+   "v": "pick",
+   "pick": "existing",
+   "seconds": 10,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-retention": {
+   "v": "pick",
+   "pick": "recovery",
+   "seconds": 10,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-transparency": {
+   "v": "pick",
+   "pick": "existing-screens",
+   "seconds": 10,
+   "theme": "cotton-candy-sky"
+  }
+ }
+}

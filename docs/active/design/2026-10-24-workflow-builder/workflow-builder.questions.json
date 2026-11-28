@@ -1,0 +1,183 @@
+{
+  "title": "Workflows you can build yourself — what it is",
+  "key": "workflow-builder-questions",
+  "out": "workflow-builder.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Workflows",
+      "path": "A new place in the app",
+      "headline": "Which real jobs should the first version be great at?",
+      "today": "The assistant can hire specialists one at a time, and an unfinished feature lets it propose a plan of several specialists that you approve in the chat.",
+      "problem": "A builder that tries to fit every job well at once usually fits none. The first jobs decide which boxes and connections matter most.",
+      "proposal": "Pick every job you would really use it for in the next few months. The first version is designed around these.",
+      "pick": "several",
+      "options": [
+        {"id": "research", "label": "Research reports", "summary": "Several researchers each cover one angle, then one writes the combined report.", "pros": ["Already works well in the built plans.", "Read-only, so nothing on your computer can break."], "cons": ["Mostly possible today by just asking the assistant."]},
+        {"id": "build", "label": "Building features", "summary": "Builders, then different reviewers and testers, then a final reviewer — your stated goal.", "pros": ["Your main goal; the strongest reason to have workflows at all."], "cons": ["Several agents changing the same files collide; needs separate copies of the project, the hardest part."]},
+        {"id": "files", "label": "Processing many files", "summary": "Run the same job on 50 documents or rows, then collect the results.", "pros": ["Plain, repeatable, easy to explain to non-developers.", "Cheap models do most of it."], "cons": ["Needs a box that turns a folder or list into one job per item."]},
+        {"id": "recurring", "label": "Recurring jobs", "summary": "Run every morning or every week without you.", "pros": ["The path to Autonomous Assistants."], "cons": ["Needs schedules and a way to reach you while you're away; much more to build."]}
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Workflows",
+      "path": "Where you build and run them",
+      "headline": "Where should the workflow builder live?",
+      "today": "YouCoded Pages are small apps inside YouCoded that the assistant builds. They can save their own data but cannot run agents; they can only open a new chat with a message filled in.",
+      "problem": "A builder has to start agents, show their spending, and ask you for approvals. Pages would need new powers to do any of that; a built-in screen already has them.",
+      "proposal": "Choose where it lives. This decides how much new plumbing is needed and how it feels to use.",
+      "options": [
+        {"id": "screen", "label": "Its own app screen", "recommended": true, "summary": "A Workflows screen beside Chat and Projects, built like the rest of the app.", "pros": ["Can start agents, show spending and approvals with no new risky powers.", "Works on the phone the same way, since the phone runs the same app now.", "Later becomes the home for Autonomous Assistants."], "cons": ["A new top-level place to learn.", "Not something users can remix the way they remix Pages."]},
+        {"id": "page", "label": "A YouCoded Page", "summary": "A first-party Page that edits workflows, with new powers to run them.", "pros": ["Matches how you first described it.", "Users could build their own variations."], "cons": ["Pages must first be allowed to run agents, spend money and ask for approvals — a big safety design on its own.", "Pages are fenced off from the app, so it would feel less built-in."]},
+        {"id": "card", "label": "Inside the chat card", "summary": "The plan card in the chat grows an edit mode.", "pros": ["Nothing new to find; you edit where the assistant proposed it."], "cons": ["A chat bubble is too narrow for arranging many boxes.", "Hard to save and reuse a workflow outside that chat."]}
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Workflows",
+      "path": "The builder's canvas",
+      "headline": "How freely should you be able to arrange the boxes?",
+      "today": "A built plan is a straight list of up to 6 steps, where one step can send several specialists out at once.",
+      "problem": "Free canvases with wires (like n8n or Zapier) can draw anything but turn into a tangle that non-developers struggle to read. A fixed layout is easier to read but can draw less.",
+      "proposal": "Three ways to lay it out. Pictures of the winner come next; this just sets the direction.",
+      "options": [
+        {"id": "lanes", "label": "Rows of cards", "recommended": true, "summary": "Steps go top to bottom; cards side by side in one row run at the same time; arrows show only what each card reads.", "pros": ["Reads at a glance, like the plan card you already reviewed.", "Can't become a tangle.", "Fits a phone screen."], "cons": ["Two separate chains running side by side need a little workaround."]},
+        {"id": "free", "label": "Free canvas with wires", "summary": "Put boxes anywhere and draw wires between them.", "pros": ["Can draw any shape.", "Familiar to people who used n8n or Zapier."], "cons": ["Becomes spaghetti fast; the most common complaint about these tools.", "Unusable on a phone."]},
+        {"id": "list", "label": "A list with indents", "summary": "Like a numbered outline; indented items run together.", "pros": ["Simplest to build and use."], "cons": ["Hard to see how results flow from one card to the next."]}
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Workflows",
+      "path": "Between the chat and the builder",
+      "headline": "Should the assistant and you edit the very same workflow?",
+      "today": "Only the assistant can write a plan. You can change the limit and each step's model; Comment asks the assistant to rewrite it.",
+      "problem": "Claude's version keeps the editable form as code; CrewAI's exports one way. When the picture and the thing that runs differ, they drift apart.",
+      "proposal": "One workflow format that both of you edit: the assistant can draft one in chat and you open it in the builder; you can build one and ask the assistant to improve it.",
+      "yes": "Same workflow",
+      "no": "Keep them separate"
+    },
+    {
+      "id": "P-2",
+      "page": "What a card can do",
+      "intro": "These decide what you can set on each agent card and which shapes the first version supports."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Workflows",
+      "path": "Settings on one agent card",
+      "headline": "What should you be able to set on each card?",
+      "today": "In a built plan each step has its instructions and a model; everything else comes from the specialist type (explorer, researcher, reviewer, worker).",
+      "problem": "Every setting is power for you and one more thing to understand. Most builders offer instructions, model and tools; nobody offers a dollar limit per card.",
+      "proposal": "Pick every setting a card should have in the first version. Unpicked ones keep a sensible default.",
+      "pick": "several",
+      "options": [
+        {"id": "prompt", "label": "Its instructions", "pros": ["The core of the card."], "cons": ["None."]},
+        {"id": "model", "label": "Its model", "pros": ["Cheap or local models for easy cards, strong ones for hard cards."], "cons": ["One more choice per card."]},
+        {"id": "limit", "label": "Its dollar limit", "pros": ["Nobody else offers this; stops one runaway card from eating the budget."], "cons": ["Needs a rule for what happens when one card hits its limit."]},
+        {"id": "tools", "label": "What it may do", "summary": "Read only, edit files, run commands, use the web.", "pros": ["A reviewer that can't change anything is safe to run unattended."], "cons": ["Permission choices are easy to get wrong."]},
+        {"id": "folder", "label": "Which folder it works in", "pros": ["Lets one workflow touch several projects."], "cons": ["Rarely needed at first."]},
+        {"id": "format", "label": "What it hands on", "summary": "A fixed shape for its result, like a checklist or a table.", "pros": ["The next card can rely on it; the main reliability trick in Claude's version."], "cons": ["Hard to explain to non-developers; may be better set automatically."]}
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Workflows",
+      "path": "How cards connect",
+      "headline": "Which ways of connecting cards should the first version have?",
+      "today": "Built plans have: one after another; several at once; combine or check earlier results; repeat until good (up to 5 rounds). Nothing else.",
+      "problem": "Every extra way to connect makes more workflows possible but makes the builder harder to read. 'If this, then that' choices made by the AI are the most fragile part of other tools.",
+      "proposal": "Pick every connection the first version should have.",
+      "pick": "several",
+      "options": [
+        {"id": "sequence", "label": "One after another", "pros": ["Basic; already built."], "cons": ["None."]},
+        {"id": "parallel", "label": "Several at once", "pros": ["Speed; already built."], "cons": ["None."]},
+        {"id": "combine", "label": "Combine or check", "pros": ["Already built; what makes results trustworthy."], "cons": ["None."]},
+        {"id": "repeat", "label": "Repeat until good", "pros": ["Already built; fixes and re-checks without you."], "cons": ["Can cost more if it never gets good."]},
+        {"id": "approve", "label": "Ask me first", "summary": "The workflow pauses for your OK before a card runs.", "pros": ["You stay in control of risky steps, like before files change."], "cons": ["A workflow left waiting while you're away."]},
+        {"id": "branch", "label": "If this, then that", "pros": ["Handles 'only fix it if the reviewer found problems'."], "cons": ["The most fragile part of other tools; harder to read."]},
+        {"id": "list-from-card", "label": "Split by a card's result", "summary": "An earlier card produces the list; the next row runs one card per item.", "pros": ["Lets research decide how many builders or reviewers to send."], "cons": ["You can't see the count before it runs, so the estimate is less sure."]}
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Workflows",
+      "path": "Running a workflow",
+      "headline": "Should a workflow run on its own, outside any chat?",
+      "today": "A built plan belongs to the chat it was proposed in; that chat has to be open for it to run, and the assistant reports the result there.",
+      "problem": "A workflow you saved and press play on has no natural chat. Tying it to one makes it feel like part of a conversation; separating it needs its own run screen.",
+      "proposal": "Choose how a run relates to chats.",
+      "options": [
+        {"id": "own", "label": "Its own run", "recommended": true, "summary": "Each run has its own page with live cards and spending; you can send the result into a chat.", "pros": ["Works the same whether you or the assistant started it.", "The basis for schedules later."], "cons": ["The engine needs a new owner that isn't a chat; real work."]},
+        {"id": "chat", "label": "Always in a chat", "summary": "Pressing play opens a chat where the run happens.", "pros": ["Reuses what is built.", "The assistant can explain results."], "cons": ["Your conversation list fills with workflow runs.", "Harder to run on a schedule later."]}
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Workflows",
+      "path": "Spending limits",
+      "headline": "When one card reaches its own limit, what should happen?",
+      "today": "Built plans have one optional limit for the whole plan; reaching it pauses everything with Stop and Continue.",
+      "problem": "With a limit per card, one card can run out while the others are fine.",
+      "proposal": "Choose what happens to the rest of the workflow.",
+      "options": [
+        {"id": "pause-all", "label": "Pause everything", "recommended": true, "summary": "The whole run waits for you: raise that card's limit or stop.", "pros": ["Nothing continues on half-finished work.", "Same as the plan limit you already approved."], "cons": ["One card can hold up the rest."]},
+        {"id": "skip", "label": "Stop that card only", "summary": "It hands on what it had; the rest keeps going.", "pros": ["The run finishes without waiting for you."], "cons": ["Later cards may work from an incomplete result without you noticing."]}
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Reuse, timing, and the built work",
+      "intro": "These decide what comes in the first version and what happens to the plans work already built."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Workflows",
+      "path": "Saved workflows",
+      "headline": "Should a saved workflow take inputs each time you run it?",
+      "today": "Nothing can be saved; each plan is written once for one job.",
+      "problem": "A 'review this feature' workflow is only reusable if you can hand it a different feature, folder or topic each time.",
+      "proposal": "A saved workflow can ask for a few inputs when you press play (a topic, a folder, a file), filled into its cards. Yes includes it in the first version; No saves workflows exactly as written."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Workflows",
+      "path": "Starting a workflow",
+      "headline": "When should workflows be able to run on a schedule?",
+      "today": "Nothing in YouCoded runs on a schedule. Autonomous Assistants (named assistants with recurring duties) is planned separately and has not been designed.",
+      "problem": "Schedules need a way to reach you while you're away and to keep running when the window is closed; that is most of the Autonomous Assistants work.",
+      "proposal": "Choose when schedules come.",
+      "options": [
+        {"id": "later", "label": "With Autonomous Assistants", "recommended": true, "summary": "First version: you or the assistant press play. Schedules come with the assistants work.", "pros": ["First version arrives much sooner.", "Schedules get designed once, for both."], "cons": ["No 'every Monday' workflows at first."]},
+        {"id": "now", "label": "In the first version", "pros": ["Recurring jobs from day one."], "cons": ["Roughly doubles the first version."]}
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Workflows",
+      "path": "The plans work already built",
+      "headline": "What should happen to the chat plan card that is already built?",
+      "today": "About 140 rounds of plans work are built but not in the app: the assistant proposes a plan in chat, you approve it, it runs with live spending and survives restarts. Bringing it up to date with today's app is a big job either way.",
+      "problem": "If the builder changes what a plan is, shipping the chat card first means building some parts twice. Waiting means nothing usable until the builder is done.",
+      "proposal": "Choose the route.",
+      "options": [
+        {"id": "fold-in", "label": "Fold it into the builder", "recommended": true, "summary": "Keep its engine (running, spending, saving, recovery) and rebuild its format and card for the builder; the chat card becomes the builder's preview.", "pros": ["Built once, in the shape you now want.", "The hard, tested part is reused."], "cons": ["No plans in the app until the first builder version is ready."]},
+        {"id": "ship-first", "label": "Finish and ship it first", "summary": "Finish the chat card as designed, then grow the builder from it.", "pros": ["Something usable sooner.", "Real use teaches the builder's design."], "cons": ["Card, format and connections get redone for the builder.", "The sign-off and review work is spent twice."]}
+      ]
+    }
+  ]
+}

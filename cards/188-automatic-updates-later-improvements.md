@@ -2,6 +2,7 @@
 id: 188
 title: Automatic updates: later improvements
 stage: explore
+priority: P3
 tags: desktop, updates
 related: 183
 branch: 188-automatic-updates-later-improvements
@@ -10,7 +11,7 @@ why: Left out of #183 on purpose: a notice when an update did not finish install
 ---
 Progress
 Done: nothing yet.
-Next: plan it.
+Next: decide with Destin which of the five follow-ups to plan first (or merge them into 183/189 follow-ups).
 Blocked: nothing.
 
 Chats

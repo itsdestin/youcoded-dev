@@ -1,0 +1,80 @@
+{
+  "title": "Unsafe plugins: YouCoded turns them off and tells you",
+  "key": "plugin-off-switch-review",
+  "out": "plugin-off-switch.review.html",
+  "images": "images/plugin-off-switch",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "1",
+      "surface": "Your library",
+      "path": "Your library > Plugins",
+      "crop": "library#plugin-turned-off@400x230+0+390",
+      "headline": "A plugin YouCoded turned off keeps its card, but says so in a red tag and a slim red note with a Remove button.",
+      "changed": "The card gets a red \"Turned off\" tag where \"Installed\" was, and a one-line red note at its foot: \"Turned off because it was found to be unsafe.\" with Remove inside it.",
+      "notice": "You can tell at a glance which plugin is off and why. Clicking the card still opens its details. The star still works.",
+      "risk": "Not built yet: the server's unsafe list and the actual switching-off; the app checks it at launch and about hourly with the store refresh. Remove deletes the plugin and its settings, like Uninstall, with no extra confirm."
+    },
+    {
+      "id": "2",
+      "surface": "Plugin details",
+      "path": "Your library > click the plugin",
+      "crop": "marketplace/detail/turned-off@840x240+300+176",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Proposed"
+      },
+      "new": true,
+      "headline": "On its details page, the red note takes the place of Install, Update and Uninstall.",
+      "changed": "The same red \"Turned off\" tag sits beside the name. Where the buttons were, one red note says \"YouCoded turned this plugin off because it was found to be unsafe. Your settings for it are kept.\" with Remove at the right.",
+      "notice": "There is no way to switch it back on from here, and no Update button. Remove is the only action.",
+      "risk": "Not built yet: the server list and the switching-off. Votes and comments still show on the page. Today this plugin would just look normal."
+    },
+    {
+      "id": "3",
+      "surface": "Chat",
+      "path": "Appears once, above the message box, after the app turns a plugin off",
+      "crop": "dev/toast#turned-off@900x150+250+755",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Proposed"
+      },
+      "new": true,
+      "headline": "A one-time message tells you even if you never open your library.",
+      "changed": "The app's normal pop-up message says \"We turned off a plugin that was found to be unsafe.\" with a Show button that opens Your library. It stays about 10 seconds and shows once per plugin.",
+      "notice": "You hear about it the next time you open the app, wherever you are. Show takes you straight to the plugin's card.",
+      "risk": "Not built yet; it can be missed if you look away for 10 seconds (the red tag in your library stays), and several plugins at once give one message."
+    },
+    {
+      "id": "4",
+      "surface": "Your library",
+      "path": "Your library on a phone",
+      "crop": "library#plugin-turned-off-phone@390x190+0+350",
+      "headline": "On a phone the note and Remove fit the card the same way.",
+      "changed": "Same card as change 1 at phone width: red tag by the name, the note and Remove at the card's foot.",
+      "notice": "Nothing is cut off or squeezed.",
+      "risk": "A longer plugin name shortens with \"...\" beside the tag, as names do today.",
+      "themes": [
+        "midnight",
+        "halftone-dimension"
+      ]
+    }
+  ]
+}

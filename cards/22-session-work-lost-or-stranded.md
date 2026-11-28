@@ -5,21 +5,17 @@ stage: planning
 priority: P1
 tags: dev-workspace, knowledge, regression, bug
 branch: 22-session-work-lost-or-stranded
-roadmap: dev-workspace: Session work lost or stranded: 6 ways a session's work or wo
 created: 2026-10-15
 summary: Unfinished work can vanish or be stranded on one computer, and the cleanup step has offered to delete folders holding unsaved edits.
 area: Workspace
 vision: together.added.closeout
-work: session/162-linux-update-feedback, session/93-file-viewer-freezes, session/welcome-back-recovery, session/22-checkpoint-backups
 ---
 Progress
-Done: Checkpoint-backup subtask merged: workspace PR #290 (48232bb1) restores regular own-work checkpoint backups with every-push secrets checks; app PR #666 (4a5951e3e) contains the exact approved concise native boundary. All local desktop/workspace checks and required GitHub Linux tests/packages plus Android JVM/debug/releaseTest builds passed. Remote ancestry verified; app merged tree exactly matches tested candidate.
-Next: Remaining #22 lifecycle, cleanup and stranded-work issues are still open; checkpoint-backup instruction repair is complete.
-Blocked: No blocker for this subtask. No app release or installed-app update was requested or performed.
+Done: Checkpoint backups merged earlier (PR #290). Landed on master 2026-11-10 (workspace PR #356): (e) close-out no longer says 'the work landed' or suggests deleting a folder that holds unsaved or untracked work; (a) cleanup removes a finished session's record, and stale records are cleared at session start; (c) a session can be resumed after cleanup removed its folder, only when all its work is already in master; (f) session start names any idle folder whose work exists only on this computer after 1 day. Each has a test that fails without the fix.
+Next: Destin: merge the branch. (b) folder vanished mid-session and (d) fresh folder missing a package: no cause provable, no recurrence since the 2026-09/10 fixes; close with those two recorded as 'no cause found', or keep open as a watch item.
+Blocked: nothing.
 
 Chats
-- 2026-10-21 session/22-checkpoint-backups: chat started
-- 2026-10-21 session/22-checkpoint-backups: chat started
 - 2026-10-21 session/22-checkpoint-backups: chat started
 - 2026-10-18 session/welcome-back-recovery: Close-out recurrence verified again: both unchanged base tips were called landed while recovery implementation is uncommitted. No deletion/archive/card closure followed; /tmp/recovery-close-{app,workspace}.log preserve evidence. Existing #22 covers the required dirty-worktree guard; no duplicate item.
 - 2026-10-18 session/93-file-viewer-freezes: Read-only close-out recurrence: both unchanged base tips were called landed despite this session's uncommitted implementation, and deletion was suggested. Worktrees retained; no card closure, archive, or cleanup followed that false verdict. Tooling repair remains outside this performance task.

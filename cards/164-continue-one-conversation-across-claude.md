@@ -2,6 +2,7 @@
 id: 164
 title: Continue one conversation across Claude Code and the native engine
 stage: explore
+priority: P3
 tags: chat-data, claude-code-integration, native-harness, sessions
 related: 3, 59
 vision: chat.converse.resume, chat.converse.native

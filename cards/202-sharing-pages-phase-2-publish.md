@@ -10,7 +10,7 @@ why: Destin 2026-10-24 (pages-finish-2 deck): 'want to look into other marketpla
 ---
 Progress
 Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Next: wait until Pages steps 4-6 are settled, then plan publishing without a GitHub account, saved versions and copies, and the AI reviewer.
+Blocked: nothing; it waits on the Pages foundation (card 90).
 
 Chats

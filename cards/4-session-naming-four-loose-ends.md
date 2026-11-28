@@ -1,7 +1,7 @@
 ---
 id: 4
 title: Conversation names: four loose ends
-stage: planning
+stage: explore
 priority: P3
 tags: chat-data, session-drawer, desktop, needs-repro, bug
 branch: 4-session-naming-four-loose-ends
@@ -14,9 +14,9 @@ platform: Desktop only
 vision: chat.converse.tags
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: The naming feature shipped 2026-09-09 (youcoded merge 9d445011), with three modes (Off, Basic, AI) and hand-typed names kept safe. The counter-undercount bug was fixed in c019d71d9. 2026-11-11 (chat-engine batch, app branch session/chat-engine-batch, not merged): (c) retested in a dev copy: names survive a window reload AND a forced crash for chats on YouCoded's own engine (auto-named, hand-named, named at creation). Claude Code chats not testable in the throwaway copy; code keeps names in the app's live session list, so the same is expected. (b) can no longer happen as described: /clear now starts a new history file, so the counter starts fresh.
+Next: (a) is a permanent product choice: Destin to confirm and close. (c) one look at a Claude Code chat after a reload on a real build would close it. (d) still needs a fresh sighting; the terminal status line can show the old automatic name after a hand rename because the topic file is never updated. Card says Desktop only, but Android runs the same code.
+Blocked: needs a live test of crash reload.
 
 Chats
 

@@ -3,26 +3,24 @@ id: 66
 title: Assistant tools and permissions: faults and unclear "Always allow"
 stage: planning
 priority: P1
-tags: native-harness, tools, desktop, permissions, tool-cards, release-blocker, bug
+tags: native-harness, tools, desktop, permissions, tool-cards, bug
 branch: 66-tools-and-permissions-small-faults
-roadmap: native-harness: Tools and permissions: small faults and checks — 6 things.
 created: 2026-10-15
 summary: Small models stumble on edits, local models lack Skip Permissions, huge pictures stall, and "Always allow" doesn't say why it didn't cover a command.
 area: Chat
 side: both
 platform: Desktop only
 vision: chat.steer.permissions, chat.converse.native
-work: session/66-passwordless-admin
+work: session/66-passwordless-admin, session/66-search-root, session/66-image-cache-sweep
 ---
 Progress
-Done: Shipped scoped passwordless-admin approvals in app PR #650 (5fa56a2ee6b94b6980cbb478dc7f65ee60e526fc): exact command, saved Full Auto and session-only choices; independent review findings fixed; integrated desktop verification and Linux/Android CI passed. Records: docs/archive/design/2026-10-19-passwordless-admin/.
-Next: Other existing #66 requests remain open; this scoped admin-approval session is complete.
-Blocked: Nothing for the shipped admin-approval subtask.
+Done: Image-cache 90-day sweep merged (PR #772, c7485cd9e). Search-root branch dropped by Destin and deleted
+Next: Remaining card items as listed
+Blocked: Nothing
 
 Chats
-- 2026-10-19 session/66-passwordless-admin: chat started
-- 2026-10-19 session/66-passwordless-admin: chat started
-- 2026-10-19 session/66-passwordless-admin: chat started
+- 2026-11-18 session/66-image-cache-sweep: chat started
+- 2026-11-18 session/66-search-root: chat started
 - 2026-10-19 session/66-passwordless-admin: chat started
 
 From the old roadmap (native-harness › tools, status confirmed, seen on desktop, last checked 2026-08-12)

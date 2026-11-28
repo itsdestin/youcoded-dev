@@ -1,0 +1,24 @@
+{
+ "deck": "pinned-bubbles-review-2",
+ "started": "2026-11-18T22:45:03.355Z",
+ "submitted": "2026-11-18T22:46:19Z",
+ "cur": 1,
+ "answers": {
+  "N-1": {
+   "note": "put in inside the chat message/bubble at the bottom, full width of the bubble. dark send again on the right side with light dismiss on left. no x ",
+   "t": 1795041964747,
+   "v": "yes",
+   "seconds": 61,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-2": {
+   "note": "inside message bubble",
+   "t": 1795041978463,
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

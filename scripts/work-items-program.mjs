@@ -28,6 +28,7 @@ import { workspaceOf, masterHasCards, masterCopy, onMaster } from './cards-maste
 import { buildPage, PAGE_DIR, prefetch, prefetched, LIVE_GH_CALLS } from './manage.mjs';
 import { execFileSync } from 'node:child_process';
 import { scan } from './prune-worktrees.mjs';
+import { tryAcquireLock } from './lib/lock.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // WHY a cap per answer: the app caps a program's output (2 MB); a picture batch stops short of it and the
@@ -97,23 +98,25 @@ function scanCached(ws, inventory, now) {
   return keep;
 }
 
-const lockFile = () => path.join(cacheDir(), 'drawing.lock');
-const alive = (pid) => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+// WHY a shared lock helper (scripts/lib/lock.mjs): a drawing whose process died (the app stops a page's
+// program when the page closes) is taken over by its dead pid. The name differs from the old pid FILE
+// "drawing.lock" so a stray file from an older version cannot collide with the helper's folder.
+const lockFile = () => path.join(cacheDir(), 'drawing.lockd');
+let heldDrawing = null;
+const dropDrawLock = () => { heldDrawing?.release(); heldDrawing = null; };
 /** Take the drawing lock. Resolves true if another drawing held it (and has now finished), false if none did.
- *  A lock whose process is gone (the app stops a page's program when the page closes) is taken over. */
+ *  Waits up to 90s; after that it draws anyway (as before) by taking the lock over. */
 async function drawLock() {
-  fs.mkdirSync(cacheDir(), { recursive: true });
   let waited = false;
   for (const until = Date.now() + 90_000; Date.now() < until;) {
-    try { fs.writeFileSync(lockFile(), String(process.pid), { flag: 'wx' }); return waited; } catch { /* held */ }
-    let pid = 0;
-    try { pid = Number(fs.readFileSync(lockFile(), 'utf8').trim()); } catch { continue; /* just released */ }
-    if (!pid || !alive(pid)) { fs.rmSync(lockFile(), { force: true }); continue; }
+    const got = tryAcquireLock(lockFile(), { maxAgeMs: 90_000 });
+    if (got.acquired) { heldDrawing = got; return waited; }
     waited = true;
     await new Promise((r) => setTimeout(r, 250));
   }
-  fs.rmSync(lockFile(), { force: true });
-  fs.writeFileSync(lockFile(), String(process.pid));
+  // The ceiling equals the wait, so a holder this old is now taken over; one last try, else draw unlocked.
+  const got = tryAcquireLock(lockFile(), { maxAgeMs: 0 });
+  heldDrawing = got.acquired ? got : null;
   return waited;
 }
 
@@ -168,7 +171,7 @@ export function handle(root, req) {
         // WHY one drawing at a time: two at once both reset the master copy and one fails on git's index.lock
         // (seen 2026-10-23 opening the board twice quickly). A second request waits and answers with the first's page.
         const waited = await drawLock();
-        if (waited) { try { const html = fs.readFileSync(file, 'utf8'); fs.rmSync(lockFile(), { force: true }); return pack(html); } catch { /* the first failed: draw here */ } }
+        if (waited) { try { const html = fs.readFileSync(file, 'utf8'); dropDrawLock(); return pack(html); } catch { /* the first failed: draw here */ } }
         try {
           // WHY start GitHub first: its six answers arrive while the git work below runs, not after it
           const asked = prefetch([...LIVE_GH_CALLS, ...TIDY_GH_CALLS], workspaceOf(root));
@@ -177,7 +180,7 @@ export function handle(root, req) {
           const html = buildPage(r, { pageMode: true, tidy: tidyFacts(root, loadCards(r), { cacheScan: true }) });
           try { fs.writeFileSync(file + '.tmp', html); fs.renameSync(file + '.tmp', file); } catch { /* next open just waits */ }
           return pack(html);
-        } finally { fs.rmSync(lockFile(), { force: true }); }
+        } finally { dropDrawLock(); }
       })();
     }
     case 'stage': {
