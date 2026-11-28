@@ -1,0 +1,76 @@
+{
+ "deck": "discoverability-questions",
+ "started": "2026-11-28T01:14:07.613Z",
+ "submitted": "2026-11-28T01:20:37Z",
+ "cur": 3,
+ "answers": {
+  "Q-ai-story": {
+   "v": "pick",
+   "pick": "plain-everywhere",
+   "t": 1795828492631,
+   "seconds": 23,
+   "theme": "halftone-dimension"
+  },
+  "Q-ai-skip": {
+   "v": "pick",
+   "pick": "skip",
+   "t": 1795828492631,
+   "seconds": 23,
+   "theme": "halftone-dimension"
+  },
+  "Q-selfhost": {
+   "note": "we should write our pitches assuming mesh exists. it will be merged relatively soon here. i was specifically confused about the awesome-selfhosted issue with desktop app when i asked this question",
+   "t": 1795828559596,
+   "v": "other",
+   "seconds": 67,
+   "theme": "halftone-dimension"
+  },
+  "Q-where": {
+   "v": "picks",
+   "picks": [
+    "hn",
+    "claudeai",
+    "localllama",
+    "selfhosted",
+    "sideproject"
+   ],
+   "t": 1795828650766,
+   "seconds": 30,
+   "theme": "halftone-dimension"
+  },
+  "Q-accounts": {
+   "v": "wrote",
+   "text": "i think i only have reddit? unsure which others i'd need",
+   "t": 1795828650766,
+   "seconds": 30,
+   "theme": "halftone-dimension"
+  },
+  "Q-paid": {
+   "v": "pick",
+   "pick": "not-yet",
+   "t": 1795828650766,
+   "seconds": 30,
+   "theme": "halftone-dimension"
+  },
+  "Q-pages": {
+   "t": 1795828836643,
+   "note": "these are all genuinely quite bad and poorly designed. also openly disregard my own statements and project instructions, like overemphasizing the specific home assistant page instead of making it an example toward the broader purpose/features of the app. the \"ai on your phone\" is also absolutely fucking terrible framing. there are a million different ways to get \"ai on your phone\", and this doesn't seem to emphasize any of the features that actually make ours unique or what users would search for that they can't get from other ai like hermes/claude/gpt/opencode/etc",
+   "v": "other",
+   "seconds": 94,
+   "theme": "halftone-dimension"
+  },
+  "S-bar": {
+   "v": "yes",
+   "t": 1795828836643,
+   "seconds": 94,
+   "theme": "halftone-dimension"
+  }
+ },
+ "built": {
+  "at": "2026-11-28T00:36:09Z",
+  "branch": "session/discoverability",
+  "commit": "df05d2c88195fb0f6e54f18c9ce03fdd7490b7dc",
+  "spec_sha256": "971b71cde3d3746cdeff28dd479746eb91db1771564509f96672e41304fb0100",
+  "spec_dirty": true
+ }
+}
