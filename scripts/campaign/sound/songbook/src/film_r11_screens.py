@@ -14,11 +14,15 @@ WHAT ROUND 11 CHANGES (everything else is round 10's A, note for note):
         words), so A answers only "is this balance right?".
   screens11-b  the same balance, plus the piano made subtler under her words (the diagnosis rules,
         SONGBOOK "Under a narrator"): the high B-flat 5 / G5 tick (fundamentals 784-932 Hz, inside
-        her 250 Hz-3 kHz band) plays only where she is silent (before her first word and in her one
-        breath, 5.52-5.92 s); under her words it steps down below her voice: one soft low note per
-        half bar (G2/C3 under C minor 9, A-flat 2/C3 under A-flat major 9, all under her lowest
-        pitch, measured about 147 Hz), each struck in a gap between her words, at the softer
-        voice_touch. The pad, bass, chords, shape and logo are untouched.
+        her 250 Hz-3 kHz band) plays only where she is silent; under her words the piano steps
+        down below her voice: soft low notes (G2/C3 under C minor 9, C3/A-flat 2 under A-flat
+        major 9, all under her lowest pitch, measured about 147 Hz), at most one a second, at the
+        softer touch. The pad, bass, chords, shape and logo are untouched.
+  REVIEW FIX (a fresh reviewer, same day): "silent" and "pause" are now measured on her recording
+        (_heard), not read from the word list, whose times are padded: three of B's five low
+        notes had been struck mid-word. B's ticks and low notes now start only in her real pauses
+        (5.3-5.8, 6.5-6.9, 7.6-7.7, 8.7-9.1 s), and the ending chord's E-flat 3 / A-flat 3, struck
+        inside her word "everything.", are left out in B (its low B-flats stay).
 
 ROUND 10 NOTES FOLLOW.
 """
@@ -150,21 +154,28 @@ RING_BAR2_AT = 6.0
 MINE = ("screens11-a", "screens11-b")
 
 # ---------------------------------------------------------------- round 11, B only
-# THE LOW STEP-ASIDE under her words (B). Each entry: (target beat, MIDI note). WHY these pitches:
+# THE LOW STEP-ASIDE under her words (B). WHY these pitches:
 # her voice's pitch measured 147-308 Hz (5th-95th percentile, median 199), so every note here sits
 # under it: G2 98 Hz, C3 131 Hz, A-flat 2 104 Hz. Each is a tone of its chord and none rubs the
 # held bass (G2 is a fifth over C2; A-flat 2 doubles the bass; C3 is the common tone of both
-# chords, so the line rocks on one shared note). WHY one per half bar (about 0.96 a second at
-# 115.65 bpm): the songbook allows at most about one soft attack a second while she speaks. WHY no
-# note at beat 12: the bass's own A-flat 2 is struck there, on the wall of screens. The line stops
-# at beat 18.9, where round 10 already rests the pulse under "source everything."
-LOW = [(4.0, 43), (6.0, 48), (8.0, 43), (10.0, 48), (14.0, 48), (16.0, 44), (17.0, 48)]
+# chords, so the line rocks on one shared note). WHY at most one a second: the songbook allows at
+# most about one soft attack a second while she speaks. The line stops at beat 18.9, where round
+# 10 already rests the pulse under "source everything."
+# REVIEW FIX: the line is now placed in her REAL pauses (see _heard), not at fixed beats moved
+# into the word list's gaps (three of those five attacks landed mid-word). Pitches by chord, taken
+# in turn: G2 then C3 under C minor 9, C3 then A-flat 2 under A-flat major 9.
+LOW_PITCH = {"Cm9": (43, 48), "Abmaj9": (48, 44)}
+LOW_PAUSE = 0.10          # s: the shortest real pause that takes a low note
+LOW_SPACING = 0.9         # s: at most about one soft attack a second
+LOW_UNTIL = 18.9          # beat: the line stops where round 10 already rests the pulse
+HEARD_DB = 30.0           # dB under her loud syllables that counts as her voice sounding
+TICK_CLEAR = 0.10         # s of silence after a high tick's attack before her next syllable
 # WHY 0.21 (0.17 tried first): with Piece.touch 0.85 and voice_touch -0.05 it logged 0.09-0.14,
 # under half the pulse's 0.20-0.25; 0.21 logs about 0.13-0.18, still softer than the tick in her pauses
 LOW_TOUCH = 0.21
-LOW_SEARCH = 0.35         # s either side of the target to look for a gap between her words
-LOW_GAP = 0.05            # s: the smallest gap between two of her words that takes an attack
-JOIN = 0.25               # s: her words joined across shorter gaps = "speaking" (voicemix._speaking)
+# B: the ending chord's notes from this MIDI note up (D3, 147 Hz, her lowest measured pitch) are
+# left out where they would be struck inside her word (see the piano wrapper)
+ENDING_B_LOWEST = 50
 
 
 def _mine(piece):
@@ -179,16 +190,49 @@ def _words(piece):
     return sorted((a, b) for _, a, b in piece.speech.words)
 
 
-def _speaking_at(piece, t):
-    """True inside her speech, words joined across gaps under JOIN s (what the reading
-    'starts-under-her' counts as speaking)."""
-    w = _words(piece)
-    for i, (a, b) in enumerate(w):
-        if a - 0.05 <= t < b:
-            return True
-        if i + 1 < len(w) and b <= t < w[i + 1][0] and w[i + 1][0] - b < JOIN:
-            return True
-    return False
+_HEARD = {}
+
+
+def _heard(piece):
+    """(times, True where her voice is actually sounding) on the piece's clock, 10 ms steps, from
+    her recording itself. WHY (round 11 review): the word list's times are padded; measured on
+    the recording, "It's time to free ourselves" runs unbroken from 2.21 to 3.62 s, so the
+    50-110 ms "gaps" between listed words that B first struck its low notes into were inside
+    her speech (her voice at -12 to -15 dB at three of those five attacks), and the listed word
+    "time," (6.27-6.83) is really 6.04-6.47 then a real pause. Her real pauses are where the
+    piano may move (SONGBOOK "Under a narrator": struck notes go in her pauses)."""
+    if piece.name not in _HEARD:
+        import voicemix
+        from dsp import SR
+        v = voicemix.raw_track(piece, int(round(piece.length * SR)), SR)
+        h = int(0.01 * SR)
+        e = _np.array([10 * _np.log10(_np.mean(v[i:i + h] ** 2) + 1e-20) for i in range(0, len(v) - h, h)])
+        loud = _np.percentile(e[e > -90], 95) if (e > -90).any() else 0.0
+        # WHY 30 dB under her loud syllables: her words measure -10 to -20 dBFS and her pauses
+        # under -50 (room tone about -100); -40 sits between, so breath noise is not "speaking"
+        _HEARD[piece.name] = (_np.arange(len(e)) * 0.01, e > loud - HEARD_DB)
+    return _HEARD[piece.name]
+
+
+def _heard_speaking(piece, a, b):
+    """True if her voice sounds anywhere in [a, b) s."""
+    t, on = _heard(piece)
+    sel = (t >= a) & (t < b)
+    return bool(on[sel].any())
+
+
+def _real_pauses(piece, lo, hi, min_len):
+    """Her real pauses (start, end) of at least `min_len` s that start in [lo, hi)."""
+    t, on = _heard(piece)
+    out, s = [], None
+    for ti, o in zip(t, on):
+        if not o and s is None:
+            s = ti
+        elif o and s is not None:
+            if ti - s >= min_len and lo <= s < hi:
+                out.append((round(s, 3), round(ti, 3)))
+            s = None
+    return out
 
 
 def _beat_of(band, t):
@@ -251,7 +295,23 @@ def _install():
             # tick's notes sit inside her 250 Hz-3 kHz band and struck 2.3-2.6 a second while she
             # spoke; in B it keeps only the notes that fall where she is silent. A written rest
             # (the same notes, fewer of them), not a duck: nothing already sounding is turned down
-            if role == "pulse" and _is_b(self.piece) and _speaking_at(self.piece, self.sec(beat)):
+            # (review fix: judged on her recording, not the padded word list; a tick is kept only
+            # where she is silent from just before its attack to TICK_CLEAR s after it, so the
+            # high attack never lands on a syllable; it may ring on under the next word, softly)
+            if role == "pulse" and _is_b(self.piece):
+                t = self.sec(beat)
+                if _heard_speaking(self.piece, t - 0.03, t + TICK_CLEAR):
+                    return None
+            # WHY (round 11 review, B): the ending's piano chord is struck on bar 7's downbeat
+            # (10.88 s), in the middle of her last and softest word "everything." (10.42-11.54),
+            # and its E-flat 3 and A-flat 3 (156 and 208 Hz) sit inside her voice's pitch (about
+            # 147-308 Hz): the one place B still struck notes in her range on a word, against B's
+            # brief. B keeps the chord's low B-flats (under her voice); the held pad already
+            # sounds E-flat 3, B-flat 3, C 4 and F 4 there, so the chord is still B-flat sus.
+            # A written omission, not a duck; A keeps the chord as round 10 wrote it.
+            if (_is_b(self.piece) and end0 - 1e-6 <= beat < land - 1e-6 and role not in ("pulse", "bass")
+                    and int(m) >= ENDING_B_LOWEST and _heard_speaking(self.piece, self.sec(beat) - 0.03,
+                                                                      self.sec(beat) + TICK_CLEAR)):
                 return None
             if beat >= land - 1e-6:
                 vel *= LANDING_SCALE            # the piano logo's E-flat chord under the name
@@ -317,46 +377,40 @@ def _ring(band, plans):
             band.piano("ring", b + 0.03 * q, m, n + 0.25, v, tone=-0.3, pedal=True, p=-0.05, role="sustain")
 
 
-def _low_onset(piece, t):
-    """Where an attack aimed at `t` s goes: before her first word if `t` is near it, else into the
-    gap between two of her words (at least LOW_GAP s) nearest to `t` within LOW_SEARCH s, at the
-    gap's middle; None if no gap is that close (the note is then left out). WHY the middle (first
-    try: 10 ms after the word): the note log showed the piano's attacks about 17 ms earlier than the
-    beat asked for, which put two of them inside the end of the word before."""
-    w = _words(piece)
-    if t < w[0][0]:
-        return min(t, w[0][0] - 0.06)
-    gaps = [(b, a2) for (_, b), (a2, _) in zip(w, w[1:]) if a2 - b >= LOW_GAP]
-    if any(b + 0.02 <= t < a2 - 0.02 for b, a2 in gaps):
-        return t                                    # already well between words
-    cands = [(b + a2) / 2 for b, a2 in gaps if abs((b + a2) / 2 - t) <= LOW_SEARCH]
-    return min(cands, key=lambda x: abs(x - t)) if cands else None
-
-
 def _low(band, piece):
-    """B's low step-aside line under her words (see LOW). WHY attacks in her gaps: a note's
-    attack is the event that pulls the ear; struck in the 50-110 ms between two words, it rings
-    under the next word without landing on its consonant (SONGBOOK: struck notes in her pauses).
+    """B's low step-aside line (see LOW_PITCH). WHY attacks in her REAL pauses: a note's attack is
+    the event that pulls the ear; struck just after her word ends, in a pause of at least
+    LOW_PAUSE s measured on her recording, it rings on softly under her next words without landing
+    on a syllable (SONGBOOK: struck notes go in her pauses). At most one per LOW_SPACING s; none
+    where her speech runs on without a pause (2.2-5.3 s: the held chord alone carries her there).
     Through the wrapper, so the dynamic shape and accents apply as to the pulse."""
-    for k, (beat, m) in enumerate(LOW):
-        t = _low_onset(piece, band.sec(beat))
-        if t is None:
-            continue
+    bl = band.bedline
+    first = min(a for _, a, _ in piece.speech.words)
+    pauses = _real_pauses(piece, first, band.sec(LOW_UNTIL), LOW_PAUSE)
+    times, last = [], -9.0
+    for s, e in pauses:
+        t = s + 0.03                        # 30 ms after her word's tail
+        if t - last >= LOW_SPACING:
+            times.append(t)
+            last = t
+    turn = {}
+    tch = float(getattr(piece, "touch", 1.0) or 1.0)
+    for k, t in enumerate(times):
         b = _beat_of(band, t)
-        nxt = LOW[k + 1][0] if k + 1 < len(LOW) else 18.9
-        v = LOW_TOUCH
-        tch = float(getattr(piece, "touch", 1.0) or 1.0)
-        # WHY the perceived delay: the band starts a soft piano sample that much early so it is
-        # HEARD on its beat (score.Band.piano), and voice_touch tests the sample's start, not
-        # the beat; test the same instant here
-        from timing import perceived_delay
-        t_start = band.sec(b) - (perceived_delay("piano", v * _shape(b) * tch) if band.v3 else 0.0)
-        if not band._in_words(t_start):
-            # WHY: voice_touch softens only attacks inside a word (+-50 ms); a note placed in a
-            # wider gap missed it and logged 0.23, louder than the tick in her pauses. Every note
-            # of this line is under her, so each gets the same -0.05 (undoing the shape and
-            # Piece.touch the wrapper and the band apply after this)
-            v -= 0.05 / (_shape(b) * tch)
+        chord = next((c for bb, nn, c, _ in bl.voicing if bb - 1e-6 <= b < bb + nn), None)
+        pitches = LOW_PITCH.get(chord)
+        if not pitches:
+            continue
+        m = pitches[turn.get(chord, 0) % len(pitches)]
+        turn[chord] = turn.get(chord, 0) + 1
+        nxt = _beat_of(band, times[k + 1]) if k + 1 < len(times) else LOW_UNTIL
+        # WHY let go at the chord change (first render: the G2 struck at 5.32 s rang on over the
+        # bass's A-flat 2 at the wall of screens, a semitone, the clash check's one fault)
+        nxt = min(nxt, next((bb + nn for bb, nn, c, _ in bl.voicing if bb - 1e-6 <= b < bb + nn), nxt))
+        # WHY -0.05 on every note (the band's voice_touch softens only attacks inside a listed
+        # word, and these are all in pauses): each rings on under her, so each gets the same
+        # softer touch (divided by the shape and Piece.touch the wrapper and the band apply after)
+        v = LOW_TOUCH - 0.05 / (_shape(b) * tch)
         band.piano("piano", b, m, max(1.0, nxt - b), v, tone=-0.3, pedal=False, p=0.0, jit=0.0, role="low")
 
 
