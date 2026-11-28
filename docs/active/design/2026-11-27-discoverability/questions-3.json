@@ -1,0 +1,106 @@
+{
+  "title": "Getting YouCoded found: one page per app people are leaving",
+  "key": "discoverability-questions-3",
+  "out": "questions-3.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-spine",
+      "page": "What every page shares",
+      "intro": "Built on the Yours. campaign's own lines, not new ones. A fresh reviewer checked every pitch against the campaign, the brand guide and your comments."
+    },
+    {
+      "id": "S-spine",
+      "words": true,
+      "surface": "Website",
+      "path": "Every new page",
+      "headline": "Every page shares one Yours. paragraph, word for word; only each page's first screen is written for its rival.",
+      "changed": "The shared paragraph uses the campaign's lines: everything became a subscription; your home, your money, your look, your rules; stop renting your life; just ask for it, and it's yours. Each page's top is about the app its reader is leaving. Nothing is reworded per page, so the pages never repeat each other in new words.",
+      "notice": "Read two pages side by side and the tops differ completely; the lower paragraph is the same on purpose.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-privacy",
+      "words": true,
+      "surface": "Website",
+      "path": "Every new page",
+      "headline": "Privacy is stated honestly: YouCoded never sees your messages, but Claude's, ChatGPT's or Gemini's company still does if you use them.",
+      "changed": "The reviewer caught my drafts promising privacy while telling Claude users to keep using Claude. The truly private option is a free model on your own computer, and the pages say exactly that.",
+      "notice": "A weaker-sounding privacy line, but one no commenter can knock down.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "Q-home",
+      "words": true,
+      "surface": "Website",
+      "path": "The homepage",
+      "headline": "Add one line and one short paragraph to the homepage saying it's an open-source AI assistant, an alternative to ChatGPT, Claude and Gemini?",
+      "today": "The tab title says 'personal AI assistant and open source everything app', but no sentence a visitor reads says 'open source AI assistant', and 'free' appears only on a button.",
+      "checked": "Read the live homepage text on 2026-11-27.",
+      "problem": "The broadest searches you named ('open source AI assistant', 'easy open source AI assistant') land on the homepage, and Google reads visible sentences more than the tab title.",
+      "proposal": "A subtitle line plus a short paragraph linking to the pages below. No new design; you edit the wording on the real page. Yes means I draft it."
+    },
+    {
+      "id": "P-rivals",
+      "page": "One page per app people are leaving",
+      "intro": "Each opens with that app's own strengths conceded, then what its reader can't get there. Yes means I draft that page for your review."
+    },
+    {
+      "id": "Q-claude",
+      "words": true,
+      "surface": "Website",
+      "path": "Page: leaving the Claude app",
+      "headline": "Claude page: 'your Claude plan, your app, your rules'?",
+      "today": "Claude users like its models, connectors and polish. Since 24 November, Claude artifacts can be installed as apps on Mac and Windows (beta). People leave over usage limits and being locked to Claude.",
+      "checked": "Rival facts from official pages, read 2026-11-27; every fact on the page will carry its dated source or be cut.",
+      "problem": "Contrasting with Claude's new installed apps is risky until I've tested what they can change; Claude users will call that customizing too.",
+      "proposal": "Top: keep the model you like; the app around it is yours, its look and pages shaped to you, on Linux and Android as well. One line on other models and open source. Proof: a real clip, sign in with a Claude plan, restyle, add a page."
+    },
+    {
+      "id": "Q-chatgpt",
+      "words": true,
+      "surface": "Website",
+      "path": "Page: leaving ChatGPT",
+      "headline": "ChatGPT page: the campaign's 'sign in, subscribe, renew, upgrade to continue' opening, then 'free, and it becomes yours'?",
+      "today": "ChatGPT is the best-known assistant, with voice, images and an app directory, sold in several paid tiers; its biggest audience isn't technical.",
+      "checked": "Rival facts from official pages, read 2026-11-27; every fact on the page will carry its dated source or be cut.",
+      "problem": "Price is the main reason people leave, but I'll only state prices or ads with official dated sources. I won't hint at importing old ChatGPT chats unless that exists.",
+      "proposal": "Top: the campaign's opening, nearly word for word. Then: free; bring your ChatGPT plan if you have one; then it becomes yours. Proof: a real clip of one everyday ask becoming something kept."
+    },
+    {
+      "id": "Q-gemini",
+      "words": true,
+      "surface": "Website",
+      "path": "Page: leaving Google",
+      "headline": "Gemini page: your story of leaving Google, Microsoft and Apple, and Google keeping reviewed chats for three years?",
+      "today": "Gemini is free, built into Gmail, Docs and Android. Google's own help page says chats a human reviewer has read are kept up to three years, even after you delete your activity.",
+      "checked": "Rival facts from official pages, read 2026-11-27; every fact on the page will carry its dated source or be cut.",
+      "problem": "My draft promised the Mesh and led with Office files. The Mesh isn't released, and most people leaving Google are on Android, where Office editing isn't.",
+      "proposal": "Top: your story, quoted from your voice notes. Then the three-year fact, sourced. Then: the assistant runs on your Android phone itself, and a free model on your computer means nobody reviews anything."
+    },
+    {
+      "id": "Q-hermes",
+      "words": true,
+      "surface": "Website",
+      "path": "Page: leaving Hermes Agent",
+      "headline": "Hermes page: 'an app you can hand to anyone in your house'?",
+      "today": "Hermes is free and open, remembers and learns, runs scheduled tasks, talks through Telegram, WhatsApp or Signal, and has a desktop app for Mac and Windows. Its readers already own their data.",
+      "checked": "Rival facts from official pages, read 2026-11-27; every fact on the page will carry its dated source or be cut.",
+      "problem": "'Open source' and 'own your data' don't set us apart here. 'Easier' is weaker now it has a desktop app.",
+      "proposal": "Top: no terminal, no setup, one installer on every system including Linux and Android. Then what an agent inside a chat app can't be: the place itself, its look and pages shaped to you. I'll check Hermes on Linux before saying it lacks a desktop app there."
+    },
+    {
+      "id": "Q-openclaw",
+      "words": true,
+      "surface": "Website",
+      "path": "Page: leaving OpenClaw",
+      "headline": "OpenClaw page: 'add-ons you can trust, and an app that asks before acting'?",
+      "today": "OpenClaw has a no-terminal desktop app on Mac, Windows and Linux, reaches WhatsApp and iMessage, and has a big skills catalog (ClawHub), which has had reports of harmful skills.",
+      "checked": "Rival facts from official pages, read 2026-11-27; every fact on the page will carry its dated source or be cut.",
+      "problem": "We can't claim a big catalog: 13 add-ons were made for YouCoded. The harmful-skill story goes on the page only with an official source.",
+      "proposal": "Top: every skill and theme in our marketplace is readable before you install it, and the app asks before acting, with every standing permission on one screen. Then the place itself, shaped to you."
+    }
+  ]
+}
