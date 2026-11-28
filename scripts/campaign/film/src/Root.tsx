@@ -1,7 +1,7 @@
 import React from 'react';
 import { Composition, Still } from 'remotion';
 import { FPS } from './brand';
-import { Banner, LinkedIn, LinkedInIcon, Poster } from './posters';
+import { Banner, LinkedIn, LinkedInIcon, Poster, type LinkedInProps } from './posters';
 import { Take1 } from './round2/take1';
 import { Take1B } from './round2/take1b';
 import { Take1C } from './round2/take1c';
@@ -20,6 +20,16 @@ const IDEAS = ['own', 'ask', 'quote', 'everyone', 'nothing', 'own-data', 'own-in
 const BANNERS: [number, number][] = [[300, 250], [336, 280], [300, 600], [160, 600], [728, 90], [970, 250], [320, 50], [320, 100]];
 
 // Every deliverable is one composition: `npx remotion render src/index.ts <id> out/<id>.mp4`.
+// LinkedIn cover alternatives: every line is the brand guide's own (tagline, headline, "stands for") or one it names as good.
+const LOOKS = ['chat--golden-sunbreak', 'chat--cotton-candy-sky', 'chat--meadow-mist'];   // three bright, clearly different looks; the plain dark one read as an empty box at this size
+const LINKEDIN: [string, LinkedInProps][] = [
+  ['a-tagline', { look: 'night', head: 'open source *everything.*' }],
+  ['b-yours', { look: 'day', head: 'make your technology / useful, fun, *yours.*', shots: LOOKS }],
+  ['c-asking', { look: 'night', head: 'make anything you can / imagine, *just by asking.*', shots: LOOKS }],
+  ['d-own-row', { look: 'day', head: 'own your data. intelligence. software. *everything.*' }],
+  ['e-updates', { look: 'day', head: 'stop waiting / for *updates.*', shots: LOOKS }],
+  ['f-own-not-rent', { look: 'night', head: 'software you *own,* not rent.' }],
+];
 export const Root: React.FC = () => (
   <>
     <Composition id="hero60" component={Hero60} fps={FPS} width={1920} height={1080} durationInFrames={60 * FPS} />
@@ -42,7 +52,7 @@ export const Root: React.FC = () => (
     )))}
     {/* LinkedIn page: 6:1 cover and square profile picture */}
     <Still id="linkedin-icon" component={LinkedInIcon} width={800} height={800} />
-    {(['night', 'day'] as const).map((look) => <Still key={look} id={`linkedin-${look}`} component={LinkedIn} width={4200} height={700} defaultProps={{ look }} />)}
+    {LINKEDIN.map(([id, props]) => <Still key={id} id={`linkedin-${id}`} component={LinkedIn} width={4200} height={700} defaultProps={props} />)}
     {BANNERS.map(([w, h]) => <Still key={`${w}x${h}`} id={`banner-${w}x${h}`} component={Banner} width={w * 2} height={h * 2} />)}
   </>
 );

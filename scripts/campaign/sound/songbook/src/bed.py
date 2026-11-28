@@ -236,6 +236,19 @@ class BedLine:
 
     def _voice(self):
         lo, hi = PAD_RANGE
+        # WHY per-piece pad register, voice count and spread (round 11, SONGBOOK rule 9: "the pad
+        # three notes, above the figure's top note"): measured on round 10's purple, the pad sat
+        # Eb3-G4 right on top of the chord figure (B-flat 3 to E-flat 4), so two layers filled the
+        # 150-500 Hz band ("notes mush together"). A piece may now ask, through Piece.bed, for
+        # pad_range=("F4", "C5"), pad_voices=3, a narrower pad_span for a close 3-note voicing,
+        # and pad_under_tune=True (no pad note above a tune note sounding over it: Rule 1.2).
+        # Every key is optional; without them the voicing is exactly as before (other films unchanged).
+        if self.cfg.get("pad_range"):
+            lo, hi = (note(x) if isinstance(x, str) else int(x) for x in self.cfg["pad_range"])
+        voices = self.cfg.get("pad_voices") or (4, 3)
+        voices = (int(voices),) if isinstance(voices, (int, float)) else tuple(int(v) for v in voices)
+        span_lo, span_hi = self.cfg.get("pad_span") or (9, 19)
+        under_tune = bool(self.cfg.get("pad_under_tune"))
         prev = None
         out = []
         # WHY (v4, the unity rebuild): the pad was voiced as an Eb3/Bb3 drone with the root left
@@ -245,6 +258,8 @@ class BedLine:
         woven = getattr(self.piece, "style", "") == "v4"
         held = [(bar.beat + bb, int(m) % 12) for p in self.plans for bar in p.bars
                 for bb, m, d, canon, _ in bar.tune if canon[0] != "logo" and d >= 1.5 - 1e-6] if woven else []
+        tune_spans = [(bar.beat + bb, bar.beat + bb + d, int(m)) for p in self.plans for bar in p.bars
+                      for bb, m, d, canon, _ in bar.tune if canon[0] != "logo"] if under_tune else []
         for beat, beats, chord in self._spans():
             # the pulse's notes over this whole span (a register change may fall inside it)
             pulse = sorted({m for x in np.arange(beat, beat + beats, 2.0) for m in self.pulse_at(x) if m < C5})
@@ -254,12 +269,14 @@ class BedLine:
             best = None
             # every 3- and 4-note choice in range; small search (at most ~15 candidates)
             import itertools
-            for n in (4, 3):
+            # the lowest tune note sounding anywhere over this span (pad_under_tune)
+            tlow = min((m for a, z, m in tune_spans if a < beat + beats - 1e-6 and z > beat + 1e-6), default=None)
+            for n in voices:
                 for combo in itertools.combinations(cands, n):
                     # WHY these spacings: low close intervals are mud (the "low interval limit":
                     # nothing closer than a major third below G3), and a pad wider than a 12th
                     # stops sounding like one chord
-                    if combo[-1] - combo[0] > 19 or combo[-1] - combo[0] < 9:
+                    if combo[-1] - combo[0] > span_hi or combo[-1] - combo[0] < span_lo:
                         continue
                     if any(y - x < (4 if x < note("G3") else 2) for x, y in zip(combo, combo[1:])):
                         continue
@@ -291,6 +308,10 @@ class BedLine:
                         want = {pc for b0, pc in held if beat - 1e-6 <= b0 < beat + beats} & set(T.CHORD_TONES[chord] | {root})
                         cost += 20.0 * len(want - pcs)
                         cost += 0.0 if root in pcs else 6.0
+                    if tlow is not None:
+                        # a pad note above the tune would take the top voice for that moment (a
+                        # unison is the tune's own pitch in the bed, which Rule 1.3 asks for)
+                        cost += 20.0 * sum(1 for x in combo if x > tlow)
                     if best is None or cost < best[0]:
                         best = (cost, combo)
             if best is None:
