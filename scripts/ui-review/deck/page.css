@@ -56,8 +56,10 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .steps span:hover{transform:scaleY(1.4)} .steps span.on{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--fg)}
 /* WHY green finished bars (Destin, round 13: "we used to have colored bars to indicate whether a page was finished or not at the top, but those seem
    to have gone away?"): the page script has always marked a finished page `done`, but nothing in this file ever drew it. On a deck that grows a page
-   with nothing left for him (and one he has now dealt with) is green; pages still needing him stay the neutral grey. */
-body[data-grows] .steps span.done{background:var(--yes)}
+   with nothing left for him (and one he has now dealt with) is green; pages still needing him stay the neutral grey.
+   WHY every deck, not only growing ones (Destin, 2026-11-23, on an after-build walkthrough: "even after ticking all boxes, the top bars aren't
+   changing color?"): round 13 scoped the green to growing decks, so a walkthrough or questions deck never showed a finished page. */
+.steps span.done{background:var(--yes)}
 .steps span.yes,.steps span.pick{background:var(--yes)} .steps span.no{background:var(--no)} .steps span.other{background:var(--other)} .steps span.skip{background:var(--fg-faint)}
 .count{font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Save status (page.js showSaved): visible at every width, unlike .count — a failed save is the one
@@ -878,6 +880,8 @@ li.call.reschg{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accen
    "less is always more… not duplicative text re-explaining each menu"). The kind is the small label above the
    list's title, in the same spot a question shows "Question 1 of 7". */
 .pages article.q .qnum .kindline{font:inherit;color:inherit}
+/* What to do on a list (page.js listHelp): one plain line under its title, the same quiet size as a page line. */
+.listhelp{margin:2px 0 10px;font-size:13px;line-height:1.45;color:var(--fg-2)}
 /* A row's words lead; its reason is one step quieter. Two levels, no more. */
 .callwhat{font-weight:600}
 /* WHY a card (round 10: "bare text with no card gets ignored easily as ai clutter"): the page's opening line —

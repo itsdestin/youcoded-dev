@@ -250,6 +250,10 @@ compaction); read `scripts/luna/README.md` for the isolation model before the fi
 Deterministic prompt shape stays pinned by unit tests (`prompt-assembly.test.ts`,
 `prompt-cache.test.ts`, `chatgpt-model.test.ts`), not by the rig.
 
+## Morning report
+
+Runs on GitHub, not on any computer: `.github/workflows/morning-report.yml`, daily about 13:30 UTC (6:30 a.m. Arizona), or on demand from the Actions tab. `scripts/morning-report.mjs` reads each repo's scheduled workflows from GitHub (one `event=schedule` query per workflow, so pull-request runs cannot hide a daily check), then runs the doc check (`audit-anchors.mjs`) and the cards check. The full report is the run's summary page. A separate job sends the phone message (counts only, high priority when red or when the report could not run) using the `NTFY_TOPIC` secret. The run itself turns red when any check is red (GitHub then emails the owner even if the phone secret is missing). Any check that cannot run is yellow, never green; the doc check says when it skipped anchors into the private repo. The default token cannot read private repos: `youcoded-admin` shows yellow "could not check" until the workflow is given a token that can. Device-only things (unsaved work, disk, shared checkouts) are deliberately not here; session start covers them. Try it locally without sending anything: `node scripts/morning-report.mjs`.
+
 ## Ending a Session
 
 **When Destin says "wrap up", "close out this session", "let's finish up", "we're done",

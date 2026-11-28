@@ -1,0 +1,90 @@
+name: Morning report
+
+# One green/yellow/red page every morning, plus a counts-only message on Destin's phone.
+# The full report is this run's summary page; the phone message only links to it.
+#
+# WHY on GitHub: the report is about the app and the workspace being functional and consistent,
+# and everything it reads (other repos' scheduled results, the doc check, the cards check) is on
+# GitHub already. Running here means it does not depend on any one computer being on.
+# What it deliberately does NOT cover: anything only true of one computer (unsaved work, disk,
+# shared checkouts); the session start-up report covers those.
+
+on:
+  schedule:
+    # 13:30 UTC = 06:30 in Arizona (no daylight saving). Off the hour on purpose: GitHub
+    # delays cron jobs scheduled at :00 under load.
+    - cron: '30 13 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # actions: read lets the default token read THIS repo's runs. Other public repos are readable by
+    # any token. The private youcoded-admin is left out of the report on purpose (no extra key).
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      message: ${{ steps.report.outputs.message }}
+      red: ${{ steps.report.outputs.red }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7
+        with:
+          node-version: 22
+
+      # Same clones the daily workspace CI makes, for the same reason: the doc check resolves
+      # anchors inside the sub-repos. youcoded-admin is private and is skipped by the checker
+      # (listed as "skipped", not failed). A failed clone fails this job on purpose, so the phone
+      # hears "could not run" rather than a doc check that falsely reports every anchor missing.
+      - name: Clone public sub-repos
+        run: |
+          set -euo pipefail
+          for entry in youcoded:master youcoded-core:master \
+                       wecoded-themes:main wecoded-marketplace:master; do
+            name="${entry%%:*}"
+            branch="${entry##*:}"
+            git clone --depth 1 --branch "$branch" \
+              "https://github.com/itsdestin/$name.git" "$name"
+          done
+
+      - name: Build the report
+        id: report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/morning-report.mjs --ci
+
+  # Its own job: the job above runs this repo's code and gets no ntfy secret. This one runs no
+  # repo code, only one request. Counts only (anyone who knows the topic name can read it).
+  # Same pattern as the Claude Code drift alerts in itsdestin/youcoded.
+  notify:
+    needs: report
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Tell Destin's phone
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MESSAGE: ${{ needs.report.outputs.message }}
+          RED: ${{ needs.report.outputs.red }}
+        run: |
+          if [ -z "$NTFY_TOPIC" ]; then echo "NTFY_TOPIC not set; the run's summary is the only notice."; exit 0; fi
+          priority=default; tags=white_check_mark
+          if [ -z "$MESSAGE" ]; then
+            # No message means the report itself broke (a red report still writes its message before the job
+            # fails): say so, never stay silent.
+            MESSAGE="Morning report could not run. Open the run on GitHub."; priority=high; tags=warning
+          elif [ "${RED:-0}" != "0" ]; then
+            priority=high; tags=warning
+          fi
+          curl -fsS -H "Title: YouCoded morning report" -H "Priority: $priority" -H "Tags: $tags" -H "Click: $RUN_URL" \
+            -d "$MESSAGE" "https://ntfy.sh/$NTFY_TOPIC" > /dev/null
