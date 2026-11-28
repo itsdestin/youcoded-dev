@@ -1,0 +1,49 @@
+{
+ "deck": "code-review-round4",
+ "started": "2026-11-28T00:11:07.127Z",
+ "submitted": "2026-11-28T00:12:59Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "pick",
+   "pick": "wrap",
+   "t": 1795824684328,
+   "seconds": 6,
+   "theme": "halftone-dimension"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1795824684328,
+   "seconds": 6,
+   "theme": "halftone-dimension"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1795824684328,
+   "seconds": 6,
+   "theme": "halftone-dimension"
+  },
+  "E-2": {
+   "v": "yes",
+   "t": 1795824777804,
+   "note": "but i want to fully understand potential downsides/unintended consequences of this.",
+   "seconds": 31,
+   "theme": "halftone-dimension"
+  },
+  "E-3": {
+   "v": "pick",
+   "pick": "as-today",
+   "t": 1795824777804,
+   "note": "i feel like i already directly answered a lot of these questions in earlier deck rounds?",
+   "seconds": 31,
+   "theme": "halftone-dimension"
+  },
+  "I-1": {
+   "note": "yeah i definitely answered some of this already. please find and utilize my existing responses.",
+   "t": 1795824777804,
+   "v": "skip",
+   "seconds": 31,
+   "theme": "halftone-dimension"
+  }
+ }
+}
