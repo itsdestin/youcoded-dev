@@ -1,0 +1,15 @@
+{
+ "deck": "search-root-questions",
+ "started": "2026-11-18T22:17:33.291Z",
+ "submitted": "2026-11-18T22:18:38Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "other",
+   "t": 1795040317554,
+   "note": "confused. doesn't the assistant have the ability/capacity to scope its own searches? also, in what world would i ever be starting the assistant in a subfolder of a project? that's not how the new session menu works....",
+   "seconds": 64,
+   "theme": "midnight"
+  }
+ }
+}

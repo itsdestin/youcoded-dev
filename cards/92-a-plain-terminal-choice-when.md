@@ -14,9 +14,9 @@ side: screens
 vision: chat.converse.multi
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Idea decided by Destin (local-engine-upgrades deck 2026-09-04, Q-1: add 'Terminal' to the new-session provider list; Q-2: keep it friendly for non-developers, anything confusing behind an (i) explainer). Back end exists: Settings' 'Run in terminal' already opens a bare shell session (desktop/src/main/session-manager.ts shell resolution ~line 93; comment in renderer App.tsx ~1287). Checked 2026-11-19, ready to build, ~small.
+Next: Find the new-session form (SessionStrip / ModelPicker / BuddyNewSessionForm), add a Terminal choice that starts that same shell session; build in workbench, Before/After deck. Desktop first; note any Android gap in the deck.
+Blocked: Nothing; Destin parked it 2026-11-19 to pick up later
 
 Chats
 

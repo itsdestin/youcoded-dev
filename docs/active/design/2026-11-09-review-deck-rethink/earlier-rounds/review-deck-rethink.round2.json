@@ -1,0 +1,430 @@
+{
+ "title": "Review deck rethink, round 2",
+ "key": "review-deck-rethink-round2",
+ "out": "review-deck-rethink.round2.html",
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Try what I built from your answers",
+   "intro": "These are working now, in this deck. Use them, then say keep or change."
+  },
+  {
+   "id": "R-1",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Drag a rectangle on this picture and comment on it. Keep it?",
+   "today": "You asked for rectangles instead of single pins. It is built: drag across the drawing below, and a numbered box opens for your comment.",
+   "problem": "I could only test it with a pretend mouse. You are the first real hand on it.",
+   "proposal": "Yes keeps it on every picture in every deck, including real screenshots. A plain click still opens the picture full size.",
+   "picture": "pictures/question.png",
+   "caption": "Drag anywhere on this drawing to try it.",
+   "checked": "Tested in a test browser on 9 Nov: drew two areas, typed in both, removed one, reloaded, and the remaining one was still there."
+  },
+  {
+   "id": "R-2",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Hover the small (i) beside \"Today\" on this question. Keep it?",
+   "today": "The (i) is built. It holds one sentence saying how and when I checked that \"Today\" is true.",
+   "problem": "Wrong or stale \"Today\" facts were the worst fault in past decks, and you could not tell which ones I had checked.",
+   "proposal": "Yes makes it a written rule: every \"Today\" I state carries its (i). No automatic refusal, as you asked.",
+   "checked": "This is the pop-up. Here I would write, for example: \"Opened the dev app on 9 Nov and pressed Send with no internet; the message stayed in the box.\""
+  },
+  {
+   "id": "R-3",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Calls I made for you while building this",
+   "calls": [
+    {
+     "id": "word-cap",
+     "call": "Each Today, Problem and Proposal box holds at most 60 words; each pro or con at most 25.",
+     "why": "You said the cap must leave room to be useful. 97 in 100 past boxes already fit; the ones over 60 were the walls of text."
+    },
+    {
+     "id": "no-quick-replies",
+     "call": "No new one-tap reply buttons. \"Other\" plus your note stays the way to disagree.",
+     "why": "You said three more buttons was too many and your note already says it better."
+    },
+    {
+     "id": "dont-know",
+     "call": "The \"Don't know\" button on yes/no questions stays as it is.",
+     "why": "You did not ask to remove it. Say so here if you want it gone."
+    },
+    {
+     "id": "stamp",
+     "call": "No cover page. Instead the top-left label shows when the deck was built and from which version, and each question shows the time you answered it.",
+     "why": "You said cover-page copy had to prove its value and named these facts as the useful ones."
+    },
+    {
+     "id": "area-means-other",
+     "call": "Marking an area without pressing any button counts as answering \"Other\".",
+     "why": "Otherwise a question you only commented on would be reported to me as skipped."
+    },
+    {
+     "id": "picture-rule",
+     "call": "\"Questions about looks need a picture\" becomes a written instruction, not an automatic refusal.",
+     "why": "Your answer to Q-8."
+    },
+    {
+     "id": "mic",
+     "call": "The microphone now turns your theme's accent colour with a ring that grows as you speak, and says \"Listening\" under the box.",
+     "why": "You asked for it to feel like the one in YouCoded, which works this way."
+    },
+    {
+     "id": "no-service",
+     "call": "Decks keep running the way they do today. No always-on helper was added.",
+     "why": "Your answer to Q-13."
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Who decides what",
+   "intro": "You asked for the specifics of what future chats ask you and what they decide alone."
+  },
+  {
+   "id": "R-4",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Is this the right three-way split?",
+   "today": "Written rules tell chats how to build a deck. None says which decisions are yours. My earlier \"nothing written down\" was too loose: the how is written, the who is not.",
+   "problem": "Without it, one chat asks you about build details and the next silently changes how a screen behaves.",
+   "proposal": "ASKED, with options: anything a user sees or feels. Layout, on-screen words, what a control does, step order, noticeable defaults, what happens on failure, anything removed, anything costing money or privacy. LISTED as calls you can overrule: visible choices with one obvious answer from the design guide. NEVER SHOWN: build details no user can notice.",
+   "options": [
+    {
+     "id": "three",
+     "label": "This three-way split",
+     "pros": [
+      "Big decisions stay yours; small ones cannot surprise you.",
+      "Fewer questions per deck."
+     ],
+     "cons": [
+      "A chat can misjudge \"obvious\" and list something you wanted to be asked."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "ask-more",
+     "label": "Ask more: listed calls become questions",
+     "pros": [
+      "Nothing visible stands without your direct answer."
+     ],
+     "cons": [
+      "Longer decks; big decisions get buried again."
+     ]
+    },
+    {
+     "id": "ask-less",
+     "label": "Ask less: only layout and behaviour are asked",
+     "pros": [
+      "Shortest decks."
+     ],
+     "cons": [
+      "Words, defaults and failure handling get decided for you."
+     ]
+    }
+   ],
+   "checked": "Read all three rule files and the deck guide on 9 Nov. They cover kinds, fields and commands. None says who decides what."
+  },
+  {
+   "id": "R-5",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "When a chat is unsure which group a decision belongs in, what should it do?",
+   "today": "No rule covers this.",
+   "problem": "Guessing \"small\" hides a decision from you. Guessing \"big\" pads the deck.",
+   "proposal": "When unsure, ask it as a question.",
+   "options": [
+    {
+     "id": "ask",
+     "label": "Ask it as a question",
+     "pros": [
+      "You never lose a decision to a wrong guess."
+     ],
+     "cons": [
+      "Some decks carry a question you find trivial."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "list",
+     "label": "Put it in the calls list",
+     "pros": [
+      "Shorter decks."
+     ],
+     "cons": [
+      "You must read the list carefully every time."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "The walkthrough that replaces the contract",
+   "intro": "You picked \"before and after building\" and wanted to steer the design further."
+  },
+  {
+   "id": "R-6",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Are these the right six parts, in this order?",
+   "today": "The drawing shows two of the parts. Nothing is built yet.",
+   "problem": "You said the contract did a poor job of showing what exists, how parts fit and how it is tested.",
+   "proposal": "1 What this is for. 2 Every screen: its picture and the decision of yours behind it. 3 Behind the scenes, as numbered plain steps. 4 Calls I made. 5 Checks. 6 Left for you to verify yourself. Drag on the drawing to change any part of it.",
+   "options": [
+    {
+     "id": "six",
+     "label": "These six, this order",
+     "pros": [
+      "Reads start to finish like a tour of the feature."
+     ],
+     "cons": [
+      "A big feature makes a long deck."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "screens-first",
+     "label": "Screens first, purpose folded into the opening screen",
+     "pros": [
+      "You see the thing sooner."
+     ],
+     "cons": [
+      "No single place states what the feature is for."
+     ]
+    }
+   ],
+   "picture": "pictures/walkthrough.png",
+   "caption": "A drawing of parts 2 and 3. Drag on it to comment on an area."
+  },
+  {
+   "id": "R-7",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "How should you answer each item in a walkthrough?",
+   "today": "Today a screen gets Yes or No, and a contract row gets nothing of its own.",
+   "problem": "A walkthrough has dozens of items. Yes or No on each is slow, and one Yes for the whole deck is the rubber stamp you disliked.",
+   "proposal": "Every item works like the calls list on the previous page: it stands unless you press Change this, which opens its own box. Pictures also take dragged areas.",
+   "options": [
+    {
+     "id": "change",
+     "label": "Stands unless you press Change this",
+     "pros": [
+      "Fast when things are right; precise when they are not."
+     ],
+     "cons": [
+      "An item you skimmed past counts as accepted."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "each",
+     "label": "A Yes or No on every item",
+     "pros": [
+      "Nothing is accepted without a deliberate press."
+     ],
+     "cons": [
+      "Dozens of presses per deck."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-8",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Is this how the Checks part should work?",
+   "today": "An independent reviewer runs a fixed routine you did not choose, and you see a pass or fail table.",
+   "problem": "You want to direct the checks yourself, and see proof.",
+   "proposal": "Before building: I suggest a handful of checks with reasons; you tick the ones to run and say any of your own in words. After building: each check shows pass, fail or unclear with its picture or clip, then a short list of things only you can verify.",
+   "options": [
+    {
+     "id": "steer",
+     "label": "You choose the checks, I show proof",
+     "pros": [
+      "You direct exactly what gets tested.",
+      "Proof is a picture or clip, not a word."
+     ],
+     "cons": [
+      "More checks ticked means a slower, costlier build."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "fails-only",
+     "label": "Same, but show proof only for failures",
+     "pros": [
+      "Shorter results."
+     ],
+     "cons": [
+      "You take passes on trust."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-9",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Is this the finish line?",
+   "today": "A feature is blocked from finishing until a contract is signed and graded.",
+   "problem": "You skip both, so the block guards steps you do not use.",
+   "proposal": "Finished means: every change you asked for is in the before-build walkthrough, and you submitted the after-build walkthrough with nothing marked Change. If you mark anything, I fix it and the same deck returns showing only what changed.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, that is the finish line",
+     "pros": [
+      "One clear rule you control."
+     ],
+     "cons": [
+      "A small fix sends the deck back to you once more."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "small-fixes",
+     "label": "Same, but tiny fixes do not need a return trip",
+     "pros": [
+      "Fewer round trips."
+     ],
+     "cons": [
+      "You do not see the fix before it counts as finished."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "One deck that grows, instead of many",
+   "intro": "From your answer to Q-14."
+  },
+  {
+   "id": "R-10",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "When I revise a deck after your answers, how should the same deck show it?",
+   "today": "Each round is a new deck with a new link. Earlier answers live in separate files.",
+   "problem": "One feature reached 108 decks. You lose track of what you already said.",
+   "proposal": "One link per topic. Reopened, it leads with what is new or changed, each marked New. Settled questions fold up below with your answer shown. Earlier wording and answers sit in a History view. Truly different topics still get their own deck.",
+   "options": [
+    {
+     "id": "new-first",
+     "label": "New first, settled folded below, History view",
+     "pros": [
+      "You only read what changed.",
+      "Your earlier answers are always in sight."
+     ],
+     "cons": [
+      "Questions move position between rounds."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "in-place",
+     "label": "Everything stays in place, changed ones get a badge",
+     "pros": [
+      "Nothing moves."
+     ],
+     "cons": [
+      "You scroll past settled questions to find new ones."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "R-11",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Should a deck list its related decks?",
+   "today": "Related decks are only mentioned in chat, if at all.",
+   "problem": "You asked for a way to track decks that are related but separate.",
+   "proposal": "A small \"Related\" list at the top of a deck: each entry is a name, one line on how it relates, and its link.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Add the Related list",
+     "pros": [
+      "You can hop between connected decks."
+     ],
+     "cons": [
+      "One more thing in the header area."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "Leave it",
+     "pros": [
+      "Nothing added."
+     ],
+     "cons": [
+      "You keep asking chat where the other deck is."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "Looks",
+   "intro": "From your last answer. I will show before and after pictures of these once the structure above is settled."
+  },
+  {
+   "id": "R-12",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Tidy-ups I plan to make to how decks look",
+   "calls": [
+    {
+     "id": "header",
+     "call": "The top bar keeps one height and layout on every page and tab, so nothing jumps as you move.",
+     "why": "You named header resizing across pages."
+    },
+    {
+     "id": "title-once",
+     "call": "The deck title appears once, not in the label and again in the bar.",
+     "why": "It is shown twice today and cut short in one place."
+    },
+    {
+     "id": "next-once",
+     "call": "One Next button, at the bottom, instead of one in the bar and one below.",
+     "why": "Two buttons that do the same thing."
+    },
+    {
+     "id": "chips",
+     "call": "Remove the small code-like tag on each option card.",
+     "why": "It repeats the option letter in a form only I use."
+    },
+    {
+     "id": "buttons-cards",
+     "call": "Buttons, cards and text sizes follow the app's design guide: same corner rounding, spacing and weights as YouCoded.",
+     "why": "You named button, text and card styling."
+    },
+    {
+     "id": "images",
+     "call": "Pictures always fill the available space: a single picture uses the full width; a pair sits side by side at equal size with matching edges; nothing is cropped unless I say so in the caption.",
+     "why": "You asked that pictures in any combination use the screen well and read as connected."
+    },
+    {
+     "id": "statement-label",
+     "call": "A statement you approve is not labelled \"Question\" either.",
+     "why": "Lists like this one already say \"List\"; statements still say \"Question\"."
+    }
+   ]
+  }
+ ]
+}

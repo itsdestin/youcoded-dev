@@ -14,9 +14,9 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin, session/66-search-root, session/66-image-cache-sweep
 ---
 Progress
-Done: Grep/Glob default to the project git root (home-folder repo and no-repo fall back to chat folder), disclosed, credential roots refused; tests green
-Next: Destin reviews deck docs/active/design/2026-11-19-search-root/search-root.questions.html
-Blocked: Nothing for the admin part. Other items wait on a decision about splitting the card.
+Done: Image-cache 90-day sweep merged (PR #772, c7485cd9e). Search-root branch dropped by Destin and deleted
+Next: Remaining card items as listed
+Blocked: Nothing
 
 Chats
 - 2026-11-18 session/66-image-cache-sweep: chat started

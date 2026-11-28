@@ -15,9 +15,9 @@ vision: chat.converse.native, chat.converse.queue
 work: session/fix-anthropic-many-image-brick, session/chat-followups, session/62-queue-edit-choice
 ---
 Progress
-Done: Item (d) built: editing a waiting message into a non-empty box now asks Replace or Append (YouCoded engine only); tests added; branch session/62-queue-edit-choice pushed
-Next: Destin reviews deck /home/destin/youcoded-dev/worktrees/sessions/62-queue-edit-choice/docs/active/design/2026-11-19-queue-edit-choice/queue-edit-choice.review.json
-Blocked: nothing recorded.
+Done: Deck 2026-11-19 queue-edit-choice: Destin said no - the refusal is fine, Replace/Append is overcomplicated. Branch session/62-queue-edit-choice not to be merged
+Next: Delete the branch once he OKs it
+Blocked: Nothing
 
 Chats
 - 2026-11-18 session/62-queue-edit-choice: chat started

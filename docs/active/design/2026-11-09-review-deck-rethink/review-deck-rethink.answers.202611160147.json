@@ -1,0 +1,67 @@
+{
+ "deck": "review-deck-rethink",
+ "started": "2026-11-12T11:29:08.899Z",
+ "submitted": "2026-11-16T01:47:08Z",
+ "cur": 0,
+ "answers": {
+  "W-1": {
+   "ok": {
+    "header": true,
+    "pictures": true,
+    "original": true
+   },
+   "t": 1794793627772,
+   "changes": {
+    "path": "confused. where did the other pages go then? i didn't ask you to eliminate the others, just to put things that need me at the end and start me at the first page that needs me so i dont have to click through pointless pages with fully answered questions.  also we used to have colored bars to indicate whether a page was finished or not at the top, but those seem to have gone away?",
+    "earlier": "no. thats confusing. they should remain their own pages at the top, but just be before the pages that need me with a green status bar instead of empyu/gray",
+    "fold": "see comment"
+   },
+   "v": "other",
+   "marks": [
+    {
+     "pic": "row fold",
+     "x": 0.5,
+     "y": 2,
+     "w": 98.9,
+     "h": 93.8,
+     "text": "tf is the difference between \"previously answered\" and \"everything answered earlier\"? this is extremely confusing and poorly considered."
+    },
+    {
+     "pic": "row more",
+     "x": 1.1,
+     "y": 5.5,
+     "w": 98.9,
+     "h": 80.3,
+     "text": "right margin seems weird/inconcistent here."
+    }
+   ],
+   "seconds": 76,
+   "theme": "ivory-schematic"
+  },
+  "D-1": {
+   "ok": {
+    "stages": true,
+    "popup": true,
+    "sink": true,
+    "tick": true,
+    "trail": true,
+    "marks": true
+   },
+   "t": 1794793627772,
+   "v": "yes",
+   "seconds": 76,
+   "theme": "ivory-schematic"
+  }
+ },
+ "built": {
+  "at": "2026-11-15T00:43:57Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "7a8d648bb"
+ },
+ "pageNotes": {
+  "PD-2": "why am i starting on a page full of completed questions? i also think the card with the answered questions should be collapsible/expandable into a single row.",
+  "PD-3": "again, why am i starting on a page full of answered questions that needs nothing from me? its fine if there's a reason for it, but that reason is extremely unintuitive.",
+  "PD-5": "yeah what was the point of this? you gave me a full deck with nothing to do? its fine if this is supposed to be a review phase or something, but that isn't clear to me. you just handed me a deck for what?",
+  "PD-0": "well after trying to submit it brought me back to this first page, which makes more sense i guess, but its still confusing that i started on a later page? and why would we put the newly requested responses on the first tab and make me click back through all the prior answers to get to the end? (why was this text carried over from my last round of answers? the previous comment seems like it would confusingly be applied to this round/page?). also just commenting on an imaged should count as a response/pencil/edit click"
+ }
+}

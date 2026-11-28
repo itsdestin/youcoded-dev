@@ -2,13 +2,20 @@
 """Assemble one self-describing HTML page: page.html.tmpl + page.css + page.js + the theme tokens
 + the deck data as one JSON object. Refuses when a picture or a box is missing, or a writing
 rule is broken — a deck with a hole in it is worse than no deck (spec §5)."""
+import datetime
+import hashlib
 import html
 import json
 import os
+import re
+import shutil
+import subprocess
 
 from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
-from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
+from . import reopen_diff
+from .grows import STAGES, STAGE_NAMES, answer_view, handled_view, is_grows, round_number, spec_bytes_at_commit, step_data
+from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_calls, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
 
@@ -24,6 +31,11 @@ def theme_tokens(themes):
         builtin = json.load(f)
     # Community themes live in the wecoded-themes checkout at the WORKSPACE root — a worktree has none.
     theme_dirs = [os.path.join(workspace_root(), 'wecoded-themes', 'themes')]
+    # WHY the installed themes too (Destin, 2026-11-11: every deck of this rethink opened in Midnight while
+    # his app was on Ivory Schematic — "barely any of this looks like youcoded"). A theme he made or
+    # installed himself lives only in the app's own theme folder, not in the registry checkout. It is
+    # only READ here, never written.
+    theme_dirs.append(os.path.join(os.path.expanduser('~'), '.claude', 'wecoded-themes'))
     # WHY the app's own built-in theme files too (2026-10-04): YouCoded and YouCoded Night are
     # built-ins that live as JSON in the app (themes/builtin/<slug>.json, the same tokens/dark
     # shape as a community manifest), not in globals.css or wecoded-themes — so a deck shot in
@@ -49,6 +61,17 @@ def theme_tokens(themes):
                     if k in (m.get('shape') or {}):
                         tok[k] = m['shape'][k]
                 tok['_dark'] = bool(m.get('dark', True))
+                # WHY the theme's typeface (Destin, 2026-11-12, round 10, L-3: yes, "match the app"): a deck
+                # in his colours but the deck's own typewriter face still read as a different product.
+                # The family goes in as --font; a Google Fonts address (the only kind accepted) is loaded
+                # when the deck opens, as the app does. Anything odd in either is ignored, not trusted.
+                font = m.get('font') or {}
+                fam = font.get('family') if isinstance(font, dict) else None
+                if isinstance(fam, str) and fam.strip() and not re.search(r'[;{}<>\\]', fam):
+                    tok['font'] = fam.strip() + ", system-ui, sans-serif"
+                    url = font.get('google-font-url')
+                    if isinstance(url, str) and url.startswith('https://fonts.googleapis.com/') and not re.search(r'[\s"\'()<>\\]', url):
+                        tok['_fonturl'] = url
                 out[t] = tok
                 break
         else:
@@ -57,7 +80,8 @@ def theme_tokens(themes):
 
 
 def tokens_css(tokens):
-    lines = []
+    # A stylesheet's @import lines must come before anything else in it.
+    lines = sorted({f'@import url("{tok["_fonturl"]}");' for tok in tokens.values() if tok.get('_fonturl')})
     for t, tok in tokens.items():
         decl = ';'.join(f'--{k}:{v}' for k, v in tok.items() if not k.startswith('_'))
         # Fix: page.css's defaults live on a bare `:root{...}` (specificity 0,1,0) and match <html> too,
@@ -87,7 +111,12 @@ def _option(o):
     return {'id': o['id'], 'label': o['label'], 'summary': (o.get('summary') or '').strip(),
             'pros': list(o.get('pros') or []), 'cons': list(o.get('cons') or []),
             'recommended': bool(o.get('recommended')),
-            'measured': o.get('measured', ''), 'cost': o.get('cost', '')}
+            'measured': o.get('measured', ''), 'cost': o.get('cost', ''),
+            # WHY: a written option may show a picture of itself (spec.py _validate_pictures).
+            **({'picture': o['picture']} if o.get('picture') else {}),
+            **({'caption': o['caption']} if o.get('caption') else {}),
+            # WHY (round 7): what the design reuses from the app, behind a small (i) on the option.
+            **({'reuse': o['reuse']} if o.get('reuse') else {})}
 
 
 # The rows keys, verbatim into deck data — page.js draws them as a table (feature-flow design §3).
@@ -108,7 +137,7 @@ def _decide_step(spec, st, boxes, runs):
         # Today / The problem / Proposal ride along exactly as on a words-only decide.
         # WHY (submit-ticket friction, proposal 20): validate accepted them and page.js draws
         # them, but this step dropped them — a picture decide reached Destin without them.
-        **{k: st[k] for k in QUESTION_FIELDS if st.get(k)},
+        **{k: st[k] for k in QUESTION_FIELDS + ('checked', 'trail', 'state', 'reuse') if st.get(k)},
     }
 
 
@@ -146,15 +175,38 @@ def _words_step(spec, st):
         d['rows'] = [{k: r.get(k, '') for k in ROW_KEYS} for r in st['rows']]
         d['yes'] = st.get('yes') or 'Yes, that is done'
         d['no'] = st.get('no') or 'No, something is missing'
+    elif is_calls(st):
+        # Small choices the assistant made itself: one line and its reason each; page.js gives
+        # every line its own pencil and comment box.
+        d['kind'] = 'calls'
+        d['calls'] = [{k: c[k] for k in ('id', 'call', 'why', 'picture', 'before', 'before_name', 'picture_name', 'decided', 'result', 'trail', 'state', 'more', 'reuse') if c.get(k)} for c in st['calls']]
+        if st.get('numbered'):
+            d['numbered'] = True   # a behind-the-scenes story: the rows are steps, in order
+        if st.get('context'):
+            d['context'] = True    # facts to read, not choices: no pencils (round 5, E-1)
+        if st.get('fold_settled'):
+            d['fold_settled'] = True   # rows marked settled fold into one "Settled (n)" line (round 7)
+        if st.get('gallery'):
+            d['gallery'] = True    # every screen that changed, as tiles side by side (round 3, S-1)
+    elif st.get('screen') or st.get('liveScreen'):
+        # A still copy of an app screen whose words he retypes in place (round 4; freeze.mjs).
+        d['kind'] = 'screen'
+        d['screen'] = st.get('screen', '')
+        # WHY (Destin, 2026-11-10: "the dropdown menus in that about popup should probably still
+        # work"): the screen's name in the app's screen list. When the deck is served the card can
+        # run the practice app on it ("Use it") and freeze it as it stands ("Edit words").
+        if st.get('liveScreen'):
+            d['liveScreen'] = st['liveScreen']
     elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
     elif is_question(st):
-        # A question with nothing to pick between is answered Yes / No / Don't know, which is a
+        # A question with nothing to pick between is answered Yes / No / Other, which is a
         # different answer row from both the decide and the statement — so it gets its own kind.
         d['kind'] = 'question'
     # The three parts of a question ride as their own keys; page.js draws one card each.
-    for k in QUESTION_FIELDS:
+    # `picture`/`caption` ride with them: a file beside the spec, shown above the three cards.
+    for k in QUESTION_FIELDS + ('picture', 'caption', 'checked', 'trail', 'state', 'reuse'):
         if st.get(k):
             d[k] = st[k]
     return d
@@ -258,6 +310,8 @@ def _still_step(spec, st, boxes):
         # about a pair.
         **({'runs': runs} if st.get('runs') else {}),
         **({'labels': st['labels']} if st.get('labels') else {}),
+        # WHY (round 7): what this design reuses from the app, behind a small (i) beside the headline.
+        **{k: st[k] for k in ('reuse', 'trail', 'state') if st.get(k)},
         # A NEW state of something built: one picture, but keep-or-remove, not build-or-leave.
         # page.js already prefers a step's own yes/no over its one-picture brief wording, so the
         # words are decided here and the page needed no change (games-social friction, 5).
@@ -286,6 +340,112 @@ def _answer_shape(st):
     return d
 
 
+def _built(spec):
+    """When this deck was built and from which version of the work (Destin, 2026-11-09, rethink
+    Q-6: "tracking the date/time and branch/commit a deck was built against"). Stale decks were
+    his worst complaint; this lets him — and the session reading the answers — see at a glance
+    whether a deck is older than the work it describes. Outside a git folder: the time alone."""
+    def git(*args):
+        try:
+            return subprocess.run(['git', *args], cwd=spec.get('_base') or '.', capture_output=True, text=True, timeout=5).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            return ''
+    # WHY `ids` (a growing deck's "New" tags): the next round must know which topics this build showed. The answers file
+    # keeps only topics he answered, so the build stamp, which rides into that file, carries the full list. Last key: serve.py
+    # finds `at` with a pattern that stops at the first closing brace.
+    # WHY `commit` is the FULL hash, `spec_sha256` a fingerprint of the spec file as built, and `spec_dirty` whether it differed from the committed one
+    # (code review F1/F2): a deck is usually built and served BEFORE its edits are committed, so the commit alone names an OLDER file than the one he
+    # saw. The gate reads the version whose fingerprint matches, never one that merely sits at that commit.
+    built = {'at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+             'branch': git('rev-parse', '--abbrev-ref', 'HEAD'), 'commit': git('rev-parse', 'HEAD')}
+    path = os.path.join(spec.get('_base') or '.', (spec.get('_stem') or '') + '.json')
+    try:
+        with open(path, 'rb') as f:
+            raw = f.read()
+        built['spec_sha256'] = hashlib.sha256(raw).hexdigest()
+        committed = spec_bytes_at_commit(path, built['commit']) if built['commit'] else None
+        built['spec_dirty'] = committed is None or hashlib.sha256(committed).hexdigest() != built['spec_sha256']
+    except OSError:
+        pass
+    if is_grows(spec):
+        built['ids'] = [st['id'] for st in spec['steps'] if isinstance(st, dict) and not is_page(st) and st.get('id')]
+    spec['_last_built'] = built   # review-cards.py build() keeps a copy of the spec as built when it was not committed
+    return {'built': built}
+
+
+def save_as_built(spec):
+    """When the spec he is about to see differs from the committed one, keep a copy of it beside the answers (`<stem>.as-built.<fingerprint>.json`),
+    so the gate can read exactly what he saw. Tracked like an answers file. Returns the path written, or None."""
+    b = spec.get('_last_built') or {}
+    if not b.get('spec_dirty') or not b.get('spec_sha256'):
+        return None
+    src = os.path.join(spec['_base'], spec['_stem'] + '.json')
+    dest = os.path.join(spec['_base'], f'{spec["_stem"]}.as-built.{b["spec_sha256"][:12]}.json')
+    if not os.path.exists(dest):
+        shutil.copyfile(src, dest)
+    return dest
+
+
+def _history(spec):
+    """Earlier rounds of this topic and related decks, for the History panel (page.js).
+
+    WHY (Destin, rethink round 2 R-10/R-11, round 4 N-1 "build it next"): every round was a
+    new link and the earlier ones were gone from view — what he had already decided on a topic
+    could only be found by a session reading files. A deck now names its `earlier` rounds (spec
+    files beside it, newest first) and `related` decks; the builder reads each earlier round's
+    questions and HIS saved answers into the page, so one link shows the new round first and
+    everything he said before behind one button. Read-only: an earlier round is a record."""
+    base = spec.get('_base', '')
+    rounds = []
+    for name in spec.get('earlier') or []:
+        path = os.path.join(base, name)
+        try:
+            with open(path, encoding='utf-8') as f:
+                old = json.load(f)
+        except (OSError, ValueError):
+            continue   # spec.py already refused a missing file; a broken one is simply left out
+        ans_path = os.path.splitext(path)[0] + '.answers.json'
+        saved = {}
+        if os.path.exists(ans_path):
+            try:
+                with open(ans_path, encoding='utf-8') as f:
+                    saved = json.load(f)
+            except (OSError, ValueError):
+                saved = {}
+        answers = saved.get('answers') or {}
+        items, page = [], ''
+        for st in old.get('steps') or []:
+            if not isinstance(st, dict):
+                continue
+            if 'page' in st:
+                page = st['page']
+                note = ((saved.get('pageNotes') or {}).get(st.get('id')) or '').strip()
+                if note:
+                    items.append({'page': page, 'headline': 'About this page', 'answer': '', 'notes': [note]})
+                continue
+            # WHY shared with growing decks (grows.answer_view): one reading of an answer everywhere.
+            answer, notes = answer_view(st, answers.get(st.get('id')) or {})
+            items.append({'page': page, 'headline': st.get('headline', st.get('id', '')), 'answer': answer, 'notes': notes})
+        general = (saved.get('notes') or '').strip()
+        if general:
+            items.insert(0, {'page': '', 'headline': 'Notes about anything else', 'answer': '', 'notes': [general]})
+        rounds.append({'title': old.get('title', name), 'when': (saved.get('submitted') or '')[:10], 'items': items})
+    related = [{'title': r['title'], 'href': r['path'], **({'how': r['how']} if r.get('how') else {})} for r in spec.get('related') or []]
+    return {'history': rounds, 'related': related} if rounds or related else {}
+
+
+def _freeze_source():
+    """The text of scripts/shoot/freeze.mjs's FREEZE (an expression that returns a screen as one
+    still HTML page when evaluated inside a page). Read by importing the module, so its escapes
+    are resolved by JavaScript itself rather than by a pattern of mine."""
+    path = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'shoot', 'freeze.mjs')
+    r = subprocess.run(['node', '-e', "import(require('url').pathToFileURL(process.argv[1])).then(m=>process.stdout.write(m.FREEZE))", path],
+                       capture_output=True, text=True)
+    if r.returncode != 0 or not r.stdout.strip():
+        raise SpecError(f'could not read the freeze function from {path}: {(r.stderr or "empty").strip()[:300]}')
+    return r.stdout
+
+
 def deck_data(spec, boxes):
     runs = run_names(spec)
     steps = [_live_step(spec, st) if is_live(st)
@@ -311,17 +471,67 @@ def deck_data(spec, boxes):
         # builds and serves it, and a failure there is a build error, not a stopped process.
         **({'command': f'bash scripts/run-workbench.sh {tree}'} if base else {}),
     }} if has_live(spec) else {}
+    # The freeze function itself, shipped only when a step can freeze the running app. WHY here and
+    # not copied into page.js: scripts/shoot/freeze.mjs is the ONE definition of "a screen as a
+    # still page"; a second copy would drift. One short `node` start, only for such a deck.
+    if any(st.get('liveScreen') for st in spec['steps']):
+        live['live']['freeze'] = _freeze_source()
     # A question deck is PAGES (design 3.1): `pages` lists the step ids on each, and page.js
     # switches to the scrolling reading column when it is there. Absent for any deck with a
     # picture, which keeps one step per screen — `steps` itself never carries the markers.
     pg = pages(spec)
     paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
-                        'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
-    return {**live, **paged, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
+                        'steps': [st['id'] for st in p['steps']],
+                        # `stage` only on a growing deck: the header's four-part control reads it.
+                        **({'stage': p['stage']} if p.get('stage') else {}),
+                        # WHY `record`: a page of an earlier stage than the deck is at is the record (read-only, never counted).
+                        **({'record': True} if is_grows(spec) and p.get('stage') in STAGES and spec.get('stage') in STAGES
+                           and STAGES.index(p['stage']) < STAGES.index(spec['stage']) else {})} for p in pg]} if pg else {}
+    # WHY (Destin, round 10): a growing deck has no History button; its earlier rounds live ON each topic.
+    grown = {}
+    if is_grows(spec):
+        gd = step_data(spec)
+        # WHY (Destin, 2026-11-18: "It feels like it keeps resetting rows/questions on me with no clear indication of what (if anything)
+        # actually changed"): a reopened topic carries what changed since he answered it (and, on a list, the ticks he already gave).
+        rdiffs, rwarns = reopen_diff.compute(spec)
+        spec['_reopen_warnings'] = rwarns
+        for st in steps:
+            if st['id'] in gd:
+                st['grow'] = gd[st['id']]
+                if st['id'] in rdiffs:
+                    st['grow']['diff'] = rdiffs[st['id']]
+        grown = {'grows': {'round': round_number(spec), 'stages': STAGE_NAMES, 'stage': spec.get('stage'),
+                           # WHY (Destin, 2026-11-18): a hands-off deck quotes his words on its first page and shows the three earlier stages skipped.
+                           **({'hands_off': spec['hands_off']} if isinstance(spec.get('hands_off'), str) and spec['hands_off'].strip() else {})}}
+        # WHY (Destin, round 15: "if a full page is new, a big NEW tag next to the title without tags on individual cards"): a page is new
+        # when everything on it that is open is new and nothing on it was answered in an earlier round; page.js then tags the heading.
+        # Any other page tags only its new topics (st.grow.new).
+        steps_by_id = {s_.get('id'): s_ for s_ in steps}
+        # WHY (code review F3): his comments that were not answers, and what was done about each, ride on the page they were left on
+        # (a note on a step goes to that step's page; the deck-wide note to the first page).
+        hv = handled_view(spec)
+        for pgd in paged.get('pages', []):
+            mine_ = [{**h, 'about': 'the whole deck' if k == 'general' else 'a question here' if k in pgd['steps'] else 'this page'}
+                     for k, lst in hv.items() for h in lst if k == pgd['id'] or k in pgd['steps'] or (k == 'general' and pgd is paged['pages'][0])]
+            if mine_:
+                pgd['handled'] = mine_
+        for pgd in paged.get('pages', []):
+            on = [steps_by_id[i] for i in pgd['steps'] if i in steps_by_id and not steps_by_id[i].get('context')]
+            if on and not pgd.get('record') and all((s_.get('grow') or {}).get('new') for s_ in on):
+                pgd['new'] = True
+    return {**live, **paged, **grown, **_built(spec), **({} if is_grows(spec) else _history(spec)), 'title': spec['title'], 'tag': (spec.get('tag') or '').strip() or None, 'key': spec['key'], 'runs': runs,
             # Any other run name (`round3`) shows as written unless `labels` names it.
             'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},
             'steps': steps}
+
+
+def embed_json(obj):
+    """JSON safe to sit inside a <script> block. WHY every `<` becomes \\u003c (review 2026-11-10):
+    escaping only `</` left `<!--` + `<script` in an answer text to switch the browser into a
+    state where the real closing tag no longer ends the block, blanking the deck — and his notes
+    are copied into later decks. \\u003c is still plain JSON, so nothing reading it changes."""
+    return json.dumps(obj).replace('<', '\\u003c')
 
 
 def build_page(spec, boxes):
@@ -372,5 +582,5 @@ def build_page(spec, boxes):
     # hardcoded data-theme="midnight" on <html>, so any deck whose first theme isn't Midnight flashed
     # the wrong palette before page.js's render() ran. Substitute the spec's actual first theme.
     page = page.replace('__TITLE__', html.escape(spec['title'])).replace('__THEME__', html.escape(spec['themes'][0]))
-    page = page.replace('__DECK__', json.dumps(deck_data(spec, boxes)).replace('</', '<\\/'))
-    return page, warnings
+    page = page.replace('__DECK__', embed_json(deck_data(spec, boxes)))
+    return page, warnings + list(spec.get('_reopen_warnings') or [])

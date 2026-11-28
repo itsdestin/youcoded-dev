@@ -23,6 +23,8 @@
         every row's source resolves to an answered step in a submitted deck and every mechanical guard exists on disk or on
         the contract's branch (exit 1 lists what doesn't); then reports, as ok:/todo: lines, whether the contract was signed
         (its own answers file) and whether the acceptance deck was submitted
+  python3 scripts/ui-review/review-cards.py walkthrough-check <feature>.walkthrough.json [<feature>.walkthrough.after.json]   (or one hands-off deck: walkthrough-check <deck>.json)
+        the done / not-done gate for the walkthrough flow: exit 1 listing what is unfinished (see deck/gate.py)
   python3 scripts/ui-review/review-cards.py acceptance <feature>.contract.json
         merge <feature>.contract.verdicts.json into <feature>.contract.acceptance.json — the contract graded, plus a yes/no per human row
 
@@ -64,9 +66,11 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from deck.build import build_page                       # noqa: E402
+from deck.build import build_page, save_as_built                       # noqa: E402
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
+from deck.gate import after_path, check_gate            # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
+from deck.shotmark import crop_shot                     # noqa: E402
 from deck.preview import can_render, preview as render_preview   # noqa: E402
 from deck.selfie import selfie as run_selfie              # noqa: E402
 from deck.serve import already_served, record, serve, wait_for_submit   # noqa: E402
@@ -78,7 +82,10 @@ def shared_key_specs(spec):
     twins = []
     try:
         for name in sorted(os.listdir(spec['_base'])):
-            if not name.endswith('.json') or name == spec['_stem'] + '.json' or '.answers' in name:
+            # WHY skip `<stem>.as-built.*.json` (2026-11-18): those are this deck's own kept copies of the version Destin saw, and they
+            # carry its key on purpose; counting them warned on every build of every growing deck, so real twins were lost in the noise.
+            if (not name.endswith('.json') or name == spec['_stem'] + '.json' or '.answers' in name
+                    or name.startswith(spec['_stem'] + '.as-built.')):
                 continue
             try:
                 with open(os.path.join(spec['_base'], name)) as f:
@@ -121,6 +128,10 @@ def build(spec):
     with open(out, 'w') as f:
         f.write(page)
     print('wrote', out)
+    # WHY (code review F1): a spec not yet committed when he is shown it is kept beside the answers, so the done gate can read what he saw.
+    kept = save_as_built(spec)
+    if kept:
+        print('kept the spec as he will see it:', kept)
     return 0
 
 
@@ -150,16 +161,46 @@ def main(argv):
         sub.choices[c].add_argument('--theme', help="open the deck on this theme instead of the one the app is on")
         sub.choices[c].add_argument('--rebuild-answered', action='store_true',
                                     help='rebuild a deck whose answers file says submitted (rewrites its approved pictures)')
+    # `walkthrough-check` takes the BEFORE-build walkthrough and optionally the after one (default:
+    # `<stem>.after.json` beside it) — the done / not-done gate (deck/gate.py). Handled in main()
+    # before a spec is loaded: it reads two raw specs and their answers, and needs no pictures.
+    wc = sub.add_parser('walkthrough-check')
+    wc.add_argument('spec', help='the before-build walkthrough, <feature>.walkthrough.json (or a hands-off deck: the one after-build deck)')
+    wc.add_argument('after', nargs='?', help='the after-build walkthrough (default: <feature>.walkthrough.after.json)')
     # `selfie` is the one command with no spec of its own: it WRITES one.
     sf = sub.add_parser('selfie')
     sf.add_argument('--before', default='origin/master', help='the git ref to compare this worktree against')
     sf.add_argument('--out', help='where the fixture, the pictures and the review land (default: a fresh temp folder, printed)')
     sf.add_argument('--dry-run', action='store_true', help='lay the fixture out and write the review spec; check nothing out, render nothing, serve nothing')
+    # `crop-shot` cuts part of a real screenshot and keeps its "real app" label (deck/shotmark.py says why).
+    cs = sub.add_parser('crop-shot')
+    cs.add_argument('src', help='a picture taken by shoot or explore')
+    cs.add_argument('dst', help='where the cropped picture goes (usually the deck folder\'s pictures/)')
+    cs.add_argument('box', nargs=4, type=int, metavar=('LEFT', 'TOP', 'WIDTH', 'HEIGHT'), help='the part to keep, in pixels')
     pv = sub.choices['preview']
     pv.add_argument('--sizes', help='window sizes to shoot, comma separated (default 1440x900,1280x800,1024x768)')
     pv.add_argument('--themes', help="themes to shoot, comma separated (default: the deck's first two)")
     pv.add_argument('--out', help='where the pictures go (default <spec dir>/preview/<spec name>/)')
     a = ap.parse_args(argv)
+    if a.cmd == 'crop-shot':
+        try:
+            crop_shot(a.src, a.dst, a.box)
+        except (ValueError, OSError) as e:
+            print(str(e), file=sys.stderr)
+            return 1
+        print(f'wrote {a.dst} (still labelled as a real screenshot)')
+        return 0
+    if a.cmd == 'walkthrough-check':
+        # WHY exit 1 + `todo:` lines: close-out.sh relays them verbatim, the same shape contract-check
+        # uses, so the script never reads an answers file itself.
+        problems, notes = check_gate(a.spec, a.after)
+        if problems:
+            print('NOT FINISHED:\n' + '\n'.join('- ' + p for p in problems), file=sys.stderr)
+            return 1
+        print('ok: ' + notes[0])
+        for n in notes[1:]:
+            print('note: ' + n)
+        return 0
     if a.cmd == 'selfie':
         # WHY before the try below: selfie has no `spec` argument to load — the review deck is
         # its OUTPUT. `finish` is main() again, so the deck it writes is built and served by
@@ -196,7 +237,9 @@ def main(argv):
         # approved — the only record of what he said yes to. The rule already said "re-serve an
         # answered deck with --no-build"; this makes it execute instead of asking.
         rebuilds = a.cmd in ('build', 'preview') or (a.cmd == 'serve' and not a.no_build)
-        if rebuilds and not a.rebuild_answered and answered(spec):
+        # WHY a deck that grows is exempt (Destin, round 10): its routine IS to rebuild the same file each round
+        # after he answers. It has no pictures to rewrite, and his submitted answers are kept as the earlier round.
+        if rebuilds and not a.rebuild_answered and answered(spec) and spec.get('grows') is not True:
             print(f'[deck] {os.path.basename(a.spec)} is already answered — rebuilding would rewrite the pictures '
                   'Destin approved. Use `serve --no-build` to show it again, shoot new pictures into a run folder '
                   'to compare against it, or pass --rebuild-answered if a rebuild is truly intended.', file=sys.stderr)

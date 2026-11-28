@@ -18,6 +18,13 @@ YouCoded is the start of a new kind of personal computing: one open app through 
 anyone, with no software skill at all, can make every device they own work for them —
 build their own apps, run their own home, hold their own data, and help build the app itself.
 
+## What the name means
+
+Mostly the Gen Z slang: **"that's so you-coded"**, meaning unmistakably *you*. Your technology,
+shaped until it reads as yours. The second reading, "you coded it" (a non-developer built this by
+asking AI; a nod to Claude Code), is true but secondary. Destin's words: section 5 of the voice
+notes.
+
 ## Today versus where it is going
 
 **Today** it is mostly an AI assistant: a chat window, on desktop, Android and the web, that

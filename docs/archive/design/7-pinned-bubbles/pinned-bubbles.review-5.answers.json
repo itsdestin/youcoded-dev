@@ -1,0 +1,30 @@
+{
+ "deck": "pinned-bubbles-review-5",
+ "started": "2026-11-19T00:45:50.393Z",
+ "submitted": "2026-11-19T00:47:07Z",
+ "cur": 2,
+ "answers": {
+  "K-1": {
+   "v": "no",
+   "t": 1795049174892,
+   "seconds": 24,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "K-2": {
+   "v": "no",
+   "t": 1795049182319,
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "K-3": {
+   "v": "other",
+   "t": 1795049226823,
+   "note": "this is better and closest to what i'd envisioned, but it still feels off. the contrast/colors are stranged. how are these similar styled messages handled in settings menus and such on similarly colored surfaces?",
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

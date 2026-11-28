@@ -1,0 +1,664 @@
+{
+ "title": "Review deck rethink, round 8",
+ "key": "review-deck-rethink-round8",
+ "out": "review-deck-rethink.round8.html",
+ "earlier": [
+  "review-deck-rethink.round7.json",
+  "review-deck-rethink.round6.json",
+  "review-deck-rethink.round5.json",
+  "review-deck-rethink.round4.json",
+  "review-deck-rethink.round3.json",
+  "review-deck-rethink.round2.json",
+  "review-deck-rethink.questions.json"
+ ],
+ "steps": [
+  {
+   "id": "P-0",
+   "page": "The restyle you asked for",
+   "intro": "Judge here: does the deck now look and behave like part of YouCoded, and is it calm enough? Each row quotes your comment and shows before and after. Press a tile to open its picture large."
+  },
+  {
+   "id": "N-1",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "gallery": true,
+   "headline": "Your round-7 comment, and what changed",
+   "calls": [
+    {
+     "id": "tiles",
+     "call": "Attachments is now a copy of the app's Deliverables card: one tile per picture, with a preview on top and its name below.",
+     "why": "Pressing a tile opens the full-window picture popup. Before, the pictures were laid out large inside the card.",
+     "decided": "\"i wanted these too look like 'deliverables' which meant a single card for each image. clicking that should open our popup image screen/comment menu\"",
+     "before": "pictures/r8-open-before.png",
+     "picture": "pictures/r8-open-after.png",
+     "reuse": {
+      "from": [
+       "Chat → Deliverables card: header line, sideways strip, tile size, open-arrow"
+      ],
+      "new": [
+       "A comment count on a tile's corner"
+      ],
+      "note": "Sizes are the app's own: tiles 224 wide, previews 112 tall."
+     }
+    },
+    {
+     "id": "popup",
+     "call": "The picture popup shows one picture with its comments beside it. You drag across the picture there to comment on a part of it.",
+     "why": "You no longer drag on pictures inside the card. A clip plays in the same popup.",
+     "picture": "pictures/r8-viewer.png"
+    },
+    {
+     "id": "badges",
+     "call": "The \"New this round\", \"Changed from your comment\" and \"Settled\" badges are gone. Rows sit under plain headings instead: New, Changed, Already settled.",
+     "why": "The only coloured pills left are real statuses such as Passed and Unclear, and a card's answered state.",
+     "decided": "\"these ' new this round' and 'changed from your comment' badges don't really make much sense, not to mention the colors make them visually confusing next to the unclear/pass/fail chips\"",
+     "before": "pictures/r8-list-before.png",
+     "picture": "pictures/r8-list-after.png"
+    },
+    {
+     "id": "fold",
+     "call": "The three bare \">\" lines (How this changed, More, Built from) are now one \"Details\" row, drawn like the app's fold-out rows with the arrow at the right.",
+     "why": "Small labels on the row say what is inside. A row with nothing to add has no Details row.",
+     "decided": "\"we don't use the bare > dropdowns anywhere\"",
+     "reuse": {
+      "from": [
+       "Settings → fold-out rows",
+       "Chat → Deliverables header line"
+      ]
+     }
+    },
+    {
+     "id": "links",
+     "call": "No underlined links are left anywhere on a deck. \"Since last round\" is a plain sentence; related decks and undo are small outlined buttons.",
+     "why": "Cost: the counts no longer jump to their rows. The headings inside each list replace that.",
+     "decided": "\"nor the linked underline text at the top of the page\""
+    },
+    {
+     "id": "bin",
+     "call": "Taking a comment away is a bin, not an ×. In History, each earlier round is the same fold-out row.",
+     "why": "In the app × means close and a bin means remove."
+    },
+    {
+     "id": "phone",
+     "call": "Phone width, before and after.",
+     "why": "Tiles are narrower there, as in the app.",
+     "before": "pictures/r8-phone-before.png",
+     "picture": "pictures/r8-phone-after.png"
+    },
+    {
+     "id": "left",
+     "call": "Not matched yet: the deck still opens in the Midnight colours, not your current theme, and the popup's Close is a word button where the app uses an ×.",
+     "why": "Your current theme has no colours in the deck tool yet. Say if either should change.",
+     "result": "unclear"
+    }
+   ]
+  },
+  {
+   "id": "P-1",
+   "page": "Built in round 6, still to review",
+   "intro": "Judge here: is each thing you asked for built the way you meant? You have not reviewed these yet. \"Changed\" means changed by the restyle on the previous page."
+  },
+  {
+   "id": "W-1",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "fold_settled": true,
+   "headline": "What you asked for in round 6, and what you got",
+   "calls": [
+    {
+     "id": "attach",
+     "call": "A row's pictures sit in an Attachments card at its foot.",
+     "why": "Rebuilt this round as tiles; see the previous page.",
+     "state": "changed",
+     "reuse": {
+      "from": [
+       "Chat → Deliverables card"
+      ],
+      "new": [
+       "drag-to-comment on the opened picture"
+      ],
+      "note": "Same folding card, with the deck's picture comments added."
+     },
+     "trail": [
+      {
+       "round": "Round 4",
+       "asked": "i just need to have more space and a better surface to actually leave/manage comments and such and quickly scan through all of the changes at once",
+       "built": "A full-window viewer with a strip of every picture.",
+       "said": "the arrows that let me click between pictures are weird cuz they fully lose the context of the question"
+      },
+      {
+       "round": "Round 6",
+       "asked": "rows with images should have an \"attachements\" row/expandable card at the bottom kind of like the \"deliverables\" row/card in youcoded chats.",
+       "built": "The Attachments card."
+      },
+      {
+       "round": "Round 7",
+       "built": "A card with the pictures laid out large inside it.",
+       "said": "this has suddently become VERYY busy and confusing… barely any of this looks like youcoded native ui elements"
+      }
+     ]
+    },
+    {
+     "id": "trail",
+     "call": "Each row can carry its own story, round by round: what you asked, what was built, what you said.",
+     "why": "Open Details on this row to see one.",
+     "state": "changed",
+     "trail": [
+      {
+       "round": "Round 5",
+       "built": "A History button opening a separate panel.",
+       "said": "You marked it Failed: you expected history woven into the deck."
+      },
+      {
+       "round": "Round 6",
+       "asked": "maybe? but i think we need to refine the ui/ux of this further",
+       "built": "The trail on each row, plus New, Changed and Settled marks."
+      },
+      {
+       "round": "Round 7",
+       "built": "A bare \"> How this changed\" line and coloured state badges.",
+       "said": "this has suddently become VERYY busy and confusing… barely any of this looks like youcoded native ui elements"
+      }
+     ]
+    },
+    {
+     "id": "since",
+     "call": "A deck after its first round opens with a \"Since last round\" sentence: how many rows are new, changed and settled.",
+     "why": "Settled rows fold shut at the bottom of a list.",
+     "state": "changed",
+     "trail": [
+      {
+       "round": "Round 7",
+       "built": "The counts were underlined links that jumped to their rows.",
+       "said": "this has suddently become VERYY busy and confusing… barely any of this looks like youcoded native ui elements"
+      }
+     ]
+    },
+    {
+     "id": "paste",
+     "call": "A picture or file path pasted or dropped into any comment box becomes a small pill under it.",
+     "why": "Pictures are saved beside the deck's answers, so I receive them.",
+     "state": "new",
+     "picture": "pictures/r7-paste-pills.png",
+     "reuse": {
+      "from": [
+       "Chat → message box attachment pills"
+      ],
+      "note": "Same pill shape and remove button."
+     },
+     "trail": [
+      {
+       "round": "Round 5",
+       "asked": "i need to be able to attach/paste images/filepaths in these input boxes and have them work as pills like youcoded.",
+       "built": "Pills under every comment box."
+      }
+     ]
+    },
+    {
+     "id": "more",
+     "call": "A check row carries a fuller explanation: what it does, what comes back, and why it is suggested for this build.",
+     "why": "Required on every check you can switch on or off. It sits inside the row's Details.",
+     "state": "changed",
+     "trail": [
+      {
+       "round": "Round 6",
+       "asked": "i think these checks cards need to have more elaborate/expandable descriptiosn of what they actually entail and why they are/aren't recommended for the specific build",
+       "built": "The More line."
+      },
+      {
+       "round": "Round 7",
+       "built": "A bare \"> More\" line.",
+       "said": "this has suddently become VERYY busy and confusing… barely any of this looks like youcoded native ui elements"
+      }
+     ]
+    },
+    {
+     "id": "reuse",
+     "call": "A design or row can say which existing app parts it is built from.",
+     "why": "You said this belongs in the deck, not in chat. It sits inside Details; the first row on the previous page carries one.",
+     "state": "changed",
+     "trail": [
+      {
+       "round": "Round 7",
+       "built": "A small labelled (i) on the row.",
+       "said": "this has suddently become VERYY busy and confusing… barely any of this looks like youcoded native ui elements"
+      }
+     ]
+    },
+    {
+     "id": "live",
+     "call": "A wording page can carry a \"Use it / Edit words\" switch: open any dropdown in the running practice app, then switch to freeze it and retype its words.",
+     "why": "Not yet tried by a real hand, and it needs the practice app running, so the deck starts slower.",
+     "state": "new",
+     "result": "unclear",
+     "picture": "pictures/r7-use-it.png",
+     "before": "pictures/r7-edit-words.png",
+     "trail": [
+      {
+       "round": "Round 6",
+       "asked": "You picked the switch, and asked for the best and simplest way possible.",
+       "built": "The switch. Edits are remembered by the words you changed and the state the screen was in."
+      }
+     ]
+    },
+    {
+     "id": "buttons",
+     "call": "Buttons follow the app's design guide: only Next and Done are filled; a chosen answer gets an outline and a tick.",
+     "why": "Open since round 4.",
+     "state": "settled",
+     "picture": "pictures/r7-buttons.png"
+    },
+    {
+     "id": "pill",
+     "call": "A list shows a pill only once you changed it or moved past it. \"Not reviewed\" is gone.",
+     "why": "You called that pill confusing. Unchanged this round.",
+     "state": "settled"
+    },
+    {
+     "id": "rules",
+     "call": "The round-6 flow is written into the rule files every YouCoded chat reads.",
+     "why": "Explore first, \"Here is how I understand this\", drawn designs, walkthrough before and after, wording last, no contract.",
+     "state": "settled"
+    },
+    {
+     "id": "context",
+     "call": "A background-only list has dashed rows and no pencils.",
+     "why": "Unchanged since round 6.",
+     "state": "settled"
+    },
+    {
+     "id": "switches",
+     "call": "A check can carry a Will run or Skip switch.",
+     "why": "Unchanged since round 6, apart from the larger pill on the next page.",
+     "state": "settled"
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "What the fresh reviewers found",
+   "intro": "Judge here (not reviewed yet): are the fixes right, and is anything I left alone wrong to leave? You asked for reviewers with no background. Three ran: two code reviewers and a first-time tester. One helper then fixed what they found."
+  },
+  {
+   "id": "R-1",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Fixes you will see",
+   "calls": [
+    {
+     "id": "pencil",
+     "call": "Pressing a row's pencil a second time no longer deletes your comment. A small bin beside the comment removes it.",
+     "why": "The tester lost a comment this way with no warning.",
+     "result": "pass"
+    },
+    {
+     "id": "status",
+     "call": "A status you change gets an outline and a \"changed from\" line. The pill is larger, with a small arrow.",
+     "why": "A changed row looked the same as an untouched one, and the pill read as a label.",
+     "result": "pass",
+     "picture": "pictures/r7-fix-status.png"
+    },
+    {
+     "id": "picked",
+     "call": "The option you pick gets a strong outline and a tick.",
+     "why": "It was a faint tint, the same look as \"Recommended\".",
+     "result": "pass",
+     "picture": "pictures/r7-fix-picked.png"
+    },
+    {
+     "id": "finish",
+     "call": "The finish page says \"Page 2, Question 3 of 3\" and shows option names. A list you left alone reads \"Left as listed\".",
+     "why": "It showed internal labels and \"Yes, build it\" for lists you never touched.",
+     "result": "pass",
+     "picture": "pictures/r7-fix-finish.png"
+    },
+    {
+     "id": "bg",
+     "call": "A background-only list is never counted as answered and never appears on the finish page.",
+     "why": "It was recorded as \"Yes, build it\".",
+     "result": "pass"
+    },
+    {
+     "id": "after",
+     "call": "After Submit, every box is locked.",
+     "why": "One typing box still took text, which was then lost.",
+     "result": "pass"
+    },
+    {
+     "id": "tiny",
+     "call": "A tiny accidental drag on a picture draws nothing.",
+     "why": "It left an empty, nearly invisible comment.",
+     "result": "pass"
+    },
+    {
+     "id": "phone",
+     "call": "At phone width the title has its own line and every button is tall enough to tap.",
+     "why": "The progress bar covered the title.",
+     "result": "pass",
+     "picture": "pictures/r7-fix-phone.png"
+    },
+    {
+     "id": "words",
+     "call": "A wording page opens zoomed to fit the window, with a count of your edits above the screen.",
+     "why": "On a short window the popup's foot is still cut off until you scroll.",
+     "result": "unclear",
+     "picture": "pictures/r7-fix-words.png"
+    }
+   ]
+  },
+  {
+   "id": "R-2",
+   "surface": "Review decks",
+   "path": "Behind the scenes",
+   "words": true,
+   "headline": "Fixes you will not see",
+   "calls": [
+    {
+     "id": "saves",
+     "call": "Two saves landing at once can no longer lose answers, and a late save can no longer undo your Submit.",
+     "why": "Found by the code reviewer; proven with a test of many saves at once.",
+     "result": "pass"
+    },
+    {
+     "id": "notes",
+     "call": "Page comments and status changes survive when the deck recovers from its backup copy.",
+     "why": "They were dropped; only answers came back.",
+     "result": "pass"
+    },
+    {
+     "id": "frozen",
+     "call": "A saved screen is scrubbed of anything that can run or load from the internet before it enters a deck.",
+     "why": "A saved screen is a copy of a real page; it should be only words and layout.",
+     "result": "pass"
+    },
+    {
+     "id": "mic",
+     "call": "Recording stops if you close the tab mid-sentence or the voice helper fails.",
+     "why": "The microphone could stay open. Tested with a pretend microphone only.",
+     "result": "unclear"
+    },
+    {
+     "id": "outside",
+     "call": "No web page outside this computer can read or change a deck's answers.",
+     "why": "The reviewer tried five ways in; all were refused.",
+     "result": "pass"
+    },
+    {
+     "id": "tests",
+     "call": "16 automatic tests added, none removed: 445 in all, all passing.",
+     "why": "Each new test repeats one of the faults above and proves it stays fixed.",
+     "result": "pass"
+    }
+   ]
+  },
+  {
+   "id": "R-3",
+   "surface": "Review decks",
+   "path": "Any deck link I send you",
+   "words": true,
+   "headline": "Found, and left alone",
+   "calls": [
+    {
+     "id": "skim",
+     "call": "Leaving a list page without touching it still accepts its rows.",
+     "why": "The tester called this surprising. You decided it in round 3: rows stand unless changed."
+    },
+    {
+     "id": "dead",
+     "call": "The link stops working after Submit. The page now says \"Sent. You can close this tab.\"",
+     "why": "Reopening is asked on the last page."
+    },
+    {
+     "id": "hand",
+     "call": "Never tried: a real mouse on the Use it switch, a real microphone, a real phone, the light themes.",
+     "why": "I can only press buttons by script, and I do not record your microphone."
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "What slipped between rounds",
+   "intro": "Judge here (not reviewed yet): which of these do you still want? You asked for a check of everything you said in six rounds against what exists. The rule files were corrected already. These are the rest."
+  },
+  {
+   "id": "D-1",
+   "surface": "Review decks",
+   "path": "Rounds 2 to 6",
+   "words": true,
+   "headline": "Asked for or raised, and not done",
+   "calls": [
+    {
+     "id": "other",
+     "call": "A status pill has no \"Something else\" choice.",
+     "why": "Round 5. Today: Passed, Failed, Unclear, Not done. A comment on the row is the workaround."
+    },
+    {
+     "id": "starts",
+     "call": "No ready-made starting deck for \"here are three drawn designs\".",
+     "why": "Round 5. Chats build it from the questions starting deck each time."
+    },
+    {
+     "id": "testspage",
+     "call": "\"Tests added and removed, in plain words\" has no fixed place in the after-build walkthrough.",
+     "why": "Round 6. Today it is one row, as on the previous page."
+    },
+    {
+     "id": "hosting",
+     "call": "Your question about the app hosting deck links itself was never answered.",
+     "why": "Round 2. It is an app feature, so it would be an idea card, not part of this work."
+    },
+    {
+     "id": "claims",
+     "call": "Three things I told you were not quite true: Notes \"gone\" (only on question decks), Related \"built\" (moved inside History), buttons \"taken from the design guide\" (matched by eye).",
+     "why": "Corrected here so the record is right."
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Decisions I need",
+   "intro": "Judge here: five decisions that block or shape what comes next."
+  },
+  {
+   "id": "Q-1",
+   "surface": "This work",
+   "path": "Backing up to GitHub",
+   "words": true,
+   "headline": "May I tell the safety scanner to ignore five made-up ids?",
+   "today": "16 saved steps of this work exist only on this computer. The scanner that guards every backup refuses to send them.",
+   "problem": "One old step holds five practice-app ids that look like passwords to the scanner. They are not secrets, and I am not allowed to rewrite saved history.",
+   "proposal": "Yes adds those five exact lines to the scanner's ignore list and backs everything up. Nothing else is loosened. No leaves the work on this computer only.",
+   "yes": "Yes, ignore those five",
+   "no": "No, keep it local"
+  },
+  {
+   "id": "Q-2",
+   "surface": "How chats work with you",
+   "path": "The checks menu before a build",
+   "words": true,
+   "headline": "Which reviewers should be on by default?",
+   "today": "The new rules give every build a checks menu where each reviewer is suggested on or off. Nothing says which are normally on.",
+   "checked": "Counted across 32 past builds: the code reviewer made 241 findings, about two thirds accepted. About half the first-time tester's findings were noise. The grader changed nothing.",
+   "problem": "You asked to discuss this. Without a default, each chat guesses.",
+   "proposal": "Pick the default. You can still flip any switch on any build.",
+   "options": [
+    {
+     "id": "code",
+     "label": "Code reviewer always on; the rest suggested per build",
+     "pros": [
+      "Keeps the one that reliably finds real faults.",
+      "The tester runs only when there are new screens."
+     ],
+     "cons": [
+      "I judge when the tester is worth it, and can judge wrong."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "both",
+     "label": "Code reviewer and first-time tester always on",
+     "pros": [
+      "This round the tester found real faults the code reviewers missed."
+     ],
+     "cons": [
+      "Slower builds, and about half its findings are noise I must sort."
+     ]
+    },
+    {
+     "id": "none",
+     "label": "Nothing on by default",
+     "pros": [
+      "Fastest builds."
+     ],
+     "cons": [
+      "A fault like \"second press deletes your comment\" reaches you instead of a reviewer."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "surface": "Review decks",
+   "path": "A deck link opened again after Submit",
+   "words": true,
+   "headline": "What should reopening an answered deck do?",
+   "today": "The link dies on Submit. If I serve the deck again, it opens empty and your earlier answers are filed beside it.",
+   "problem": "The tester read the empty deck as lost answers, and could have answered twice.",
+   "proposal": "Pick what a reopened deck shows.",
+   "options": [
+    {
+     "id": "resume",
+     "label": "Your answers, still editable, with a line saying when you sent them",
+     "pros": [
+      "Nothing looks lost.",
+      "You can correct one answer and send again."
+     ],
+     "cons": [
+      "A second Submit replaces the first; the first is kept in a dated file."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "locked",
+     "label": "Your answers, locked",
+     "pros": [
+      "A clear record."
+     ],
+     "cons": [
+      "In August a locked deck read to you as \"I can't click through\"."
+     ]
+    },
+    {
+     "id": "fresh",
+     "label": "Leave it: empty",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Looks like lost answers."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "surface": "Review decks",
+   "path": "A picture, on a phone",
+   "words": true,
+   "headline": "On a phone, how should commenting on part of a picture start?",
+   "today": "Since this round's fixes a finger dragged across a picture draws a comment area. Before, a finger could not draw at all.",
+   "problem": "A swipe that starts on a picture now draws instead of scrolling the page. Not tried on a real phone.",
+   "proposal": "Pick how drawing starts on a touch screen. A mouse is unaffected.",
+   "options": [
+    {
+     "id": "button",
+     "label": "Tap a \"Comment on an area\" button, then drag",
+     "pros": [
+      "Scrolling always works.",
+      "No accidental areas."
+     ],
+     "cons": [
+      "One extra tap per comment."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "drag",
+     "label": "Leave it: any drag draws",
+     "pros": [
+      "Same as with a mouse."
+     ],
+     "cons": [
+      "On a page of large pictures, scrolling means aiming for the gaps."
+     ]
+    },
+    {
+     "id": "off",
+     "label": "No drawing on phones",
+     "pros": [
+      "Simplest."
+     ],
+     "cons": [
+      "On a phone you describe the spot in words again."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "surface": "Idea cards",
+   "path": "The work board",
+   "words": true,
+   "headline": "Should I file two idea cards from earlier rounds?",
+   "today": "Two ideas came up and were never filed: a simple screen sketcher inside a deck whose sketch is handed to the chat, and the app hosting deck links itself.",
+   "problem": "Unfiled, they exist only in these decks.",
+   "proposal": "Pick which to file. Filing only records the idea; nothing is built.",
+   "options": [
+    {
+     "id": "bothcards",
+     "label": "File both",
+     "pros": [
+      "Neither is lost."
+     ],
+     "cons": [
+      "Two more cards on the board."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "sketch",
+     "label": "Only the screen sketcher",
+     "pros": [
+      "The one closest to your layout complaints."
+     ],
+     "cons": [
+      "The hosting idea stays unrecorded."
+     ]
+    },
+    {
+     "id": "host",
+     "label": "Only app-hosted decks",
+     "pros": [
+      "Would fix dead links at the root."
+     ],
+     "cons": [
+      "The sketcher stays unrecorded."
+     ]
+    },
+    {
+     "id": "nocards",
+     "label": "Neither",
+     "pros": [
+      "A shorter board."
+     ],
+     "cons": [
+      "Both ideas fade."
+     ]
+    }
+   ]
+  }
+ ]
+}

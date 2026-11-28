@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/renderer/dev/workbench/**"
   - "**/scripts/promo/**"
   - "**/docs/brand/**"
-last_verified: 2026-09-26
+last_verified: 2026-11-19
 verify:
   - path: scripts/ui-review/site-assets.sh
     contains: "docs/media"

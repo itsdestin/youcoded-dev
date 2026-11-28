@@ -1,0 +1,92 @@
+{
+ "deck": "review-deck-rethink-round3",
+ "started": "2026-11-10T03:59:47.158Z",
+ "submitted": "2026-11-10T04:45:22Z",
+ "cur": 4,
+ "answers": {
+  "W-1": {
+   "v": "other",
+   "t": 1794285063139,
+   "changes": {
+    "more": "a few notes about this page itself. leaving comment here because there is no additional//separate notes button for me to leave misc/unrelated comments/notes. so we should add something like that. also i love these little qoutes from me you added on each line. the images on this page are inserted kinda strange and it introduces a lot of deadspace in those rows. also tapping the image briefly once opens it in a separate tab, which is strange/unexpected behaviour. we should try to optimize dead space and fit text/images/buttons in a better arrangement in each card/row/question thing."
+   },
+   "seconds": 1876,
+   "theme": "midnight"
+  },
+  "W-2": {
+   "changes": {
+    "s3": "i think we should make this work much more like how it actually works in youcoded, including showing my words as i speak. i think i want the input areas just to appear slightly more youcoded like in general"
+   },
+   "v": "other",
+   "t": 1794285135552,
+   "seconds": 72,
+   "theme": "midnight"
+  },
+  "W-3": {
+   "changes": {
+    "block": "i don't really like the all fine button as currently styled. needs to use better/upgraded style/fit. i honestly dont even know if we need it, could probably integrate with the next page button?",
+    "side": "think these can be smarter and better utilize youcoded design principles"
+   },
+   "v": "other",
+   "t": 1794285243216,
+   "seconds": 108,
+   "theme": "midnight"
+  },
+  "W-4": {
+   "v": "yes",
+   "t": 1794285276093,
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "W-5": {
+   "v": "yes",
+   "t": 1794285276093,
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "changes": {
+    "p1": "i think a way  to see all new screens and visual changes together is still useful. we're kinda working on something similar in a parllel session for the work board (like a diff thing of sorts) that i think we could parallel for single features as a page on each deck? "
+   },
+   "v": "other",
+   "t": 1794285921148,
+   "seconds": 129,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "changes": {
+    "big": "comment: i think we should add a card if we dont have one already or integrate, but i want to create or pull in a basic ui designer/builder interface for me to wireframe designs in a deck that i could hand off to you. also think these rows need better options. maybe we should improve the menu and simplify down to a single pencil/edit icon on each of these rows that opens the comment box. and i can steer myself instead of the separate change/more context buttons"
+   },
+   "v": "other",
+   "t": 1794285921148,
+   "seconds": 129,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "pick",
+   "t": 1794285921148,
+   "pick": "boxes",
+   "note": "i think it should include a link to a screenshot of the actual menu in the app/context of what i'm editing if that makes sense. and should be pre-filled with the suggested or existing copy",
+   "seconds": 129,
+   "theme": "midnight"
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1794285921148,
+   "seconds": 129,
+   "theme": "midnight"
+  },
+  "S-5": {
+   "v": "pick",
+   "pick": "topic",
+   "t": 1794285921148,
+   "seconds": 129,
+   "theme": "midnight"
+  }
+ },
+ "built": {
+  "at": "2026-11-10T03:46:56Z",
+  "branch": "session/review-deck-rethink",
+  "commit": "e610b85bf"
+ }
+}
