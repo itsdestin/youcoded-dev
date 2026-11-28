@@ -4,7 +4,7 @@
   "out": "phone-menu.html",
   "grows": true,
   "tag": "feature",
-  "stage": "understanding",
+  "stage": "design",
   "steps": [
     {
       "id": "PU-1",
@@ -43,7 +43,8 @@
       "yes": "Holds",
       "no": "Fails",
       "changed": "Today's approved design centres the dots under a centred name. Here they start at the left edge of the combined button.",
-      "notice": "The dots read as part of the menu button rather than floating in the middle."
+      "notice": "The dots read as part of the menu button rather than floating in the middle.",
+      "resolved": "Built that way: the lights stay under the name, right of the menu icon, starting at the name's left edge instead of centred."
     },
     {
       "id": "U-4",
@@ -76,7 +77,8 @@
       "yes": "Holds",
       "no": "Fails",
       "changed": "Today you press Resume to open a separate page of past chats, then pick one. Here past chats are already listed in the menu.",
-      "notice": "Reopening a past chat takes one tap from the menu instead of two plus a page."
+      "notice": "Reopening a past chat takes one tap from the menu instead of two plus a page.",
+      "resolved": "Your worry about when a past chat counts as reopened, and keeping the X to end a chat, is now its own question on the design page."
     },
     {
       "id": "U-7",
@@ -98,7 +100,8 @@
       "yes": "Holds",
       "no": "Fails",
       "changed": "Today they are rows in the three-line menu with Settings and Session files. Here they sit in the full-screen menu, and Session files leaves for the top bar.",
-      "notice": "The menu becomes the one place for everything that is not the chat itself."
+      "notice": "The menu becomes the one place for everything that is not the chat itself.",
+      "resolved": "Browser now sits at top right beside Session files. Only Projects, Pages and Games moved into the menu."
     },
     {
       "id": "U-9",
@@ -223,7 +226,138 @@
       "today": "You have described the order: New session, Active sessions, Previous sessions, other places, Settings at the bottom.",
       "checked": "From your message of 2026-11-27.",
       "problem": "I will draw two to four versions of the menu and the top bar next; a picture in your head saves a round.",
-      "proposal": "Write anything you already see. Leave it blank and I draw from your message alone."
+      "proposal": "Write anything you already see. Leave it blank and I draw from your message alone.",
+      "resolved": "Kept as a later idea, letting each person pick their own layout. Nothing is built for it in this round."
+    },
+    {
+      "id": "PD-1",
+      "page": "The menu, drawn",
+      "intro": "Built roughly in the practice app. Pick the menu you like, and say if the top bar and past chats work.",
+      "stage": "design"
+    },
+    {
+      "id": "D-1",
+      "surface": "Phone top bar",
+      "path": "Top of every chat",
+      "words": true,
+      "headline": "Is this the top bar you pictured for the alternative?",
+      "picture": "images/phone-menu/bar-alternative.png",
+      "caption": "The alternative top bar, in the practice app.",
+      "today": "In the approved layout the bar has the menu icon and Projects at left, the name centred with the lights centred under it, and the terminal switch at right.",
+      "checked": "Photographed both bars in the practice app on 2026-11-28.",
+      "problem": "You described the alternative bar in words; this is the first time it is drawn.",
+      "proposal": "The menu icon and the name are one button at left, the lights start at the name's left edge, Session files sits at right with no number. Browser joins it once a chat has used it.",
+      "reuse": {
+        "from": [
+          "the approved bar's name button and lights",
+          "today's Session files and Browser buttons"
+        ],
+        "new": [
+          "the name and menu icon as one button"
+        ],
+        "note": "Projects leaves the bar for the menu; the dropdown arrow is gone."
+      }
+    },
+    {
+      "id": "D-2",
+      "surface": "Full-screen menu",
+      "path": "Tap the name at top left",
+      "words": true,
+      "headline": "Where should Projects, Pages and Games sit in the full-screen menu?",
+      "today": "Today they are rows in the small three-line menu, with Settings and Session files.",
+      "checked": "Built and photographed in the practice app on 2026-11-28.",
+      "problem": "The menu also has to hold search, New session, every active and past chat, and Settings, so the three places compete with the chat list for room.",
+      "proposal": "All three versions share search and New session at the top, Active sessions, Previous sessions grouped by day, and Settings at the bottom. Only the three places move.",
+      "reuse": {
+        "from": [
+          "the session list's rows and status chips",
+          "the earlier hub panel's New session button and icon tiles",
+          "the menu's Projects, Pages and Games rows",
+          "the Resume page's list of past chats"
+        ],
+        "new": [
+          "the search box",
+          "Previous sessions grouped by day",
+          "the Settings button at the bottom"
+        ],
+        "note": "Each active chat keeps its X to end it."
+      },
+      "options": [
+        {
+          "id": "rows",
+          "label": "Rows at bottom",
+          "summary": "Three rows just above Settings.",
+          "picture": "images/phone-menu/menu-rows.png",
+          "pros": [
+            "Biggest, easiest to read."
+          ],
+          "cons": [
+            "Takes three rows from the chat list."
+          ]
+        },
+        {
+          "id": "tiles",
+          "label": "Tiles at bottom",
+          "recommended": true,
+          "summary": "One row of small icons above Settings, like the earlier hub.",
+          "picture": "images/phone-menu/menu-tiles.png",
+          "pros": [
+            "One row instead of three; still near your thumb."
+          ],
+          "cons": [
+            "Smaller labels."
+          ]
+        },
+        {
+          "id": "top",
+          "label": "Icons on top",
+          "summary": "Small icons under New session; only Settings at the bottom.",
+          "picture": "images/phone-menu/menu-top.png",
+          "pros": [
+            "Places are seen first."
+          ],
+          "cons": [
+            "Chats start lower on the screen."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D-3",
+      "surface": "Full-screen menu",
+      "path": "Tap a chat under Previous sessions",
+      "words": true,
+      "headline": "When you tap a past chat in the menu, what should happen?",
+      "today": "Picking a chat on the Resume page restarts it straight away; it joins your open sessions at once, and some chats first ask which model to use.",
+      "checked": "Read in the app's Resume page and session code on master on 2026-11-28. The Resume page already has a read-only preview of a past chat.",
+      "problem": "In a menu you scroll through, a tap that restarts the chat would turn every quick look into an open session you then have to close with its X.",
+      "proposal": "A tap opens the chat to read. It only becomes an active session, and only asks for a model, when you send a message.",
+      "options": [
+        {
+          "id": "read-first",
+          "label": "Read, then send",
+          "recommended": true,
+          "summary": "The chat opens to read; sending a message restarts it.",
+          "pros": [
+            "Looking back never leaves an extra open chat.",
+            "Matches the phone apps you named."
+          ],
+          "cons": [
+            "New work: the read-only view needs a message box."
+          ]
+        },
+        {
+          "id": "reopen-now",
+          "label": "Reopen at once",
+          "summary": "A tap restarts the chat, as Resume does today.",
+          "pros": [
+            "Works the way it does now; little new work."
+          ],
+          "cons": [
+            "Every look adds an open session you must end with its X."
+          ]
+        }
+      ]
     }
   ]
 }
