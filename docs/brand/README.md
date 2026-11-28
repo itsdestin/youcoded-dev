@@ -65,6 +65,12 @@ Typed, not drawn. There is no logo image file. **The live website is the referen
   "coded" in plum `#21152C`, or `#F3EAF9` on dark.
 - **Versions:** icon + name + tagline (main) · icon + name (footer, end cards) · stacked name over
   tagline, no icon (setup screens) · name only · "yc" tile (approved, unused).
+- **Joined name and address (optional; Destin, 2026-11-27):** `youcoded.ai` set as ONE logo, same recipe, with
+  ".ai" in the same colour and weight as "coded". Use it where the name and the address would otherwise sit
+  side by side ("i want to stop putting "youcoded.ai" next to bare "youcoded""); never show it beside a
+  separate address. Not required everywhere. Code: `Wordmark` with `ai="same"` in `scripts/campaign/film/src/kit.tsx`.
+- **Profile picture for social sites:** the face on the frosted surface filling the whole square, so the
+  site's own crop is the only edge. Made by `scripts/campaign/make-avatar.mjs` from the icon's one drawing.
 - **Clear space:** half the icon's height on every side. **Minimums:** icon 16px, lockup 96px wide,
   name 64px wide.
 - **Other themes:** the name takes that theme's colours, only in pieces about themes (the website's

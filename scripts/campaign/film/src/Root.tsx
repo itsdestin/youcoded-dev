@@ -30,12 +30,12 @@ const LINKEDIN: [string, LinkedInProps][] = [
   ['e-updates', { look: 'day', head: 'stop waiting / for *updates.*', shots: LOOKS }],
   ['f-own-not-rent', { look: 'night', head: 'software you *own,* not rent.' }],
   // round 2 (Destin: likes the own-row; wants "make your technology yours"; one joined youcoded.ai logo)
-  ['own-row-day', { look: 'day', head: 'own your data. intelligence. software. *everything.*', ai: 'soft' }],
-  ['own-row-night', { look: 'night', head: 'own your data. intelligence. software. *everything.*', ai: 'soft' }],
-  ['yours-day', { look: 'day', head: 'make your technology *yours.*', ai: 'soft' }],
-  ['yours-night', { look: 'night', head: 'make your technology *yours.*', ai: 'soft' }],
-  ['yours-app-day', { look: 'day', head: 'make your / technology *yours.*', shots: LOOKS, ai: 'soft' }],
-  ['yours-app-night', { look: 'night', head: 'make your / technology *yours.*', shots: LOOKS, ai: 'soft' }],
+  ['own-row-day', { look: 'day', head: 'own your data. intelligence. software. *everything.*', ai: 'same' }],
+  ['own-row-night', { look: 'night', head: 'own your data. intelligence. software. *everything.*', ai: 'same' }],
+  ['yours-day', { look: 'day', head: 'make your technology *yours.*', ai: 'same' }],
+  ['yours-night', { look: 'night', head: 'make your technology *yours.*', ai: 'same' }],
+  ['yours-app-day', { look: 'day', head: 'make your / technology *yours.*', shots: LOOKS, ai: 'same' }],
+  ['yours-app-night', { look: 'night', head: 'make your / technology *yours.*', shots: LOOKS, ai: 'same' }],
 ];
 export const Root: React.FC = () => (
   <>

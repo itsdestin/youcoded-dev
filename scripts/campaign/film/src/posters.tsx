@@ -423,16 +423,26 @@ export const LinkedIn: React.FC<LinkedInProps> = ({ look, head, shots, struck, a
         <Shot key={src} src={`stills/${src}.png`} u={H / 60} style={{ left: W * (0.6 + 0.125 * i), top: H * (0.13 + 0.13 * i), width: sw, height: sh }} />
       ))}
       <div style={{ position: 'absolute', left, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        {struck ? (<>
-          <div style={{ ...row, marginBottom: GAP * size }}>you'll own<span style={{ display: 'inline-block', width: 0.26 * size }} /><Struck word="nothing." fix="everything." size={size} anchorRight /></div>
-          <div style={row}>and you'll be happy.</div>
-        </>) : <Head text={head} size={size} dark={dark} />}
-        <div style={{ height: H * 0.075 }} />
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: H * 0.045, whiteSpace: 'nowrap' }}>
-          <Wordmark size={H * 0.1} dark={dark} ai={ai} />
-          {/* with the joined name-and-address logo the separate address is dropped: saying it twice was the complaint */}
-          {!ai && <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: H * 0.062, color: dark ? C.nightText : C.plum }}>youcoded.ai</span>}
-          <span style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: H * 0.048, color: dark ? C.nightText2 : C.plum2 }}>Free · Windows · Mac · Linux · Android</span>
+        {/* WHY a block exactly as wide as the words: the foot's two ends then line up under the headline's two ends */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignSelf: 'flex-start' }}>
+          {struck ? (<>
+            <div style={{ ...row, marginBottom: GAP * size }}>you'll own<span style={{ display: 'inline-block', width: 0.26 * size }} /><Struck word="nothing." fix="everything." size={size} anchorRight /></div>
+            <div style={row}>and you'll be happy.</div>
+          </>) : <Head text={head} size={size} dark={dark} />}
+          <div style={{ height: H * 0.075 }} />
+          {ai ? (
+            // Destin, 2026-11-27: platforms on the left, the joined youcoded.ai on the right, a clear gap between
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: H * 0.2, whiteSpace: 'nowrap' }}>
+              <span style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: H * 0.052, color: dark ? C.nightText2 : C.plum2 }}>Free · Windows · Mac · Linux · Android</span>
+              <Wordmark size={H * 0.11} dark={dark} ai={ai} />
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: H * 0.045, whiteSpace: 'nowrap' }}>
+              <Wordmark size={H * 0.1} dark={dark} />
+              <span style={{ fontFamily: OUTFIT, fontWeight: 600, fontSize: H * 0.062, color: dark ? C.nightText : C.plum }}>youcoded.ai</span>
+              <span style={{ fontFamily: DMSANS, fontWeight: 500, fontSize: H * 0.048, color: dark ? C.nightText2 : C.plum2 }}>Free · Windows · Mac · Linux · Android</span>
+            </div>
+          )}
         </div>
       </div>
     </AbsoluteFill>
