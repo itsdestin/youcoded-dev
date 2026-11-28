@@ -232,7 +232,7 @@
     {
       "id": "PD-1",
       "page": "The menu, drawn",
-      "intro": "Built roughly in the practice app. Pick the menu you like, and say if the top bar and past chats work.",
+      "intro": "Reworked from your notes. Say if the top bar and menu are right now, and answer the two new questions.",
       "stage": "design"
     },
     {
@@ -240,87 +240,54 @@
       "surface": "Phone top bar",
       "path": "Top of every chat",
       "words": true,
-      "headline": "Is this the top bar you pictured for the alternative?",
-      "picture": "images/phone-menu/bar-alternative.png",
-      "caption": "The alternative top bar, in the practice app.",
-      "today": "In the approved layout the bar has the menu icon and Projects at left, the name centred with the lights centred under it, and the terminal switch at right.",
-      "checked": "Photographed both bars in the practice app on 2026-11-28.",
-      "problem": "You described the alternative bar in words; this is the first time it is drawn.",
-      "proposal": "The menu icon and the name are one button at left, the lights start at the name's left edge, Session files sits at right with no number. Browser joins it once a chat has used it.",
+      "headline": "Is the top bar right now?",
+      "reopened": "You asked for this chat's light under the name in a ring, much tighter spacing, and no dot on the menu icon.",
+      "picture": "images/phone-menu/bar-alternative-2.png",
+      "caption": "The reworked top bar, in the practice app.",
+      "today": "The first drawing had a dot before the name, the lights hanging well below it, and a warning dot on the menu icon.",
+      "checked": "Rebuilt and photographed in the practice app on 2026-11-28.",
+      "problem": "The name and lights read as two loose pieces, and the dot before the name repeated what the lights show.",
+      "proposal": "No dot before the name. This chat's light sits in the row under it, in its strip order, inside a thin ring. The lights start under the name's first letter, right below it, and the pair is centred on the menu icon.",
       "reuse": {
         "from": [
-          "the approved bar's name button and lights",
-          "today's Session files and Browser buttons"
+          "the approved bar's lights",
+          "the ring idea from the selected pill in the wide session switcher"
         ],
         "new": [
-          "the name and menu icon as one button"
+          "this chat's ringed light"
         ],
-        "note": "Projects leaves the bar for the menu; the dropdown arrow is gone."
-      }
+        "note": "The menu icon's warning dot moved to the Settings tile in the menu."
+      },
+      "yes": "Right",
+      "no": "Not yet"
     },
     {
       "id": "D-2",
       "surface": "Full-screen menu",
       "path": "Tap the name at top left",
       "words": true,
-      "headline": "Where should Projects, Pages and Games sit in the full-screen menu?",
-      "today": "Today they are rows in the small three-line menu, with Settings and Session files.",
-      "checked": "Built and photographed in the practice app on 2026-11-28.",
-      "problem": "The menu also has to hold search, New session, every active and past chat, and Settings, so the three places compete with the chat list for room.",
-      "proposal": "All three versions share search and New session at the top, Active sessions, Previous sessions grouped by day, and Settings at the bottom. Only the three places move.",
+      "headline": "Is the redrawn menu right?",
+      "reopened": "You picked tiles, and asked for the guide's look: no lines, clearer buttons, a header like other screens, Settings and pinned pages as tiles.",
+      "picture": "images/phone-menu/menu-2.png",
+      "caption": "The redrawn menu, in the practice app.",
+      "today": "The first drawing had a search box at the very top, a line above the places, borderless icons, and Settings as a wide button at the bottom.",
+      "checked": "Read the design guide's Spacing, Buttons, Full screens and Lists sections, and photographed phone Settings and Pages for reference, on 2026-11-28.",
+      "problem": "It did not look like the app's other phone screens, and the places did not read as buttons.",
+      "proposal": "A Chats title at left and a close button at right, like phone Settings. Then search and New session. At the foot, one row of boxed tiles: Settings, Projects, Pages, Games, then each pinned page. It slides sideways under a soft fade when it does not fit. No lines anywhere; space separates the parts.",
       "reuse": {
         "from": [
-          "the session list's rows and status chips",
-          "the earlier hub panel's New session button and icon tiles",
-          "the menu's Projects, Pages and Games rows",
-          "the Resume page's list of past chats"
+          "phone Settings' header",
+          "the app's search box",
+          "the app's sideways edge fade",
+          "pinned pages' own icons"
         ],
         "new": [
-          "the search box",
-          "Previous sessions grouped by day",
-          "the Settings button at the bottom"
+          "the row of boxed tiles"
         ],
-        "note": "Each active chat keeps its X to end it."
+        "note": "Session rows stay plain rows, as the guide asks for switchers."
       },
-      "options": [
-        {
-          "id": "rows",
-          "label": "Rows at bottom",
-          "summary": "Three rows just above Settings.",
-          "picture": "images/phone-menu/menu-rows.png",
-          "pros": [
-            "Biggest, easiest to read."
-          ],
-          "cons": [
-            "Takes three rows from the chat list."
-          ]
-        },
-        {
-          "id": "tiles",
-          "label": "Tiles at bottom",
-          "recommended": true,
-          "summary": "One row of small icons above Settings, like the earlier hub.",
-          "picture": "images/phone-menu/menu-tiles.png",
-          "pros": [
-            "One row instead of three; still near your thumb."
-          ],
-          "cons": [
-            "Smaller labels."
-          ]
-        },
-        {
-          "id": "top",
-          "label": "Icons on top",
-          "summary": "Small icons under New session; only Settings at the bottom.",
-          "picture": "images/phone-menu/menu-top.png",
-          "pros": [
-            "Places are seen first."
-          ],
-          "cons": [
-            "Chats start lower on the screen."
-          ]
-        }
-      ]
+      "yes": "Right",
+      "no": "Not yet"
     },
     {
       "id": "D-3",
@@ -358,6 +325,81 @@
           ]
         }
       ]
+    },
+    {
+      "id": "D-4",
+      "surface": "Full-screen menu",
+      "path": "Tap a tile at the foot of the menu",
+      "words": true,
+      "headline": "When you tap a tile, should the menu fade into that screen, or stay and change in place?",
+      "today": "In the practice app, a tap fades the menu's title to the tile's name, opens that screen underneath, and fades the menu away over it in about a fifth of a second.",
+      "checked": "Built in the practice app on 2026-11-28; a fade cannot be shown in a still picture.",
+      "problem": "Your note asked for the title and the right page to fade in when one is picked. It could mean either of two things, and they work very differently.",
+      "proposal": "Keep the fade into the screen: every screen still opens and closes the way it does today.",
+      "options": [
+        {
+          "id": "fade-out",
+          "label": "Fade into the screen",
+          "recommended": true,
+          "summary": "The title changes, then the menu fades away and leaves you on that screen.",
+          "pros": [
+            "Screens open and close as today.",
+            "Already built to try."
+          ],
+          "cons": [
+            "The menu closes each time; coming back means opening it again."
+          ]
+        },
+        {
+          "id": "in-place",
+          "label": "Change in place",
+          "summary": "The menu stays open; the tiles act like tabs, and the area above them fades to that screen.",
+          "pros": [
+            "Jumping between places never leaves the menu."
+          ],
+          "cons": [
+            "Every screen must fit inside the menu: a lot of new work.",
+            "Two ways to reach each screen."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D-5",
+      "surface": "Full-screen menu",
+      "path": "A warning, like a failing backup",
+      "words": true,
+      "headline": "With no dot on the menu icon, where should a warning show while the menu is closed?",
+      "today": "Today a failing backup or a waiting game challenge puts a dot on the menu icon. In this version, as you asked, it sits only on the Settings or Games tile inside the menu.",
+      "checked": "Read in the menu icon's code on the branch, 2026-11-28.",
+      "problem": "Someone who never opens the menu would not learn that their backup is failing.",
+      "proposal": "Keep it on the tile only, as you asked, and decide again once you have used it.",
+      "options": [
+        {
+          "id": "tile-only",
+          "label": "Tile only",
+          "recommended": true,
+          "summary": "The dot shows only on its tile in the menu.",
+          "pros": [
+            "The top bar stays clean."
+          ],
+          "cons": [
+            "A warning waits until the menu is opened."
+          ]
+        },
+        {
+          "id": "ring-tint",
+          "label": "Also on the bar",
+          "summary": "A small dot at the end of the lights row too, while something needs you.",
+          "pros": [
+            "A warning is seen without opening anything."
+          ],
+          "cons": [
+            "The bar carries a second kind of dot."
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "notes_handled": {}
 }

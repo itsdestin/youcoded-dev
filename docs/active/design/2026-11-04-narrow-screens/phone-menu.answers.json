@@ -1,100 +1,38 @@
 {
  "deck": "phone-menu-alternative",
- "started": "2026-11-28T06:28:01.364Z",
- "submitted": "2026-11-28T06:36:46Z",
- "cur": 1,
+ "started": "2026-11-28T10:49:40.236Z",
+ "submitted": "2026-11-28T11:01:19Z",
+ "cur": 0,
  "answers": {
-  "U-1": {
-   "v": "yes",
-   "t": 1795847548035,
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-2": {
-   "v": "yes",
-   "t": 1795847548035,
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-3": {
-   "v": "yes",
-   "t": 1795847548035,
-   "note": "they still stay under the name, to the right of the 3-line button. but they align with the left side of name now instead of centering",
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-4": {
-   "v": "yes",
-   "t": 1795847548035,
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-5": {
-   "v": "yes",
-   "t": 1795847548035,
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-6": {
-   "v": "yes",
-   "t": 1795847548035,
-   "note": "i suspect this will be the most odd or potentially problematic part of this design. i'm not sure how the underlying architecture treats resuming a session, and how this would differ from something like opencode/gemini app/claude app/etc, but this may require slight changes? and some ux/ui design? like, for example, i wouldn't want a session to actually count as \"resumed\" until a user sends a new message in that chat, and i would still expect users to manually hit the X on active sessions to \"end\" them even if they kinda stay in the same list.",
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-7": {
-   "v": "yes",
-   "t": 1795847548035,
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-8": {
-   "note": "browser can stay next to session files.",
-   "t": 1795847548035,
+  "D-1": {
+   "note": "i think we should swap the status dot before name for an extra status dot below but with a selection ring of some sort around it, kinda like selection rings in the normal session switcher. reduce space between text and status dots by a lotttt and better center/balance the combined text/dots against the 3-line menu. remove the separate status dot from the 3-line menu, the backup/other error status dot should go on the specific settings menu/row button at the bottom, not on this 3-line menu.",
+   "t": 1795863678409,
    "v": "other",
-   "seconds": 27,
+   "seconds": 233,
    "theme": "halftone-dimension"
   },
-  "U-9": {
-   "v": "yes",
-   "t": 1795847548035,
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "U-10": {
-   "v": "yes",
-   "t": 1795847548035,
-   "seconds": 27,
-   "theme": "halftone-dimension"
-  },
-  "Q-1": {
+  "D-2": {
+   "note": "need to review design guide. no full horizontal lines, need to improve button structure/separation, etc. ui guide should help with this. the header styling and such of this screen need to be fixed to look like other screens. i want to make settings appear as a normal icon next to projects/pages/etc. and keep pinnable pages in the list as their own icons with a premium/polished scrolling effect where text/title of menu and the correct page fade in for selected page.",
+   "t": 1795863678409,
    "v": "pick",
-   "pick": "phones",
-   "t": 1795847804253,
-   "seconds": 85,
+   "pick": "tiles",
+   "seconds": 233,
    "theme": "halftone-dimension"
   },
-  "Q-2": {
+  "D-3": {
    "v": "pick",
-   "pick": "search",
-   "t": 1795847804253,
-   "seconds": 85,
-   "theme": "halftone-dimension"
-  },
-  "Q-3": {
-   "v": "wrote",
-   "text": "i think, at least at some point, i would like to further expand youcoded's appearance menus and customization options to basically let users change the styling of their main ui/homepage/framework as they deem fit. we dont need to build this right now, but the goal would be to eventually let a user decide whether they want something like option 1, option 2, or an entirely custom ui that lets them manage their sessions and app features as they please.",
-   "t": 1795847804253,
-   "seconds": 85,
+   "pick": "read-first",
+   "t": 1795863678409,
+   "seconds": 233,
    "theme": "halftone-dimension"
   }
  },
  "built": {
-  "at": "2026-11-28T00:10:11Z",
+  "at": "2026-11-28T07:59:14Z",
   "branch": "session/narrow-screen-proposals",
-  "commit": "d532a4699400d3ae52544e871c5869217b17433d",
-  "spec_sha256": "fa7d298afe208bc809b32a2b5383151472c0e60cf8b2d37e0a40c11274833e70",
-  "spec_dirty": false,
+  "commit": "241dfe73ca08f72f6193026de30b06715d455ea8",
+  "spec_sha256": "55d9d67841b82b8a768c98992d8cc2c46dae64013bf187b741733eb2272f093e",
+  "spec_dirty": true,
   "ids": [
    "U-1",
    "U-2",
@@ -108,7 +46,10 @@
    "U-10",
    "Q-1",
    "Q-2",
-   "Q-3"
+   "Q-3",
+   "D-1",
+   "D-2",
+   "D-3"
   ]
  }
 }
