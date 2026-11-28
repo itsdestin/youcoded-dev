@@ -17,7 +17,7 @@ Method: code reading on master `fb611dbbb`, plus the installed app's own hitch l
 The hitch recorder logged, in about 23 hours of use (1397 minutes):
 - **About 6,100 freezes of 0.1 s or longer.** That is about 2 minutes frozen per hour of use, with recording continuing overnight while the app sat idle.
 - **About 13,300 main-process ("engine") stalls of 100 ms or longer.** The engine's worst delay reached 0.4-0.9 s every hour.
-- **A clock-like rhythm.** About 60% of engine stalls in the 29-hour launch fall at the same phase of a 10-second cycle (median 140 ms). A second cluster sits 5 s off it (median 350 ms). That is a timer, not real work.
+- **A clock-like rhythm, in one launch.** In the 29-hour launch `85e4545d`, about 60% of engine stalls fall at the same phase of a 10-second cycle (median 140 ms), with a second cluster 5 s off it (median 350 ms). In launch `eb127c8e` the top phase holds only 19%. Stalls per minute were flat across 16-20 sessions, so this data does not show "worse with more sessions". (Corrected after independent review.)
 
 Nobody had read this file. The lab said "nothing slow found" (card 94) because it measures a different, calmer world (see Tooling below).
 
