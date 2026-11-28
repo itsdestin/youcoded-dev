@@ -90,9 +90,13 @@ export const FREEZE = `(async () => {
     let text = null;
     try { text = [...s.cssRules].map((r) => r.cssText).join('\\n'); } catch {}
     if (text === null && s.href) { try { text = await (await fetch(s.href)).text(); } catch {} }
-    // A sheet that could not be read is simply left out (it used to be re-linked with @import,
-    // which made the saved file load it from the network).
-    if (text === null) continue;
+    // A sheet that could not be read is left out (it used to be re-linked with @import, which made
+    // the saved file load it from the network) — but its address is left as a marker comment, so
+    // packRemoteSheets (outside the page) can fetch a theme's web font and pack it in.
+    // WHY (Destin, 2026-11-28: "text editing slides are super broken"): the app's own security
+    // rules forbid the page from downloading fonts.googleapis.com, so every frozen screen in a
+    // Google-font theme (Meadow Mist: Nunito) fell back to the typewriter font.
+    if (text === null) { if (s.href) css += '/*youcoded-sheet:' + encodeURI(s.href).replace(/\\*/g, '%2A') + '*/\\n'; continue; }
     css += await packUrls(text, s.href || document.baseURI) + '\\n';
   }
   const root = document.documentElement.cloneNode(true);
@@ -134,3 +138,63 @@ export const FREEZE = `(async () => {
   root.setAttribute('data-frozen', innerWidth + 'x' + innerHeight);   // the size it was laid out at — the deck frames it at this size
   return '<!doctype html>\\n' + root.outerHTML;
 })()`;
+
+// packRemoteSheets — run OUTSIDE the page, on FREEZE's text: each sheet the page could not read
+// (left as a /*youcoded-sheet:<address>*/ marker) is fetched here and its fonts packed in.
+// WHY outside (Destin, 2026-11-28: "text editing slides are super broken"): the app's security
+// rules stop the page itself from downloading fonts.googleapis.com, so a theme's Google font
+// (Meadow Mist's Nunito) never reached the frozen copy and every screen fell back to the
+// typewriter font. Only Google's two font addresses are fetched — the same ones the app's own
+// theme check allows (theme-validator.ts) — and whatever cannot be fetched is simply left out,
+// exactly as before. `get` is `fetch`; a test passes its own. Returns { html, missed: [address] }.
+const FONT_HOST = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//;
+export async function packRemoteSheets(html, get = fetch) {
+  const missed = [];
+  const asData = async (u) => {
+    const r = await get(u); if (!r.ok) throw new Error(String(r.status));
+    const buf = Buffer.from(await r.arrayBuffer()); if (buf.length > 4e6) throw new Error('too large');
+    const type = (r.headers.get('content-type') || 'font/woff2').split(';')[0].trim();
+    return `data:${type};base64,${buf.toString('base64')}`;
+  };
+  const sheet = async (href) => {
+    if (!FONT_HOST.test(href)) { missed.push(href); return ''; }
+    try {
+      // WHY a browser's name: Google sends the small woff2 files only to a browser it recognises (plain ttf to anyone else, ~3x larger).
+      const r = await get(href, { headers: { 'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36' } });
+      if (!r.ok) throw new Error(String(r.status));
+      // WHY only the Latin character sets: Google splits a font into Cyrillic, Vietnamese and Latin files, and packing all of
+      // them made every saved screen ~750 KB heavier; the app's screens are in English. A block with no set label is kept.
+      let text = (await r.text()).replace(/@import[^;]*;?/gi, '')
+        .replace(/\/\*\s*([a-z-]+)\s*\*\/\s*@font-face\s*\{[^}]*\}/gi, (block, set) => (/^latin(-ext)?$/i.test(set) ? block : ''));
+      // WHY merge blocks that share one file: a variable font lists the SAME file once per weight, which packed it four times.
+      // One block with the weights as a range ("400 800") draws the same.
+      const seen = new Map();
+      text = text.replace(/@font-face\s*\{[^}]*\}/gi, (block) => {
+        const file = (block.match(/url\(\s*["']?([^"')\s]+)/) || [])[1], style = (block.match(/font-style:\s*([^;]+)/) || [])[1];
+        const weight = (block.match(/font-weight:\s*([^;]+)/) || [])[1];
+        if (!file || !weight || !/^\d+$/.test(weight.trim())) return block;
+        const key = file + '|' + style, w = +weight.trim();
+        if (!seen.has(key)) { seen.set(key, { lo: w, hi: w }); return `@@face:${key}@@` + block; }
+        const s = seen.get(key); s.lo = Math.min(s.lo, w); s.hi = Math.max(s.hi, w); return '';
+      });
+      text = text.replace(/@@face:([^@]*)@@(@font-face\s*\{[^}]*\})/g, (all, key, block) => {
+        const s = seen.get(key); return s.lo === s.hi ? block : block.replace(/font-weight:\s*[^;]+/, `font-weight: ${s.lo} ${s.hi}`);
+      });
+      const urls = [...new Set([...text.matchAll(/url\(\s*["']?([^"')\s]+)["']?\s*\)/g)].map((m) => m[1]))];
+      for (const u of urls) {
+        let abs; try { abs = new URL(u, href).href; } catch { abs = ''; }
+        // A font address not on Google's list, or one that fails, becomes url("") — never a live link in the saved file.
+        const data = FONT_HOST.test(abs) ? await asData(abs).catch(() => '') : '';
+        text = text.split(u).join(data);
+      }
+      // Nothing that could close the <style> it lands in.
+      return text.replace(/<\//g, '<\\/');
+    } catch { missed.push(href); return ''; }
+  };
+  const marks = [...new Set([...html.matchAll(/\/\*youcoded-sheet:([^*]*)\*\//g)].map((m) => m[1]))];
+  for (const m of marks) {
+    let href; try { href = decodeURI(m).replace(/%2A/g, '*'); } catch { href = ''; }
+    html = html.split(`/*youcoded-sheet:${m}*/`).join(await sheet(href));
+  }
+  return { html, missed };
+}

@@ -671,7 +671,10 @@
       const lf = fr.closest('.card.screen').querySelector('.liveframe'); const place = (tf, ht) => { fr.style.transform = tf; wrap.style.height = ht; if (lf) { lf.style.transform = tf; lf.style.width = w + 'px'; lf.style.height = h + 'px'; } };
       const big = !!fr.closest('.card.screen.big'); const p = ((fr.closest('.card.screen')._zoom) || fr.dataset.panel || '').split(',').map(Number);
       // Opened large, or a screen with no panel of its own: the whole window, fitted to the width.
-      if (big || p.length !== 4 || p[2] > w * 0.8) {
+      // WHY a wide panel still zooms when it is SHORT (Destin, 2026-11-28: "text editing slides are super broken"):
+      // a notice strip or toast spans the whole window's width but only a band of its height, and showing the whole
+      // window made it a thin line under a large blurred chat. Only a panel that is wide AND most of the height is the whole window.
+      if (big || p.length !== 4 || (p[2] > w * 0.8 && p[3] > h * 0.6)) {
         const k = Math.min(1.25, wrap.clientWidth / w);
         place('scale(' + k + ')', Math.round(h * k) + 'px'); return;
       }

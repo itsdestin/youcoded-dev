@@ -32,7 +32,7 @@ import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
 import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
-import { FREEZE } from './freeze.mjs';
+import { FREEZE, packRemoteSheets } from './freeze.mjs';
 import { markShot } from './shotmark.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -316,7 +316,10 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
         // deck can open zoomed on it instead of showing a small popup in a large window.
         const box = r.panel ? ` data-frozen-panel="${[r.panel.x, r.panel.y, r.panel.w, r.panel.h].map(Math.round).join(',')}"` : '';
         r.page = join(dir, `${theme}.html`);
-        writeFileSync(r.page, (await tab.evaluate(FREEZE, 60_000)).replace(' data-frozen="', `${box} data-frozen="`));
+        // WHY packRemoteSheets: the page may not download a theme's Google font itself (freeze.mjs says why); it is fetched here.
+        const packed = await packRemoteSheets(await tab.evaluate(FREEZE, 60_000));
+        if (packed.missed.length) r.pageNote = 'left out (could not fetch): ' + packed.missed.join(', ');
+        writeFileSync(r.page, packed.html.replace(' data-frozen="', `${box} data-frozen="`));
       }
       catch (e) { r.page = null; r.pageError = String(e.message || e); }
     }

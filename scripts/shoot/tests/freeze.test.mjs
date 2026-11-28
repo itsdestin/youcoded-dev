@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { scrubFrozen, FREEZE } from '../freeze.mjs';
+import { scrubFrozen, FREEZE, packRemoteSheets } from '../freeze.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const jsdomPath = join(here, '..', '..', '..', 'youcoded', 'desktop', 'node_modules', 'jsdom');
@@ -48,4 +48,24 @@ test('a packed SVG drawing with quotes and url(#…) inside survives the scrub w
 test('FREEZE carries the scrub and is still one expression', () => {
   assert.ok(FREEZE.includes('scrubFrozen(root)') && FREEZE.includes('const scrubFrozen'));
   assert.doesNotThrow(() => new Function('return ' + FREEZE));
+});
+
+// WHY (Destin, 2026-11-28: "text editing slides are super broken"): the page may not download a theme's Google font,
+// so every frozen screen showed the typewriter fallback. packRemoteSheets fetches it outside the page; pinned with a fake download.
+test('packRemoteSheets packs a theme font, one file per set, and fetches nothing else', async () => {
+  const css = `/* cyrillic */ @font-face { font-family: 'Nunito'; font-style: normal; font-weight: 400; src: url(https://fonts.gstatic.com/c.woff2) format('woff2'); }
+/* latin */ @font-face { font-family: 'Nunito'; font-style: normal; font-weight: 400; src: url(https://fonts.gstatic.com/l.woff2) format('woff2'); }
+/* latin */ @font-face { font-family: 'Nunito'; font-style: normal; font-weight: 800; src: url(https://fonts.gstatic.com/l.woff2) format('woff2'); }`;
+  const asked = [];
+  const get = async (u) => { asked.push(u); return u.endsWith('.woff2')
+    ? { ok: true, headers: new Map([['content-type', 'font/woff2']]), arrayBuffer: async () => new Uint8Array([1, 2, 3]).buffer }
+    : { ok: true, text: async () => css }; };
+  const font = 'https://fonts.googleapis.com/css2?family=Nunito';
+  const html = `<style>a{}/*youcoded-sheet:${encodeURI(font)}*/b{}/*youcoded-sheet:${encodeURI('https://evil.example/x.css')}*/</style>`;
+  const { html: out, missed } = await packRemoteSheets(html, get);
+  assert.deepEqual(missed, ['https://evil.example/x.css'], 'an address that is not Google Fonts is left out, never fetched');
+  assert.ok(!asked.some((u) => u.includes('evil')) && !asked.includes('https://fonts.gstatic.com/c.woff2'), 'only the Latin file is downloaded: ' + asked);
+  assert.equal((out.match(/@font-face/g) || []).length, 1, 'the two weights of one file become one block\n' + out);
+  assert.ok(out.includes('font-weight: 400 800') && out.includes('url(data:font/woff2;base64,AQID)'), out);
+  assert.ok(!out.includes('youcoded-sheet') && !out.includes('https://'), 'no marker and no live address is left');
 });

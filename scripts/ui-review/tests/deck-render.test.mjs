@@ -1168,7 +1168,10 @@ raw['steps'] = [{'id': 'Q-9', 'words': True, 'surface': 'Games', 'path': 'Questi
   {'id': 'K-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'Calls I made for you',
     'calls': [{'id': 'size', 'call': 'The board is five rows tall.', 'why': 'It matches the other games.', 'result': 'unclear'},
               {'id': 'sound', 'call': 'A win plays no sound.', 'why': 'Nothing else plays one.', 'result': 'pass', 'picture': 'pic.png', 'before': 'pic.png'}]},
-  {'id': 'S-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'The words on the games menu', 'screen': 'menu.html'}]
+  {'id': 'S-1', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'The words on the games menu', 'screen': 'menu.html'},
+  {'id': 'S-2', 'words': True, 'surface': 'Games', 'path': 'Questions', 'headline': 'The words on the notice strip', 'screen': 'strip.html'}]
+# A notice strip: as wide as the window, a short band of its height (2026-11-28: shown whole, it was a thin line under a blurred chat).
+open(os.path.join(os.path.dirname(p), 'strip.html'), 'w').write('<!doctype html><html data-frozen-panel="0,220,400,60" data-frozen="400x300"><head><meta charset="utf-8"></head><body style="margin:0;height:300px"><p style="position:absolute;top:240px">Claude is waiting on something</p></body></html>')
 # A still copy of a screen, as \`shoot --page\` saves one: the size it was laid out at, where its panel sits.
 open(os.path.join(os.path.dirname(p), 'menu.html'), 'w').write('<!doctype html><html data-frozen-panel="10,10,200,120" data-frozen="400x300"><head><meta charset="utf-8"></head><body><h1>Pick a game</h1><button>Start</button><input placeholder="Search games"></body></html>')
 json.dump(raw, open(p, 'w'))
@@ -1205,6 +1208,10 @@ print(p)`;
       for (let i = 0; i < 40 && !(await c.evaluate("document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]').length === 3").catch(() => false)); i++) await sleep(250);
       assert.equal(await c.evaluate("[...document.querySelector('.screenframe').contentDocument.querySelectorAll('[data-w]')].map(e=>e.matches('input')?e.value:e.textContent).join('|')"), 'Pick a game|Start|Search games', 'every piece of text, and a box hint, is editable');
       assert.equal(await c.evaluate("document.querySelectorAll('article.q[data-id=\"S-1\"] .ans, article.q[data-id=\"S-1\"] .note').length"), 0, 'a screen has no answer buttons or note box');
+      // WHY (Destin, 2026-11-28: "text editing slides are super broken"): a full-width but short panel opens on its band, not the whole window.
+      for (let i = 0; i < 40 && !(await c.evaluate("+document.querySelector('.screenframe[data-sid=\"S-2\"]').dataset.w > 0").catch(() => false)); i++) await sleep(250);
+      assert.ok(await c.evaluate("(()=>{const f=document.querySelector('.screenframe[data-sid=\"S-2\"]'),wrap=f.parentElement;return wrap.clientHeight < f.getBoundingClientRect().height * 0.7})()"),
+        'the strip is shown as its band, not the whole window');
       await c.evaluate(`(()=>{const t=document.querySelector('.screenframe').contentDocument.querySelector('h1 [data-w]');t.textContent='Choose a game';t.dispatchEvent(new Event('input',{bubbles:true}));
         const b=document.querySelector('.screenframe').contentDocument.querySelector('button [data-w]');b.textContent='Go';b.dispatchEvent(new Event('input',{bubbles:true}));})()`);
       await sleep(100);
