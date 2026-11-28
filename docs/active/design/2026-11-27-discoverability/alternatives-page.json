@@ -1,0 +1,176 @@
+{
+  "title": "A page for people leaving ChatGPT, Claude or Gemini",
+  "key": "alternatives-page",
+  "out": "alternatives-page.html",
+  "grows": true,
+  "tag": "feature",
+  "stage": "understanding",
+  "rounds_before": 0,
+  "retired": {},
+  "steps": [
+    {
+      "id": "P-u",
+      "page": "How I understand this page",
+      "intro": "Mark what holds and what doesn't. Nothing is designed yet.",
+      "stage": "understanding"
+    },
+    {
+      "id": "U-who",
+      "words": true,
+      "surface": "Website",
+      "path": "A new page on youcoded.ai",
+      "headline": "Its readers already use ChatGPT, Claude or Gemini, or are searching for DeepSeek, Kimi, Qwen or similar, and are open to something else.",
+      "changed": "They arrive from a search ('chatgpt alternative' is about 110,000 US searches a month; 'deepseek vs chatgpt' 12,100), an ad, AlternativeTo or a comparison article. They know what an AI assistant is; they don't know youcoded.",
+      "notice": "The page assumes they already like AI and skips explaining it, unlike the homepage, which has to start from zero.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-promise",
+      "words": true,
+      "surface": "Website",
+      "path": "The top of the page",
+      "headline": "In the first seconds they learn they can keep the AI they like, or try others, and get an app that becomes theirs.",
+      "changed": "Built on the marketing takes made for this same audience ('Make it mine', 'Purple is the new orange'): 'make anything you can imagine, just by asking' and 'stop waiting for updates'. Customize and make it yours, never 'build your own app'; home and money pages only as examples.",
+      "notice": "The top reads like the continuation of those ads, so someone who saw one and searched lands somewhere familiar.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-rivals",
+      "words": true,
+      "surface": "Website",
+      "path": "Lower on the page",
+      "headline": "Each app they might be leaving gets its own short section, tuned to what that app does well and badly.",
+      "changed": "ChatGPT (price tiers, its huge app directory conceded), Claude (Cowork and the new install-as-app feature, conceded and answered), Gemini (Google's three-year keeping of reviewed chats), and the open models (DeepSeek, Kimi, Qwen, GLM, MiniMax), each with its own facts and dated sources.",
+      "notice": "A ChatGPT user and a DeepSeek user read different sections of the same page; neither has to read about the other's app.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-honest",
+      "words": true,
+      "surface": "Website",
+      "path": "Everywhere on the page",
+      "headline": "Privacy is said exactly: youcoded never receives your messages, but a cloud model's company does; truly private means a model on your own computer.",
+      "changed": "Checked in the app's code on 2026-11-28: it does not choose which companies OpenRouter routes your requests to, so we can't promise DeepSeek through youcoded avoids China. Also no comparison tables, and the not-affiliated sentence (brand guide).",
+      "notice": "Some sentences are less punchy than a rival's would be, but none can be knocked down in a comment thread.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "U-proof",
+      "words": true,
+      "surface": "Website",
+      "path": "The pictures and clips",
+      "headline": "Every picture on the page is a real recording of the app, as on the homepage.",
+      "changed": "The landing page's rule: clips come from the real app, filmed by our recording tools, never drawn. You allowed faked scenes for ads; this page follows the website's rule unless you say otherwise.",
+      "notice": "Clips show only what today's download does.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-scope",
+      "page": "What's in and out",
+      "intro": "Scope decisions in words. Layout comes later, as drawings.",
+      "stage": "understanding"
+    },
+    {
+      "id": "Q-shape",
+      "words": true,
+      "surface": "Website",
+      "path": "How many pages",
+      "headline": "One page with a section per app, or a main page plus a short page per app?",
+      "today": "The site is one page. Google ranks one page best for one kind of search, and 'chatgpt alternative' and 'deepseek app' are different kinds.",
+      "checked": "Search volumes: Google Ads US monthly averages via seodata.dev, read 2026-11-28; app facts from youcoded source the same day.",
+      "problem": "One page is simpler and keeps everything together, but a DeepSeek searcher may land on a page that opens with ChatGPT. Separate pages match each search better but each must stay short and unique, as you asked.",
+      "proposal": "Pick a shape; either way the top promise is shared and each app's part is written for that app.",
+      "options": [
+        {
+          "id": "one",
+          "label": "One page, sections per app",
+          "pros": [
+            "One thing to keep accurate.",
+            "Strong for the big 'chatgpt alternative' search."
+          ],
+          "cons": [
+            "Weaker for model-name searches like DeepSeek or Kimi."
+          ]
+        },
+        {
+          "id": "hub",
+          "label": "Main page + a short page per app",
+          "pros": [
+            "Each search lands on its own app's page first.",
+            "DeepSeek's privacy story gets the room it needs."
+          ],
+          "cons": [
+            "Five or six short pages to keep accurate.",
+            "Each has to earn its place, or it gets cut."
+          ],
+          "recommended": true
+        }
+      ]
+    },
+    {
+      "id": "Q-deepseek",
+      "words": true,
+      "surface": "Website",
+      "path": "The DeepSeek part",
+      "headline": "What do we tell people searching DeepSeek, many of whom worry their data goes to China?",
+      "today": "DeepSeek's own privacy policy says it stores data on servers in China. Pages answering 'use DeepSeek without sending data to China' are mostly old how-tos that need typing commands.",
+      "checked": "DeepSeek privacy policy dated 2025-02-14 and youcoded's code, both read 2026-11-28.",
+      "problem": "youcoded can reach DeepSeek's models through OpenRouter, but doesn't control which company serves them. Full DeepSeek is too big for a normal computer; smaller open models like Qwen run offline in youcoded.",
+      "proposal": "Pick what the DeepSeek part says.",
+      "options": [
+        {
+          "id": "offline",
+          "label": "Offline open models",
+          "summary": "Use DeepSeek through OpenRouter if you like; for real privacy, run an open model like Qwen on your own computer, no commands.",
+          "pros": [
+            "Entirely true today.",
+            "Answers the worry better than the how-tos: no terminal."
+          ],
+          "cons": [
+            "Not literally DeepSeek offline (too big for most computers)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "setting",
+          "label": "Also add a privacy setting",
+          "summary": "Same as above now, and a new app setting later that tells OpenRouter to use only providers that don't keep your data.",
+          "pros": [
+            "Lets the page say more, once built."
+          ],
+          "cons": [
+            "New app work; it would go through its own design first."
+          ]
+        },
+        {
+          "id": "skip",
+          "label": "Don't mention privacy",
+          "pros": [
+            "Simplest."
+          ],
+          "cons": [
+            "Ignores the main reason many of them search."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-picture",
+      "words": true,
+      "answer": "words",
+      "prompt": "Optional: anything you already picture, a site you like, or something to avoid",
+      "surface": "Website",
+      "path": "The new page(s)",
+      "headline": "Anything you already picture for how this looks? Skip if not.",
+      "today": "Nothing is drawn yet. Next round I bring two to four drawn designs to choose between.",
+      "checked": "No design work exists for this page as of 2026-11-28.",
+      "problem": "A picture in your head now saves a round of designs that miss it.",
+      "proposal": "A sentence is plenty; leave it blank to see designs first."
+    }
+  ]
+}
