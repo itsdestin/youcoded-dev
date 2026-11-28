@@ -127,3 +127,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#801 fixes | The app's usage counts now include a first message sent in a Claude Code chat, plus a one-word note when a setup step fails or is cancelled.
 - youcoded#802 behind | Nothing visible.
 - youcoded#803 fixes | The app freezes far less often with many Claude Code chats open — it no longer re-reads your whole chat history folder every time a chat shows activity.
+- youcoded#804 fixes | The session menu opens more smoothly and shows each chat's tags and pin straight away.
