@@ -65,7 +65,11 @@ FIGURE_OPEN = ["b - 2 - 3 - 2 -",      # 1  colours every 2 bars: quarters, the 
 # lowest notes (B-flat 4, D5). WHY not from E-flat 4: tried, the pad's E-flat 4 rubbed a semitone
 # against the figure's D4 on every Ebmaj9 bar (the clash check failed bars 1-2). Two notes only
 # where the chord has no third tone in that stretch (the plain E-flat under the name: G4 B-flat 4).
-PAD = dict(pad_range=("F4", "C5"), pad_voices=(3, 2), pad_span=(3, 12), pad_under_tune=True)
+# pad_hold_common (review fix, 2026-11-27): measured, the pad's shared notes were re-struck at
+# chord changes (G4 and B-flat 4 at 23 s, both chords hold them), dipping the pad 3-5 dB each time
+# while the piano struck; now a note both chords hold simply carries on (bed.py)
+PAD = dict(pad_range=("F4", "C5"), pad_voices=(3, 2), pad_span=(3, 12), pad_under_tune=True,
+           pad_hold_common=True)
 # THE PAD'S COLOUR FOLLOWS THE COLOURS (change the colour, not the notes: the Overmono notes'
 # main lesson). WHY: the piano grows through the build (more notes, the lift) and the pad
 # should grow with it rather than sit unchanged (rule 5, one dynamic shape). Its filter starts a
@@ -73,7 +77,9 @@ PAD = dict(pad_range=("F4", "C5"), pad_voices=(3, 2), pad_span=(3, 12), pad_unde
 # start changing every bar) and bar 11 (20 s, every beat). 900 Hz x 0.8 = 720 Hz at the start,
 # 1035 Hz from bar 11: well under the 1500 Hz where the pad took over 2-6 kHz. Measured: it
 # did NOT fix the levels-together reading (-0.38 before, -0.32 after; a shorter pad attack gave
-# -0.31), so that reading's cause is still unknown; kept for the musical reason only.
+# -0.31); kept for the musical reason only. The review found the main cause: pad notes common to
+# two chords were re-struck and swelled back in (dips at 4, 16, 23 s); pad_hold_common below took
+# the reading to -0.02.
 CHANGES = [(1, "brightness", 0.8), (7, "brightness", 1.25), (11, "brightness", 1.15), (13, "peak")]
 
 

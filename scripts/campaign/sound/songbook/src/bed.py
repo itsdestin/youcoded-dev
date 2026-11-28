@@ -367,11 +367,38 @@ def play(band, plans, piece):
     # 1. SUSTAIN: one line per voice; a note common to two chords is held through (no re-attack)
     lines = {}
     tail_beats = (piece.length - bl.seconds(land)) * plans[-1].tm.bpm_at(land) / 60.0
+    # WHY pad_hold_common (round 11 purple review, 2026-11-27; opt-in through Piece.bed, other films
+    # unchanged): lines were paired by sorted position, so when a voicing shifted (F4 G4 B-flat 4 ->
+    # G4 B-flat 4 C5) or changed from 2 to 3 notes, the shared G4 and B-flat 4 moved to another
+    # voice: the old one let go (fast, under pad_handover "clean") and the new one swelled in over
+    # 1.2 s, so a note common to both chords dipped 3-5 dB at the change instead of being held, as
+    # the line above promises. With the switch on, a note already sounding keeps its own line.
+    hold_common = bool(cfg.get("pad_hold_common"))
     for b, n, c, ms in bl.voicing:
+        # the pad rings on under the logo (its own release then the file's last-second fade)
+        end = min(b + n, land + max(0.0, tail_beats - 1.0))
+        if hold_common:
+            todo = sorted(ms)
+            ending = {v: L for v, L in lines.items() if abs(L[-1][0] + L[-1][2] - b) < 1e-6}
+            for m in list(todo):
+                v = next((v for v, L in ending.items() if L[-1][1] == m), None)
+                if v is not None:
+                    ending[v][-1][2] = end - ending[v][-1][0]
+                    del ending[v]
+                    todo.remove(m)
+            for m in todo:
+                # a moving note continues the free line nearest in pitch (keeps its pan and its
+                # hand-over rule), or starts a new line
+                v = min(ending, key=lambda v: abs(ending[v][-1][1] - m), default=None)
+                if v is None:
+                    v = max(lines, default=-1) + 1
+                    lines[v] = []
+                else:
+                    del ending[v]
+                lines[v].append([b, m, end - b])
+            continue
         for v, m in enumerate(sorted(ms)):
             L = lines.setdefault(v, [])
-            # the pad rings on under the logo (its own release then the file's last-second fade)
-            end = min(b + n, land + max(0.0, tail_beats - 1.0))
             if L and L[-1][1] == m and abs(L[-1][0] + L[-1][2] - b) < 1e-6:
                 L[-1][2] = end - L[-1][0]
             else:
