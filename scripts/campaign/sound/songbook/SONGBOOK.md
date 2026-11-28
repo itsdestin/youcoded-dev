@@ -293,6 +293,16 @@ the name, ask the editor for 1-2 s after her last word; otherwise `ending="short
 steps), `"pool"`, `"density"`, `"brightness"` (0.7-1.3 on the pad filter), `"echo"`, `"family"`,
 `"peak"`. A layer fades over two bars. One change every 8-16 s; under 20 s, none or one.
 
+## Figure, pad and low tools (round 11)
+
+Section fields: `fig_open=True` (the chord figure skips a 7th/9th a semitone from another chord
+tone: no D next to E-flat), figure tokens `3^` firmer / `3~` softer and written pitches (`Bb4`,
+checked by you against the chord), `fig_shadow=-10` (a clean sine under each figure note),
+`low=dict(mask="x.........x.....", voice="sub")` (the sub root on chosen steps; `voice="thump"` is
+a muffled low pulse that BENDS the no-drums rule: a labelled A/B only), `counter_voice="sine"` (a
+rare ping). Piece.bed: `pad_range`, `pad_voices`, `pad_span`, `pad_under_tune`, `pad_avoid_figure`.
+Worked example: `src/film_r11_mim.py`.
+
 ## Sound switches (engine/options.py)
 
 Order: `Piece.sound`, then `SONGBOOK_SOUND="k=v,..."`, then the style profile (v1 old sound, v2,

@@ -234,6 +234,26 @@ class BedLine:
                 return self.pool(p.sec, self.bar_no(beat))
         return []
 
+    def _figure_at(self, beat):
+        """The chord figure's reachable notes under this beat (its ladder from fig_floor at the
+        ladder indices and written pitches its tokens use), for pad_avoid_figure."""
+        import blocks as BL
+        for p in self.plans:
+            if p.ending or getattr(p.sec, "fig_mode", None) == "pedal" or not getattr(p.sec, "figure", None):
+                continue
+            if p.beat0 - 1e-6 <= beat < p.beat0 + p.blen * len(p.bars) + 1e-6:
+                fl = p.sec.fig_floor
+                fl = fl[0] if isinstance(fl, (tuple, list)) else fl
+                bar = next((b for b in p.bars if b.beat - 1e-6 <= beat < b.beat + p.blen), p.bars[0])
+                c = bar.chords[1] if (len(bar.chords) == 2 and beat - bar.beat >= 2) else bar.chords[0]
+                j = int(round((bar.beat - p.beat0) / 4.0))
+                bars = BL._fig_bars(p.sec)
+                toks = [BL._fig_token(t)[0] for t in bars[j % len(bars)]]
+                lad = BL._ladder(c, note(fl) + int(getattr(p.sec, "register", 0) or 0), bool(getattr(p.sec, "fig_open", False)))
+                return ([lad[min(int(t) - 1, len(lad) - 1)] for t in set(toks) if t.isdigit()]
+                        + [note(t) for t in toks if BL._is_pitch(t)])
+        return []
+
     def _voice(self):
         lo, hi = PAD_RANGE
         # WHY per-piece pad register, voice count and spread (round 11, SONGBOOK rule 9: "the pad
@@ -249,6 +269,11 @@ class BedLine:
         voices = (int(voices),) if isinstance(voices, (int, float)) else tuple(int(v) for v in voices)
         span_lo, span_hi = self.cfg.get("pad_span") or (9, 19)
         under_tune = bool(self.cfg.get("pad_under_tune"))
+        # WHY pad_avoid_figure (round 11, "Make it mine"): the semitone/7th/9th check ran only
+        # against the PEDAL pulse's pool, so with the chord figure the pad could hold D4 under the
+        # figure's E-flat 4 (measured: the second most frequent rub in the round-10 sketch). With it,
+        # the figure's reachable notes (blocks._ladder) are checked the same way.
+        avoid_fig = bool(self.cfg.get("pad_avoid_figure"))
         prev = None
         out = []
         # WHY (v4, the unity rebuild): the pad was voiced as an Eb3/Bb3 drone with the root left
@@ -263,6 +288,8 @@ class BedLine:
         for beat, beats, chord in self._spans():
             # the pulse's notes over this whole span (a register change may fall inside it)
             pulse = sorted({m for x in np.arange(beat, beat + beats, 2.0) for m in self.pulse_at(x) if m < C5})
+            if avoid_fig:
+                pulse = sorted(set(pulse) | {m for x in np.arange(beat, beat + beats, 2.0) for m in self._figure_at(x)})
             tones = T.CHORD_TONES[chord]
             bass = note(T.V[chord]["root"])
             cands = [m for m in range(lo, hi + 1) if m % 12 in tones]

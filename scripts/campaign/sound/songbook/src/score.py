@@ -121,6 +121,16 @@ class Section:
     # 35 ms on the off-beat eighths); it lived only in the mood table, so a recipe could not ask
     # for it. None = the mood's own value. It moves EVERY off-beat eighth (tune included): one feel.
     swing: Optional[float] = None
+    # ---- round 11 (2026-11-27, "Make it mine": "a handful of notes still feel somewhat misplaced",
+    # and alternatives "taking heavy inspiration from" Overmono's GTA VI pieces). WHY each:
+    # fig_open: the chord figure leaves out a colour tone a semitone from another chord tone
+    #   (blocks._ladder), the most frequent rub measured in the round-10 sketch (D4 against E-flat);
+    # fig_shadow: dB of a clean sine doubling each figure note (None = off), a glow without grit;
+    # low: dict(mask=16 steps, voice="sub"|"thump", vel): the sub root on chosen steps (a 2-step
+    #   low line; "thump" bends the no-drums rule and is only for a labelled A/B, blocks.play_low).
+    fig_open: bool = False
+    fig_shadow: Optional[float] = None
+    low: Optional[dict] = None
 
 
 @dataclass
@@ -734,6 +744,28 @@ class Band:
         x = self.S.synth(int(m), self.vary(vel, key, 0.02), cutoff=cutoff,
                          gate=self.secs(beat, gate_beats), seed=int(abs(_h("s", key)) * 1000))
         self._put("synth", pan(x, p), t)
+
+    def sine(self, beat, m, beats, vel, p=0.0, role=""):
+        """A clean sine note on the synth bus (round 11: the figure's shadow and the rare ping).
+        WHY its own instrument: `synth` is two saws and a square (a pluck with upper partials); the
+        Overmono-inspired glow and bleeps must be the plainest tone there is, so they add no
+        brightness and no attack of their own."""
+        key = ("sine", round(beat, 4), int(m))
+        t = self.when(beat, 3.0, key)
+        self._log(t, beat, m, beats, vel, "synth", role, "sine")
+        if self.dry:
+            return self._put("synth", None, t)
+        x = self.S.sine_tone(int(m), self.secs(beat, beats), vel)
+        self._put("synth", pan(x, p), t)
+
+    def thump(self, beat, m, vel):
+        """A soft, muffled, pitched low pulse on the (dry) sub bus: sounds.thump. BENDS the
+        no-drums rule; only for a labelled A/B (blocks.play_low)."""
+        t = self.when(beat, 2.0, ("thump", round(beat, 4), int(m)))
+        self._log(t, beat, m, 0.5, vel, "sub", "thump", "thump")
+        if self.dry:
+            return
+        place(self.bus["sub"], self.S.thump(int(m), vel), t)
 
     def sub(self, beat, m, beats, vel, fin=0.0):
         t = self.sec(beat)

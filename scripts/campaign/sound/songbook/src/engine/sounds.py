@@ -411,6 +411,35 @@ def sub(m, dur, vel=0.8):
     return fade(biquad(x * e * vel, "lp", 180, 0.7), fout=0.02)
 
 
+def thump(m, vel=0.5):
+    """A soft, muffled, pitched low pulse (round 11, a labelled A/B that BENDS the no-drums rule):
+    a sine on the chord's sub root that starts a fifth high and falls to pitch in ~30 ms, a 6 ms
+    rounded entry, a ~0.15 s decay, low-passed at 140 Hz. WHY these numbers: the pitch fall is
+    what makes it a pulse rather than a held bass note; the rounded entry and the low-pass keep
+    any click out (no snap, no clack: a felt heartbeat, not a kick drum's beater)."""
+    f0 = float(midi_hz(m))
+    while f0 < 40.0:
+        f0 *= 2
+    n = int(0.45 * SR)
+    t = np.arange(n) / SR
+    f = f0 * (1 + 0.5 * np.exp(-t / 0.012))
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR)
+    env = _rcos(t, 0.006) * np.exp(-t / 0.15)
+    return fade(biquad(x * env * vel, "lp", 140, 0.7), fout=0.03)
+
+
+def sine_tone(m, dur, vel=0.5):
+    """A clean sine (round 11: the figure's shadow and the rare ping): 12 ms rounded entry, held
+    `dur` s at a gentle 0.6 s decay, then a 0.12 s release. No harmonics, no filter, no attack of
+    its own."""
+    f0 = float(midi_hz(m))
+    n = int((dur + 0.4) * SR)
+    t = np.arange(n) / SR
+    x = np.sin(2 * np.pi * f0 * t)
+    env = _rcos(t, 0.012) * np.exp(-t / 0.6) * np.where(t < dur, 1.0, np.exp(-(t - dur) / 0.04))
+    return fade(x * env * vel, fout=0.01)
+
+
 # ================================================================ soft warm synth
 
 def synth(m, vel=0.5, cutoff=900.0, gate=0.16, seed=0):

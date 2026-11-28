@@ -25,6 +25,13 @@ def m_(name):
     return note(name)
 
 
+# The sine shadow's touch against the piano note it doubles, so that fig_shadow=0 means "about as
+# loud as the note". Measured 2026-11-27 (single notes through the fixed bus gains, G3-B-flat 4,
+# touch 0.28): a sine at the piano's touch is 0.2-2.5 dB (median ~2.2) quieter than the note, so
+# x1.25 (+1.9 dB); fig_shadow=-10 is then about 10 dB under the note.
+SHADOW_K = 1.25
+
+
 # Section loudness shapes (Section.shape), as (fraction of the section, touch multiplier). On the
 # felt piano at its usual touch a multiplier f moves the level by about 10 x (f - 1) dB (1.15 is
 # about +1.5 dB, 0.7 about -3 dB); the strings follow in proportion. Combine a shape with a
@@ -489,7 +496,11 @@ def play_counter(band, p, dyn, plans):
     vo = p.sec.counter_voice
     for beat, m, d, touch, src in _phrase_notes(p, ph):
         v = 0.5 * touch * dyn.v(beat)
-        if vo == "piano":
+        if vo == "sine":
+            # WHY (round 11, "Night drive"): Overmono's "short bleeps and fragments" in our quiet
+            # clean electronics: a rare sine ping on a note of the chord, written by the composer
+            band.sine(beat, m, d, v, role="counter")
+        elif vo == "piano":
             band.piano("counter", beat, m, d, v * 0.95, tone=0.0, pedal=p.mood["pedal"], p=0.3, role="counter")
         elif vo == "pizz":
             band.pizz("vc" if m < m_("C4") else "vla", beat, m, v * 1.1, p=0.2, bus="counter", role="counter")
@@ -748,13 +759,41 @@ def _fig_bars(sec):
     return out
 
 
-def _ladder(chord, floor):
+def _ladder(chord, floor, open_=False):
     """The chord's tones from `floor` (midi) upwards, two octaves: index 1 is the first chord tone
     at or above the floor. WHY counted from a fixed floor (not from each chord's root): the
     figure's notes then stay in one register and move by the smallest step when the chord
-    changes, which is what good voice-leading in an accompaniment is."""
-    tones = T.CHORD_TONES[chord]
+    changes, which is what good voice-leading in an accompaniment is.
+    open_ (Section.fig_open): leave out a colour tone (7th, 9th, 11th) that sits a semitone from
+    another tone of the chord. WHY (round 11, "Make it mine": "a handful of notes still feel
+    somewhat misplaced", "the notes ... mush together"): a rich chord's close ladder holds a
+    semitone (Ebmaj9 D-Eb, Cm9 D-Eb, Abmaj9 G-Ab, Fm9 G-Ab), and the figure struck the two in a
+    row; measured on the round-10 sketch, D4 against E-flat (figure, pad and tune) was the most
+    frequent rub in the window. The pad and the tune still carry the colour."""
+    tones = set(T.CHORD_TONES[chord])
+    if open_:
+        root = T.root_of(chord)
+        core = {root, (root + 3) % 12, (root + 4) % 12, (root + 7) % 12, (root + 5) % 12}
+        tones = {pc for pc in tones if pc in core or not ({(pc + 1) % 12, (pc - 1) % 12} & tones)}
     return [m for m in range(int(floor), int(floor) + 25) if m % 12 in tones]
+
+
+def _fig_token(tok):
+    """A figure token split into (token, touch multiplier): a trailing "^" plays it firmer (x1.15),
+    a trailing "~" softer (x0.8). WHY (round 11, the 2-step "Night drive" figure): a skipping
+    figure needs its first step firmest; the figure had one fixed accent (the downbeat x1.1)."""
+    if tok.endswith("^"):
+        return tok[:-1], 1.15
+    if tok.endswith("~"):
+        return tok[:-1], 0.8
+    return tok, 1.0
+
+
+def _is_pitch(tok):
+    """A written pitch token ("Bb4", "G3") rather than a ladder index. WHY (round 11, the "piano
+    chop" figure): the tune's own notes cut into fragments ("you-co" B-flat G, "co-ded" G F) are
+    fixed pitches, which a ladder index cannot name; the composer checks them against the chord."""
+    return bool(tok) and tok[0] in "ABCDEFG"
 
 
 def acc_figure(band, p, bar, dyn, cut=4.0):
@@ -787,8 +826,9 @@ def acc_figure(band, p, bar, dyn, cut=4.0):
     st = float(sec.step)
     fig = []
     i = 0
+    open_ = bool(getattr(sec, "fig_open", False))
     while i < len(toks):
-        tok = toks[i]
+        tok, acc = _fig_token(toks[i])
         off = i * st
         n = 1
         while i + n < len(toks) and toks[i + n] == "-":
@@ -803,8 +843,14 @@ def acc_figure(band, p, bar, dyn, cut=4.0):
         c = _chord(bar, off)
         if tok == "b":
             m = bn(p, V[c]["root"])
+        elif _is_pitch(tok):
+            m = m_(tok)
+            if getattr(band, "woven", False) and not p.ending:
+                m = _woven_fit(band, beat, m, st)
+                if m is None:
+                    continue
         else:
-            lad = _ladder(c, floor)
+            lad = _ladder(c, floor, open_)
             m = lad[min(int(tok) - 1, len(lad) - 1)]
             if getattr(band, "woven", False) and not p.ending:
                 # the tune is the figure's top voice (see _woven_fit)
@@ -824,7 +870,14 @@ def acc_figure(band, p, bar, dyn, cut=4.0):
             d = max(d, (2.0 if (len(bar.chords) == 2 and off < 2) else 4.0) - off)
         # WHY the downbeat only a hair stronger (1.1): an even touch is the point; accents are
         # what made the old patterns skip and bounce
-        v = sec.fig_touch * (1.1 if abs(off % 4.0) < 1e-6 else 1.0) * dyn.v(beat)
+        v = sec.fig_touch * (1.1 if abs(off % 4.0) < 1e-6 else 1.0) * acc * dyn.v(beat)
+        sh = getattr(sec, "fig_shadow", None)
+        if sh is not None and tok != "b" and sec.fig_voice == "piano":
+            # WHY the sine shadow (round 11, "Piano chop", from Overmono's heavily processed chops
+            # done without grit): each figure note is doubled by a clean sine at the same pitch,
+            # `fig_shadow` dB under it, a glow, never a second line (same note, same time, its
+            # own short release). SHADOW_K is the measured sine-to-piano level (see band.sine)
+            band.sine(beat, m, min(d, 1.0), v * SHADOW_K * 10 ** (float(sh) / 20), role="shadow")
         if sec.fig_voice == "pizz":
             band.pizz("vc" if m < m_("C3") else "vla", beat, m, v * 1.6, p=0.15)
         elif sec.fig_voice == "synth":
@@ -1196,6 +1249,39 @@ def play_sub(band, p, dyn, piece, plans, k):
     band.held_on[("sub", k + 1)] = there or here
 
 
+def play_low(band, p, dyn, piece, plans):
+    """THE LOW STEPS (Section.low = dict(mask="x.........x.....", voice="sub"|"thump", vel=0.5)):
+    the chord's sub root on chosen sixteenth steps. "sub" holds the round sine to the next step
+    (a bass line with a rhythm: Overmono's 2-step, steps 1 and 11, pitched, never a drum);
+    "thump" is a short, muffled, pitched low pulse (sounds.thump).
+    WHY (round 11, "Make it mine" alternatives from the Overmono notes): the sub layer could only
+    hold one note per chord ("weight only, no rhythm of its own"), so a skipping low line could not
+    be written. "thump" BENDS the no-drums rule (a soft kick made of a sine) and exists only for
+    the owner's decision on a clearly labelled sketch; nothing uses it by default."""
+    lo = getattr(p.sec, "low", None)
+    if not lo or p.ending:
+        return
+    mask = lo["mask"].replace(" ", "")
+    if len(mask) != 16 or set(mask) - set("x."):
+        raise ValueError(f"Section.low mask {lo['mask']!r}: 16 steps of x (play) and . (rest)")
+    voice, vel = lo.get("voice", "sub"), float(lo.get("vel", 0.5))
+    on = [i for i, s in enumerate(mask) if s == "x"]
+    for bar in p.bars:
+        for i in on:
+            off = i * 0.25
+            if off >= p.blen - 1e-9:
+                continue
+            beat = bar.beat + off
+            c = _chord(bar, off)
+            m = m_(V[c]["sub"])
+            v = vel * dyn.v(beat)
+            if voice == "thump":
+                band.thump(beat, m, v)
+            else:
+                nxt = next((j for j in on if j > i), on[0] + 16) * 0.25
+                band.sub(beat, m, max(0.25, min(nxt, p.blen) - off - 0.1), v)
+
+
 # ====================================================================== THE LOGO, PLAYED
 
 def play_logo(band, plans, piece):
@@ -1286,6 +1372,7 @@ def render(band, plans, piece):
         play_accomp(band, p, dyn, piece, plans)
         play_held(band, p, dyn, plans, k, piece)
         play_sub(band, p, dyn, piece, plans, k)
+        play_low(band, p, dyn, piece, plans)
     band.swing = 0.0
     if band.bedline is not None:
         BED.play(band, plans, piece)
