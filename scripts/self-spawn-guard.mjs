@@ -14,7 +14,9 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const CALL_NAMES = ['spawn', 'spawnSync', 'fork', 'execFile', 'execFileSync', 'exec', 'execSync'];
-const ident = (s) => s.replace(/\$/g, '\\$');
+// WHY escape every regex special (CodeQL, 2026-11-27): names here are JS identifiers, but escaping only `$`
+// would break silently if a name ever carried another special character.
+const ident = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // Expressions whose value is THIS file's path (or URL).
 const SELF_EXPR = String.raw`(?:fileURLToPath\(\s*import\.meta\.url\s*\)|new URL\(\s*import\.meta\.url\s*\)(?:\.pathname|\.href)?|import\.meta\.filename|import\.meta\.url|__filename|process\.argv\[1\]|process\.argv\.at\(\s*1\s*\))`;
 const SELF_VAR = new RegExp(String.raw`\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*${SELF_EXPR}\s*[;,\n]`, 'g');
