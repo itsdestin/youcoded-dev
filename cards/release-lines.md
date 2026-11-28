@@ -130,3 +130,4 @@ One to three lines per merged change, written when it lands by `node scripts/car
 - youcoded#804 fixes | Fewer small freezes: the app's own slowdown recorder no longer briefly freezes it every 25 seconds, and git checks no longer pile up.
 - youcoded#804 fixes | The session menu opens more smoothly and shows each chat's tags and pin straight away.
 - youcoded#805 fixes | The new-comment box stays next to its words when the file's text re-wraps (for example while you drag the file panel wider or narrower).
+- youcoded#806 behind | Nothing visible.
