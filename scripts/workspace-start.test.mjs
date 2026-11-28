@@ -446,7 +446,7 @@ test('startup and shell maintenance coordinate on the shared sync lock', t => {
   const f = fixture(t);
   const lock = path.join(f.root, '.git', 'youcoded-sync.lock');
   fs.mkdirSync(lock);
-  fs.writeFileSync(path.join(lock, 'owner.json'), JSON.stringify({ pid: 4242 }));
+  fs.writeFileSync(path.join(lock, 'owner.json'), JSON.stringify({ pid: process.pid }));
   const maintenance = spawnSync('bash', [syncShell, f.root, 'master'], { env, encoding: 'utf8' });
   assert.equal(maintenance.status, 1);
   assert.match(maintenance.stdout, /Action: busy/);

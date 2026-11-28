@@ -12,6 +12,7 @@ import { cpus, loadavg, tmpdir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CHROME_FLAGS } from '../ui-review/cdp-helpers.mjs';
+import { tryAcquireLock } from '../lib/lock.mjs';
 
 // SHOOT_SCALE=1.5 photographs at a screen's pixel density instead of 1×. WHY: Destin's
 // laptop runs at 1.5×, where half-pixel offsets show that a 1× picture rounds away — a tag
@@ -98,12 +99,14 @@ export async function ensureBuild(checkout, log = () => {}) {
   if (ready()) return use();
 
   // One build at a time per checkout: a second `shoot` waits instead of building the same thing twice.
-  const lock = join(home, 'lock');
-  for (let t0 = Date.now(); ; await sleep(200)) {
-    try { mkdirSync(lock); break; } catch {
-      if (Date.now() - t0 > 120_000) { rmSync(lock, { recursive: true, force: true }); continue; } // a crashed builder's lock
-      if (ready()) return use();
-    }
+  // WHY shared helper: a crashed builder's lock is now recognised by its dead pid instead of
+  // being force-removed after 120s (which also stole the lock from a slow but live builder).
+  // Ceiling 15 min covers a stuck-but-alive builder.
+  let held;
+  for (;; await sleep(200)) {
+    held = tryAcquireLock(join(home, 'lock'), { maxAgeMs: 15 * 60_000 });
+    if (held.acquired) break;
+    if (ready()) return use();
   }
   try {
     // WHY re-check after taking the lock (2026-09-26): shoot --check and journeys start together
@@ -128,7 +131,7 @@ export async function ensureBuild(checkout, log = () => {}) {
     log(`built in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
     sweepOldBuilds(home, dist);
     return use();
-  } finally { rmSync(lock, { recursive: true, force: true }); }
+  } finally { held.release(); }
 }
 
 // ─── Serving it ─────────────────────────────────────────────────────────────

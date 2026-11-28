@@ -26,7 +26,8 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const REPOS = ['youcoded', 'youcoded-core', 'youcoded-admin', 'wecoded-themes', 'wecoded-marketplace'];
+// WHY read workspace-repos.json (X-2, 2026-11-27): one repo list for every script, instead of a copy here that drifts.
+export const REPOS = Object.keys(JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'))).filter(k => k !== 'workspace');
 
 // A workspace WORKTREE holds no sub-repo clones — `youcoded/` and friends are gitignored
 // directories of the MAIN checkout — so every `youcoded/...` anchor and MAP path read

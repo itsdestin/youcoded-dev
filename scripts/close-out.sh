@@ -178,7 +178,11 @@ else
     # branch yet", which reads as lost work and invites a session to redo it
     # (observed 2026-09-03).
     ELSEWHERE=""
-    for _cand in workspace youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
+    # WHY read scripts/workspace-repos.json (X-2): one repo list for every script; the typed list is a fallback.
+    _list=$(node -e 'try{console.log(Object.keys(require(process.argv[1])).join(" "))}catch{}' "$WORKSPACE/scripts/workspace-repos.json" 2>/dev/null || true)
+    [[ -n "$_list" ]] || _list="workspace youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace"
+    read -r -a _cands <<< "$_list"
+    for _cand in "${_cands[@]}"; do
       [[ "$_cand" == "$REPO" ]] && continue
       if [[ "$_cand" == workspace ]]; then _dir="$WORKSPACE"; else _dir="$WORKSPACE/$_cand"; fi
       [[ -e "$_dir/.git" ]] || continue

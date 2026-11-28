@@ -108,6 +108,10 @@ jobs:
       # machine, so CI is the only thing that would notice them rotting.
       - name: Test the workspace drift guards
         run: node --test scripts/workspace-drift-guards.test.mjs scripts/workspace-mcp.test.mjs
+      # WHY (2026-11-27): a test that started copies of itself crashed Destin's computer three times. The guard
+      # fails any test file that does that; the lock tests pin the shared self-clearing lock those scripts use.
+      - name: Test the self-spawn guard and the shared lock
+        run: node --test --test-concurrency=1 scripts/self-spawn-guard.test.mjs scripts/lib/lock.test.mjs
 
       # WHY: a large merge diff must not silently drop screen/journey gates.
       - name: Test verification gate selection

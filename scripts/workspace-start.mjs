@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { formatBriefing, syncWorkspace, verifyWorkspaceIdentity } from './workspace-sync.mjs';
 import { sweep, formatSweep, isMergedInto } from './prune-worktrees.mjs';
+import { tryAcquireLock } from './lib/lock.mjs';
 import { markTeamDevice, teamDeviceFile } from './team-device.mjs';
 
 const inventory = JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'));
@@ -422,10 +423,10 @@ export function startWorkspace({ root, session, repos = [] }) {
   const common = commonDir(root), stateRoot = path.join(common, 'youcoded-sessions');
   ensureDirectory(stateRoot);
   const lock = path.join(stateRoot, `${session}.lock`), manifest = path.join(stateRoot, `${session}.json`);
-  try { fs.mkdirSync(lock); } catch (error) {
-    if (error.code === 'EEXIST') throw new Error(`Session ${session} is locked: ${lock}. Another startup may be running; do not remove the lock without checking.`);
-    throw error;
-  }
+  // WHY shared helper: a startup that crashed used to leave this lock and block the session key
+  // until removed by hand; now a lock whose owner process is gone is taken over automatically.
+  const held = tryAcquireLock(lock);
+  if (!held.acquired) throw new Error(`Session ${session} is locked: ${lock}. Another startup may be running; do not remove the lock without checking.`);
   try {
     const workspace = path.join(root, 'worktrees', 'sessions', session), branch = `session/${session}`;
     let state = { version: 1, session, workspace, repositories: {} };
@@ -533,7 +534,7 @@ export function startWorkspace({ root, session, repos = [] }) {
       // Preserve successful workspace evidence when later component provisioning fails.
       throw new Error(`${error.message}\nWorkspace reorientation report: ${synced.reportPath}`);
     }
-  } finally { fs.rmdirSync(lock); }
+  } finally { held.release(); }
 }
 
 function main(args) {
